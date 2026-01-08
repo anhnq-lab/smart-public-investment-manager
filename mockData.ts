@@ -104,7 +104,26 @@ const haTinhProjects = [
     { id: "DA022", name: "Đầu tư xây dựng, cải tạo trạm y tế xã (Vốn ADB)", total: 88000000000, status: ProjectStatus.Execution },
     { id: "DA023", name: "Cải tạo nhà KTX sinh viên Lào - ĐH Hà Tĩnh", total: 9400000000, status: ProjectStatus.Execution },
     { id: "DA7763646", name: "Trụ sở làm việc Trạm kiểm dịch động vật nội địa", total: 15000000000, status: ProjectStatus.Finished },
-    { id: "DA024", name: "Nâng cấp trụ sở làm việc Sở Y tế", total: 25000000000, status: ProjectStatus.Execution }
+    { id: "DA024", name: "Nâng cấp trụ sở làm việc Sở Y tế", total: 25000000000, status: ProjectStatus.Execution },
+    {
+        id: "PR2500044101",
+        name: "Xây dựng đường nối từ đường Quốc lộ 2 - Minh Trí - Xuân Hòa đi Khu Công nghiệp sạch Sóc Sơn với đường Nội Bài - 35 - Minh Phú",
+        total: 57526217000,
+        status: ProjectStatus.Preparation,
+        // New detailed fields from image
+        projectNumber: "PR2500044101",
+        version: "00",
+        objective: "", // Not specified in image, left empty
+        investor: "Ban Quản lý dự án đầu tư - Hạ tầng xã Kim Anh",
+        authority: "Chủ tịch UBND xã Kim Anh",
+        duration: "3 Năm",
+        managementForm: "BQLDA chuyên ngành - khu vực",
+        isODA: false,
+        location: "Xã Kim Anh, Thành phố Hà Nội",
+        decisionNumber: "1032/QĐ-UBND",
+        decisionDate: "2025-02-28",
+        decisionAuthority: "UBND huyện Sóc Sơn"
+    }
 ];
 
 const projectImages = [
@@ -166,7 +185,8 @@ export const mockProjects: Project[] = haTinhProjects.map((p, i) => {
                             p.id === 'DA7946312' ? ["NV1001", "NV1015", "NV1035"] :
                                 p.id === 'DA7544621' ? ["NV1001", "NV1016", "NV1036"] :
                                     p.id === 'DA7501924' ? ["NV1001", "NV1002", "NV1033", "NV1037"] :
-                                        i % 3 === 0 ? ["NV1001", "NV1002"] : ["NV1002", "NV1003"],
+                                        p.id === 'PR2500044101' ? ["NV1001", "NV1005"] :
+                                            i % 3 === 0 ? ["NV1001", "NV1002"] : ["NV1002", "NV1003"],
 
         // Map new fields
         ProjectNumber: pAny.projectNumber,
@@ -1380,6 +1400,42 @@ const tramYTePackages: BiddingPackage[] = [
     }
 ];
 mockBiddingPackages.push(...tramYTePackages);
+
+// ADD SPECIFIC PACKAGES FOR Kim Anh Project (PR2500044101)
+const kimAnhPackages: BiddingPackage[] = [
+    {
+        PackageID: "PKG-PR2500044101-01",
+        ProjectID: "PR2500044101",
+        PackageNumber: "PL2500186419", // Using KHLCNT number as proxy if needed, or mapping it to KHLCNTCode
+        PackageName: "Điều chỉnh nguồn vốn và phê duyệt kế hoạch lựa chọn nhà thầu bổ sung dự án Xây dựng đường nối từ đường Quốc lộ 2 - Minh Trí - Xuân Hòa đi Khu công nghiệp sạch Sóc Sơn với đường Nội Bài - 35 - Minh Phú",
+        Price: 52267727,
+        SelectionMethod: "Đấu thầu rộng rãi",
+        BidType: "Qua mạng",
+        ContractType: "Trọn gói",
+        Status: PackageStatus.Planning,
+        KHLCNTCode: "PL2500186419",
+        Field: "Hỗn hợp", // Inferring
+        Duration: "—",
+        DecisionNumber: "1032/QĐ-UBND",
+        DecisionDate: "28/02/2025",
+        DecisionAgency: "UBND huyện Sóc Sơn"
+    },
+    {
+        PackageID: "PKG-PR2500044101-02",
+        ProjectID: "PR2500044101",
+        PackageNumber: "PL2500138388",
+        PackageName: "Kế hoạch lựa chọn nhà thầu dự án: Xây dựng đường nối Quốc lộ 2 - Minh Trí - Xuân Hòa đi Khu công nghiệp sạch Sóc Sơn với đường Nội Bài - 35 - Minh Phú",
+        Price: 27570010110,
+        SelectionMethod: "Đấu thầu rộng rãi",
+        BidType: "Qua mạng",
+        ContractType: "Đơn giá điều chỉnh",
+        Status: PackageStatus.Awarded, // "KHLCNT đã thực hiện xong"
+        KHLCNTCode: "PL2500138388",
+        Field: "Xây lắp",
+        Duration: "—"
+    }
+];
+mockBiddingPackages.push(...kimAnhPackages);
 
 // 5. Documents
 // 5. Documents
