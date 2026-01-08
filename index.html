@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Quản lý Dự án Đầu tư công</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              // Custom Palette Definition for reference
+              'theme-p1': '#d4eaf7',
+              'theme-p2': '#b6ccd8',
+              'theme-p3': '#3b3c3d',
+              'theme-a1': '#71c4ef',
+              'theme-a2': '#00668c',
+              'theme-t1': '#1d1c1c',
+              'theme-t2': '#313d44',
+              'theme-b1': '#fffefb',
+              'theme-b2': '#f5f4f1',
+              'theme-b3': '#cccbc8',
+
+              // Override standard colors to apply theme globally
+              white: '#fffefb', // bg-100
+              
+              blue: {
+                50: '#d4eaf7',  // primary-100 (Background highlights)
+                100: '#d4eaf7', 
+                200: '#b6ccd8', // primary-200
+                300: '#71c4ef', // accent-100
+                400: '#71c4ef',
+                500: '#00668c', // accent-200 (Main Brand Color)
+                600: '#00668c', // accent-200
+                700: '#004d69', // Darker shade
+              },
+              
+              gray: {
+                50: '#f5f4f1',  // bg-200 (App background)
+                100: '#f5f4f1',
+                200: '#b6ccd8', // primary-200 (Borders)
+                300: '#cccbc8', // bg-300
+                400: '#9ca3af',
+                500: '#313d44', // text-200 (Secondary text)
+                600: '#313d44',
+                700: '#3b3c3d', // primary-300
+                800: '#1d1c1c', // text-100 (Headings)
+                900: '#1d1c1c',
+              },
+              
+              slate: {
+                50: '#f5f4f1',
+                800: '#3b3c3d', // primary-300
+                900: '#1d1c1c', // text-100
+              },
+              
+              emerald: {
+                 50: '#ecfdf5',
+                 500: '#10b981',
+                 600: '#059669',
+              }
+            },
+            fontFamily: {
+              sans: ['Inter', 'sans-serif'],
+            }
+          }
+        }
+      }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+      body {
+        font-family: 'Inter', sans-serif;
+        background-color: #f5f4f1; /* bg-200 */
+        color: #1d1c1c; /* text-100 */
+      }
+      /* Custom scrollbar for cleaner look */
+      ::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+      }
+      ::-webkit-scrollbar-track {
+        background: #f5f4f1; 
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #b6ccd8; /* primary-200 */
+        border-radius: 4px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: #00668c; /* accent-200 */
+      }
+    </style>
+  <script type="importmap">
+{
+  "imports": {
+    "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
+    "react-router-dom": "https://esm.sh/react-router-dom@^7.10.1",
+    "lucide-react": "https://esm.sh/lucide-react@^0.561.0",
+    "react/": "https://esm.sh/react@^19.2.3/",
+    "react": "https://esm.sh/react@^19.2.3",
+    "recharts": "https://esm.sh/recharts@^3.6.0"
+  }
+}
+</script>
+<link rel="stylesheet" href="/index.css">
+</head>
+  <body>
+    <div id="root"></div>
+  <script type="module" src="/index.tsx"></script>
+</body>
+</html>
