@@ -1649,6 +1649,95 @@ const vuBanPackages: BiddingPackage[] = [
 ];
 mockBiddingPackages.push(...vuBanPackages);
 
+// --- VU BAN PROJECT CONTRACTS & PAYMENTS ---
+const vuBanContracts: Contract[] = [
+    {
+        ContractID: "103/2025/HĐ-TVTK", // Based on decision 103/QĐ-QLDA
+        PackageID: "PKG-PR2500062685-04",
+        ContractorID: "vn0107740913", // Trung Hung
+        SignDate: "25/11/2025",
+        Value: 657532000,
+        AdvanceRate: 15,
+        Warranty: 0,
+        Status: ContractStatus.Executing
+    },
+    {
+        ContractID: "104/2025/HĐ-TVTT", // Guessing next number
+        PackageID: "PKG-PR2500062685-05",
+        ContractorID: "vn0108622278", // Tu Bo Ton Tao
+        SignDate: "25/11/2025",
+        Value: 81963000,
+        AdvanceRate: 0,
+        Warranty: 0,
+        Status: ContractStatus.Executing
+    },
+    {
+        ContractID: "105/2025/HĐ-TVHSMT",
+        PackageID: "PKG-PR2500062685-06",
+        ContractorID: "vn0107128531", // CNS1
+        SignDate: "18/12/2025",
+        Value: 67767000,
+        AdvanceRate: 0,
+        Warranty: 0,
+        Status: ContractStatus.Executing
+    },
+    {
+        ContractID: "194/2025/HĐ-XL07", // Based on decision 194/QĐ-QLDA
+        PackageID: "PKG-PR2500062685-07",
+        ContractorID: "LD-PR2500062685-07", // Lien Danh
+        SignDate: "30/12/2025",
+        Value: 18507185000,
+        AdvanceRate: 20,
+        Warranty: 12,
+        Status: ContractStatus.Executing
+    },
+    {
+        ContractID: "196/2025/HĐ-TVGS", // Based on decision 196/QĐ-QLDA
+        PackageID: "PKG-PR2500062685-08",
+        ContractorID: "vn0104426593", // Me Linh
+        SignDate: "08/01/2026",
+        Value: 552663000,
+        AdvanceRate: 10,
+        Warranty: 0,
+        Status: ContractStatus.Executing
+    },
+    {
+        ContractID: "197/2025/HĐ-BH",
+        PackageID: "PKG-PR2500062685-09",
+        ContractorID: "vn0304422444", // Bao Hiem Toan Cau
+        SignDate: "08/01/2026",
+        Value: 14780000,
+        AdvanceRate: 0,
+        Warranty: 0,
+        Status: ContractStatus.Executing
+    }
+];
+mockContracts.push(...vuBanContracts);
+
+const vuBanPayments: Payment[] = [
+    // Payment for Package 4 (TVTK) - Advance
+    {
+        PaymentID: 30001,
+        ContractID: "103/2025/HĐ-TVTK",
+        BatchNo: 1,
+        Type: PaymentType.Advance,
+        Amount: 657532000 * 0.15, // 15%
+        Status: PaymentStatus.Transferred,
+        TreasuryRef: "KB-KA-25-001"
+    },
+    // Payment for Package 7 (Construction) - Advance
+    {
+        PaymentID: 30002,
+        ContractID: "194/2025/HĐ-XL07",
+        BatchNo: 1,
+        Type: PaymentType.Advance,
+        Amount: 18507185000 * 0.20, // 20%
+        Status: PaymentStatus.Pending,
+        TreasuryRef: "KB-KA-26-001"
+    }
+];
+mockPayments.push(...vuBanPayments);
+
 // 5. Documents
 // 5. Documents
 export const mockDocuments: Document[] = [
