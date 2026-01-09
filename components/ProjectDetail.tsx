@@ -5,14 +5,14 @@ import {
     mockProjects, mockBiddingPackages, formatFullCurrency, mockTasks, mockEmployees, saveTasksToDB,
     mockContracts, mockPayments
 } from '../mockData';
-import { ProjectStatus, ProjectGroup, Task, TaskStatus, TaskPriority, PackageStatus, PaymentStatus, InvestmentType } from '../types';
+import { ProjectStatus, ProjectGroup, Task, TaskStatus, TaskPriority, PackageStatus, PaymentStatus, InvestmentType, BiddingPackage } from '../types';
 import { TaskService } from '../services/taskService';
 import {
     ArrowLeft, Calendar, MapPin, DollarSign,
     Layers, Clock, FileText,
     Building2, AlertCircle, ListChecks,
     Scale, Landmark, ChevronDown, ChevronRight, PlayCircle, BookOpen, ShieldCheck, UserCheck, CheckCircle2, Loader2,
-    Eye, PieChart, TrendingUp, AlertTriangle, Plus, Edit, Trash2, X, Save, Briefcase, Users, Activity, Info, HardHat, BarChart2, Wand2,
+    Eye, PieChart, TrendingUp, AlertTriangle, Plus, Edit, Trash2, X, Save, Briefcase, Users, Activity, Info, HardHat, BarChart2, Wand2, Pencil,
     FileInput, FileOutput, Mail, Phone, Map, Download, FileCheck, Wallet, Search, Filter, Printer, Maximize2, Minimize2, Upload, Image as ImageIcon, UserPlus,
     RefreshCw, FileBarChart, FolderOpen, Reply, Send, Paperclip // New icons
 } from 'lucide-react';
@@ -542,7 +542,61 @@ const ProjectDetail: React.FC = () => {
 
     if (!project) return <div className="flex items-center justify-center h-screen font-bold text-gray-500">Dự án không tồn tại.</div>;
 
-    const packages = mockBiddingPackages.filter(p => p.ProjectID === project.ProjectID);
+    // --- PACKAGE MANAGEMENT STATE ---
+    const [packages, setPackages] = useState<BiddingPackage[]>([]);
+    const [isPackageModalOpen, setIsPackageModalOpen] = useState(false);
+    const [currentPackage, setCurrentPackage] = useState<Partial<BiddingPackage> | null>(null);
+
+    // Initialize packages from mock
+    useEffect(() => {
+        if (project) {
+            setPackages(mockBiddingPackages.filter(p => p.ProjectID === project.ProjectID));
+        }
+    }, [project]);
+
+    // Handlers
+    const handleAddPackage = () => {
+        setCurrentPackage({
+            ProjectID: project.ProjectID,
+            PackageNumber: '',
+            PackageName: '',
+            Price: 0,
+            SelectionMethod: 'Đấu thầu rộng rãi',
+            BidType: 'Qua mạng',
+            ContractType: 'Trọn gói',
+            Status: PackageStatus.Planning,
+            Field: 'Hỗn hợp'
+        });
+        setIsPackageModalOpen(true);
+    };
+
+    const handleEditPackage = (e: React.MouseEvent, pkg: BiddingPackage) => {
+        e.stopPropagation();
+        setCurrentPackage({ ...pkg });
+        setIsPackageModalOpen(true);
+    };
+
+    const handleDeletePackage = (e: React.MouseEvent, id: string) => {
+        e.stopPropagation();
+        if (window.confirm('Bạn có chắc chắn muốn xóa gói thầu này?')) {
+            setPackages(prev => prev.filter(p => p.PackageID !== id));
+        }
+    };
+
+    const handleSavePackage = (e: React.FormEvent) => {
+        e.preventDefault();
+        const pkgData = currentPackage as BiddingPackage;
+
+        if (!pkgData.PackageID) {
+            // New package (simple ID generation)
+            pkgData.PackageID = `PKG-${project.ProjectID}-${Date.now()}`;
+            setPackages(prev => [...prev, pkgData]);
+        } else {
+            // Update
+            setPackages(prev => prev.map(p => p.PackageID === pkgData.PackageID ? pkgData : p));
+        }
+        setIsPackageModalOpen(false);
+    };
     const disbursedAmount = mockContracts
         .filter(c => packages.some(pkg => pkg.PackageID === c.PackageID))
         .reduce((total, contract) => {
@@ -1060,6 +1114,12 @@ const ProjectDetail: React.FC = () => {
                                 <button className="px-3 py-1.5 bg-indigo-50 text-indigo-700 text-[10px] font-bold rounded-lg border border-indigo-200 flex items-center gap-2">
                                     <BookOpen className="w-3.5 h-3.5" /> Hồ sơ thầu E-GP
                                 </button>
+                                <button
+                                    onClick={handleAddPackage}
+                                    className="px-3 py-1.5 bg-blue-600 text-white text-[10px] font-bold rounded-lg border border-blue-600 flex items-center gap-2 hover:bg-blue-700 transition-colors shadow-lg shadow-blue-200"
+                                >
+                                    <Plus className="w-3.5 h-3.5" /> Thêm gói thầu
+                                </button>
                             </div>
                         </div>
                         <div className="overflow-x-auto rounded-2xl border border-gray-100">
@@ -1131,13 +1191,146 @@ const ProjectDetail: React.FC = () => {
                                                         <span className="text-[10px] text-gray-400 italic">Không có</span>
                                                     )}
                                                 </td>
-                                                <td className="px-6 py-4 text-right"><Eye className="w-4 h-4 text-gray-300 group-hover:text-blue-600 inline" /></td>
+                                                <td className="px-6 py-4 text-right">
+                                                    <div className="flex items-center justify-end gap-2">
+                                                        <button
+                                                            onClick={(e) => handleEditPackage(e, pkg)}
+                                                            className="p-1.5 text-blue-600 hover:bg-blue-50 rounded transition-colors"
+                                                            title="Chỉnh sửa"
+                                                        >
+                                                            <Pencil className="w-4 h-4" />
+                                                        </button>
+                                                        <button
+                                                            onClick={(e) => handleDeletePackage(e, pkg.PackageID)}
+                                                            className="p-1.5 text-red-600 hover:bg-red-50 rounded transition-colors"
+                                                            title="Xóa"
+                                                        >
+                                                            <Trash2 className="w-4 h-4" />
+                                                        </button>
+                                                        <Eye className="w-4 h-4 text-gray-300 group-hover:text-gray-500 inline ml-1" />
+                                                    </div>
+                                                </td>
                                             </tr>
                                         )
                                     })}
                                 </tbody>
                             </table>
                         </div>
+
+                        {/* PACKAGE MODAL */}
+                        {isPackageModalOpen && currentPackage && (
+                            <div className="fixed inset-0 z-[105] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200" onClick={(e) => e.stopPropagation()}>
+                                <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl border border-gray-100 overflow-hidden" onClick={e => e.stopPropagation()}>
+                                    <div className="bg-gray-50 px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+                                        <h3 className="font-bold text-gray-800 text-lg flex items-center gap-2">
+                                            {currentPackage.PackageID ? <Pencil className="w-5 h-5 text-blue-600" /> : <Plus className="w-5 h-5 text-green-600" />}
+                                            {currentPackage.PackageID ? 'Cập nhật gói thầu' : 'Thêm gói thầu mới'}
+                                        </h3>
+                                        <button onClick={() => setIsPackageModalOpen(false)} className="text-gray-400 hover:text-gray-600">
+                                            <X className="w-6 h-6" />
+                                        </button>
+                                    </div>
+                                    <form onSubmit={handleSavePackage} className="p-6 grid grid-cols-2 gap-4">
+                                        <div className="col-span-2">
+                                            <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Tên gói thầu</label>
+                                            <input
+                                                type="text"
+                                                required
+                                                className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500/20 focus:outline-none"
+                                                value={currentPackage.PackageName}
+                                                onChange={e => setCurrentPackage({ ...currentPackage, PackageName: e.target.value })}
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Mã gói / Số hiệu</label>
+                                            <input
+                                                type="text"
+                                                required
+                                                className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500/20 focus:outline-none"
+                                                value={currentPackage.PackageNumber}
+                                                onChange={e => setCurrentPackage({ ...currentPackage, PackageNumber: e.target.value })}
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Giá gói thầu (VND)</label>
+                                            <input
+                                                type="number"
+                                                required
+                                                className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500/20 focus:outline-none"
+                                                value={currentPackage.Price}
+                                                onChange={e => setCurrentPackage({ ...currentPackage, Price: Number(e.target.value) })}
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Lĩnh vực</label>
+                                            <select
+                                                className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500/20 focus:outline-none"
+                                                value={currentPackage.Field || 'Hỗn hợp'}
+                                                onChange={e => setCurrentPackage({ ...currentPackage, Field: e.target.value })}
+                                            >
+                                                <option value="Xây lắp">Xây lắp</option>
+                                                <option value="Tư vấn">Tư vấn</option>
+                                                <option value="Phi tư vấn">Phi tư vấn</option>
+                                                <option value="Hỗn hợp">Hỗn hợp</option>
+                                                <option value="Mua sắm hàng hóa">Mua sắm hàng hóa</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Hình thức lựa chọn</label>
+                                            <select
+                                                className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500/20 focus:outline-none"
+                                                value={currentPackage.SelectionMethod}
+                                                onChange={e => setCurrentPackage({ ...currentPackage, SelectionMethod: e.target.value })}
+                                            >
+                                                <option value="Đấu thầu rộng rãi">Đấu thầu rộng rãi</option>
+                                                <option value="Chỉ định thầu rút gọn">Chỉ định thầu rút gọn</option>
+                                                <option value="Chào hàng cạnh tranh">Chào hàng cạnh tranh</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Loại hợp đồng</label>
+                                            <select
+                                                className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500/20 focus:outline-none"
+                                                value={currentPackage.ContractType}
+                                                onChange={e => setCurrentPackage({ ...currentPackage, ContractType: e.target.value })}
+                                            >
+                                                <option value="Trọn gói">Trọn gói</option>
+                                                <option value="Đơn giá cố định">Đơn giá cố định</option>
+                                                <option value="Đơn giá điều chỉnh">Đơn giá điều chỉnh</option>
+                                                <option value="Theo tỷ lệ phần trăm">Theo tỷ lệ phần trăm</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Trạng thái</label>
+                                            <select
+                                                className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500/20 focus:outline-none"
+                                                value={currentPackage.Status}
+                                                onChange={e => setCurrentPackage({ ...currentPackage, Status: e.target.value as PackageStatus })}
+                                            >
+                                                {Object.values(PackageStatus).map(status => (
+                                                    <option key={status} value={status}>{status}</option>
+                                                ))}
+                                            </select>
+                                        </div>
+                                        <div className="col-span-2 flex justify-end gap-3 mt-4 pt-4 border-t border-gray-100">
+                                            <button
+                                                type="button"
+                                                onClick={() => setIsPackageModalOpen(false)}
+                                                className="px-4 py-2 bg-white border border-gray-200 text-gray-600 text-sm font-bold rounded-xl hover:bg-gray-50 transition-colors"
+                                            >
+                                                Hủy bỏ
+                                            </button>
+                                            <button
+                                                type="submit"
+                                                className="px-4 py-2 bg-blue-600 text-white text-sm font-bold rounded-xl hover:bg-blue-700 transition-colors shadow-lg shadow-blue-200"
+                                            >
+                                                Lưu thay đổi
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        )}
                     </div>
                 )
             }
