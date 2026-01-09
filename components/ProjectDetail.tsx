@@ -352,7 +352,7 @@ const ProjectDetail: React.FC = () => {
     // Local state for members to update UI immediately
     const [memberIds, setMemberIds] = useState<string[]>(project?.Members || []);
 
-    const [activeTab, setActiveTab] = useState<'info' | 'overview' | 'packages' | 'legal' | 'timeline'>('info');
+    const [activeTab, setActiveTab] = useState<'info' | 'overview' | 'packages' | 'legal' | 'timeline' | 'cde' | 'bim' | 'capital'>('info');
     const [activeDocTab, setActiveDocTab] = useState<'incoming' | 'outgoing'>('incoming');
     const [activePhase, setActivePhase] = useState<string>("1. Giai đoạn chuẩn bị dự án");
     const [isMembersModalOpen, setIsMembersModalOpen] = useState(false);
