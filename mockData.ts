@@ -1176,6 +1176,30 @@ mockContractors.push(
         IsForeign: false,
         Address: 'Hà Nội',
         ContactInfo: 'congngheso1@example.com'
+    },
+    {
+        ContractorID: 'vn0107008523',
+        FullName: 'Công ty TNHH thương mại tổng hợp và xây dựng Minh Châu',
+        CapCertCode: 'MN070085',
+        IsForeign: false,
+        Address: 'Hà Nội',
+        ContactInfo: 'minhchau@example.com'
+    },
+    {
+        ContractorID: 'vn0103723427',
+        FullName: 'CÔNG TY CỔ PHẦN ĐẦU TƯ VÀ XÂY DỰNG PHÚ NGHĨA',
+        CapCertCode: 'MN037234',
+        IsForeign: false,
+        Address: 'Hà Nội',
+        ContactInfo: 'phunghia@example.com'
+    },
+    {
+        ContractorID: 'LD-PR2500062685-07',
+        FullName: 'Liên danh nhà thầu thi công Tu bổ, tôn tạo đình Vụ Bản, xã Minh Trí',
+        CapCertCode: 'LD-VUBAN',
+        IsForeign: false,
+        Address: 'Hà Nội',
+        ContactInfo: 'liendanh.vuban@example.com'
     }
 );
 
@@ -1549,12 +1573,20 @@ const vuBanPackages: BiddingPackage[] = [
         PackageName: "Gói thầu số 7: Toàn bộ phần xây dựng",
         Price: 18548389278,
         SelectionMethod: "Đấu thầu rộng rãi",
-        BidType: "Qua mạng", // Standard for Open Bidding now
+        BidType: "Qua mạng",
         ContractType: "Đơn giá cố định",
-        Status: PackageStatus.Posted,
+        Status: PackageStatus.Awarded,
         Field: "Xây lắp",
         Duration: "360 ngày",
-        DecisionAgency: "Ban Quản lý dự án đầu tư - Hạ tầng xã Kim Anh"
+        NotificationCode: "IB2500605959",
+        PostingDate: "29/12/2025 18:01",
+        EstimatePrice: 18690734349,
+        WinningContractorID: "LD-PR2500062685-07",
+        WinningPrice: 18507185000,
+        DecisionNumber: "194/QĐ-QLDA",
+        DecisionDate: "29/12/2025",
+        DecisionAgency: "Ban Quản lý dự án đầu tư - Hạ tầng xã Kim Anh",
+        DecisionFile: "IB2500605959_QuyetDinhPheDuyetKQLCNT_29_12_2025.pdf"
     },
     {
         PackageID: "PKG-PR2500062685-08",
