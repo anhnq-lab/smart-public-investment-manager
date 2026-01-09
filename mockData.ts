@@ -1320,7 +1320,7 @@ mockProjects.forEach((project, index) => {
                 Status: PaymentStatus.Transferred
             });
         });
-    } else if (project.ProjectID !== 'PR2500060068' && project.ProjectID !== 'PR2400031160') {
+    } else if (project.ProjectID !== 'PR2500060068' && project.ProjectID !== 'PR2400031160' && project.ProjectID !== 'PR2500062685' && project.ProjectID !== 'PR2500044101') {
         // 2. Fallback: Create 1 Default Package & Contract if no specific data exists
         // This ensures the UI is not empty for other projects
         // SKIP FOR Truong Chinh Tri (PR2500060068) as we manually add specific packages later
