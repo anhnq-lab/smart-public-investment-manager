@@ -1160,6 +1160,14 @@ mockContractors.push(
         IsForeign: false,
         Address: 'Hà Nội',
         ContactInfo: 'trunghungjsc@gmail.com'
+    },
+    {
+        ContractorID: 'vn0108622278',
+        FullName: 'CÔNG TY CỔ PHẦN TU BỔ TÔN TẠO CÔNG TRÌNH VĂN HÓA',
+        CapCertCode: 'MN010862',
+        IsForeign: false,
+        Address: 'Hà Nội',
+        ContactInfo: 'tubotontao@example.com'
     }
 );
 
@@ -1499,10 +1507,14 @@ const vuBanPackages: BiddingPackage[] = [
         SelectionMethod: "Chỉ định thầu rút gọn",
         BidType: "Không qua mạng",
         ContractType: "Trọn gói",
-        Status: PackageStatus.Planning,
-        Field: "Tư vấn",
         Duration: "30 ngày",
-        DecisionAgency: "Ban Quản lý dự án đầu tư - Hạ tầng xã Kim Anh"
+        DecisionAgency: "Ban Quản lý dự án đầu tư - Hạ tầng xã Kim Anh",
+        WinningContractorID: "vn0108622278",
+        WinningPrice: 81963000,
+        DecisionNumber: "103/QĐ-QLDA",
+        DecisionDate: "22/11/2025",
+        DecisionFile: "QĐ 103_0001.pdf",
+        Status: PackageStatus.Awarded
     },
     {
         PackageID: "PKG-PR2500062685-06",
