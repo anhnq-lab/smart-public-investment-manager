@@ -1200,6 +1200,22 @@ mockContractors.push(
         IsForeign: false,
         Address: 'Hà Nội',
         ContactInfo: 'liendanh.vuban@example.com'
+    },
+    {
+        ContractorID: 'vn0104426593',
+        FullName: 'CÔNG TY CỔ PHẦN TƯ VẤN VÀ XÂY DỰNG MÊ LINH',
+        CapCertCode: 'MN044265',
+        IsForeign: false,
+        Address: 'Hà Nội',
+        ContactInfo: 'melinh@example.com'
+    },
+    {
+        ContractorID: 'vn0304422444',
+        FullName: 'TỔNG CÔNG TY CỔ PHẦN BẢO HIỂM TOÀN CẦU',
+        CapCertCode: 'MN044224',
+        IsForeign: false,
+        Address: 'Hà Nội',
+        ContactInfo: 'baohiemtoancau@example.com'
     }
 );
 
@@ -1597,9 +1613,16 @@ const vuBanPackages: BiddingPackage[] = [
         SelectionMethod: "Chỉ định thầu rút gọn",
         BidType: "Không qua mạng",
         ContractType: "Trọn gói",
-        Status: PackageStatus.Planning,
+        Status: PackageStatus.Awarded,
         Field: "Tư vấn",
         Duration: "360 ngày",
+        EstimatePrice: 552663414,
+        WinningContractorID: "vn0104426593",
+        WinningPrice: 552663000,
+        DecisionNumber: "196/QĐ-QLDA",
+        DecisionDate: "29/12/2025",
+        PostingDate: "07/01/2026",
+        DecisionFile: "13. QĐ phê duyệt KQLCNT gói thầu GS, bảo hiểm.pdf",
         DecisionAgency: "Ban Quản lý dự án đầu tư - Hạ tầng xã Kim Anh"
     },
     {
@@ -1611,9 +1634,16 @@ const vuBanPackages: BiddingPackage[] = [
         SelectionMethod: "Chỉ định thầu rút gọn",
         BidType: "Không qua mạng",
         ContractType: "Theo tỷ lệ phần trăm", // Mapped roughly to logic or kept as string if type allows
-        Status: PackageStatus.Planning,
-        Field: "Tư vấn", // Keeping as Tu van per request table usually, or Non-Consulting. User said Tu van in table column 4
+        Status: PackageStatus.Awarded,
+        Field: "Phi tư vấn", // Keeping as Tu van per request table usually, or Non-Consulting. User said Tu van in table column 4
         Duration: "360 ngày",
+        EstimatePrice: 14780061,
+        WinningContractorID: "vn0304422444",
+        WinningPrice: 14780000,
+        DecisionNumber: "196/QĐ-QLDA",
+        DecisionDate: "29/12/2025",
+        PostingDate: "07/01/2026",
+        DecisionFile: "13. QĐ phê duyệt KQLCNT gói thầu GS, bảo hiểm.pdf",
         DecisionAgency: "Ban Quản lý dự án đầu tư - Hạ tầng xã Kim Anh"
     }
 ];
