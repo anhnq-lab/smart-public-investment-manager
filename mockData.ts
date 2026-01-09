@@ -1168,6 +1168,14 @@ mockContractors.push(
         IsForeign: false,
         Address: 'Hà Nội',
         ContactInfo: 'tubotontao@example.com'
+    },
+    {
+        ContractorID: 'vn0107128531',
+        FullName: 'CÔNG TY CỔ PHẦN CÔNG NGHỆ SỐ 1 VIỆT NAM',
+        CapCertCode: 'MN010712',
+        IsForeign: false,
+        Address: 'Hà Nội',
+        ContactInfo: 'congngheso1@example.com'
     }
 );
 
@@ -1525,10 +1533,14 @@ const vuBanPackages: BiddingPackage[] = [
         SelectionMethod: "Chỉ định thầu rút gọn",
         BidType: "Không qua mạng",
         ContractType: "Trọn gói",
-        Status: PackageStatus.Planning,
-        Field: "Tư vấn",
         Duration: "30 ngày",
-        DecisionAgency: "Ban Quản lý dự án đầu tư - Hạ tầng xã Kim Anh"
+        DecisionAgency: "Ban Quản lý dự án đầu tư - Hạ tầng xã Kim Anh",
+        WinningContractorID: "vn0107128531",
+        WinningPrice: 67767000,
+        DecisionNumber: "Đang cập nhật",
+        DecisionDate: "15/12/2025",
+        DecisionFile: "QĐ phê duyệt TKBVTC và dự toán gói thầu.pdf",
+        Status: PackageStatus.Awarded
     },
     {
         PackageID: "PKG-PR2500062685-07",
