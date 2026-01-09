@@ -1152,6 +1152,14 @@ mockContractors.push(
         IsForeign: false,
         Address: 'Hà Tĩnh',
         ContactInfo: 'tvxdht@example.com'
+    },
+    {
+        ContractorID: 'vn0107740913',
+        FullName: 'CÔNG TY CỔ PHẦN BẢO TỒN DI SẢN VĂN HÓA TRUNG HƯNG',
+        CapCertCode: 'MN010774',
+        IsForeign: false,
+        Address: 'Hà Nội',
+        ContactInfo: 'trunghungjsc@gmail.com'
     }
 );
 
@@ -1473,10 +1481,14 @@ const vuBanPackages: BiddingPackage[] = [
         SelectionMethod: "Chỉ định thầu rút gọn",
         BidType: "Không qua mạng",
         ContractType: "Trọn gói",
-        Status: PackageStatus.Planning,
-        Field: "Tư vấn",
         Duration: "30 ngày",
-        DecisionAgency: "Ban Quản lý dự án đầu tư - Hạ tầng xã Kim Anh"
+        DecisionAgency: "Ban Quản lý dự án đầu tư - Hạ tầng xã Kim Anh",
+        WinningContractorID: "vn0107740913",
+        WinningPrice: 657532000,
+        DecisionNumber: "103/QĐ-QLDA",
+        DecisionDate: "22/11/2025",
+        DecisionFile: "QĐ 103_0001.pdf",
+        Status: PackageStatus.Awarded
     },
     {
         PackageID: "PKG-PR2500062685-05",
