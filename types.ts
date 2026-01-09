@@ -90,7 +90,8 @@ export enum PackageStatus {
     Bidding = 'Bidding',       // Đang mời thầu
     Evaluating = 'Evaluating', // Đang xét thầu
     Awarded = 'Awarded',       // Đã có KQLCNT
-    Cancelled = 'Cancelled'    // Hủy thầu
+    Cancelled = 'Cancelled',   // Hủy thầu
+    Posted = 'Posted'          // Đã đăng tải TBMT
 }
 
 export interface BiddingPackage {

@@ -123,6 +123,25 @@ const haTinhProjects = [
         decisionNumber: "1032/QĐ-UBND",
         decisionDate: "2025-02-28",
         decisionAuthority: "UBND huyện Sóc Sơn"
+    },
+    {
+        id: "PR2500062685",
+        name: "Tu bổ, tôn tạo đình Vụ Bản, xã Minh Trí",
+        total: 21032000000,
+        status: ProjectStatus.Execution,
+        // New detailed fields from image
+        projectNumber: "PR2500062685",
+        version: "00",
+        objective: "",
+        investor: "Ban Quản lý dự án đầu tư - Hạ tầng xã Kim Anh",
+        authority: "Chủ tịch UBND xã Kim Anh",
+        duration: "3 Năm",
+        managementForm: "Chủ đầu tư trực tiếp quản lý dự án",
+        isODA: false,
+        location: "Xã Kim Anh, Thành phố Hà Nội",
+        decisionNumber: "1620/QĐ-UBND",
+        decisionDate: "2025-11-04",
+        decisionAuthority: "UBND xã Kim Anh"
     }
 ];
 
@@ -186,7 +205,8 @@ export const mockProjects: Project[] = haTinhProjects.map((p, i) => {
                                 p.id === 'DA7544621' ? ["NV1001", "NV1016", "NV1036"] :
                                     p.id === 'DA7501924' ? ["NV1001", "NV1002", "NV1033", "NV1037"] :
                                         p.id === 'PR2500044101' ? ["NV1001", "NV1005"] :
-                                            i % 3 === 0 ? ["NV1001", "NV1002"] : ["NV1002", "NV1003"],
+                                            p.id === 'PR2500062685' ? ["NV1001", "NV1033"] :
+                                                i % 3 === 0 ? ["NV1001", "NV1002"] : ["NV1002", "NV1003"],
 
         // Map new fields
         ProjectNumber: pAny.projectNumber,
@@ -211,7 +231,12 @@ export const mockProjects: Project[] = haTinhProjects.map((p, i) => {
             LastSyncDate: undefined,
             NationalProjectCode: undefined,
             SyncError: undefined
-        } : undefined),
+        } : (p.id === 'PR2500062685' ? {
+            IsSynced: true,
+            LastSyncDate: '2025-11-25',
+            NationalProjectCode: 'PR2500062685',
+            SyncError: undefined
+        } : undefined)),
 
         // Map Coordinates (Random around Ha Tinh: 18.343x, 105.90xx)
         Coordinates: {
@@ -1436,6 +1461,95 @@ const kimAnhPackages: BiddingPackage[] = [
     }
 ];
 mockBiddingPackages.push(...kimAnhPackages);
+
+// ADD SPECIFIC PACKAGES FOR Vu Ban Project (PR2500062685)
+const vuBanPackages: BiddingPackage[] = [
+    {
+        PackageID: "PKG-PR2500062685-04",
+        ProjectID: "PR2500062685",
+        PackageNumber: "4",
+        PackageName: "Gói thầu số 4: Tư vấn lập thiết kế bản vẽ thi công và dự toán",
+        Price: 669709097,
+        SelectionMethod: "Chỉ định thầu rút gọn",
+        BidType: "Không qua mạng",
+        ContractType: "Trọn gói",
+        Status: PackageStatus.Planning,
+        Field: "Tư vấn",
+        Duration: "30 ngày",
+        DecisionAgency: "Ban Quản lý dự án đầu tư - Hạ tầng xã Kim Anh"
+    },
+    {
+        PackageID: "PKG-PR2500062685-05",
+        ProjectID: "PR2500062685",
+        PackageNumber: "5",
+        PackageName: "Gói thầu số 5: Tư vấn thẩm tra thiết kế bản vẽ thi công và dự toán",
+        Price: 83393476,
+        SelectionMethod: "Chỉ định thầu rút gọn",
+        BidType: "Không qua mạng",
+        ContractType: "Trọn gói",
+        Status: PackageStatus.Planning,
+        Field: "Tư vấn",
+        Duration: "30 ngày",
+        DecisionAgency: "Ban Quản lý dự án đầu tư - Hạ tầng xã Kim Anh"
+    },
+    {
+        PackageID: "PKG-PR2500062685-06",
+        ProjectID: "PR2500062685",
+        PackageNumber: "6",
+        PackageName: "Gói thầu số 6: Tư vấn lập hồ sơ mời thầu, đánh giá hồ sơ dự thầu gói thầu 7",
+        Price: 67614740,
+        SelectionMethod: "Chỉ định thầu rút gọn",
+        BidType: "Không qua mạng",
+        ContractType: "Trọn gói",
+        Status: PackageStatus.Planning,
+        Field: "Tư vấn",
+        Duration: "30 ngày",
+        DecisionAgency: "Ban Quản lý dự án đầu tư - Hạ tầng xã Kim Anh"
+    },
+    {
+        PackageID: "PKG-PR2500062685-07",
+        ProjectID: "PR2500062685",
+        PackageNumber: "7",
+        PackageName: "Gói thầu số 7: Toàn bộ phần xây dựng",
+        Price: 18548389278,
+        SelectionMethod: "Đấu thầu rộng rãi",
+        BidType: "Qua mạng", // Standard for Open Bidding now
+        ContractType: "Đơn giá cố định",
+        Status: PackageStatus.Posted,
+        Field: "Xây lắp",
+        Duration: "360 ngày",
+        DecisionAgency: "Ban Quản lý dự án đầu tư - Hạ tầng xã Kim Anh"
+    },
+    {
+        PackageID: "PKG-PR2500062685-08",
+        ProjectID: "PR2500062685",
+        PackageNumber: "8",
+        PackageName: "Gói thầu số 8: Tư vấn giám sát thi công xây dựng",
+        Price: 538963519,
+        SelectionMethod: "Chỉ định thầu rút gọn",
+        BidType: "Không qua mạng",
+        ContractType: "Trọn gói",
+        Status: PackageStatus.Planning,
+        Field: "Tư vấn",
+        Duration: "360 ngày",
+        DecisionAgency: "Ban Quản lý dự án đầu tư - Hạ tầng xã Kim Anh"
+    },
+    {
+        PackageID: "PKG-PR2500062685-09",
+        ProjectID: "PR2500062685",
+        PackageNumber: "9",
+        PackageName: "Gói thầu số 9: Bảo hiểm công trình",
+        Price: 14300856,
+        SelectionMethod: "Chỉ định thầu rút gọn",
+        BidType: "Không qua mạng",
+        ContractType: "Theo tỷ lệ phần trăm", // Mapped roughly to logic or kept as string if type allows
+        Status: PackageStatus.Planning,
+        Field: "Tư vấn", // Keeping as Tu van per request table usually, or Non-Consulting. User said Tu van in table column 4
+        Duration: "360 ngày",
+        DecisionAgency: "Ban Quản lý dự án đầu tư - Hạ tầng xã Kim Anh"
+    }
+];
+mockBiddingPackages.push(...vuBanPackages);
 
 // 5. Documents
 // 5. Documents

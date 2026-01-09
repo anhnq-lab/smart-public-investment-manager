@@ -1068,9 +1068,10 @@ const ProjectDetail: React.FC = () => {
                                     <tr>
                                         <th className="px-6 py-4">Mã gói</th>
                                         <th className="px-6 py-4">Tên gói thầu</th>
+                                        <th className="px-6 py-4">Lĩnh vực</th>
                                         <th className="px-6 py-4">Hình thức</th>
-                                        <th className="px-6 py-4 text-right">Giá trị HĐ (VND)</th>
-                                        <th className="px-6 py-4">Tình trạng HĐ</th>
+                                        <th className="px-6 py-4 text-right">Giá trị gói thầu (VND)</th>
+                                        <th className="px-6 py-4">Trạng thái</th>
                                         <th className="px-6 py-4">VO (Phụ lục)</th>
                                         <th className="px-6 py-4 text-right">Thao tác</th>
                                     </tr>
@@ -1084,11 +1085,20 @@ const ProjectDetail: React.FC = () => {
                                         return (
                                             <tr key={pkg.PackageID} className="hover:bg-blue-50/30 cursor-pointer group" onClick={() => navigate(`/projects/${project.ProjectID}/packages/${pkg.PackageID}`)}>
                                                 <td className="px-6 py-4 font-mono font-bold text-gray-600">{pkg.PackageNumber}</td>
-                                                <td className="px-6 py-4 font-extrabold text-gray-800 max-w-xs">{pkg.PackageName}</td>
+                                                <td className="px-6 py-4 font-extrabold text-gray-800 max-w-xs">
+                                                    {pkg.PackageName}
+                                                    <div className="text-[10px] font-normal text-gray-500 mt-1">{pkg.Duration ? `Thời gian: ${pkg.Duration}` : ''}</div>
+                                                </td>
+                                                <td className="px-6 py-4">
+                                                    <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-gray-50 text-gray-600 border border-gray-200">
+                                                        {pkg.Field || 'Hỗn hợp'}
+                                                    </span>
+                                                </td>
                                                 <td className="px-6 py-4">
                                                     <span className="flex items-center gap-1 text-[10px] font-bold text-gray-500 bg-gray-100 px-2 py-0.5 rounded w-fit">
-                                                        <Wand2 className="w-3 h-3" /> Đấu thầu QM
+                                                        <Wand2 className="w-3 h-3" /> {pkg.SelectionMethod || 'Đấu thầu QM'}
                                                     </span>
+                                                    <div className="text-[9px] text-gray-400 mt-1">{pkg.BidType}</div>
                                                 </td>
                                                 <td className="px-6 py-4 text-right font-mono font-black text-emerald-600">
                                                     {formatFullCurrency(contract?.Value || pkg.WinningPrice || pkg.Price)}
@@ -1099,8 +1109,13 @@ const ProjectDetail: React.FC = () => {
                                                             Đang thực hiện
                                                         </span>
                                                     ) : (
-                                                        <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-orange-100 text-orange-700 border border-orange-200 uppercase">
-                                                            Chưa ký HĐ
+                                                        <span className={`px-2 py-0.5 rounded text-[10px] font-bold border uppercase ${pkg.Status === 'Posted' ? 'bg-blue-100 text-blue-700 border-blue-200' :
+                                                            pkg.Status === 'Planning' ? 'bg-gray-100 text-gray-600 border-gray-200' :
+                                                                'bg-orange-100 text-orange-700 border-orange-200'
+                                                            }`}>
+                                                            {pkg.Status === 'Posted' ? 'Đã đăng tải' :
+                                                                pkg.Status === 'Planning' ? 'Trong kế hoạch' :
+                                                                    pkg.Status === 'Bidding' ? 'Đang mời thầu' : 'Chưa ký HĐ'}
                                                         </span>
                                                     )}
                                                 </td>
