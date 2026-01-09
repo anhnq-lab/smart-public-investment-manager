@@ -674,11 +674,11 @@ const ProjectDetail: React.FC = () => {
                     { id: 'info', label: 'THÔNG TIN DỰ ÁN', icon: Info },
                     { id: 'timeline', label: 'TIẾN ĐỘ DỰ ÁN', icon: Clock },
                     { id: 'overview', label: 'TỔNG QUAN', icon: PieChart },
+                    { id: 'packages', label: 'GÓI THẦU', icon: Briefcase },
+                    { id: 'legal', label: 'VĂN BẢN ĐẾN/ĐI', icon: Mail },
                     { id: 'cde', label: 'CDE & TÀI LIỆU', icon: FolderOpen },
                     { id: 'bim', label: 'MÔ HÌNH BIM', icon: Layers },
-                    { id: 'capital', label: 'QUẢN LÝ VỐN', icon: Landmark },
-                    { id: 'packages', label: 'GÓI THẦU', icon: Briefcase },
-                    { id: 'legal', label: 'VĂN BẢN ĐẾN/ĐI', icon: Mail }
+                    { id: 'capital', label: 'QUẢN LÝ VỐN', icon: Landmark }
                 ].map(t => (
                     <button
                         key={t.id} onClick={() => setActiveTab(t.id as any)}
