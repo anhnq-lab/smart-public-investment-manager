@@ -24,13 +24,20 @@ export const sendMessageToGemini = async (
         const genAI = getGenAI();
         const model = genAI.getGenerativeModel({ model: "gemini-pro" });
 
+        // Gemini API requires the first message in history to be from the 'user'.
+        // We need to filter out any leading system/AI messages (like the welcome message).
+        const validHistory = history.filter(msg => !msg.isError);
+        const firstUserIndex = validHistory.findIndex(msg => msg.sender === 'user');
+
+        const apiHistory = firstUserIndex !== -1
+            ? validHistory.slice(firstUserIndex).map(msg => ({
+                role: msg.sender === 'user' ? 'user' : 'model',
+                parts: [{ text: msg.text }],
+            }))
+            : [];
+
         const chat = model.startChat({
-            history: history
-                .filter(msg => !msg.isError)
-                .map(msg => ({
-                    role: msg.sender === 'user' ? 'user' : 'model',
-                    parts: [{ text: msg.text }],
-                })),
+            history: apiHistory,
             generationConfig: {
                 maxOutputTokens: 1000,
             },
