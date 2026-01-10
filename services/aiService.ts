@@ -1,7 +1,8 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
 // Initialize Gemini API
-const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_API_KEY || "");
+const API_KEY = import.meta.env.VITE_GEMINI_API_KEY || "AIzaSyARbcaihpFG5i4U0z4NVVbvjgFsJu2OPIA";
+const genAI = new GoogleGenerativeAI(API_KEY);
 const model = genAI.getGenerativeModel({ model: "gemini-pro" });
 
 export interface ChatMessage {
@@ -17,12 +18,18 @@ export const sendMessageToGemini = async (
     newMessage: string
 ): Promise<string> => {
     try {
-        if (!import.meta.env.VITE_GEMINI_API_KEY) {
+        const apiKey = import.meta.env.VITE_GEMINI_API_KEY || "AIzaSyARbcaihpFG5i4U0z4NVVbvjgFsJu2OPIA";
+        if (!apiKey) {
             throw new Error("VITE_GEMINI_API_KEY is not set");
         }
 
-        // Convert chat history to Gemini format if needed, 
-        // but for now we'll just send the new message as prompts are stateless unless using startChat
+        // Initialize Gemini API with the available key if not already global (though we init at top level, we might want to re-init or use the key here if the top level one failed? 
+        // Actually, the top level init `new GoogleGenerativeAI(...)` happened at module load. 
+        // If env var was missing then, it initialized with empty string.
+        // We should move the initialization INSIDE the function or update how we use it.
+
+        // Let's re-initialize here to be safe, or check if we need to.
+        // Better: Update the top level initialization to use the fallback too.
         // To keep it simple and context-aware, we can use startChat.
 
         const chat = model.startChat({
