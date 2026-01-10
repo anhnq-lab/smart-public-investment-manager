@@ -49,9 +49,15 @@ export const AIChatbot: React.FC = () => {
             };
             setMessages(prev => [...prev, aiMsg]);
         } catch (error) {
+            console.error("Chatbot Error:", error);
+            let errorMessage = 'Xin lỗi, tôi đang gặp sự cố kết nối.';
+            if (error instanceof Error) {
+                errorMessage += ` (${error.message})`;
+            }
+
             const errorMsg: ChatMessage = {
                 id: (Date.now() + 1).toString(),
-                text: 'Xin lỗi, tôi đang gặp sự cố kết nối. Vui lòng thử lại sau.',
+                text: errorMessage,
                 sender: 'ai',
                 timestamp: new Date(),
                 isError: true
@@ -130,8 +136,8 @@ export const AIChatbot: React.FC = () => {
                                 {msg.sender === 'user' ? <User size={16} className="text-blue-600" /> : <Bot size={16} className="text-emerald-600" />}
                             </div>
                             <div className={`p-3 rounded-2xl text-sm ${msg.sender === 'user'
-                                    ? 'bg-blue-600 text-white rounded-tr-none'
-                                    : 'bg-white text-slate-700 shadow-sm border border-slate-100 rounded-tl-none'
+                                ? 'bg-blue-600 text-white rounded-tr-none'
+                                : 'bg-white text-slate-700 shadow-sm border border-slate-100 rounded-tl-none'
                                 } ${msg.isError ? 'bg-red-50 text-red-600 border-red-200' : ''}`}>
                                 {msg.text}
                                 <div className={`text-[10px] mt-1 ${msg.sender === 'user' ? 'text-blue-100' : 'text-slate-400'}`}>
