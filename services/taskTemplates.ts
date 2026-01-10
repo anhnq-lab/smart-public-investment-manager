@@ -25,15 +25,6 @@ const GROUP_B_MAIN_FLOW: TaskTemplate[] = [
         Priority: TaskPriority.Medium
     },
     {
-        Title: "Lập Báo cáo nghiên cứu khả thi (hoặc Báo cáo đề xuất chủ trương)",
-        Description: "Lập hồ sơ đề xuất chủ trương đầu tư (nếu cần) hoặc BCNCKT.",
-        TimelineStep: "1. Giai đoạn chuẩn bị dự án",
-        LegalBasis: "NĐ 175/2024/NĐ-CP; Luật Đầu tư công",
-        OutputDocument: "Tờ trình/Hồ sơ dự án",
-        DurationDays: 45,
-        Priority: TaskPriority.High
-    },
-    {
         Title: "Khảo sát xây dựng phục vụ lập dự án",
         Description: "Khảo sát địa hình, địa chất phục vụ lập BCNCKT.",
         TimelineStep: "1. Giai đoạn chuẩn bị dự án",
@@ -41,6 +32,15 @@ const GROUP_B_MAIN_FLOW: TaskTemplate[] = [
         OutputDocument: "Báo cáo kết quả khảo sát",
         DurationDays: 20,
         Priority: TaskPriority.Medium
+    },
+    {
+        Title: "Lập Báo cáo nghiên cứu khả thi (hoặc Báo cáo đề xuất chủ trương)",
+        Description: "Lập hồ sơ đề xuất chủ trương đầu tư (nếu cần) hoặc BCNCKT.",
+        TimelineStep: "1. Giai đoạn chuẩn bị dự án",
+        LegalBasis: "NĐ 175/2024/NĐ-CP; Luật Đầu tư công",
+        OutputDocument: "Tờ trình/Hồ sơ dự án",
+        DurationDays: 45,
+        Priority: TaskPriority.High
     },
     {
         Title: "Thẩm định Báo cáo nghiên cứu khả thi",
@@ -135,6 +135,15 @@ const GROUP_B_MAIN_FLOW: TaskTemplate[] = [
         Priority: TaskPriority.Medium
     },
     {
+        Title: "Vận hành, chạy thử",
+        Description: "Vận hành thử nghiệm hệ thống trước khi nghiệm thu.",
+        TimelineStep: "2. Giai đoạn thực hiện dự án",
+        LegalBasis: "NĐ 175/2024/NĐ-CP",
+        OutputDocument: "Báo cáo kết quả chạy thử",
+        DurationDays: 15,
+        Priority: TaskPriority.High
+    },
+    {
         Title: "Giám sát thi công xây dựng",
         Description: "Công tác giám sát chất lượng, khối lượng, tiến độ, an toàn lao động.",
         TimelineStep: "2. Giai đoạn thực hiện dự án",
@@ -189,6 +198,15 @@ const GROUP_B_MAIN_FLOW: TaskTemplate[] = [
         OutputDocument: "Văn bản xác nhận hoàn thành bảo hành",
         DurationDays: 365,
         Priority: TaskPriority.Medium
+    },
+    {
+        Title: "Giám sát, đánh giá dự án đầu tư",
+        Description: "Đánh giá hiệu quả đầu tư sau khi dự án đi vào hoạt động.",
+        TimelineStep: "3. Giai đoạn kết thúc xây dựng",
+        LegalBasis: "NĐ 175/2024/NĐ-CP",
+        OutputDocument: "Báo cáo giám sát đánh giá đầu tư",
+        DurationDays: 30,
+        Priority: TaskPriority.Low
     }
 ];
 
@@ -204,7 +222,16 @@ const GROUP_C_MAIN_FLOW: TaskTemplate[] = [
         Priority: TaskPriority.High
     },
     {
-        Title: "Khảo sát, Lập Báo cáo KT-KT đầu tư xây dựng",
+        Title: "Khảo sát xây dựng phục vụ lập dự án",
+        Description: "Khảo sát địa hình, địa chất phục vụ lập BCNCKT (nếu cần).",
+        TimelineStep: "1. Giai đoạn chuẩn bị dự án",
+        LegalBasis: "NĐ 175/2024/NĐ-CP",
+        OutputDocument: "Báo cáo kết quả khảo sát",
+        DurationDays: 15,
+        Priority: TaskPriority.Medium
+    },
+    {
+        Title: "Lập Báo cáo KT-KT đầu tư xây dựng",
         Description: "Lập Báo cáo kinh tế - kỹ thuật (bao gồm thiết kế bản vẽ thi công & dự toán).",
         TimelineStep: "1. Giai đoạn chuẩn bị dự án",
         LegalBasis: "NĐ 175/2024/NĐ-CP",
@@ -305,6 +332,15 @@ const GROUP_C_MAIN_FLOW: TaskTemplate[] = [
         OutputDocument: "Xác nhận hết hạn bảo hành",
         DurationDays: 365,
         Priority: TaskPriority.Medium
+    },
+    {
+        Title: "Giám sát, đánh giá dự án đầu tư",
+        Description: "Đánh giá hiệu quả đầu tư sau khi dự án đi vào hoạt động.",
+        TimelineStep: "3. Giai đoạn kết thúc xây dựng",
+        LegalBasis: "NĐ 175/2024/NĐ-CP",
+        OutputDocument: "Báo cáo giám sát đánh giá đầu tư",
+        DurationDays: 30,
+        Priority: TaskPriority.Low
     }
 ];
 
