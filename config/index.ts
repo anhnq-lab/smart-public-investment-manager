@@ -2,11 +2,11 @@
 
 export const config = {
     // API Configuration
-    API_BASE_URL: import.meta.env.VITE_API_URL || 'http://localhost:3000/api',
+    API_BASE_URL: import.meta.env.VITE_API_URL || '/api',
 
     // Toggle between mock data and real API
     // Set to false when backend is ready
-    USE_MOCK_DATA: true,
+    USE_MOCK_DATA: false,
 
     // Pagination defaults
     DEFAULT_PAGE_SIZE: 20,

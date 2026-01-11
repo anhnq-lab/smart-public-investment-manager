@@ -1,0 +1,338 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["multiSchema"]
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+  schemas   = ["public"]
+}
+
+// 3.1. Projects
+model Project {
+  ProjectID          String   @id @db.VarChar(50)
+  ProjectName        String
+  GroupCode          String   @db.Char(2) 
+  InvestmentType     Int 
+  DecisionMakerID    Int?
+  TotalInvestment    Decimal  @db.Decimal(18, 2)
+  CapitalSource      String
+  LocationCode       String   @db.VarChar(20)
+  ApprovalDate       DateTime?
+  Status             Int 
+  IsEmergency        Boolean  @default(false)
+
+  // UI & Additional Fields
+  ImageUrl           String?
+  Progress           Int?     @default(0)
+  PaymentProgress    Int?     @default(0)
+  InvestorName       String?
+  MainContractorName String?
+  ConstructionType   String?
+  ConstructionGrade  String?
+
+  // Detailed Fields
+  ProjectNumber      String?
+  Version            String?
+  Objective          String?
+  CompetentAuthority String?
+  Duration           String?
+  ManagementForm     String?
+  DecisionNumber     String?
+  DecisionDate       DateTime?
+  DecisionAuthority  String?
+  IsODA              Boolean?
+
+  // Module 1: National Gateway Sync
+  IsSynced            Boolean?
+  LastSyncDate        DateTime?
+  NationalProjectCode String?
+  SyncError           String?
+
+  // Coordinates
+  Coordinates         Json?
+
+  // Relations
+  BiddingPackages     BiddingPackage[]
+  Documents           Document[]
+  Tasks               Task[]
+  CapitalPlans        CapitalPlan[]
+  Disbursements       Disbursement[]
+  Members             ProjectMember[]
+
+  @@schema("public")
+}
+
+model ProjectMember {
+  ID         String   @id @default(uuid())
+  ProjectID  String
+  EmployeeID String
+  Project    Project  @relation(fields: [ProjectID], references: [ProjectID])
+  Employee   Employee @relation(fields: [EmployeeID], references: [EmployeeID])
+
+  @@unique([ProjectID, EmployeeID])
+  @@schema("public")
+}
+
+// 4.1. Contractors
+model Contractor {
+  ContractorID String @id @db.VarChar(50)
+  CapCertCode  String?
+  FullName     String
+  IsForeign    Boolean @default(false)
+  OpLicenseNo  String?
+  Address      String?
+  ContactInfo  String?
+
+  Contracts    Contract[]
+
+  @@schema("public")
+}
+
+// 5.1. BiddingPackages
+model BiddingPackage {
+  PackageID       String  @id @db.VarChar(50)
+  ProjectID       String
+  PackageNumber   String
+  PackageName     String
+  Price           Decimal @db.Decimal(18, 2)
+  SelectionMethod String?
+  BidType         String?
+  ContractType    String?
+  Status          String  
+
+  // Detailed fields
+  NotificationCode    String?
+  PostingDate         DateTime?
+  BidClosingDate      DateTime?
+  EstimatePrice       Decimal? @db.Decimal(18, 2)
+  WinningContractorID String?
+  WinningPrice        Decimal? @db.Decimal(18, 2)
+
+  // New Detailed Fields
+  KHLCNTCode      String?
+  Field           String?
+  Duration        String?
+  BidFee          Decimal? @db.Decimal(18, 2)
+  DecisionNumber  String?
+  DecisionDate    DateTime?
+  DecisionAgency  String?
+  DecisionFile    String?
+
+  Project         Project    @relation(fields: [ProjectID], references: [ProjectID])
+  Contracts       Contract[]
+  Issues          PackageIssue[]
+
+  @@schema("public")
+}
+
+model PackageIssue {
+  IssueID      String   @id @default(uuid())
+  PackageID    String
+  Title        String
+  Description  String?
+  Status       String   
+  Severity     String   
+  ReportedDate DateTime @default(now())
+  Reporter     String?
+
+  Package      BiddingPackage @relation(fields: [PackageID], references: [PackageID])
+
+  @@schema("public")
+}
+
+// 5.2. Contracts
+model Contract {
+  ContractID    String   @id @db.VarChar(50)
+  PackageID     String
+  ContractorID  String
+  SignDate      DateTime?
+  Value         Decimal  @db.Decimal(18, 2)
+  AdvanceRate   Decimal  @db.Decimal(5, 2)
+  Warranty      Int?     
+  Status        Int      
+
+  Package       BiddingPackage @relation(fields: [PackageID], references: [PackageID])
+  Contractor    Contractor     @relation(fields: [ContractorID], references: [ContractorID])
+  Payments      Payment[]
+  VariationOrders VariationOrder[]
+
+  @@schema("public")
+}
+
+model VariationOrder {
+  VOID             String   @id @default(uuid())
+  ContractID       String
+  Number           String
+  SignDate         DateTime?
+  Content          String?
+  AdjustedAmount   Decimal  @db.Decimal(18, 2)
+  AdjustedDuration Int?     
+  ApprovalFile     String?
+
+  Contract         Contract @relation(fields: [ContractID], references: [ContractID])
+
+  @@schema("public")
+}
+
+// 5.3. Payments
+model Payment {
+  PaymentID    Int      @id @default(autoincrement())
+  ContractID   String
+  BatchNo      Int
+  Type         String   
+  Amount       Decimal  @db.Decimal(18, 2)
+  TreasuryRef  String?
+  Status       String   
+
+  Contract     Contract @relation(fields: [ContractID], references: [ContractID])
+  Disbursements Disbursement[]
+
+  @@schema("public")
+}
+
+// 6.1. Documents
+model Document {
+  DocID       Int      @id @default(autoincrement())
+  ReferenceID String?
+  ProjectID   String?
+  Category    Int      
+  DocName     String
+  StoragePath String
+  IsDigitized Boolean  @default(false)
+  UploadDate  DateTime @default(now())
+  
+  // UI Helpers
+  Version     String?
+  Size        String?
+
+  // CDE
+  FolderID    String?
+  ISOStatus   String?
+  Revision    String?
+
+  Project     Project? @relation(fields: [ProjectID], references: [ProjectID])
+
+  @@schema("public")
+}
+
+model Folder {
+  FolderID String @id @default(uuid())
+  ParentID String?
+  Name     String
+  Type     String 
+  Path     String
+
+  @@schema("public")
+}
+
+// 7.1. Employees & Auth
+model Employee {
+  EmployeeID String   @id @db.VarChar(20)
+  FullName   String
+  Username   String   @unique
+  Password   String
+  Role       String   
+  Department String?
+  Position   String?
+  Email      String?
+  Phone      String?
+  AvatarUrl  String?
+  Status     Int      @default(1)
+  JoinDate   DateTime?
+
+  ProjectMembers ProjectMember[]
+  Tasks          Task[]
+
+  @@schema("public")
+}
+
+// 8.1. Tasks
+model Task {
+  TaskID          String   @id @db.VarChar(50)
+  Title           String
+  Description     String?
+  ProjectID       String
+  AssigneeID      String
+  DueDate         DateTime?
+  Status          String   
+  Priority        String   
+  
+  // Regulatory
+  LegalBasis      String?
+  OutputDocument  String?
+  DurationDays    Int?
+  PredecessorTaskID String?
+  ApproverID      String?
+  EstimatedCost   Decimal? @db.Decimal(18, 2)
+  ActualStartDate DateTime?
+  ActualEndDate   DateTime?
+
+  Project         Project   @relation(fields: [ProjectID], references: [ProjectID])
+  Assignee        Employee  @relation(fields: [AssigneeID], references: [EmployeeID])
+  SubTasks        SubTask[]
+
+  @@schema("public")
+}
+
+model SubTask {
+  SubTaskID  String  @id @default(uuid())
+  TaskID     String
+  Title      String
+  AssigneeID String?
+  Status     String  @default("Todo")
+  DueDate    DateTime?
+
+  Task       Task    @relation(fields: [TaskID], references: [TaskID])
+
+  @@schema("public")
+}
+
+// Module 3: Public Investment Management
+model CapitalPlan {
+  PlanID         String   @id @db.VarChar(50)
+  ProjectID      String
+  Year           Int
+  Amount         Decimal  @db.Decimal(18, 2)
+  DecisionNumber String?
+  DateAssigned   DateTime?
+  Source         String?
+  DisbursedAmount Decimal @db.Decimal(18, 2) @default(0)
+
+  Project        Project  @relation(fields: [ProjectID], references: [ProjectID])
+  Disbursements  Disbursement[]
+
+  @@schema("public")
+}
+
+model Disbursement {
+  DisbursementID String   @id @db.VarChar(50)
+  ProjectID      String
+  PaymentID      Int?
+  CapitalPlanID  String?
+  Amount         Decimal  @db.Decimal(18, 2)
+  Date           DateTime
+  TreasuryCode   String?
+  FormType       String?  
+  Status         String   
+
+  Project        Project    @relation(fields: [ProjectID], references: [ProjectID])
+  Payment        Payment?   @relation(fields: [PaymentID], references: [PaymentID])
+  CapitalPlan    CapitalPlan? @relation(fields: [CapitalPlanID], references: [PlanID])
+
+  @@schema("public")
+}
+
+model AuditLog {
+  LogID         String   @id @default(uuid())
+  Action        String
+  TargetEntity  String
+  TargetID      String
+  ChangedBy     String
+  Timestamp     DateTime @default(now())
+  Details       String?
+
+  @@schema("public")
+}

@@ -1963,6 +1963,9 @@ export const saveTasksToDB = (tasks: Task[]) => {
 const TASKS_DATA_VERSION = '2026-01-07-v2';
 
 export const loadTasksFromStorage = (): Task[] => {
+    if (typeof localStorage === 'undefined') {
+        return generateDefaultTasks();
+    }
     try {
         const savedVersion = localStorage.getItem('app_tasks_version');
         const saved = localStorage.getItem('app_tasks');
