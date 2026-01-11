@@ -1,7 +1,5 @@
 import { VercelRequest, VercelResponse } from '@vercel/node';
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import prisma from '../../lib/prisma';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
     res.setHeader('Access-Control-Allow-Credentials', 'true');
@@ -16,8 +14,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             const project = await prisma.project.findUnique({
                 where: { ProjectID: projectId },
                 include: {
-                    BiddingPackages: true,
-                    Contracts: true,
+                    BiddingPackages: {
+                        include: {
+                            Contracts: true
+                        }
+                    },
                     Members: { include: { Employee: true } },
                     CapitalPlans: true,
                     Documents: true
