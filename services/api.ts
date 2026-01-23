@@ -46,7 +46,8 @@ class ApiClientClass {
             }
 
             const json: ApiResponse<T> = await response.json();
-            return json.data;
+            // Unwrap 'data' if present, otherwise return whole response
+            return json.data !== undefined ? json.data : (json as any);
         } catch (error) {
             console.error(`API GET ${endpoint} failed:`, error);
             throw error;
@@ -73,7 +74,7 @@ class ApiClientClass {
             }
 
             const json: ApiResponse<T> = await response.json();
-            return json.data;
+            return json.data !== undefined ? json.data : (json as any);
         } catch (error) {
             console.error(`API POST ${endpoint} failed:`, error);
             throw error;
@@ -100,7 +101,7 @@ class ApiClientClass {
             }
 
             const json: ApiResponse<T> = await response.json();
-            return json.data;
+            return json.data !== undefined ? json.data : (json as any);
         } catch (error) {
             console.error(`API PUT ${endpoint} failed:`, error);
             throw error;
