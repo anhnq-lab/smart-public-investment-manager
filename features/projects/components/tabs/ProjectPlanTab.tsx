@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Task } from '@/types';
 import { Layers, CheckCircle2, Circle, Clock, ChevronDown, ChevronRight, FileText, AlertCircle } from 'lucide-react';
 import { ProjectGanttChart } from '../ProjectGanttChart';
+import { ProjectTaskModal } from '../ProjectTaskModal';
 
 interface ProjectPlanTabProps {
     tasks: Task[];
@@ -62,8 +63,33 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({ tasks, projectID
         'PHASE_3': true
     });
 
+    // Modal State
+    const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
+    const [selectedStep, setSelectedStep] = useState<{ name: string; code: string } | null>(null);
+    const [editingTask, setEditingTask] = useState<Task | null>(null);
+
     const togglePhase = (id: string) => {
         setExpandedPhases(prev => ({ ...prev, [id]: !prev[id] }));
+    };
+
+    const handleAddTask = (stepName: string, stepCode: string) => {
+        setSelectedStep({ name: stepName, code: stepCode });
+        setEditingTask(null);
+        setIsTaskModalOpen(true);
+    };
+
+    const handleEditTask = (task: Task) => {
+        setEditingTask(task);
+        setSelectedStep(null); // Or derive step from task.TimelineStep if possible
+        setIsTaskModalOpen(true);
+    };
+
+    const handleSaveTask = (taskData: Partial<Task>) => {
+        console.log("Saving Task:", taskData);
+        // TODO: Call API to create/update task
+        // For now, just close modal
+        setIsTaskModalOpen(false);
+        alert(`Đã lưu công việc: ${taskData.Title} (Mock)`);
     };
 
     return (
@@ -156,17 +182,25 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({ tasks, projectID
                                                     {linkedTasks.length > 0 && (
                                                         <div className="mt-2 ml-[-4px] pl-4 border-l-2 border-gray-200 space-y-1">
                                                             {linkedTasks.map(t => (
-                                                                <div key={t.TaskID} className="flex items-center gap-2 text-xs">
+                                                                <div
+                                                                    key={t.TaskID}
+                                                                    onClick={() => handleEditTask(t)}
+                                                                    className="flex items-center gap-2 text-xs cursor-pointer hover:bg-white p-1 rounded transition-colors"
+                                                                >
                                                                     <span className={`w-1.5 h-1.5 rounded-full ${t.Status === 'Done' ? 'bg-emerald-500' : t.Status === 'InProgress' ? 'bg-blue-500' : 'bg-gray-300'}`}></span>
-                                                                    <span className="text-gray-600">{t.Title}</span>
+                                                                    <span className="text-gray-600 font-medium hover:text-blue-600 hover:underline">{t.Title}</span>
                                                                     <span className="text-gray-400">- {t.AssigneeID || 'Chưa giao'}</span>
+                                                                    <span className="text-[10px] text-gray-400 ml-auto">{t.DueDate ? new Date(t.DueDate).toLocaleDateString('vi-VN') : ''}</span>
                                                                 </div>
                                                             ))}
                                                         </div>
                                                     )}
                                                 </div>
                                                 <div className="opacity-0 group-hover:opacity-100 transition-opacity">
-                                                    <button className="px-3 py-1.5 text-xs font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-md border border-blue-200">
+                                                    <button
+                                                        onClick={() => handleAddTask(item.title, item.code)}
+                                                        className="px-3 py-1.5 text-xs font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-md border border-blue-200"
+                                                    >
                                                         + Thêm công việc
                                                     </button>
                                                 </div>
@@ -179,6 +213,16 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({ tasks, projectID
                     </div>
                 ))}
             </div>
+
+            {/* Task Modal */}
+            <ProjectTaskModal
+                isOpen={isTaskModalOpen}
+                onClose={() => setIsTaskModalOpen(false)}
+                onSubmit={handleSaveTask}
+                initialData={editingTask || {}}
+                stepName={selectedStep?.name}
+                stepCode={selectedStep?.code}
+            />
         </div>
     );
 };
