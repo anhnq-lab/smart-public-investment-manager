@@ -6,7 +6,7 @@ export const config = {
 
     // Toggle between mock data and real API
     // Set to false when backend is ready
-    USE_MOCK_DATA: false,
+    USE_MOCK_DATA: true,
 
     // Pagination defaults
     DEFAULT_PAGE_SIZE: 20,
