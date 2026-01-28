@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Task } from '@/types';
+import React, { useState, useMemo, useEffect } from 'react';
+import { Task, TaskStatus } from '@/types';
 import { Layers, CheckCircle2, Circle, Clock, ChevronDown, ChevronRight, FileText, AlertCircle } from 'lucide-react';
 import { ProjectGanttChart } from '../ProjectGanttChart';
 import { ProjectTaskModal } from '../ProjectTaskModal';
@@ -54,8 +54,84 @@ const DECREE_175_PHASES = [
     }
 ];
 
-export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({ tasks, projectID }) => {
-    // Basic state to toggle Gantt view
+export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({ tasks: initialTasks, projectID }) => {
+    // 1. Local Tasks State (to allow immediate "Save" feedback without full backend)
+    const [tasks, setTasks] = useState<Task[]>(initialTasks);
+
+    // Sync tasks if props change (optional, but good practice)
+    useEffect(() => {
+        if (initialTasks.length > 0 && tasks.length === 0) {
+            setTasks(initialTasks);
+        }
+    }, [initialTasks, tasks]);
+
+    // 2. Compute Parent Item Status & Dates
+    // We create a map of "Step Code" -> Aggregated Data
+    const stepAggregates = useMemo(() => {
+        const map = new Map<string, { status: TaskStatus; startDate: string | null; dueDate: string | null; childCount: number }>();
+
+        // Flatten all items to iterate
+        const allItems = DECREE_175_PHASES.flatMap(p => p.items);
+
+        allItems.forEach(item => {
+            // Find children for this step
+            const children = tasks.filter(t => t.TimelineStep === item.code);
+
+            if (children.length === 0) {
+                map.set(item.code, { status: TaskStatus.Todo, startDate: null, dueDate: null, childCount: 0 });
+                return;
+            }
+
+            // Status Logic:
+            // All Done -> Done
+            // Any InProgress or Done -> InProgress
+            // Else -> Todo
+            const allDone = children.every(t => t.Status === TaskStatus.Done);
+            const anyActive = children.some(t => t.Status === TaskStatus.InProgress || t.Status === TaskStatus.Done || t.Status === TaskStatus.Review);
+
+            let status = TaskStatus.Todo;
+            if (allDone) status = TaskStatus.Done;
+            else if (anyActive) status = TaskStatus.InProgress;
+
+            // Date Logic
+            const startDates = children.map(t => new Date(t.StartDate).getTime()).filter(t => !isNaN(t));
+            const dueDates = children.map(t => new Date(t.DueDate).getTime()).filter(t => !isNaN(t));
+
+            const minStart = startDates.length > 0 ? new Date(Math.min(...startDates)).toISOString() : null;
+            const maxDue = dueDates.length > 0 ? new Date(Math.max(...dueDates)).toISOString() : null;
+
+            map.set(item.code, { status, startDate: minStart, dueDate: maxDue, childCount: children.length });
+        });
+
+        return map;
+    }, [tasks]);
+
+    // 3. Prepare Gantt Data (Parents Only)
+    const ganttTasks = useMemo(() => {
+        const allItems = DECREE_175_PHASES.flatMap(p => p.items);
+        return allItems
+            .map(item => {
+                const agg = stepAggregates.get(item.code);
+                if (!agg || !agg.startDate || !agg.dueDate) return null; // Skip if no dates (no children or empty dates)
+
+                // Return a Synthetic Task for the Gantt
+                return {
+                    TaskID: item.code,
+                    Title: `${item.id}. ${item.title}`,
+                    StartDate: agg.startDate,
+                    DueDate: agg.dueDate,
+                    Status: agg.status,
+                    Priority: 'Medium',
+                    Description: 'Tổng hợp từ các công việc con',
+                    AssigneeID: '',
+                    TimelineStep: item.code
+                } as Task;
+            })
+            .filter((t): t is Task => t !== null); // Remove nulls
+    }, [stepAggregates]);
+
+
+    // Basic state
     const [showGantt, setShowGantt] = useState(true);
     const [expandedPhases, setExpandedPhases] = useState<Record<string, boolean>>({
         'PHASE_1': true,
@@ -80,22 +156,31 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({ tasks, projectID
 
     const handleEditTask = (task: Task) => {
         setEditingTask(task);
-        setSelectedStep(null); // Or derive step from task.TimelineStep if possible
+        setSelectedStep(null);
         setIsTaskModalOpen(true);
     };
 
     const handleSaveTask = (taskData: Partial<Task>) => {
-        console.log("Saving Task:", taskData);
-        // TODO: Call API to create/update task
-        // For now, just close modal
+        if (taskData.TaskID) {
+            // Edit Mode
+            setTasks(prev => prev.map(t => t.TaskID === taskData.TaskID ? { ...t, ...taskData } as Task : t));
+        } else {
+            // Create Mode
+            const newTask: Task = {
+                ...taskData as Task,
+                TaskID: `NEW_${Date.now()}`, // Temporary ID
+                ProjectID: projectID || 'PROJ_001',
+                CreatedDate: new Date().toISOString()
+            };
+            setTasks(prev => [...prev, newTask]);
+        }
         setIsTaskModalOpen(false);
-        alert(`Đã lưu công việc: ${taskData.Title} (Mock)`);
     };
 
     return (
         <div className="animate-in slide-in-from-bottom-2 duration-500 space-y-6 max-w-6xl mx-auto py-4">
 
-            {/* Header / Strategy Selection */}
+            {/* Header */}
             <div className="bg-blue-50 border border-blue-100 p-4 rounded-lg flex justify-between items-center">
                 <div>
                     <h3 className="text-blue-900 font-bold flex items-center gap-2">
@@ -116,16 +201,25 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({ tasks, projectID
                 </div>
             </div>
 
-            {/* Gantt Chart Section */}
+            {/* Gantt Chart Section (Parents Only) */}
             {showGantt && (
                 <div className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
                     <div className="px-4 py-3 border-b border-gray-100 bg-gray-50 flex justify-between items-center">
                         <h4 className="font-bold text-gray-700 text-xs uppercase flex items-center gap-2">
                             <Layers className="w-4 h-4" /> Tiến độ tổng thể (Gantt)
                         </h4>
+                        <span className="text-[10px] text-gray-400 font-normal normal-case">
+                            * Chỉ hiển thị các hạng mục lớn đã có công việc thành phần
+                        </span>
                     </div>
                     <div className="p-4">
-                        <ProjectGanttChart tasks={tasks} />
+                        {ganttTasks.length > 0 ? (
+                            <ProjectGanttChart tasks={ganttTasks} />
+                        ) : (
+                            <div className="h-32 flex items-center justify-center text-gray-400 text-sm italic">
+                                Chưa có công việc nào được cập nhật thời gian. Hãy thêm công việc bên dưới.
+                            </div>
+                        )}
                     </div>
                 </div>
             )}
@@ -149,28 +243,32 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({ tasks, projectID
                         {/* Phase Items */}
                         {expandedPhases[phase.id] && (
                             <div className="divide-y divide-gray-100">
-                                {phase.items.map((item, index) => {
-                                    // Pseudo-logic to check if this item has linked tasks (mock)
-                                    // In real app, we would match tasks by 'TimelineStep' or 'Code'
-                                    const linkedTasks = tasks.filter(t => t.Title.toLowerCase().includes(item.title.toLowerCase()) || (index === 0 && tasks.length > 0)); // Hack for demo
-                                    const isDone = linkedTasks.some(t => t.Status === 'Done');
-                                    const inProgress = linkedTasks.some(t => t.Status === 'InProgress');
+                                {phase.items.map((item) => {
+                                    // Get Children and Aggregated Status
+                                    const linkedTasks = tasks.filter(t => t.TimelineStep === item.code);
+                                    const agg = stepAggregates.get(item.code);
+                                    const parentStatus = agg?.status || TaskStatus.Todo;
+                                    const isParentDone = parentStatus === TaskStatus.Done;
+                                    const isParentInProgress = parentStatus === TaskStatus.InProgress;
 
                                     return (
                                         <div key={item.id} className="p-4 hover:bg-slate-50 transition-colors group">
                                             <div className="flex items-start gap-4">
+                                                {/* Parent Status Icon */}
                                                 <div className="mt-1">
-                                                    {isDone ? (
+                                                    {isParentDone ? (
                                                         <CheckCircle2 className="w-5 h-5 text-emerald-500" />
-                                                    ) : inProgress ? (
+                                                    ) : isParentInProgress ? (
                                                         <Clock className="w-5 h-5 text-blue-500 animate-pulse" />
                                                     ) : (
                                                         <Circle className="w-5 h-5 text-gray-300" />
                                                     )}
                                                 </div>
+
                                                 <div className="flex-1">
+                                                    {/* Parent Title Line */}
                                                     <div className="flex justify-between items-start">
-                                                        <h5 className={`text-sm font-medium ${isDone ? 'text-gray-900' : 'text-gray-600'}`}>
+                                                        <h5 className={`text-sm font-medium ${isParentDone ? 'text-gray-900' : 'text-gray-600'}`}>
                                                             {item.id}. {item.title}
                                                         </h5>
                                                         <span className="text-[10px] bg-gray-100 text-gray-500 px-2 py-0.5 rounded border border-gray-200 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -178,7 +276,15 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({ tasks, projectID
                                                         </span>
                                                     </div>
 
-                                                    {/* Linked Tasks Preview */}
+                                                    {/* Parent Date Summary (if available) */}
+                                                    {(agg?.startDate || agg?.dueDate) && (
+                                                        <div className="text-[10px] text-gray-400 mt-1 mb-2 flex gap-2">
+                                                            {agg.startDate && <span>Bắt đầu: {new Date(agg.startDate).toLocaleDateString('vi-VN')}</span>}
+                                                            {agg.dueDate && <span>Kết thúc: {new Date(agg.dueDate).toLocaleDateString('vi-VN')}</span>}
+                                                        </div>
+                                                    )}
+
+                                                    {/* Children List */}
                                                     {linkedTasks.length > 0 && (
                                                         <div className="mt-2 ml-[-4px] pl-4 border-l-2 border-gray-200 space-y-1">
                                                             {linkedTasks.map(t => (
