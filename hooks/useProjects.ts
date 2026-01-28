@@ -1,10 +1,11 @@
 import { useQuery } from '@tanstack/react-query';
-import { projectService } from '../services/project.service';
+import { ProjectService } from '../services/ProjectService';
+import { QueryParams } from '../types/api';
 
-export const useProjects = () => {
+export const useProjects = (params?: QueryParams) => {
     const { data: projects = [], isLoading, error, refetch } = useQuery({
-        queryKey: ['projects'],
-        queryFn: projectService.getAll
+        queryKey: ['projects', JSON.stringify(params)],
+        queryFn: () => ProjectService.getAll(params)
     });
 
     return {
