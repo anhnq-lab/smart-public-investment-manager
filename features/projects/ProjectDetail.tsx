@@ -6,7 +6,7 @@ import {
     mockContracts, mockPayments
 } from '../../mockData';
 import { ProjectStatus, ProjectGroup, Task, TaskStatus, TaskPriority, PackageStatus, PaymentStatus, InvestmentType, BiddingPackage } from '../../types';
-import { TaskService } from '../services/taskService';
+import { TaskService } from '../../services/taskService';
 import {
     ArrowLeft, Calendar, MapPin, DollarSign,
     Layers, Clock, FileText,
@@ -16,12 +16,12 @@ import {
     FileInput, FileOutput, Mail, Phone, Map, Download, FileCheck, Wallet, Search, Filter, Printer, Maximize2, Minimize2, Upload, Image as ImageIcon, UserPlus,
     RefreshCw, FileBarChart, FolderOpen, Reply, Send, Paperclip // New icons
 } from 'lucide-react';
-import { NationalGatewayService, SyncResult } from '../services/NationalGatewayService';
-import { CDEManager } from './CDEManager';
-import { CapitalManager } from './CapitalManager';
-import { BIMViewer } from './BIMViewer';
+import { NationalGatewayService, SyncResult } from '../../services/NationalGatewayService';
+import { CDEManager } from '../documents/CDEManager';
+import { CapitalManager } from '../capital/CapitalManager';
+import { BIMViewer } from '../documents/BIMViewer';
 import { PieChart as RechartsPie, Pie, Cell, ResponsiveContainer, Tooltip as RechartsTooltip, Legend, BarChart, Bar, XAxis, YAxis, CartesianGrid } from 'recharts';
-import { generateTasksForProject } from '../services/taskTemplates';
+import { generateTasksForProject } from '../../services/taskTemplates';
 
 // --- COMPONENT: FILE PREVIEW MODAL (ACTUAL + MOCK) ---
 const FilePreviewModal: React.FC<{ file: any, onClose: () => void }> = ({ file, onClose }) => {
@@ -1140,7 +1140,7 @@ const ProjectDetail: React.FC = () => {
                                     {packages.map(pkg => {
                                         const contract = mockContracts.find(c => c.PackageID === pkg.PackageID);
                                         const voCount = contract?.VariationOrders?.length || 0;
-                                        const voAmount = contract?.VariationOrders?.reduce((sum, vo) => sum + vo.Amount, 0) || 0;
+                                        const voAmount = contract?.VariationOrders?.reduce((sum, vo) => sum + vo.AdjustedAmount, 0) || 0;
 
                                         return (
                                             <tr key={pkg.PackageID} className="hover:bg-blue-50/30 cursor-pointer group" onClick={() => navigate(`/projects/${project.ProjectID}/packages/${pkg.PackageID}`)}>

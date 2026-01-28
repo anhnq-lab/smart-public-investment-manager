@@ -1,3 +1,4 @@
+@config "./tailwind.config.js";
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -13,13 +14,16 @@
   width: 8px;
   height: 8px;
 }
+
 ::-webkit-scrollbar-track {
-  background: #f5f4f1; 
+  background: #f5f4f1;
 }
+
 ::-webkit-scrollbar-thumb {
-  background: #b6ccd8; 
+  background: #b6ccd8;
   border-radius: 4px;
 }
+
 ::-webkit-scrollbar-thumb:hover {
-  background: #00668c; 
+  background: #00668c;
 }

@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { MessageCircle, X, Send, Minimize2, Maximize2, Bot, User } from 'lucide-react';
-import { sendMessageToGemini, ChatMessage } from '../services/aiService';
+import { sendMessageToGemini, ChatMessage } from '../../services/aiService';
 
 export const AIChatbot: React.FC = () => {
     const [isOpen, setIsOpen] = useState(false);

@@ -8,7 +8,7 @@ import {
     ArrowRight, X, PenTool, RefreshCw
 } from 'lucide-react';
 import { Document, Folder, ISO19650Status } from '../../types';
-import { DocumentService, INTERLINKED_WORKFLOW_STEPS } from '../services/DocumentService';
+import { DocumentService, INTERLINKED_WORKFLOW_STEPS } from '../../services/DocumentService';
 
 interface CDEManagerProps {
     projectId: string;
@@ -254,14 +254,14 @@ export const CDEManager: React.FC<CDEManagerProps> = ({ projectId, projectCode }
                                             )}
 
                                             <div className={`w-5 h-5 rounded-full flex items-center justify-center z-10 text-[8px] font-black border-2 transition-all ${isCompleted ? 'bg-emerald-500 border-emerald-500 text-white' :
-                                                    isCurrent ? 'bg-white border-blue-600 text-blue-600 ring-2 ring-blue-100' :
-                                                        'bg-white border-gray-200 text-gray-300'
+                                                isCurrent ? 'bg-white border-blue-600 text-blue-600 ring-2 ring-blue-100' :
+                                                    'bg-white border-gray-200 text-gray-300'
                                                 }`}>
                                                 {isCompleted ? <CheckCircle2 className="w-3 h-3" /> : (idx + 1)}
                                             </div>
                                             <span className={`text-[8px] font-bold text-center uppercase tracking-tighter ${isCompleted ? 'text-emerald-600' :
-                                                    isCurrent ? 'text-blue-600 font-extrabold' :
-                                                        'text-gray-400'
+                                                isCurrent ? 'text-blue-600 font-extrabold' :
+                                                    'text-gray-400'
                                                 }`}>
                                                 {step.name.split(' ').pop()}
                                             </span>

@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { ProjectStatus } from '../types';
+import { ProjectStatus } from '../../types';
 
 interface Project {
     ProjectName: string;

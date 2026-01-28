@@ -3,7 +3,7 @@ import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip as RechartsToolti
 import { Wallet, Activity, TrendingUp, AlertCircle, CheckCircle2, FileBox, Users, HardHat, Clock, ArrowRight, AlertTriangle, Calendar, Building2, Briefcase, Map } from 'lucide-react';
 import { formatCurrency, mockProjects, mockPayments, mockTasks, mockEmployees, mockContractors } from '../../mockData';
 import { ProjectStatus, ProjectGroup, PaymentType } from '../../types';
-import InteractiveMap from './InteractiveMap';
+import InteractiveMap from '../../components/common/InteractiveMap';
 
 
 // --- MOCK DATA FOR CHARTS ---

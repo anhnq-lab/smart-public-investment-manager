@@ -4,8 +4,8 @@ import {
     Bell, X, Clock, AlertTriangle, CheckCircle2, FileText,
     Building2, Calendar, ChevronRight, Trash2, BellOff
 } from 'lucide-react';
-import { mockTasks, mockProjects } from '../mockData';
-import { TaskStatus } from '../types';
+import { mockTasks, mockProjects } from '../../mockData';
+import { TaskStatus } from '../../types';
 
 interface Notification {
     id: string;

@@ -1,8 +1,8 @@
 import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Search, X, Building2, Users, FileText, Briefcase, ArrowRight, Clock, TrendingUp } from 'lucide-react';
-import { mockProjects, mockContractors, mockContracts, mockEmployees, mockBiddingPackages } from '../mockData';
-import { ProjectStatus } from '../types';
+import { mockProjects, mockContractors, mockContracts, mockEmployees, mockBiddingPackages } from '../../mockData';
+import { ProjectStatus } from '../../types';
 
 interface SearchResult {
     id: string;

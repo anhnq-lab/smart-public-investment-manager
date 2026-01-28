@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Employee, Project, Task, TaskStatus } from '../../types';
 import { mockEmployees, mockProjects, mockAuditLogs } from '../../mockData';
-import { TaskService } from '../services/taskService';
+import { TaskService } from '../../services/taskService';
 import { ArrowLeft, Mail, Phone, MapPin, Briefcase, Calendar, Shield, Clock, CheckCircle2, AlertCircle } from 'lucide-react';
 
 const EmployeeDetail: React.FC = () => {
@@ -57,7 +57,7 @@ const EmployeeDetail: React.FC = () => {
                                     {employee.Position} • {employee.Department}
                                 </p>
                             </div>
-                            <span className={`px-4 py-1.5 rounded-full text-sm font-bold border ${employee.Status === 1 ? 'bg-emerald-50 text-emerald-600 border-emerald-100' : 'bg-gray-100 text-gray-500'}`}>
+                            <span className={`px - 4 py - 1.5 rounded - full text - sm font - bold border ${employee.Status === 1 ? 'bg-emerald-50 text-emerald-600 border-emerald-100' : 'bg-gray-100 text-gray-500'} `}>
                                 {employee.Status === 1 ? 'Đang làm việc' : 'Đã nghỉ việc'}
                             </span>
                         </div>
@@ -113,7 +113,7 @@ const EmployeeDetail: React.FC = () => {
                         </h3>
                         <div className="space-y-3">
                             {projects.map(p => (
-                                <div key={p.ProjectID} onClick={() => navigate(`/projects/${p.ProjectID}`)} className="p-4 border border-gray-100 rounded-2xl hover:bg-gray-50 cursor-pointer transition-colors group">
+                                <div key={p.ProjectID} onClick={() => navigate(`/ projects / ${p.ProjectID} `)} className="p-4 border border-gray-100 rounded-2xl hover:bg-gray-50 cursor-pointer transition-colors group">
                                     <h4 className="font-bold text-gray-800 text-sm group-hover:text-blue-600 transition-colors line-clamp-2">{p.ProjectName}</h4>
                                     <p className="text-xs text-gray-400 mt-1">{p.ProjectID}</p>
                                 </div>
@@ -133,16 +133,16 @@ const EmployeeDetail: React.FC = () => {
                         </div>
                         <div className="space-y-4">
                             {tasks.slice(0, 5).map(task => (
-                                <div key={task.TaskID} onClick={() => navigate(`/tasks/${task.TaskID}`)} className="flex items-start gap-4 p-4 rounded-2xl hover:bg-gray-50 cursor-pointer transition-colors border border-transparent hover:border-gray-100">
-                                    <div className={`mt-1 w-3 h-3 rounded-full shrink-0 ${task.Status === TaskStatus.Done ? 'bg-emerald-500' : 'bg-blue-500'}`}></div>
+                                <div key={task.TaskID} onClick={() => navigate(`/ tasks / ${task.TaskID} `)} className="flex items-start gap-4 p-4 rounded-2xl hover:bg-gray-50 cursor-pointer transition-colors border border-transparent hover:border-gray-100">
+                                    <div className={`mt - 1 w - 3 h - 3 rounded - full shrink - 0 ${task.Status === TaskStatus.Done ? 'bg-emerald-500' : 'bg-blue-500'} `}></div>
                                     <div className="flex-1">
-                                        <h4 className={`font-bold text-gray-800 ${task.Status === TaskStatus.Done ? 'line-through text-gray-400' : ''}`}>{task.Title}</h4>
+                                        <h4 className={`font - bold text - gray - 800 ${task.Status === TaskStatus.Done ? 'line-through text-gray-400' : ''} `}>{task.Title}</h4>
                                         <div className="flex items-center gap-3 mt-2 text-xs text-gray-500">
                                             <span className="bg-gray-100 px-2 py-1 rounded font-mono">{task.TaskID}</span>
                                             <span className="flex items-center gap-1"><Clock className="w-3 h-3" /> Hạn: {task.DueDate}</span>
                                         </div>
                                     </div>
-                                    <span className={`text-[10px] font-bold px-2 py-1 rounded uppercase ${task.Status === TaskStatus.Done ? 'bg-emerald-100 text-emerald-600' : 'bg-blue-100 text-blue-600'}`}>
+                                    <span className={`text - [10px] font - bold px - 2 py - 1 rounded uppercase ${task.Status === TaskStatus.Done ? 'bg-emerald-100 text-emerald-600' : 'bg-blue-100 text-blue-600'} `}>
                                         {task.Status}
                                     </span>
                                 </div>

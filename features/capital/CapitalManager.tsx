@@ -5,7 +5,7 @@ import {
     Plus, Download, DollarSign, Calendar, PieChart
 } from 'lucide-react';
 import { CapitalPlan, Disbursement } from '../../types';
-import { CapitalService, DisbursementAlert } from '../services/CapitalService';
+import { CapitalService, DisbursementAlert } from '../../services/CapitalService';
 import { formatFullCurrency } from '../../mockData';
 
 interface CapitalManagerProps {
@@ -114,7 +114,7 @@ export const CapitalManager: React.FC<CapitalManagerProps> = ({ projectId }) => 
                                     <td className="px-6 py-4 text-right font-mono font-medium text-emerald-600">{formatFullCurrency(plan.DisbursedAmount)}</td>
                                     <td className="px-6 py-4 text-right">
                                         <span className={`px-2 py-1 rounded text-[10px] font-bold ${(plan.DisbursedAmount / plan.Amount) >= 0.9 ? 'bg-emerald-100 text-emerald-600' :
-                                                (plan.DisbursedAmount / plan.Amount) >= 0.5 ? 'bg-blue-100 text-blue-600' : 'bg-orange-100 text-orange-600'
+                                            (plan.DisbursedAmount / plan.Amount) >= 0.5 ? 'bg-blue-100 text-blue-600' : 'bg-orange-100 text-orange-600'
                                             }`}>
                                             {((plan.DisbursedAmount / plan.Amount) * 100).toFixed(1)}%
                                         </span>

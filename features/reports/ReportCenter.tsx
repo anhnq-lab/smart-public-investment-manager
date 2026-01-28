@@ -4,8 +4,9 @@ import {
     generateMonitoringReport,
     generateDisbursementReport,
     generateIssuesReport,
-    downloadReport
-} from '../utils/reportGenerator';
+    downloadReport,
+    generateMonitoringReport as generateProjectReport
+} from '../../utils/reportGenerator';
 
 const ReportCenter: React.FC = () => {
     const [isSyncing, setIsSyncing] = useState(false);
@@ -100,10 +101,10 @@ const ReportCenter: React.FC = () => {
                         <button
                             onClick={handleSync}
                             disabled={isSyncing || syncStatus === 'success'}
-                            className={`flex items-center gap-2 px-6 py-3 rounded-xl font-bold transition-all ${syncStatus === 'success'
-                                    ? 'bg-emerald-500 text-white cursor-default'
-                                    : 'bg-white text-blue-900 hover:bg-blue-50'
-                                }`}
+                            className={`flex items - center gap - 2 px - 6 py - 3 rounded - xl font - bold transition - all ${syncStatus === 'success'
+                                ? 'bg-emerald-500 text-white cursor-default'
+                                : 'bg-white text-blue-900 hover:bg-blue-50'
+                                } `}
                         >
                             {isSyncing ? (
                                 <RefreshCw className="w-5 h-5 animate-spin" />
@@ -141,10 +142,10 @@ const ReportCenter: React.FC = () => {
                         <button
                             onClick={() => handleExportReport('monitoring')}
                             disabled={exportingReport === 'monitoring'}
-                            className={`text-sm font-bold flex items-center gap-1 transition-colors ${exportSuccess === 'monitoring'
-                                    ? 'text-emerald-600'
-                                    : 'text-purple-600 hover:text-purple-700'
-                                }`}
+                            className={`text - sm font - bold flex items - center gap - 1 transition - colors ${exportSuccess === 'monitoring'
+                                ? 'text-emerald-600'
+                                : 'text-purple-600 hover:text-purple-700'
+                                } `}
                         >
                             {exportingReport === 'monitoring' ? (
                                 <>
@@ -177,10 +178,10 @@ const ReportCenter: React.FC = () => {
                         <button
                             onClick={() => handleExportReport('disbursement')}
                             disabled={exportingReport === 'disbursement'}
-                            className={`text-sm font-bold flex items-center gap-1 transition-colors ${exportSuccess === 'disbursement'
-                                    ? 'text-emerald-600'
-                                    : 'text-emerald-600 hover:text-emerald-700'
-                                }`}
+                            className={`text - sm font - bold flex items - center gap - 1 transition - colors ${exportSuccess === 'disbursement'
+                                ? 'text-emerald-600'
+                                : 'text-emerald-600 hover:text-emerald-700'
+                                } `}
                         >
                             {exportingReport === 'disbursement' ? (
                                 <>
@@ -213,10 +214,10 @@ const ReportCenter: React.FC = () => {
                         <button
                             onClick={() => handleExportReport('issues')}
                             disabled={exportingReport === 'issues'}
-                            className={`text-sm font-bold flex items-center gap-1 transition-colors ${exportSuccess === 'issues'
-                                    ? 'text-emerald-600'
-                                    : 'text-orange-600 hover:text-orange-700'
-                                }`}
+                            className={`text - sm font - bold flex items - center gap - 1 transition - colors ${exportSuccess === 'issues'
+                                ? 'text-emerald-600'
+                                : 'text-orange-600 hover:text-orange-700'
+                                } `}
                         >
                             {exportingReport === 'issues' ? (
                                 <>

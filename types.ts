@@ -60,6 +60,12 @@ export interface Project {
         lat: number;
         lng: number;
     }; // Tọa độ địa lý
+    SyncStatus?: {
+        IsSynced: boolean;
+        LastSyncDate?: string;
+        NationalProjectCode?: string;
+        SyncError?: string;
+    };
 }
 
 // 3.2. Bảng dữ liệu: ConstructionWorks (Công trình Xây dựng)
