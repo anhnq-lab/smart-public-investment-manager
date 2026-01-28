@@ -6,10 +6,10 @@ import { Project, Task, BiddingPackage } from '@/types';
 import { useTasks } from '@/hooks/useTasks';
 import { ProjectHeader } from './components/ProjectHeader';
 import { ProjectInfoTab } from './components/tabs/ProjectInfoTab';
-import { ProjectTimelineTab } from './components/tabs/ProjectTimelineTab';
+import { ProjectPlanTab } from './components/tabs/ProjectPlanTab';
 import { FilePreviewModal } from './components/FilePreviewModal';
 // Icons for Tabs
-import { Info, Clock, PieChart, Briefcase, Mail, FolderOpen, Layers, Landmark } from 'lucide-react';
+import { Info, CalendarCheck, PieChart, Briefcase, Mail, FolderOpen, Layers, Landmark } from 'lucide-react';
 import { mockBiddingPackages } from '@/mockData'; // TODO: Move to Service
 
 const ProjectDetail: React.FC = () => {
@@ -19,7 +19,7 @@ const ProjectDetail: React.FC = () => {
     // State
     const [project, setProject] = useState<Project | null>(null);
     const [loading, setLoading] = useState(true);
-    const [activeTab, setActiveTab] = useState<'info' | 'overview' | 'packages' | 'legal' | 'timeline' | 'cde' | 'bim' | 'capital'>('info');
+    const [activeTab, setActiveTab] = useState<'info' | 'overview' | 'packages' | 'legal' | 'plan' | 'cde' | 'bim' | 'capital'>('info');
 
     // Module 1: National Gateway State
     const [isSyncing, setIsSyncing] = useState(false);
@@ -105,7 +105,7 @@ const ProjectDetail: React.FC = () => {
                 <div className="border-b border-gray-200 flex gap-8 mt-6 overflow-x-auto">
                     {[
                         { id: 'info', label: 'THÔNG TIN', icon: Info },
-                        { id: 'timeline', label: 'TIẾN ĐỘ', icon: Clock },
+                        { id: 'plan', label: 'KẾ HOẠCH', icon: CalendarCheck },
                         { id: 'packages', label: 'GÓI THẦU', icon: Briefcase },
                         { id: 'capital', label: 'VỐN & GIẢI NGÂN', icon: Landmark },
                         { id: 'legal', label: 'VĂN BẢN', icon: Mail },
@@ -134,10 +134,10 @@ const ProjectDetail: React.FC = () => {
                             onGenerateReport={handleGenerateReport}
                         />
                     )}
-                    {activeTab === 'timeline' && (
-                        <ProjectTimelineTab tasks={tasks} />
+                    {activeTab === 'plan' && (
+                        <ProjectPlanTab tasks={tasks} projectID={project.ProjectID} />
                     )}
-                    {activeTab !== 'info' && activeTab !== 'timeline' && (
+                    {activeTab !== 'info' && activeTab !== 'plan' && (
                         <div className="bg-white p-10 rounded-2xl border border-dashed border-gray-200 text-center text-gray-400">
                             <div className="mb-2"><Layers className="w-10 h-10 mx-auto text-gray-200" /></div>
                             <h3 className="font-bold text-gray-600">Tính năng đang cập nhật</h3>
