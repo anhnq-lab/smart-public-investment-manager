@@ -142,36 +142,73 @@ const Dashboard: React.FC = () => {
                 />
             </div>
 
-            {/* PROJECT MAP & LOCATIONS */}
-            <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 relative overflow-hidden">
-                <div className="flex justify-between items-center mb-6">
-                    <div className="flex items-center gap-3">
-                        <div className="p-2 bg-indigo-50 text-indigo-600 rounded-lg"><Map className="w-5 h-5" /></div>
-                        <h3 className="text-sm font-black text-gray-800 uppercase tracking-widest">Bản đồ vị trí dự án</h3>
+            {/* 2. MAP & ALERTS ROW */}
+            <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 h-[500px]">
+                {/* Map Section (2/3 width) */}
+                <div className="xl:col-span-2 bg-white p-6 rounded-3xl shadow-sm border border-gray-100 relative overflow-hidden h-full flex flex-col">
+                    <div className="flex justify-between items-center mb-4 shrink-0">
+                        <div className="flex items-center gap-3">
+                            <div className="p-2 bg-indigo-50 text-indigo-600 rounded-lg"><Map className="w-5 h-5" /></div>
+                            <h3 className="text-sm font-black text-gray-800 uppercase tracking-widest">Bản đồ vị trí dự án</h3>
+                        </div>
                     </div>
-                </div>
 
-                <div className="h-[500px] w-full bg-gray-100 rounded-2xl relative border border-gray-200 overflow-hidden z-0">
-                    <InteractiveMap projects={mockProjects} />
+                    <div className="flex-1 w-full bg-gray-100 rounded-2xl relative border border-gray-200 overflow-hidden z-0">
+                        <InteractiveMap projects={mockProjects} />
 
-                    {/* Legend Overlay */}
-                    <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm p-3 rounded-xl border border-gray-200 shadow-lg z-[1000]">
-                        <h4 className="text-[10px] font-black text-gray-500 uppercase tracking-wider mb-2">Chú thích</h4>
-                        <div className="space-y-2">
-                            {projectStatusData.map((item, idx) => (
-                                <div key={idx} className="flex items-center gap-2">
-                                    <span className="w-2.5 h-2.5 rounded-full ring-2 ring-white shadow-sm" style={{ backgroundColor: item.color }}></span>
-                                    <span className="text-[10px] font-bold text-gray-600">{item.name}</span>
-                                </div>
-                            ))}
+                        {/* Legend Overlay */}
+                        <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm p-3 rounded-xl border border-gray-200 shadow-lg z-[1000]">
+                            <h4 className="text-[10px] font-black text-gray-500 uppercase tracking-wider mb-2">Chú thích</h4>
+                            <div className="space-y-2">
+                                {projectStatusData.map((item, idx) => (
+                                    <div key={idx} className="flex items-center gap-2">
+                                        <span className="w-2.5 h-2.5 rounded-full ring-2 ring-white shadow-sm" style={{ backgroundColor: item.color }}></span>
+                                        <span className="text-[10px] font-bold text-gray-600">{item.name}</span>
+                                    </div>
+                                ))}
+                            </div>
                         </div>
                     </div>
                 </div>
+
+                {/* ALERTS SECTION (Moved up) */}
+                <div className="bg-white p-6 rounded-3xl shadow-sm border border-red-100 relative overflow-hidden h-full flex flex-col">
+                    <div className="absolute top-0 right-0 p-3 opacity-5 pointer-events-none"><AlertTriangle className="w-32 h-32 text-red-500" /></div>
+                    <h3 className="text-sm font-black text-red-600 uppercase tracking-widest mb-4 flex items-center gap-2 relative z-10 shrink-0">
+                        <AlertTriangle className="w-4 h-4" /> Cảnh báo quan trọng
+                    </h3>
+                    <div className="space-y-3 relative z-10 flex-1 overflow-y-auto pr-2 custom-scrollbar">
+                        {risks.map(r => (
+                            <div key={r.id} className="p-3 bg-red-50 border border-red-100 rounded-xl flex items-start gap-3 transition-transform hover:scale-[1.02] cursor-pointer">
+                                <div className="p-1.5 bg-white rounded-lg text-red-500 shadow-sm shrink-0">
+                                    <AlertCircle className="w-4 h-4" />
+                                </div>
+                                <div>
+                                    <p className="text-[11px] font-bold text-red-800 leading-snug">{r.msg}</p>
+                                    <p className="text-[10px] text-red-500 mt-1 font-medium">{r.date}</p>
+                                </div>
+                            </div>
+                        ))}
+                        {/* More mock alerts to fill space if needed */}
+                        <div className="p-3 bg-orange-50 border border-orange-100 rounded-xl flex items-start gap-3">
+                            <div className="p-1.5 bg-white rounded-lg text-orange-500 shadow-sm shrink-0">
+                                <AlertTriangle className="w-4 h-4" />
+                            </div>
+                            <div>
+                                <p className="text-[11px] font-bold text-orange-800 leading-snug">Cảnh báo: Tỷ lệ giải ngân thấp dưới 50% (Nhóm B)</p>
+                                <p className="text-[10px] text-orange-500 mt-1 font-medium">Hôm nay</p>
+                            </div>
+                        </div>
+                    </div>
+                    <button className="w-full mt-4 py-2 bg-white border border-red-200 text-red-600 rounded-xl text-xs font-bold hover:bg-red-50 transition-colors shrink-0">
+                        Xem chi tiết báo cáo rủi ro
+                    </button>
+                </div>
             </div>
 
-            {/* 2. CHARTS & ALERTS ROW */}
+            {/* 3. CHARTS & BOTTOM ROW */}
             <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
-                {/* Main Chart (2/3 width) */}
+                {/* Main Chart (2/3 width) - Changed to BarChart */}
                 <div className="xl:col-span-2 space-y-8">
                     <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
                         <div className="flex justify-between items-center mb-6">
@@ -180,31 +217,26 @@ const Dashboard: React.FC = () => {
                                 <h3 className="text-sm font-black text-gray-800 uppercase tracking-widest">Biểu đồ giải ngân & Kế hoạch vốn</h3>
                             </div>
                             <div className="flex gap-2">
-                                <span className="flex items-center gap-1 text-[10px] font-bold text-gray-500"><div className="w-2 h-2 rounded-full bg-[#0ea5e9]"></div> Giải ngân</span>
-                                <span className="flex items-center gap-1 text-[10px] font-bold text-gray-500"><div className="w-2 h-2 rounded-full bg-gray-300"></div> Kế hoạch</span>
+                                <span className="flex items-center gap-1 text-[10px] font-bold text-gray-500"><div className="w-2 h-2 rounded bg-[#0ea5e9]"></div> Giải ngân</span>
+                                <span className="flex items-center gap-1 text-[10px] font-bold text-gray-500"><div className="w-2 h-2 rounded bg-gray-300"></div> Kế hoạch</span>
                             </div>
                         </div>
                         <div className="h-80 w-full">
                             <ResponsiveContainer width="100%" height="100%">
-                                <AreaChart data={disbursementData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
-                                    <defs>
-                                        <linearGradient id="colorDisbursement" x1="0" y1="0" x2="0" y2="1">
-                                            <stop offset="5%" stopColor="#0ea5e9" stopOpacity={0.2} />
-                                            <stop offset="95%" stopColor="#0ea5e9" stopOpacity={0} />
-                                        </linearGradient>
-                                    </defs>
-                                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#F3F4F6" />
-                                    <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: '#9CA3AF', fontSize: 11, fontWeight: 600 }} dy={10} />
-                                    <YAxis axisLine={false} tickLine={false} tick={{ fill: '#9CA3AF', fontSize: 11, fontWeight: 600 }} tickFormatter={(val) => `${val / 1000} Tỷ`} />
+                                <BarChart data={disbursementData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }} barGap={0}>
+                                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
+                                    <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: '#6B7280', fontSize: 11, fontWeight: 600 }} dy={10} />
+                                    <YAxis axisLine={false} tickLine={false} tick={{ fill: '#6B7280', fontSize: 11, fontWeight: 600 }} tickFormatter={(val) => `${val / 1000} Tỷ`} />
                                     <RechartsTooltip
-                                        contentStyle={{ backgroundColor: '#fff', borderRadius: '16px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }}
+                                        cursor={{ fill: '#F3F4F6' }}
+                                        contentStyle={{ backgroundColor: '#fff', borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
                                         itemStyle={{ fontSize: '12px', fontWeight: 'bold' }}
                                         labelStyle={{ display: 'none' }}
                                         formatter={(value: any, name: string) => [formatCurrency(value * 1000000000), name === 'disbursement' ? 'Thực hiện' : 'Kế hoạch']}
                                     />
-                                    <Area type="monotone" dataKey="plan" stroke="#D1D5DB" strokeWidth={2} strokeDasharray="4 4" fill="transparent" />
-                                    <Area type="monotone" dataKey="disbursement" stroke="#0ea5e9" strokeWidth={3} fillOpacity={1} fill="url(#colorDisbursement)" />
-                                </AreaChart>
+                                    <Bar dataKey="plan" fill="#D1D5DB" radius={[4, 4, 0, 0]} maxBarSize={40} />
+                                    <Bar dataKey="disbursement" fill="#0ea5e9" radius={[4, 4, 0, 0]} maxBarSize={40} />
+                                </BarChart>
                             </ResponsiveContainer>
                         </div>
                     </div>
@@ -277,32 +309,8 @@ const Dashboard: React.FC = () => {
                     </div>
                 </div>
 
-                {/* Sidebar Column (1/3 width) - Status & Alerts */}
+                {/* Sidebar Column (1/3 width) - Remaining Widgets */}
                 <div className="space-y-6">
-                    {/* ALERTS SECTION */}
-                    <div className="bg-white p-6 rounded-3xl shadow-sm border border-red-100 relative overflow-hidden">
-                        <div className="absolute top-0 right-0 p-3 opacity-5 pointer-events-none"><AlertTriangle className="w-32 h-32 text-red-500" /></div>
-                        <h3 className="text-sm font-black text-red-600 uppercase tracking-widest mb-4 flex items-center gap-2 relative z-10">
-                            <AlertTriangle className="w-4 h-4" /> Cảnh báo quan trọng
-                        </h3>
-                        <div className="space-y-3 relative z-10">
-                            {risks.map(r => (
-                                <div key={r.id} className="p-3 bg-red-50 border border-red-100 rounded-xl flex items-start gap-3">
-                                    <div className="p-1.5 bg-white rounded-lg text-red-500 shadow-sm shrink-0">
-                                        <AlertCircle className="w-4 h-4" />
-                                    </div>
-                                    <div>
-                                        <p className="text-[11px] font-bold text-red-800 leading-snug">{r.msg}</p>
-                                        <p className="text-[10px] text-red-500 mt-1 font-medium">{r.date}</p>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                        <button className="w-full mt-4 py-2 bg-white border border-red-200 text-red-600 rounded-xl text-xs font-bold hover:bg-red-50 transition-colors">
-                            Xem chi tiết báo cáo rủi ro
-                        </button>
-                    </div>
-
                     {/* UPCOMING DEADLINES - Mocked from Tasks */}
                     <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
                         <div className="flex justify-between items-center mb-4">
