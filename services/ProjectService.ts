@@ -11,7 +11,14 @@ const PROJECTS_STORAGE_KEY = 'app_projects';
 const loadProjectsFromStorage = (): Project[] => {
     try {
         const saved = localStorage.getItem(PROJECTS_STORAGE_KEY);
-        if (saved) return JSON.parse(saved);
+        if (saved) {
+            const parsed = JSON.parse(saved);
+            // If we have saved data but it's empty, fallback to mockProjects to "restore" data
+            // This prevents "lost data" feeling if the user wiped storage or had a bug.
+            if (Array.isArray(parsed) && parsed.length > 0) {
+                return parsed;
+            }
+        }
     } catch (e) {
         console.error('Failed to load projects from storage', e);
     }
