@@ -154,6 +154,18 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({ tasks: initialTa
         setIsTaskModalOpen(true);
     };
 
+    const handleQuickStatusChange = (e: React.MouseEvent, task: Task) => {
+        e.stopPropagation(); // Prevent opening modal
+        const statusCycle: Record<TaskStatus, TaskStatus> = {
+            [TaskStatus.Todo]: TaskStatus.InProgress,
+            [TaskStatus.InProgress]: TaskStatus.Done,
+            [TaskStatus.Done]: TaskStatus.Todo,
+            [TaskStatus.Review]: TaskStatus.Done // Handle Review if exists
+        };
+        const newStatus = statusCycle[task.Status] || TaskStatus.InProgress;
+        handleSaveTask({ ...task, Status: newStatus });
+    };
+
     const handleEditTask = (task: Task) => {
         setEditingTask(task);
         setSelectedStep(null);
@@ -259,7 +271,7 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({ tasks: initialTa
                                                     {isParentDone ? (
                                                         <CheckCircle2 className="w-5 h-5 text-emerald-500" />
                                                     ) : isParentInProgress ? (
-                                                        <Clock className="w-5 h-5 text-blue-500 animate-pulse" />
+                                                        <Clock className="w-5 h-5 text-orange-500 animate-pulse" />
                                                     ) : (
                                                         <Circle className="w-5 h-5 text-gray-300" />
                                                     )}
@@ -291,12 +303,33 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({ tasks: initialTa
                                                                 <div
                                                                     key={t.TaskID}
                                                                     onClick={() => handleEditTask(t)}
-                                                                    className="flex items-center gap-2 text-xs cursor-pointer hover:bg-white p-1 rounded transition-colors"
+                                                                    className="flex items-center gap-2 text-xs cursor-pointer hover:bg-white p-1 rounded transition-colors group/task"
                                                                 >
-                                                                    <span className={`w-1.5 h-1.5 rounded-full ${t.Status === 'Done' ? 'bg-emerald-500' : t.Status === 'InProgress' ? 'bg-blue-500' : 'bg-gray-300'}`}></span>
-                                                                    <span className="text-gray-600 font-medium hover:text-blue-600 hover:underline">{t.Title}</span>
-                                                                    <span className="text-gray-400">- {t.AssigneeID || 'Chưa giao'}</span>
-                                                                    <span className="text-[10px] text-gray-400 ml-auto">{t.DueDate ? new Date(t.DueDate).toLocaleDateString('vi-VN') : ''}</span>
+                                                                    {/* Quick Status Toggle */}
+                                                                    <button
+                                                                        onClick={(e) => handleQuickStatusChange(e, t)}
+                                                                        className={`w-3 h-3 rounded-full mr-2 transition-transform hover:scale-125 focus:outline-none ${t.Status === 'Done' ? 'bg-emerald-500' :
+                                                                                t.Status === 'InProgress' ? 'bg-orange-500' :
+                                                                                    'bg-gray-300 hover:bg-gray-400'
+                                                                            }`}
+                                                                        title="Bấm để chuyển trạng thái"
+                                                                    />
+
+                                                                    <span className={`font-medium transition-colors ${t.Status === 'Done' ? 'text-gray-400 line-through' :
+                                                                            t.Status === 'InProgress' ? 'text-orange-600' :
+                                                                                'text-gray-700 hover:text-blue-600'
+                                                                        }`}>
+                                                                        {t.Title}
+                                                                    </span>
+
+                                                                    <span className="text-gray-400 text-[10px]">- {t.AssigneeID || 'Chưa giao'}</span>
+                                                                    <span className="text-[10px] text-gray-400 ml-auto flex items-center gap-2">
+                                                                        {t.DueDate ? new Date(t.DueDate).toLocaleDateString('vi-VN') : ''}
+                                                                        {/* Edit Hint */}
+                                                                        <span className="opacity-0 group-hover/task:opacity-100 text-blue-600 text-[9px] font-bold uppercase tracking-wider">
+                                                                            Sửa
+                                                                        </span>
+                                                                    </span>
                                                                 </div>
                                                             ))}
                                                         </div>
