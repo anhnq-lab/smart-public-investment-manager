@@ -206,46 +206,72 @@ const Dashboard: React.FC = () => {
                 </div>
             </div>
 
-            {/* 3. PORTFOLIO STATUS ROW (Moved Up) */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {/* 3. PORTFOLIO STATUS ROW (Moved Up & Compacted) */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Pie Chart: Project Status */}
-                <div className="lg:col-span-2 bg-white p-6 rounded-3xl shadow-sm border border-gray-100 flex flex-col">
-                    <h3 className="text-sm font-black text-gray-800 uppercase tracking-widest mb-4 flex items-center gap-2">
+                <div className="bg-white p-5 rounded-3xl shadow-sm border border-gray-100 flex flex-col h-48">
+                    <h3 className="text-xs font-black text-gray-800 uppercase tracking-widest mb-2 flex items-center gap-2 shrink-0">
                         <Activity className="w-4 h-4 text-blue-500" /> Trạng thái dự án
                     </h3>
-                    <div className="flex-1 flex items-center justify-center relative min-h-[180px]">
-                        <ResponsiveContainer width="100%" height="100%">
-                            <PieChart>
-                                <Pie data={projectStatusData} cx="50%" cy="50%" innerRadius={60} outerRadius={80} paddingAngle={5} dataKey="value">
-                                    {projectStatusData.map((entry, index) => <Cell key={`cell-${index}`} fill={entry.color} stroke="none" />)}
-                                </Pie>
-                                <RechartsTooltip />
-                            </PieChart>
-                        </ResponsiveContainer>
-                        <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                            <span className="text-3xl font-black text-gray-800">{mockProjects.length}</span>
-                            <span className="text-[10px] text-gray-400 font-bold uppercase">Dự án</span>
+                    <div className="flex-1 flex items-center gap-4">
+                        <div className="relative w-32 h-32 shrink-0">
+                            <ResponsiveContainer width="100%" height="100%">
+                                <PieChart>
+                                    <Pie data={projectStatusData} cx="50%" cy="50%" innerRadius={40} outerRadius={55} paddingAngle={5} dataKey="value">
+                                        {projectStatusData.map((entry, index) => <Cell key={`cell-${index}`} fill={entry.color} stroke="none" />)}
+                                    </Pie>
+                                    <RechartsTooltip />
+                                </PieChart>
+                            </ResponsiveContainer>
+                            <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                                <span className="text-xl font-black text-gray-800">{mockProjects.length}</span>
+                                <span className="text-[9px] text-gray-400 font-bold uppercase">Dự án</span>
+                            </div>
+                        </div>
+                        <div className="flex-1 grid grid-cols-1 gap-2 overflow-y-auto pr-1 custom-scrollbar max-h-32">
+                            {projectStatusData.map((item, idx) => (
+                                <div key={idx} className="flex items-center justify-between group">
+                                    <div className="flex items-center gap-2 overflow-hidden">
+                                        <div className="w-2 h-2 rounded-full shrink-0 group-hover:scale-125 transition-transform" style={{ backgroundColor: item.color }}></div>
+                                        <span className="text-[11px] font-bold text-gray-500 truncate group-hover:text-gray-700 transition-colors" title={item.name}>{item.name}</span>
+                                    </div>
+                                    <span className="text-[11px] font-black text-gray-800">{item.value}</span>
+                                </div>
+                            ))}
                         </div>
                     </div>
                 </div>
 
                 {/* Pie Chart: Groups */}
-                <div className="lg:col-span-2 bg-white p-6 rounded-3xl shadow-sm border border-gray-100 flex flex-col">
-                    <h3 className="text-sm font-black text-gray-800 uppercase tracking-widest mb-4 flex items-center gap-2">
+                <div className="bg-white p-5 rounded-3xl shadow-sm border border-gray-100 flex flex-col h-48">
+                    <h3 className="text-xs font-black text-gray-800 uppercase tracking-widest mb-2 flex items-center gap-2 shrink-0">
                         <Building2 className="w-4 h-4 text-purple-500" /> Phân loại nhóm dự án
                     </h3>
-                    <div className="flex-1 flex items-center justify-center relative min-h-[180px]">
-                        <ResponsiveContainer width="100%" height="100%">
-                            <PieChart>
-                                <Pie data={groupData} cx="50%" cy="50%" innerRadius={60} outerRadius={80} paddingAngle={5} dataKey="value">
-                                    {groupData.map((entry, index) => <Cell key={`cell-${index}`} fill={entry.color} stroke="none" />)}
-                                </Pie>
-                                <RechartsTooltip />
-                            </PieChart>
-                        </ResponsiveContainer>
-                        <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                            <span className="text-3xl font-black text-gray-800">100%</span>
-                            <span className="text-[10px] text-gray-400 font-bold uppercase">Cơ cấu</span>
+                    <div className="flex-1 flex items-center gap-4">
+                        <div className="relative w-32 h-32 shrink-0">
+                            <ResponsiveContainer width="100%" height="100%">
+                                <PieChart>
+                                    <Pie data={groupData} cx="50%" cy="50%" innerRadius={40} outerRadius={55} paddingAngle={5} dataKey="value">
+                                        {groupData.map((entry, index) => <Cell key={`cell-${index}`} fill={entry.color} stroke="none" />)}
+                                    </Pie>
+                                    <RechartsTooltip />
+                                </PieChart>
+                            </ResponsiveContainer>
+                            <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                                <span className="text-xl font-black text-gray-800">100%</span>
+                                <span className="text-[9px] text-gray-400 font-bold uppercase">Cơ cấu</span>
+                            </div>
+                        </div>
+                        <div className="flex-1 grid grid-cols-1 gap-2 overflow-y-auto pr-1 custom-scrollbar max-h-32">
+                            {groupData.map((item, idx) => (
+                                <div key={idx} className="flex items-center justify-between group">
+                                    <div className="flex items-center gap-2 overflow-hidden">
+                                        <div className="w-2 h-2 rounded-full shrink-0 group-hover:scale-125 transition-transform" style={{ backgroundColor: item.color }}></div>
+                                        <span className="text-[11px] font-bold text-gray-500 truncate group-hover:text-gray-700 transition-colors" title={item.name}>{item.name}</span>
+                                    </div>
+                                    <span className="text-[11px] font-black text-gray-800">{item.value}</span>
+                                </div>
+                            ))}
                         </div>
                     </div>
                 </div>
