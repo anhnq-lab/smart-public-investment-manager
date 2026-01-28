@@ -1,14 +1,15 @@
 
 import React, { useState, useEffect } from 'react';
-import { Bell, Search, User, LogOut } from 'lucide-react';
+import { Bell, Search, User, LogOut, Menu } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { NotificationCenter } from './NotificationCenter';
 
 interface HeaderProps {
     onOpenSearch: () => void;
+    onMenuClick: () => void;
 }
 
-export const Header: React.FC<HeaderProps> = ({ onOpenSearch }) => {
+export const Header: React.FC<HeaderProps> = ({ onOpenSearch, onMenuClick }) => {
     const { currentUser, logout } = useAuth();
     const [isNotificationOpen, setIsNotificationOpen] = useState(false);
 
@@ -25,8 +26,14 @@ export const Header: React.FC<HeaderProps> = ({ onOpenSearch }) => {
     }, [onOpenSearch]);
 
     return (
-        <header className="h-20 bg-white border-b border-gray-200 flex items-center justify-between px-8 sticky top-0 z-10">
-            <div className="flex items-center gap-4 w-96">
+        <header className="h-20 bg-white border-b border-gray-200 flex items-center justify-between px-4 lg:px-8 sticky top-0 z-10 transition-all">
+            <div className="flex items-center gap-4 w-full md:w-96">
+                <button
+                    onClick={onMenuClick}
+                    className="p-2 -ml-2 mr-2 text-gray-500 hover:bg-gray-100 rounded-lg lg:hidden"
+                >
+                    <Menu className="w-6 h-6" />
+                </button>
                 <button
                     onClick={onOpenSearch}
                     className="relative w-full flex items-center gap-2 px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl hover:bg-gray-100 hover:border-gray-300 transition-all text-left group"

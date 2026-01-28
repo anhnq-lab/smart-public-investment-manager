@@ -17,7 +17,11 @@ import {
   User
 } from 'lucide-react';
 
-const Sidebar: React.FC = () => {
+interface SidebarProps {
+  onClose?: () => void;
+}
+
+const Sidebar: React.FC<SidebarProps> = ({ onClose }) => {
   const navItems = [
     { name: 'Tổng quan', path: '/', icon: LayoutDashboard },
     { name: 'Dashboard cá nhân', path: '/my-dashboard', icon: User },
@@ -56,6 +60,7 @@ const Sidebar: React.FC = () => {
                   : 'text-gray-500 hover:bg-gray-50 hover:text-gray-800'
                 }`
               }
+              onClick={onClose}
             >
               <item.icon className="w-5 h-5 transition-colors group-hover:text-current" />
               <span>{item.name}</span>
