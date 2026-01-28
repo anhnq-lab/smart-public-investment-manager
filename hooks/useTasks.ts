@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { TaskService } from '../services/taskService';
+import { TaskService } from '../services/TaskService';
 import { Task, TaskStatus } from '../types';
 
 // Keys
@@ -26,9 +26,9 @@ export const useTasks = (options: { projectId?: string } = {}) => {
 export const useTask = (id: string | undefined) => {
     return useQuery({
         queryKey: taskKeys.detail(id || ''),
-        queryFn: () => {
+        queryFn: async () => {
             if (!id) return null;
-            const allTasks = TaskService.getAllTasks();
+            const allTasks = await TaskService.getAllTasks();
             return allTasks.find(t => t.TaskID === id) || null;
         },
         enabled: !!id,
@@ -76,10 +76,10 @@ export const useDeleteTask = () => {
 export const useTaskStatistics = (projectId?: string) => {
     return useQuery({
         queryKey: taskKeys.stats(projectId),
-        queryFn: () => {
-            const tasks = projectId
+        queryFn: async () => {
+            const tasks = await (projectId
                 ? TaskService.getTasksByProject(projectId)
-                : TaskService.getAllTasks();
+                : TaskService.getAllTasks());
 
             const byStatus = {
                 [TaskStatus.Todo]: 0,

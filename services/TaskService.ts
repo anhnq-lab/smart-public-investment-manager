@@ -22,8 +22,8 @@ const saveToStorage = (tasks: Task[]) => {
 };
 
 export const TaskService = {
-    getAllTasks: (): Task[] => {
-        return loadTasks();
+    getAllTasks: (): Promise<Task[]> => {
+        return Promise.resolve(loadTasks());
     },
 
     getTasksByProject: (projectId: string): Promise<Task[]> => {
