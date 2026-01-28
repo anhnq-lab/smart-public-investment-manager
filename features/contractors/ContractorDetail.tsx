@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { mockContractors, mockBiddingPackages, mockContracts } from '../mockData';
+import { mockContractors, mockBiddingPackages, mockContracts } from '../../mockData';
 import { ArrowLeft, Building2, MapPin, Phone, FileText, CheckCircle2, DollarSign, Award } from 'lucide-react';
 
 const ContractorDetail: React.FC = () => {

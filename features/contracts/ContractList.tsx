@@ -1,8 +1,8 @@
 
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { mockContracts, formatCurrency } from '../mockData';
-import { ContractStatus } from '../types';
+import { mockContracts, formatCurrency } from '../../mockData';
+import { ContractStatus } from '../../types';
 import { ShieldAlert, ShieldCheck } from 'lucide-react';
 
 const ContractList: React.FC = () => {

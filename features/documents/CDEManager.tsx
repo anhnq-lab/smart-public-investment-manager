@@ -7,7 +7,7 @@ import {
     LayoutGrid, List as ListIcon, FolderOpen, ShieldCheck,
     ArrowRight, X, PenTool, RefreshCw
 } from 'lucide-react';
-import { Document, Folder, ISO19650Status } from '../types';
+import { Document, Folder, ISO19650Status } from '../../types';
 import { DocumentService, INTERLINKED_WORKFLOW_STEPS } from '../services/DocumentService';
 
 interface CDEManagerProps {

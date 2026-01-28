@@ -4,9 +4,9 @@ import {
     Landmark, TrendingUp, AlertTriangle, FileText,
     Plus, Download, DollarSign, Calendar, PieChart
 } from 'lucide-react';
-import { CapitalPlan, Disbursement } from '../types';
+import { CapitalPlan, Disbursement } from '../../types';
 import { CapitalService, DisbursementAlert } from '../services/CapitalService';
-import { formatFullCurrency } from '../mockData';
+import { formatFullCurrency } from '../../mockData';
 
 interface CapitalManagerProps {
     projectId: string;

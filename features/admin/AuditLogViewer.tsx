@@ -4,7 +4,7 @@ import {
     Edit3, Trash2, Plus, Eye, Clock, ChevronLeft, ChevronRight,
     Download, Building2, Briefcase, CreditCard
 } from 'lucide-react';
-import { mockEmployees } from '../mockData';
+import { mockEmployees } from '../../mockData';
 
 // AuditLog types based on types.ts interface
 interface AuditLog {

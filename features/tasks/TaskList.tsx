@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { TaskService } from '../services/taskService';
-import { mockTasks, mockProjects, mockEmployees } from '../mockData';
-import { Task, TaskStatus, TaskPriority } from '../types';
+import { mockTasks, mockProjects, mockEmployees } from '../../mockData';
+import { Task, TaskStatus, TaskPriority } from '../../types';
 import {
     Search, Filter, Plus, Calendar, User,
     MoreVertical, CheckCircle2, Clock, AlertCircle, Trash2, Edit, Briefcase, Layers

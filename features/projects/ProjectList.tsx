@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { mockProjects, formatCurrency, formatFullCurrency, mockEmployees } from '../mockData';
-import { ProjectStatus, ProjectGroup, Project, InvestmentType } from '../types';
+import { mockProjects, formatCurrency, formatFullCurrency, mockEmployees } from '../../mockData';
+import { ProjectStatus, ProjectGroup, Project, InvestmentType } from '../../types';
+import { useProjects } from '../../hooks/useProjects';
 
 import { Eye, Edit3, MapPin, ExternalLink, User, LayoutGrid, List as ListIcon, Search, Filter, RefreshCw, Plus, X, Check, Wand2, Info, Building, ArrowRight, UserPlus, Trash2 } from 'lucide-react';
 
@@ -171,9 +172,19 @@ const ProjectCard: React.FC<{ project: Project; onClick: () => void }> = ({ proj
 
 const ProjectList: React.FC = () => {
     const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid'); // Default to grid as requested
-    const [projects, setProjects] = useState<Project[]>(mockProjects);
+
+    // Integration with Service Layer
+    const { projects: fetchedProjects, isLoading, refetch } = useProjects();
+    const [projects, setProjects] = useState<Project[]>([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const navigate = useNavigate();
+
+    // Sync fetched data to local state for client-side filtering/mutation (Provisional)
+    React.useEffect(() => {
+        if (fetchedProjects.length > 0) {
+            setProjects(fetchedProjects);
+        }
+    }, [fetchedProjects]);
 
     // Search & Filter State
     const [searchQuery, setSearchQuery] = useState('');
@@ -374,6 +385,15 @@ const ProjectList: React.FC = () => {
     // Style constants for Modern High Contrast
     const inputClass = "w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent text-white placeholder-gray-400 transition-all shadow-sm";
     const labelClass = "block text-sm font-semibold text-gray-700 mb-2";
+
+    if (isLoading && projects.length === 0) {
+        return (
+            <div className="flex flex-col items-center justify-center h-screen text-gray-400">
+                <RefreshCw className="w-8 h-8 animate-spin mb-2" />
+                <p>Đang tải dữ liệu dự án...</p>
+            </div>
+        );
+    }
 
     return (
         <div className="space-y-6 animate-in fade-in duration-300">

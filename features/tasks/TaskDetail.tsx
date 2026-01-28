@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Task, TaskStatus, TaskPriority } from '../types';
-import { mockEmployees, mockProjects, loadTasksFromStorage } from '../mockData';
+import { Task, TaskStatus, TaskPriority } from '../../types';
+import { mockEmployees, mockProjects, loadTasksFromStorage } from '../../mockData';
 import { TaskService } from '../services/taskService';
 import { ArrowLeft, Calendar, FileText, CheckCircle2, Clock, AlertCircle, Building2, User, Scale, ShieldCheck, DollarSign, Paperclip, ChevronRight, Plus, Trash2, UserPlus } from 'lucide-react';
 

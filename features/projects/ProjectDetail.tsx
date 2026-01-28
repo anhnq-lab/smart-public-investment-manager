@@ -4,8 +4,8 @@ import { useParams, useNavigate } from 'react-router-dom';
 import {
     mockProjects, mockBiddingPackages, formatFullCurrency, mockTasks, mockEmployees, saveTasksToDB,
     mockContracts, mockPayments
-} from '../mockData';
-import { ProjectStatus, ProjectGroup, Task, TaskStatus, TaskPriority, PackageStatus, PaymentStatus, InvestmentType, BiddingPackage } from '../types';
+} from '../../mockData';
+import { ProjectStatus, ProjectGroup, Task, TaskStatus, TaskPriority, PackageStatus, PaymentStatus, InvestmentType, BiddingPackage } from '../../types';
 import { TaskService } from '../services/taskService';
 import {
     ArrowLeft, Calendar, MapPin, DollarSign,

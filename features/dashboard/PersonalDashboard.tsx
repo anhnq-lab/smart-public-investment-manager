@@ -5,9 +5,9 @@ import {
     Clock, ArrowRight, Building2, Calendar, TrendingUp,
     Star, BookOpen, Bell, ChevronRight, Target
 } from 'lucide-react';
-import { useAuth } from '../context/AuthContext';
-import { mockProjects, mockTasks, mockDocuments, mockContracts, formatCurrency } from '../mockData';
-import { ProjectStatus, TaskStatus, TaskPriority } from '../types';
+import { useAuth } from '../../context/AuthContext';
+import { mockProjects, mockTasks, mockDocuments, mockContracts, formatCurrency } from '../../mockData';
+import { ProjectStatus, TaskStatus, TaskPriority } from '../../types';
 
 const PersonalDashboard: React.FC = () => {
     const navigate = useNavigate();

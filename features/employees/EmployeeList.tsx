@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { mockEmployees, mockAuditLogs } from '../mockData';
-import { Employee, EmployeeStatus, Role, AuditLog } from '../types';
+import { mockEmployees, mockAuditLogs } from '../../mockData';
+import { Employee, EmployeeStatus, Role, AuditLog } from '../../types';
 import { Search, Filter, Phone, Mail, UserPlus, MoreVertical, Briefcase, Trash2, Edit, X, Save, Clock, History, Shield, Check, User } from 'lucide-react';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../../context/AuthContext';
 
 const EmployeeList: React.FC = () => {
     const navigate = useNavigate();

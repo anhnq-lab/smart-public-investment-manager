@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { X, CreditCard, FileText, Calendar, DollarSign, Building2, Hash, AlertCircle, CheckCircle2 } from 'lucide-react';
-import { mockContracts, mockContractors, formatCurrency } from '../mockData';
-import { PaymentType, PaymentStatus } from '../types';
+import { mockContracts, mockContractors, formatCurrency } from '../../mockData';
+import { PaymentType, PaymentStatus } from '../../types';
 
 interface PaymentFormProps {
     isOpen: boolean;

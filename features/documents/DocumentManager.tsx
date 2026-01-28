@@ -3,8 +3,8 @@ import {
     Folder, FileText, ChevronRight, ChevronDown, File as FileIcon,
     Download, Eye, ShieldCheck, PenTool, HardDrive, Box, X, Check, Loader2, Clock, Printer, Upload, Image as ImageIcon, History, Search
 } from 'lucide-react';
-import { mockProjects, mockDocuments } from '../mockData';
-import { DocCategory } from '../types';
+import { mockProjects, mockDocuments } from '../../mockData';
+import { DocCategory } from '../../types';
 
 // --- COMPONENT: REUSABLE FILE PREVIEW (ACTUAL + MOCK) ---
 const FilePreviewModal: React.FC<{ file: any, onClose: () => void }> = ({ file, onClose }) => {

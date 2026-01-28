@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { mockPayments, formatCurrency } from '../mockData';
-import { PaymentType, PaymentStatus, Payment } from '../types';
+import { mockPayments, formatCurrency } from '../../mockData';
+import { PaymentType, PaymentStatus, Payment } from '../../types';
 import { PaymentForm } from './PaymentForm';
 import { CreditCard, Download, Filter, TrendingUp } from 'lucide-react';
 

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { mockContractors } from '../mockData';
-import { Contractor } from '../types';
+import { mockContractors } from '../../mockData';
+import { Contractor } from '../../types';
 import { useNavigate } from 'react-router-dom';
 import { Pencil, Trash2, Plus, X, Search, CheckCircle, AlertCircle } from 'lucide-react';
 

@@ -4,8 +4,8 @@ import { useParams, useNavigate } from 'react-router-dom';
 import {
     mockContracts, mockContractors, mockBiddingPackages, mockProjects, mockPayments,
     formatFullCurrency
-} from '../mockData';
-import { ContractStatus, PaymentStatus } from '../types';
+} from '../../mockData';
+import { ContractStatus, PaymentStatus } from '../../types';
 import {
     ArrowLeft, FileText, Calendar, DollarSign,
     Building2, Printer, Download, Edit3,

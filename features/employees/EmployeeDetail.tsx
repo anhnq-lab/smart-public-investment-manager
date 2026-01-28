@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Employee, Project, Task, TaskStatus } from '../types';
-import { mockEmployees, mockProjects, mockAuditLogs } from '../mockData';
+import { Employee, Project, Task, TaskStatus } from '../../types';
+import { mockEmployees, mockProjects, mockAuditLogs } from '../../mockData';
 import { TaskService } from '../services/taskService';
 import { ArrowLeft, Mail, Phone, MapPin, Briefcase, Calendar, Shield, Clock, CheckCircle2, AlertCircle } from 'lucide-react';
 
