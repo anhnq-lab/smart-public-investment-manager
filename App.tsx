@@ -41,58 +41,71 @@ import AuditLogViewer from './features/admin/AuditLogViewer';
 
 import { ToastProvider } from './components/ui/Toast';
 
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+
+const queryClient = new QueryClient({
+    defaultOptions: {
+        queries: {
+            staleTime: 1000 * 60 * 5, // 5 minutes
+            retry: 1,
+        },
+    },
+});
+
 const App: React.FC = () => {
     return (
-        <AuthProvider>
-            <ToastProvider>
-                <Router>
-                    <Routes>
-                        <Route path="/login" element={<Login />} />
+        <QueryClientProvider client={queryClient}>
+            <AuthProvider>
+                <ToastProvider>
+                    <Router>
+                        <Routes>
+                            <Route path="/login" element={<Login />} />
 
-                        {/* Protected Routes inside MainLayout */}
-                        <Route path="/" element={<MainLayout />}>
-                            <Route index element={<Dashboard />} />
-                            <Route path="my-dashboard" element={<PersonalDashboard />} />
+                            {/* Protected Routes inside MainLayout */}
+                            <Route path="/" element={<MainLayout />}>
+                                <Route index element={<Dashboard />} />
+                                <Route path="my-dashboard" element={<PersonalDashboard />} />
 
-                            {/* Projects Routes */}
-                            <Route path="projects" element={<ProjectList />} />
-                            <Route path="projects/:id" element={<ProjectDetail />} />
-                            <Route path="projects/:projectId/packages/:packageId" element={<PackageDetail />} />
+                                {/* Projects Routes */}
+                                <Route path="projects" element={<ProjectList />} />
+                                <Route path="projects/:id" element={<ProjectDetail />} />
+                                <Route path="projects/:projectId/packages/:packageId" element={<PackageDetail />} />
 
-                            {/* Tasks Routes */}
-                            <Route path="tasks" element={<TaskList />} />
-                            <Route path="tasks/:id" element={<TaskDetail />} />
+                                {/* Tasks Routes */}
+                                <Route path="tasks" element={<TaskList />} />
+                                <Route path="tasks/:id" element={<TaskDetail />} />
 
-                            {/* HR Routes */}
-                            <Route path="employees" element={<EmployeeList />} />
-                            <Route path="employees/:id" element={<EmployeeDetail />} />
+                                {/* HR Routes */}
+                                <Route path="employees" element={<EmployeeList />} />
+                                <Route path="employees/:id" element={<EmployeeDetail />} />
 
-                            {/* Contractor Routes */}
-                            <Route path="contractors" element={<ContractorList />} />
-                            <Route path="contractors/:id" element={<ContractorDetail />} />
+                                {/* Contractor Routes */}
+                                <Route path="contractors" element={<ContractorList />} />
+                                <Route path="contractors/:id" element={<ContractorDetail />} />
 
-                            {/* Contract Routes */}
-                            <Route path="contracts" element={<ContractList />} />
-                            <Route path="contracts/:id" element={<ContractDetail />} />
+                                {/* Contract Routes */}
+                                <Route path="contracts" element={<ContractList />} />
+                                <Route path="contracts/:id" element={<ContractDetail />} />
 
-                            {/* Finance Routes */}
-                            <Route path="payments" element={<PaymentList />} />
+                                {/* Finance Routes */}
+                                <Route path="payments" element={<PaymentList />} />
 
-                            {/* Documents & Reports */}
-                            <Route path="documents" element={<DocumentManager />} />
-                            <Route path="reports" element={<ReportCenter />} />
-                            <Route path="regulations" element={<Regulations />} />
+                                {/* Documents & Reports */}
+                                <Route path="documents" element={<DocumentManager />} />
+                                <Route path="reports" element={<ReportCenter />} />
+                                <Route path="regulations" element={<Regulations />} />
 
-                            {/* Admin */}
-                            <Route path="audit-log" element={<AuditLogViewer />} />
+                                {/* Admin */}
+                                <Route path="audit-log" element={<AuditLogViewer />} />
 
-                            {/* Fallback */}
-                            <Route path="*" element={<Navigate to="/" replace />} />
-                        </Route>
-                    </Routes>
-                </Router>
-            </ToastProvider>
-        </AuthProvider>
+                                {/* Fallback */}
+                                <Route path="*" element={<Navigate to="/" replace />} />
+                            </Route>
+                        </Routes>
+                    </Router>
+                </ToastProvider>
+            </AuthProvider>
+        </QueryClientProvider>
     );
 };
 

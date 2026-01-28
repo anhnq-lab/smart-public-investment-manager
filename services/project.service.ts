@@ -1,5 +1,5 @@
 
-import { apiClient } from './api.client';
+import { apiClient } from '../services/api.client';
 import { Project, ProjectStatus } from '../types';
 import { mockProjects } from '../mockData';
 
