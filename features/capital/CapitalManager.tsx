@@ -1,32 +1,24 @@
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import {
     Landmark, TrendingUp, AlertTriangle, FileText,
     Plus, Download, DollarSign, Calendar, PieChart
 } from 'lucide-react';
 import { CapitalPlan, Disbursement } from '../../types';
-import { CapitalService, DisbursementAlert } from '../../services/CapitalService';
 import { formatFullCurrency } from '../../mockData';
+
+// Hooks
+import { useCapitalPlans, useDisbursements, useCapitalStats, useCapitalAlerts } from '../../hooks/useCapital';
 
 interface CapitalManagerProps {
     projectId: string;
 }
 
 export const CapitalManager: React.FC<CapitalManagerProps> = ({ projectId }) => {
-    const [plans, setPlans] = useState<CapitalPlan[]>([]);
-    const [disbursements, setDisbursements] = useState<Disbursement[]>([]);
-    const [stats, setStats] = useState({ totalPlanned: 0, totalDisbursed: 0, rate: 0 });
-    const [alerts, setAlerts] = useState<DisbursementAlert[]>([]);
-
-    useEffect(() => {
-        const loadData = () => {
-            setPlans(CapitalService.getCapitalPlans(projectId));
-            setDisbursements(CapitalService.getDisbursements(projectId));
-            setStats(CapitalService.getFinancialStats(projectId));
-            setAlerts(CapitalService.getAlerts(projectId));
-        };
-        loadData();
-    }, [projectId]);
+    const { data: plans = [] } = useCapitalPlans(projectId);
+    const { data: disbursements = [] } = useDisbursements(projectId);
+    const { data: stats = { totalPlanned: 0, totalDisbursed: 0, rate: 0 } } = useCapitalStats(projectId);
+    const { data: alerts = [] } = useCapitalAlerts(projectId);
 
     return (
         <div className="space-y-6">

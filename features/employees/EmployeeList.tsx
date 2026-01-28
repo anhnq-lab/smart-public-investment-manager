@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { mockEmployees, mockAuditLogs } from '../../mockData';
+import { mockAuditLogs } from '../../mockData';
+import { useEmployees, useDepartments, useCreateEmployee, useUpdateEmployee, useDeleteEmployee } from '../../hooks/useEmployees';
 import { Employee, EmployeeStatus, Role, AuditLog } from '../../types';
 import { Search, Filter, Phone, Mail, UserPlus, MoreVertical, Briefcase, Trash2, Edit, X, Save, Clock, History, Shield, Check, User } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
@@ -8,19 +9,25 @@ import { useAuth } from '../../context/AuthContext';
 const EmployeeList: React.FC = () => {
     const navigate = useNavigate();
     const { currentUser } = useAuth();
-    const [employees, setEmployees] = useState<Employee[]>(mockEmployees);
-    const [logs, setLogs] = useState<AuditLog[]>(mockAuditLogs);
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedDept, setSelectedDept] = useState('All');
 
-    // Modal State
+    // Data Fetching
+    const { data: employees = [], isLoading } = useEmployees();
+    const { data: departments = [] } = useDepartments();
+
+    // Mutations
+    const createMutation = useCreateEmployee();
+    const updateMutation = useUpdateEmployee();
+    const deleteMutation = useDeleteEmployee();
+
+    // Local state for UI
+    const [logs, setLogs] = useState<AuditLog[]>(mockAuditLogs);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false);
     const [currentEmployee, setCurrentEmployee] = useState<Partial<Employee>>({});
     const [editMode, setEditMode] = useState<'create' | 'edit'>('create');
     const [selectedAuditLogs, setSelectedAuditLogs] = useState<AuditLog[]>([]);
-
-    const departments = Array.from(new Set(mockEmployees.map(e => e.Department)));
 
     const filteredEmployees = employees.filter(emp => {
         const matchesSearch = emp.FullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -38,7 +45,7 @@ const EmployeeList: React.FC = () => {
     const handleCreate = () => {
         setEditMode('create');
         setCurrentEmployee({
-            Department: departments[0],
+            Department: departments[0] || 'Phòng Hành chính - Tổng hợp',
             Position: 'Chuyên viên',
             Status: EmployeeStatus.Active,
             Role: Role.Staff,
@@ -54,9 +61,9 @@ const EmployeeList: React.FC = () => {
         setIsModalOpen(true);
     };
 
-    const handleDelete = (id: string) => {
+    const handleDelete = async (id: string) => {
         if (window.confirm('Bạn có chắc chắn muốn xóa tài khoản này?')) {
-            setEmployees(employees.filter(e => e.EmployeeID !== id));
+            await deleteMutation.mutateAsync(id);
 
             // Log deletion
             const newLog: AuditLog = {
@@ -78,31 +85,18 @@ const EmployeeList: React.FC = () => {
         setIsHistoryModalOpen(true);
     };
 
-    const handleSave = (e: React.FormEvent) => {
+    const handleSave = async (e: React.FormEvent) => {
         e.preventDefault();
 
         if (editMode === 'create') {
-            // Logic tạo mới
-            const newId = `NV${1000 + employees.length + 1}`;
-            // Generate username from email or name logic
-            let username = currentEmployee.Email ? currentEmployee.Email.split('@')[0] : `user${newId}`;
-
-            const newEmp: Employee = {
-                ...currentEmployee as Employee,
-                EmployeeID: newId,
-                AvatarUrl: `https://i.pravatar.cc/150?u=${newId}`,
-                Username: username,
-                Password: currentEmployee.Password || '123'
-            };
-
-            setEmployees([newEmp, ...employees]);
+            const newEmp = await createMutation.mutateAsync(currentEmployee);
 
             // Log Create
             const newLog: AuditLog = {
                 LogID: `LOG-${Date.now()}`,
                 Action: 'Create',
                 TargetEntity: 'Employee',
-                TargetID: newId,
+                TargetID: newEmp.EmployeeID,
                 ChangedBy: currentUser?.Username || 'unknown',
                 Timestamp: new Date().toLocaleString(),
                 Details: `Tạo tài khoản mới: ${newEmp.FullName}`
@@ -110,31 +104,24 @@ const EmployeeList: React.FC = () => {
             setLogs([newLog, ...logs]);
 
         } else {
-            // Logic cập nhật
-            const oldData = employees.find(e => e.EmployeeID === currentEmployee.EmployeeID);
-            setEmployees(employees.map(e => e.EmployeeID === currentEmployee.EmployeeID ? currentEmployee as Employee : e));
+            if (!currentEmployee.EmployeeID) return;
 
-            // Detect changes for log
-            const changes = [];
-            if (oldData) {
-                if (oldData.FullName !== currentEmployee.FullName) changes.push(`Tên: ${currentEmployee.FullName}`);
-                if (oldData.Department !== currentEmployee.Department) changes.push(`Phòng: ${currentEmployee.Department}`);
-                if (oldData.Role !== currentEmployee.Role) changes.push(`Quyền: ${currentEmployee.Role}`);
-                if (oldData.Password !== currentEmployee.Password) changes.push(`Đổi mật khẩu`);
-            }
+            await updateMutation.mutateAsync({
+                id: currentEmployee.EmployeeID,
+                data: currentEmployee
+            });
 
-            if (changes.length > 0) {
-                const newLog: AuditLog = {
-                    LogID: `LOG-${Date.now()}`,
-                    Action: 'Update',
-                    TargetEntity: 'Employee',
-                    TargetID: currentEmployee.EmployeeID || '',
-                    ChangedBy: currentUser?.Username || 'unknown',
-                    Timestamp: new Date().toLocaleString(),
-                    Details: `Cập nhật: ${changes.join(', ')}`
-                };
-                setLogs([newLog, ...logs]);
-            }
+            // Log Update (Simplified for now)
+            const newLog: AuditLog = {
+                LogID: `LOG-${Date.now()}`,
+                Action: 'Update',
+                TargetEntity: 'Employee',
+                TargetID: currentEmployee.EmployeeID,
+                ChangedBy: currentUser?.Username || 'unknown',
+                Timestamp: new Date().toLocaleString(),
+                Details: `Cập nhật thông tin nhân viên`
+            };
+            setLogs([newLog, ...logs]);
         }
         setIsModalOpen(false);
     };

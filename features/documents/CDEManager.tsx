@@ -9,6 +9,8 @@ import {
 } from 'lucide-react';
 import { Document, Folder, ISO19650Status } from '../../types';
 import { DocumentService, INTERLINKED_WORKFLOW_STEPS } from '../../services/DocumentService';
+// Hooks
+import { useFolders, useDocuments, useProcessStep } from '../../hooks/useDocuments';
 
 interface CDEManagerProps {
     projectId: string;
@@ -16,32 +18,14 @@ interface CDEManagerProps {
 }
 
 export const CDEManager: React.FC<CDEManagerProps> = ({ projectId, projectCode }) => {
-    const [folders, setFolders] = useState<Folder[]>([]);
     const [activeFolderId, setActiveFolderId] = useState<string>('FLD-ROOT');
-    const [documents, setDocuments] = useState<Document[]>([]);
     const [viewMode, setViewMode] = useState<'list' | 'grid'>('list');
-    const [isLoading, setIsLoading] = useState(false);
     const [selectedDoc, setSelectedDoc] = useState<Document | null>(null);
-    const [isProcessing, setIsProcessing] = useState(false);
 
-    // Initial Load
-    useEffect(() => {
-        const loadData = () => {
-            const allFolders = DocumentService.getFolders(projectId);
-            setFolders(allFolders);
-        };
-        loadData();
-    }, [projectId]);
-
-    // Load docs when folder changes
-    useEffect(() => {
-        setIsLoading(true);
-        setTimeout(() => {
-            const docs = DocumentService.getDocumentsInFolder(activeFolderId);
-            setDocuments(docs);
-            setIsLoading(false);
-        }, 300);
-    }, [activeFolderId, projectId]);
+    // Data Hooks
+    const { data: folders = [] } = useFolders(projectId);
+    const { data: documents = [], isLoading } = useDocuments(activeFolderId);
+    const processStepMutation = useProcessStep();
 
     const activeFolder = folders.find(f => f.FolderID === activeFolderId);
 
@@ -61,21 +45,26 @@ export const CDEManager: React.FC<CDEManagerProps> = ({ projectId, projectCode }
         return DocumentService.getNextWorkflowStep(selectedDoc);
     }, [selectedDoc]);
 
-    const handleProcessStep = async (status: 'Approved' | 'Rejected') => {
+    const handleProcessStep = (status: 'Approved' | 'Rejected') => {
         if (!selectedDoc || !nextStep) return;
 
-        setIsProcessing(true);
         const comment = status === 'Approved' ? `Đã duyệt bước: ${nextStep.name}` : `Yêu cầu chỉnh sửa tại bước: ${nextStep.name}`;
-        const success = await DocumentService.processStep(selectedDoc.DocID, status, comment, 'CURRENT_USER');
 
-        if (success) {
-            const docs = DocumentService.getDocumentsInFolder(activeFolderId);
-            setDocuments(docs);
-            const updatedDoc = docs.find(d => d.DocID === selectedDoc.DocID);
-            setSelectedDoc(updatedDoc || null);
-        }
-        setIsProcessing(false);
+        processStepMutation.mutate({
+            docId: selectedDoc.DocID,
+            status,
+            comment,
+            actorId: 'CURRENT_USER'
+        }, {
+            onSuccess: () => {
+                // Update local selectedDoc if needed or just re-fetch happens automatically for list.
+                // Since selectedDoc is local state, we might need to manually update it or fetch it fresh.
+                // For now, let's close the panel or keep it. Be simple: close.
+                setSelectedDoc(null);
+            }
+        });
     };
+
 
     const renderFolderTree = (parentId: string | undefined, level = 0) => {
         const children = folders.filter(f => f.ParentID === parentId);
@@ -311,19 +300,19 @@ export const CDEManager: React.FC<CDEManagerProps> = ({ projectId, projectCode }
                                 <div className="flex flex-col gap-2">
                                     <div className="flex gap-2">
                                         <button
-                                            disabled={isProcessing}
+                                            disabled={processStepMutation.isPending}
                                             onClick={() => handleProcessStep('Rejected')}
                                             className="flex-1 py-2.5 bg-white border border-red-200 text-red-600 hover:bg-red-50 rounded-xl text-[11px] font-black uppercase tracking-widest transition-all shadow-sm flex items-center justify-center gap-2"
                                         >
                                             <X className="w-4 h-4" /> Từ chối
                                         </button>
                                         <button
-                                            disabled={isProcessing}
+                                            disabled={processStepMutation.isPending}
                                             onClick={() => handleProcessStep('Approved')}
                                             className={`flex-[2] py-2.5 text-white rounded-xl text-[11px] font-black uppercase tracking-widest transition-all shadow-lg flex items-center justify-center gap-2 ${nextStep.id === 'LEADER_SIGN' ? 'bg-indigo-600 hover:bg-indigo-700 shadow-indigo-200' : 'bg-emerald-600 hover:bg-emerald-700 shadow-emerald-200'
                                                 }`}
                                         >
-                                            {isProcessing ? (
+                                            {processStepMutation.isPending ? (
                                                 <div className="w-4 h-4 border-2 border-white border-t-transparent animate-spin rounded-full"></div>
                                             ) : (
                                                 <>

@@ -1,31 +1,31 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Task, TaskStatus, TaskPriority } from '../../types';
-import { mockEmployees, mockProjects, loadTasksFromStorage } from '../../mockData';
-import { TaskService } from '../../services/taskService';
-import { ArrowLeft, Calendar, FileText, CheckCircle2, Clock, AlertCircle, Building2, User, Scale, ShieldCheck, DollarSign, Paperclip, ChevronRight, Plus, Trash2, UserPlus } from 'lucide-react';
+import { Task, TaskStatus } from '../../types';
+import { useTask, useUpdateTask } from '../../hooks/useTasks';
+import { useProjects } from '../../hooks/useProjects';
+import { useEmployees } from '../../hooks/useEmployees';
+import { ArrowLeft, Calendar, FileText, CheckCircle2, Scale, Building2, User, Clock, ShieldCheck, DollarSign, Paperclip, Plus, Trash2 } from 'lucide-react';
 
 const TaskDetail: React.FC = () => {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
-    const [task, setTask] = useState<Task | null>(null);
-    const [loading, setLoading] = useState(true);
+
+    // Hooks
+    const { data: task, isLoading } = useTask(id);
+    const { projects = [] } = useProjects();
+    const { data: employees = [] } = useEmployees();
+    const updateTaskMutation = useUpdateTask();
+
+    // Local state for modals
     const [isSubTaskModalOpen, setIsSubTaskModalOpen] = useState(false);
     const [editingSubTask, setEditingSubTask] = useState<any>(null);
 
-    useEffect(() => {
-        // Find task from service
-        const allTasks = TaskService.getAllTasks();
-        const found = allTasks.find(t => t.TaskID === id);
-        setTask(found || null);
-        setLoading(false);
-    }, [id]);
+    // Derived
+    const project = projects.find(p => p.ProjectID === task?.ProjectID);
+    const assignee = employees.find(e => e.EmployeeID === task?.AssigneeID);
 
-    if (loading) return <div className="p-8 text-center text-gray-500">Đang tải...</div>;
+    if (isLoading) return <div className="p-8 text-center text-gray-500">Đang tải...</div>;
     if (!task) return <div className="p-8 text-center text-red-500">Không tìm thấy công việc!</div>;
-
-    const project = mockProjects.find(p => p.ProjectID === task.ProjectID);
-    const assignee = mockEmployees.find(e => e.EmployeeID === task.AssigneeID);
 
     // Helper colors
     const getStatusColor = (s: TaskStatus) => {
@@ -156,7 +156,7 @@ const TaskDetail: React.FC = () => {
                         <div>
                             <label className="text-[10px] uppercase font-bold text-gray-400 mb-1 flex items-center gap-1"><User className="w-3 h-3" /> Người phê duyệt</label>
                             <p className="text-sm font-medium text-gray-700">
-                                {task.ApproverID ? mockEmployees.find(e => e.EmployeeID === task.ApproverID)?.FullName : "Lãnh đạo Ban"}
+                                {task.ApproverID ? employees.find(e => e.EmployeeID === task.ApproverID)?.FullName : "Lãnh đạo Ban"}
                             </p>
                         </div>
                         <div>
@@ -190,8 +190,7 @@ const TaskDetail: React.FC = () => {
                                         const updatedSubTasks = [...(task.SubTasks || [])];
                                         updatedSubTasks[idx].Status = updatedSubTasks[idx].Status === 'Done' ? 'Todo' : 'Done';
                                         const updatedTask = { ...task, SubTasks: updatedSubTasks };
-                                        setTask(updatedTask);
-                                        TaskService.saveTask(updatedTask);
+                                        updateTaskMutation.mutate(updatedTask);
                                     }}
                                     className={`mt-0.5 w-4 h-4 rounded border cursor-pointer flex items-center justify-center transition-colors ${sub.Status === 'Done' ? 'bg-emerald-500 border-emerald-500 text-white' : 'border-gray-300 bg-white'}`}
                                 >
@@ -202,7 +201,7 @@ const TaskDetail: React.FC = () => {
                                     <div className="flex items-center gap-2 mt-1 flex-wrap">
                                         <span className="text-[10px] text-gray-500 bg-white px-1.5 py-0.5 rounded border border-gray-100 shadow-sm flex items-center gap-1">
                                             <User className="w-3 h-3" />
-                                            {sub.AssigneeID ? mockEmployees.find(e => e.EmployeeID === sub.AssigneeID)?.FullName : "Chưa gán"}
+                                            {sub.AssigneeID ? employees.find(e => e.EmployeeID === sub.AssigneeID)?.FullName : "Chưa gán"}
                                         </span>
                                         {sub.DueDate && (
                                             <span className="text-[10px] text-red-500 bg-white px-1.5 py-0.5 rounded border border-gray-100 shadow-sm flex items-center gap-1">
@@ -218,8 +217,7 @@ const TaskDetail: React.FC = () => {
                                         if (confirm("Xóa công việc con này?")) {
                                             const updatedSubTasks = (task.SubTasks || []).filter((_, i) => i !== idx);
                                             const updatedTask = { ...task, SubTasks: updatedSubTasks };
-                                            setTask(updatedTask);
-                                            TaskService.saveTask(updatedTask);
+                                            updateTaskMutation.mutate(updatedTask);
                                         }
                                     }}
                                     className="opacity-0 group-hover:opacity-100 transition-opacity text-gray-300 hover:text-red-500 p-1"
@@ -286,8 +284,7 @@ const TaskDetail: React.FC = () => {
                             }
 
                             const updatedTask = { ...task, SubTasks: updatedSubTasks };
-                            setTask(updatedTask);
-                            TaskService.saveTask(updatedTask);
+                            updateTaskMutation.mutate(updatedTask);
                             setIsSubTaskModalOpen(false);
                             setEditingSubTask(null);
                         }} className="p-6 space-y-4">
@@ -299,7 +296,7 @@ const TaskDetail: React.FC = () => {
                                 <label className="block text-sm font-medium text-gray-700 mb-1">Người thực hiện</label>
                                 <select defaultValue={editingSubTask?.AssigneeID || ''} name="assignee" className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
                                     <option value="">-- Chọn nhân viên --</option>
-                                    {mockEmployees.filter(e => e.Status === 1).map(e => (
+                                    {employees.filter(e => e.Status === 1).map(e => (
                                         <option key={e.EmployeeID} value={e.EmployeeID}>{e.FullName} - {e.Department}</option>
                                     ))}
                                 </select>

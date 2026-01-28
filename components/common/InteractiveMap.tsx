@@ -54,7 +54,7 @@ const InteractiveMap: React.FC<InteractiveMapProps> = ({ projects }) => {
     return (
         <iframe
             ref={iframeRef}
-            src="map.html"
+            src="/map.html"
             className="w-full h-full rounded-2xl border-none custom-map-iframe"
             title="Project Map"
             style={{ width: '100%', height: '100%', minHeight: '500px' }}

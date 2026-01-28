@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { TaskService } from '../../services/taskService';
-import { mockTasks, mockProjects, mockEmployees } from '../../mockData';
+import { useTasks, useCreateTask, useUpdateTask, useDeleteTask } from '../../hooks/useTasks';
+import { useProjects } from '../../hooks/useProjects';
+import { useEmployees } from '../../hooks/useEmployees';
 import { Task, TaskStatus, TaskPriority } from '../../types';
 import {
     Search, Filter, Plus, Calendar, User,
@@ -40,21 +41,21 @@ const getStatusIcon = (s: TaskStatus) => {
 
 const TaskList: React.FC = () => {
     const navigate = useNavigate();
-    const [tasks, setTasks] = useState<Task[]>([]);
     const [searchTerm, setSearchTerm] = useState('');
     const [filterStatus, setFilterStatus] = useState<string>('All');
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [currentTask, setCurrentTask] = useState<Partial<Task>>({});
     const [isEditMode, setIsEditMode] = useState(false);
 
-    // Load tasks on mount
-    useEffect(() => {
-        setTasks(TaskService.getAllTasks());
-    }, []);
+    // Data Hooks
+    const { data: tasks = [], isLoading } = useTasks();
+    const { projects = [] } = useProjects();
+    const { data: employees = [] } = useEmployees();
 
-    const refreshTasks = () => {
-        setTasks(TaskService.getAllTasks());
-    };
+    // Mutations
+    const createTaskMutation = useCreateTask();
+    const updateTaskMutation = useUpdateTask();
+    const deleteTaskMutation = useDeleteTask();
 
     // Filter Logic
     const filteredTasks = tasks.filter(task => {
@@ -74,14 +75,13 @@ const TaskList: React.FC = () => {
     }, {} as Record<string, Task[]>);
 
     // Helper to get names
-    const getProjectName = (id: string) => mockProjects.find(p => p.ProjectID === id)?.ProjectName || id;
-    const getAssignee = (id: string) => mockEmployees.find(e => e.EmployeeID === id);
+    const getProjectName = (id: string) => projects.find(p => p.ProjectID === id)?.ProjectName || id;
+    const getAssignee = (id: string) => employees.find(e => e.EmployeeID === id);
 
     // CRUD Handlers
-    const handleDelete = (id: string) => {
+    const handleDelete = async (id: string) => {
         if (window.confirm("Bạn có chắc chắn muốn xóa công việc này?")) {
-            TaskService.deleteTask(id);
-            refreshTasks();
+            await deleteTaskMutation.mutateAsync(id);
         }
     };
 
@@ -90,8 +90,8 @@ const TaskList: React.FC = () => {
         setCurrentTask({
             Status: TaskStatus.Todo,
             Priority: TaskPriority.Medium,
-            ProjectID: mockProjects[0].ProjectID,
-            AssigneeID: mockEmployees[0].EmployeeID
+            ProjectID: projects[0]?.ProjectID || '',
+            AssigneeID: employees[0]?.EmployeeID || ''
         });
         setIsModalOpen(true);
     };
@@ -102,7 +102,7 @@ const TaskList: React.FC = () => {
         setIsModalOpen(true);
     };
 
-    const handleSave = (e: React.FormEvent) => {
+    const handleSave = async (e: React.FormEvent) => {
         e.preventDefault();
 
         const taskToSave = {
@@ -110,8 +110,12 @@ const TaskList: React.FC = () => {
             TaskID: currentTask.TaskID || `TSK-${Date.now()}`
         } as Task;
 
-        TaskService.saveTask(taskToSave);
-        refreshTasks();
+        if (isEditMode) {
+            await updateTaskMutation.mutateAsync(taskToSave);
+        } else {
+            await createTaskMutation.mutateAsync(taskToSave);
+        }
+
         setIsModalOpen(false);
     };
 
@@ -283,7 +287,7 @@ const TaskList: React.FC = () => {
                                         onChange={e => setCurrentTask({ ...currentTask, ProjectID: e.target.value })}
                                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm"
                                     >
-                                        {mockProjects.map(p => (
+                                        {projects.map(p => (
                                             <option key={p.ProjectID} value={p.ProjectID}>{p.ProjectName.substring(0, 30)}...</option>
                                         ))}
                                     </select>
@@ -295,7 +299,7 @@ const TaskList: React.FC = () => {
                                         onChange={e => setCurrentTask({ ...currentTask, AssigneeID: e.target.value })}
                                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm"
                                     >
-                                        {mockEmployees.map(e => (
+                                        {employees.map(e => (
                                             <option key={e.EmployeeID} value={e.EmployeeID}>{e.FullName}</option>
                                         ))}
                                     </select>

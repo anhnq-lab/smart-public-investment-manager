@@ -108,7 +108,6 @@ export class EmployeeService {
                 Password: employeeData.Password || '123456',
                 Role: employeeData.Role || Role.Staff,
                 ...employeeData,
-                EmployeeID: newId,
             };
 
             const updatedEmployees = [newEmployee, ...employees];

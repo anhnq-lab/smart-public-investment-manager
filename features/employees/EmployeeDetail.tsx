@@ -1,41 +1,42 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Employee, Project, Task, TaskStatus } from '../../types';
-import { mockEmployees, mockProjects, mockAuditLogs } from '../../mockData';
-import { TaskService } from '../../services/taskService';
+import { mockAuditLogs } from '../../mockData';
+import { useEmployee } from '../../hooks/useEmployees';
+import { useTasks } from '../../hooks/useTasks';
+import { useProjects } from '../../hooks/useProjects';
 import { ArrowLeft, Mail, Phone, MapPin, Briefcase, Calendar, Shield, Clock, CheckCircle2, AlertCircle } from 'lucide-react';
 
 const EmployeeDetail: React.FC = () => {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
-    const [employee, setEmployee] = useState<Employee | null>(null);
-    const [tasks, setTasks] = useState<Task[]>([]);
+
+    // Data Fetching
+    const { data: employee, isLoading: isLoadingEmp } = useEmployee(id);
+    const { data: tasks = [] } = useTasks(); // Fetch all tasks to filter by assignee in client for now. Ideally backend filter.
+    const { projects = [] } = useProjects();
+
     const [auditLogs, setAuditLogs] = useState<any[]>([]);
 
     useEffect(() => {
-        const emp = mockEmployees.find(e => e.EmployeeID === id);
-        if (emp) {
-            setEmployee(emp);
-            // Fetch Tasks
-            const allTasks = TaskService.getAllTasks();
-            const empTasks = allTasks.filter(t => t.AssigneeID === id);
-            setTasks(empTasks);
-
-            // Fetch Logs
-            const logs = mockAuditLogs.filter(l => l.ChangedBy === emp.Username || l.TargetID === id);
+        if (employee && id) {
+            // Fetch Logs (Still using mock for now)
+            const logs = mockAuditLogs.filter(l => l.ChangedBy === employee.Username || l.TargetID === id);
             setAuditLogs(logs);
         }
-    }, [id]);
+    }, [id, employee]);
 
+    if (isLoadingEmp) return <div className="p-8 text-center text-gray-500">Đang tải dữ liệu...</div>;
     if (!employee) return <div className="p-8 text-center text-gray-500">Không tìm thấy nhân viên.</div>;
 
     // Derived Data
-    const activeTasks = tasks.filter(t => t.Status !== TaskStatus.Done).length;
-    const completedTasks = tasks.filter(t => t.Status === TaskStatus.Done).length;
+    const empTasks = tasks.filter(t => t.AssigneeID === id);
+    const activeTasks = empTasks.filter(t => t.Status !== TaskStatus.Done).length;
+    const completedTasks = empTasks.filter(t => t.Status === TaskStatus.Done).length;
 
     // Participating Projects (Unique projects from tasks)
-    const projectIds = Array.from(new Set(tasks.map(t => t.ProjectID)));
-    const projects = mockProjects.filter(p => projectIds.includes(p.ProjectID));
+    const projectIds = Array.from(new Set(empTasks.map(t => t.ProjectID)));
+    const participatedProjects = projects.filter(p => projectIds.includes(p.ProjectID));
 
     return (
         <div className="bg-[#F8FAFC] min-h-screen p-8 animate-in fade-in duration-300">
@@ -102,23 +103,23 @@ const EmployeeDetail: React.FC = () => {
                             </div>
                             <div className="flex items-center justify-between p-4 bg-gray-50 rounded-2xl">
                                 <span className="font-medium text-gray-600">Tổng cộng</span>
-                                <span className="text-2xl font-black text-gray-800">{tasks.length}</span>
+                                <span className="text-2xl font-black text-gray-800">{empTasks.length}</span>
                             </div>
                         </div>
                     </div>
 
                     <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-6">
                         <h3 className="text-lg font-bold text-gray-800 mb-6 flex items-center gap-2">
-                            <Briefcase className="w-5 h-5 text-indigo-600" /> Dự án tham gia ({projects.length})
+                            <Briefcase className="w-5 h-5 text-indigo-600" /> Dự án tham gia ({participatedProjects.length})
                         </h3>
                         <div className="space-y-3">
-                            {projects.map(p => (
-                                <div key={p.ProjectID} onClick={() => navigate(`/ projects / ${p.ProjectID} `)} className="p-4 border border-gray-100 rounded-2xl hover:bg-gray-50 cursor-pointer transition-colors group">
+                            {participatedProjects.map(p => (
+                                <div key={p.ProjectID} onClick={() => navigate(`/projects/${p.ProjectID}`)} className="p-4 border border-gray-100 rounded-2xl hover:bg-gray-50 cursor-pointer transition-colors group">
                                     <h4 className="font-bold text-gray-800 text-sm group-hover:text-blue-600 transition-colors line-clamp-2">{p.ProjectName}</h4>
                                     <p className="text-xs text-gray-400 mt-1">{p.ProjectID}</p>
                                 </div>
                             ))}
-                            {projects.length === 0 && <p className="text-gray-400 text-sm italic">Chưa tham gia dự án nào.</p>}
+                            {participatedProjects.length === 0 && <p className="text-gray-400 text-sm italic">Chưa tham gia dự án nào.</p>}
                         </div>
                     </div>
                 </div>
@@ -132,8 +133,8 @@ const EmployeeDetail: React.FC = () => {
                             <button onClick={() => navigate('/tasks')} className="text-sm text-blue-600 font-bold hover:underline">Xem tất cả</button>
                         </div>
                         <div className="space-y-4">
-                            {tasks.slice(0, 5).map(task => (
-                                <div key={task.TaskID} onClick={() => navigate(`/ tasks / ${task.TaskID} `)} className="flex items-start gap-4 p-4 rounded-2xl hover:bg-gray-50 cursor-pointer transition-colors border border-transparent hover:border-gray-100">
+                            {empTasks.slice(0, 5).map(task => (
+                                <div key={task.TaskID} onClick={() => navigate(`/tasks/${task.TaskID}`)} className="flex items-start gap-4 p-4 rounded-2xl hover:bg-gray-50 cursor-pointer transition-colors border border-transparent hover:border-gray-100">
                                     <div className={`mt - 1 w - 3 h - 3 rounded - full shrink - 0 ${task.Status === TaskStatus.Done ? 'bg-emerald-500' : 'bg-blue-500'} `}></div>
                                     <div className="flex-1">
                                         <h4 className={`font - bold text - gray - 800 ${task.Status === TaskStatus.Done ? 'line-through text-gray-400' : ''} `}>{task.Title}</h4>
@@ -147,7 +148,7 @@ const EmployeeDetail: React.FC = () => {
                                     </span>
                                 </div>
                             ))}
-                            {tasks.length === 0 && <p className="text-gray-400 text-center py-8">Chưa có công việc nào được giao.</p>}
+                            {empTasks.length === 0 && <p className="text-gray-400 text-center py-8">Chưa có công việc nào được giao.</p>}
                         </div>
                     </div>
 

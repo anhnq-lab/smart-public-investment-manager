@@ -6,7 +6,7 @@ import {
     mockContracts, mockPayments
 } from '../../mockData';
 import { ProjectStatus, ProjectGroup, Task, TaskStatus, TaskPriority, PackageStatus, PaymentStatus, InvestmentType, BiddingPackage } from '../../types';
-import { TaskService } from '../../services/taskService';
+import { useTasks } from '../../hooks/useTasks';
 import {
     ArrowLeft, Calendar, MapPin, DollarSign,
     Layers, Clock, FileText,
@@ -343,11 +343,7 @@ const ProjectDetail: React.FC = () => {
     const navigate = useNavigate();
     const project = mockProjects.find(p => p.ProjectID === id);
 
-    const [localTasks, setLocalTasks] = useState<Task[]>(() => {
-        const allTasks = JSON.parse(localStorage.getItem('app_tasks') || '[]');
-        const filtered = allTasks.filter((t: Task) => t.ProjectID === id);
-        return filtered.length > 0 ? filtered : mockTasks.filter(t => t.ProjectID === id);
-    });
+
 
     // Local state for members to update UI immediately
     const [memberIds, setMemberIds] = useState<string[]>(project?.Members || []);
@@ -412,19 +408,13 @@ const ProjectDetail: React.FC = () => {
         }
     };
 
+    // Use hooks for tasks
+    const { data: tasks = [] } = useTasks({ projectId: project?.ProjectID });
+
     // Sync state if project changes
     useEffect(() => {
         if (project) setMemberIds(project.Members || []);
     }, [project]);
-
-    // Load tasks whenever project changes or refresh is triggered
-    useEffect(() => {
-        if (project?.ProjectID) {
-            const tasks = TaskService.getTasksByProject(project.ProjectID);
-            console.log("Loading tasks for project:", project.ProjectID, "Count:", tasks.length);
-            setLocalTasks(tasks);
-        }
-    }, [project?.ProjectID, refreshTrigger]);
 
     const projectMembers = useMemo(() => {
         return memberIds.map(id => mockEmployees.find(e => e.EmployeeID === id)).filter(Boolean);
@@ -533,12 +523,12 @@ const ProjectDetail: React.FC = () => {
     const tasksByPhase = useMemo(() => {
         const map: Record<string, Task[]> = {};
         phases.forEach(phase => {
-            map[phase] = localTasks
+            map[phase] = tasks
                 .filter(t => t.TimelineStep === phase)
                 .sort((a, b) => (a.SortOrder || 0) - (b.SortOrder || 0));
         });
         return map;
-    }, [localTasks, phases]);
+    }, [tasks, phases]);
 
     if (!project) return <div className="flex items-center justify-center h-screen font-bold text-gray-500">Dự án không tồn tại.</div>;
 
@@ -696,6 +686,14 @@ const ProjectDetail: React.FC = () => {
                     <div className="animate-in slide-in-from-bottom-2 duration-500 space-y-8 max-w-5xl mx-auto py-4">
 
                         {/* Section 0: Kết nối dữ liệu Quốc gia (ND111) */}
+                        {/* Gantt Chart (Using generic component) */}
+                        <div className="mb-8 bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
+                            <div className="px-4 py-3 border-b border-gray-100 bg-gray-50 flex justify-between items-center">
+                                <h4 className="font-bold text-gray-700 text-xs uppercase flex items-center gap-2"><Layers className="w-4 h-4" /> Biểu đồ Gantt tổng thể</h4>
+                                <button className="text-[10px] text-blue-600 hover:underline font-medium">Mở rộng</button>
+                            </div>
+                            <ProjectGanttChart tasks={tasks} />
+                        </div>
                         <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg shadow-sm border border-blue-100 overflow-hidden">
                             <div className="px-6 py-4 border-b border-blue-100 flex justify-between items-center">
                                 <h3 className="font-bold text-blue-800 text-sm uppercase flex items-center gap-2">
@@ -1004,12 +1002,13 @@ const ProjectDetail: React.FC = () => {
                                     <button
                                         onClick={() => {
                                             console.log('Create Process Button Clicked');
-                                            console.log('Current localTasks length:', localTasks.length);
+                                            console.log('Current tasks length:', tasks.length);
 
                                             const newTasks = generateTasksForProject(project.ProjectID, project.GroupCode);
                                             console.log('Generated tasks:', newTasks.length);
                                             // Filter out duplicates if needed, or just append
-                                            newTasks.forEach(t => TaskService.saveTask(t));
+                                            alert("Tính năng đang cập nhật API.");
+                                            // newTasks.forEach(t => TaskService.saveTask(t));
                                             setRefreshTrigger(prev => prev + 1);
                                             // Silent success - không hiện alert
                                         }}
@@ -1019,12 +1018,12 @@ const ProjectDetail: React.FC = () => {
                                     </button>
                                 </div>
 
-                                {localTasks.length === 0 && (
+                                {tasks.length === 0 && (
                                     <div className="mb-6 p-4 bg-gray-50 border border-gray-100 rounded-xl text-center">
                                         <p className="text-sm text-gray-500">Chưa có dữ liệu tiến độ.</p>
                                     </div>
                                 )}
-                                <ProjectGanttChart tasks={localTasks} />
+                                <ProjectGanttChart tasks={tasks} />
                             </div>
                         </div>
 
@@ -1466,6 +1465,20 @@ const ProjectDetail: React.FC = () => {
                                                                     <Reply className="w-4 h-4" />
                                                                 </button>
                                                             )}
+                                                            {/* Action buttons */}
+                                                            <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                                <button className="p-1 text-gray-400 hover:text-blue-500 rounded"><Edit className="w-3.5 h-3.5" /></button>
+                                                                <button
+                                                                    onClick={() => {
+                                                                        if (confirm("Xóa công việc này?")) {
+                                                                            alert("Tính năng xóa đang cập nhật.");
+                                                                        }
+                                                                    }}
+                                                                    className="p-1 text-gray-400 hover:text-red-500 rounded"
+                                                                >
+                                                                    <Trash2 className="w-3.5 h-3.5" />
+                                                                </button>
+                                                            </div>
                                                         </div>
                                                     </td>
                                                 </tr>
@@ -1598,7 +1611,8 @@ const ProjectDetail: React.FC = () => {
                                             console.log("Generated tasks:", newTasks);
 
                                             // Batch save tasks efficiently
-                                            TaskService.saveTasks(newTasks);
+                                            // TaskService.saveTasks(newTasks);
+                                            alert("Tính năng tạo quy trình đang được cập nhật.");
 
                                             // Force refresh
                                             setRefreshTrigger(prev => prev + 1);
