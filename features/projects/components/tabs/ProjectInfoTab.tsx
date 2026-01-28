@@ -100,7 +100,16 @@ export const ProjectInfoTab: React.FC<ProjectInfoTabProps> = ({
                             <InfoItem label="Nhóm dự án" value={`Nhóm ${project.GroupCode}`} />
                             <InfoItem label="Hình thức quản lý dự án" value={project.ManagementForm || 'Chủ đầu tư trực tiếp quản lý dự án'} />
                             <InfoItem label="Địa điểm" value={project.LocationCode} />
-                            {/* Decision Info */}
+
+                            {/* Standardized ND111 Fields */}
+                            <div className="grid grid-cols-2 gap-4">
+                                <InfoItem label="Tổng mức đầu tư" value={new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(project.TotalInvestment)} />
+                                <InfoItem label="Nguồn vốn" value={project.CapitalSource || 'Ngân sách tỉnh'} />
+                            </div>
+                            <div className="grid grid-cols-2 gap-4">
+                                <InfoItem label="Loại công trình" value={project.ConstructionType || 'Dân dụng'} />
+                                <InfoItem label="Cấp công trình" value={project.ConstructionGrade || 'Cấp III'} />
+                            </div>
                             <div className="pt-2">
                                 <label className="text-xs font-bold text-gray-400 uppercase mb-2 block">Quyết định phê duyệt</label>
                                 <div className="bg-gray-50 p-3 rounded-lg border border-gray-100 space-y-2">
