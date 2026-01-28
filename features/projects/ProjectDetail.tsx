@@ -10,7 +10,7 @@ import { ProjectTimelineTab } from './components/tabs/ProjectTimelineTab';
 import { FilePreviewModal } from './components/FilePreviewModal';
 // Icons for Tabs
 import { Info, Clock, PieChart, Briefcase, Mail, FolderOpen, Layers, Landmark } from 'lucide-react';
-import { mockBiddingPackages } => '@/mockData'; // TODO: Move to Service
+import { mockBiddingPackages } from '@/mockData'; // TODO: Move to Service
 
 const ProjectDetail: React.FC = () => {
     const { id } = useParams<{ id: string }>();
