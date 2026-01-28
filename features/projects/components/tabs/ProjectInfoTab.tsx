@@ -1,12 +1,10 @@
 import React from 'react';
 import { Project, Task } from '@/types';
-import { Layers, Landmark, FileBarChart, FileCheck, RefreshCw, ChevronDown } from 'lucide-react';
-import { ProjectGanttChart } from '../ProjectGanttChart';
+import { Landmark, FileBarChart, FileCheck, RefreshCw, ChevronDown } from 'lucide-react';
 import { SyncResult } from '@/services/NationalGatewayService';
 
 interface ProjectInfoTabProps {
     project: Project;
-    tasks: Task[];
     isSyncing: boolean;
     syncResult: SyncResult | null;
     isGeneratingReport: boolean;
@@ -14,20 +12,10 @@ interface ProjectInfoTabProps {
 }
 
 export const ProjectInfoTab: React.FC<ProjectInfoTabProps> = ({
-    project, tasks, isSyncing, syncResult, isGeneratingReport, onGenerateReport
+    project, isSyncing, syncResult, isGeneratingReport, onGenerateReport
 }) => {
     return (
         <div className="animate-in slide-in-from-bottom-2 duration-500 space-y-8 max-w-5xl mx-auto py-4">
-            {/* Gantt Chart Content */}
-            <div className="mb-8 bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
-                <div className="px-4 py-3 border-b border-gray-100 bg-gray-50 flex justify-between items-center">
-                    <h4 className="font-bold text-gray-700 text-xs uppercase flex items-center gap-2">
-                        <Layers className="w-4 h-4" /> Biểu đồ Gantt tổng thể
-                    </h4>
-                    <button className="text-[10px] text-blue-600 hover:underline font-medium">Mở rộng</button>
-                </div>
-                <ProjectGanttChart tasks={tasks} />
-            </div>
 
             {/* National Gateway Section */}
             <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg shadow-sm border border-blue-100 overflow-hidden">

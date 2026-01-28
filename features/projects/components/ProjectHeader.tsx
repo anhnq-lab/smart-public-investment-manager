@@ -41,13 +41,7 @@ export const ProjectHeader: React.FC<ProjectHeaderProps> = ({ project, onSync, i
                         {isSyncing ? 'Đang đồng bộ...' : (project.SyncStatus?.IsSynced || syncResult?.success ? 'Đã đồng bộ QG' : 'Đồng bộ QG')}
                     </button>
                 </div>
-                <div className="flex items-center gap-3 text-sm text-gray-500 mt-1 ml-auto">
-                    <span className="font-mono bg-gray-200 text-gray-700 px-2 py-0.5 rounded text-xs font-bold">{project.ProjectID}</span>
-                    <span className="w-1 h-1 bg-gray-300 rounded-full"></span>
-                    <span className="font-semibold text-gray-600">Nhóm {project.GroupCode}</span>
-                    <span className="w-1 h-1 bg-gray-300 rounded-full"></span>
-                    <span className="flex items-center gap-1"><MapPin className="w-3.5 h-3.5 text-red-400" /> {project.LocationCode}</span>
-                </div>
+
             </div>
         </div>
     );

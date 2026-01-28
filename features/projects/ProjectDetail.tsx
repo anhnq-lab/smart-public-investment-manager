@@ -6,10 +6,11 @@ import { Project, Task, BiddingPackage } from '@/types';
 import { useTasks } from '@/hooks/useTasks';
 import { ProjectHeader } from './components/ProjectHeader';
 import { ProjectInfoTab } from './components/tabs/ProjectInfoTab';
+import { ProjectTimelineTab } from './components/tabs/ProjectTimelineTab';
 import { FilePreviewModal } from './components/FilePreviewModal';
 // Icons for Tabs
 import { Info, Clock, PieChart, Briefcase, Mail, FolderOpen, Layers, Landmark } from 'lucide-react';
-import { mockBiddingPackages } from '@/mockData'; // TODO: Move to Service
+import { mockBiddingPackages } => '@/mockData'; // TODO: Move to Service
 
 const ProjectDetail: React.FC = () => {
     const { id } = useParams<{ id: string }>();
@@ -133,7 +134,10 @@ const ProjectDetail: React.FC = () => {
                             onGenerateReport={handleGenerateReport}
                         />
                     )}
-                    {activeTab !== 'info' && (
+                    {activeTab === 'timeline' && (
+                        <ProjectTimelineTab tasks={tasks} />
+                    )}
+                    {activeTab !== 'info' && activeTab !== 'timeline' && (
                         <div className="bg-white p-10 rounded-2xl border border-dashed border-gray-200 text-center text-gray-400">
                             <div className="mb-2"><Layers className="w-10 h-10 mx-auto text-gray-200" /></div>
                             <h3 className="font-bold text-gray-600">Tính năng đang cập nhật</h3>
