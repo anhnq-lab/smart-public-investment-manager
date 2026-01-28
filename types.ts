@@ -294,10 +294,12 @@ export interface Task {
     Description?: string;
     ProjectID: string;
     AssigneeID: string; // Link to Employee
-    DueDate: string;
+    StartDate: string; // ISO Date String
+    DueDate: string;   // ISO Date String
     Status: TaskStatus;
     Priority: TaskPriority;
     TimelineStep?: string; // Link to the specific step in project timeline
+    CreatedDate?: string; // ISO Date String
     SortOrder?: number; // Ordering for UI display
 
     // Advanced fields for Regulatory Compliance
@@ -319,6 +321,7 @@ export interface Task {
         SyncError?: string;
     };
 }
+
 
 export interface SubTask {
     SubTaskID: string;

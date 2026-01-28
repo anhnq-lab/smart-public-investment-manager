@@ -1,32 +1,16 @@
 import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useProjects } from '../../hooks/useProjects';
-import { Project, ProjectStatus, ProjectGroup, InvestmentType } from '../../types';
+import { ProjectStatus, ProjectGroup } from '../../types';
 import { ProjectCard } from './ProjectCard';
 import { ProjectStats } from './ProjectStats';
-import { Search, Plus, LayoutGrid, List as ListIcon, X, Filter, BarChart3, RefreshCw, Layers } from 'lucide-react';
+import { Search, Plus, LayoutGrid, List as ListIcon, Filter, Layers } from 'lucide-react';
 import { Skeleton } from '../../components/ui/Skeleton';
-
-// --- INLINED UTILS FOR CREATE MODAL (Preserving existing logic) ---
-enum ProjectType {
-    NoProject = '0',
-    Civil = '1',
-    Industrial = '2',
-    Infrastructure = '3',
-    Transport = '4',
-    Agriculture = '5',
-    Mixed = '6'
-}
-enum ProcedureType { Appraisal = '1', DesignAfterBasic = '2', Permit = '3' }
-const generateProjectCode = (params: any): string => {
-    const province = params.provinceCode || '42';
-    const year = params.year || new Date().getFullYear().toString().slice(-2);
-    const type = params.projectType;
-    const procedure = params.procedureType || ProcedureType.Appraisal;
-    const seqStr = (params.sequence || Math.floor(Math.random() * 100000)).toString().padStart(5, '0');
-    return `${province}${year}${type}${procedure}${seqStr}00`;
-};
-// -----------------------------------------------------
+import { CreateProjectModal } from './components/CreateProjectModal';
+import { generateProjectTasks } from '../../utils/projectTemplateGenerator';
+import { TaskService } from '../../services/TaskService';
+import ProjectService from '../../services/ProjectService';
+import { Project } from '../../types';
 
 const ProjectList: React.FC = () => {
     const navigate = useNavigate();
@@ -57,12 +41,34 @@ const ProjectList: React.FC = () => {
 
     // Create Modal State
     const [isModalOpen, setIsModalOpen] = useState(false);
-    // Note: In a full refactor, form state should be moved to a hook or separate form component
-    // For now, retaining a simple placeholder trigger
 
-    // Mock Create Handler (Simplified for UI Demo)
     const handleCreateProject = () => {
-        alert("Tính năng thêm dự án sẽ được tích hợp với Backend API trong bước tiếp theo.");
+        setIsModalOpen(true);
+    };
+
+    const handleSaveProject = async (data: Partial<Project> & { StartDate: Date }) => {
+        try {
+            // 1. Create Project
+            const newProject = await ProjectService.create(data);
+
+            // 2. Generate Schedule based on Decree 175
+            // Ensure GroupCode is valid, default to C if missing
+            const group = data.GroupCode || ProjectGroup.C;
+            const tasks = generateProjectTasks(newProject.ProjectID, group, data.StartDate);
+
+            // 3. Save Tasks
+            await TaskService.saveTasks(tasks);
+
+            // 4. Notify and Navigate
+            refetch(); // Refresh list to update stats/list
+            setIsModalOpen(false);
+
+            // Navigate to the new project detail immediately
+            navigate(`/projects/${newProject.ProjectID}`);
+        } catch (error) {
+            console.error('Error creating project:', error);
+            alert('Có lỗi xảy ra khi tạo dự án. Vui lòng thử lại.');
+        }
     };
 
     return (
@@ -215,6 +221,13 @@ const ProjectList: React.FC = () => {
                     </div>
                 </div>
             </div>
+
+            {/* Create Project Modal */}
+            <CreateProjectModal
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+                onSave={handleSaveProject}
+            />
         </div>
     );
 };

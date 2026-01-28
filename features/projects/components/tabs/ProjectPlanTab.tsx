@@ -7,6 +7,7 @@ import { ProjectTaskModal } from '../ProjectTaskModal';
 interface ProjectPlanTabProps {
     tasks: Task[];
     projectID?: string;
+    onSaveTask?: (task: Task) => void;
 }
 
 // Decree 175 Standard Phases
@@ -54,38 +55,27 @@ const DECREE_175_PHASES = [
     }
 ];
 
-export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({ tasks: initialTasks, projectID }) => {
-    // 1. Local Tasks State (to allow immediate "Save" feedback without full backend)
+export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({ tasks: initialTasks, projectID, onSaveTask }) => {
+    // 1. Local Tasks State (Optimistic UI)
     const [tasks, setTasks] = useState<Task[]>(initialTasks);
 
-    // Sync tasks if props change (optional, but good practice)
+    // Sync from props
     useEffect(() => {
-        if (initialTasks.length > 0 && tasks.length === 0) {
-            setTasks(initialTasks);
-        }
-    }, [initialTasks, tasks]);
+        setTasks(initialTasks);
+    }, [initialTasks]);
 
     // 2. Compute Parent Item Status & Dates
-    // We create a map of "Step Code" -> Aggregated Data
     const stepAggregates = useMemo(() => {
         const map = new Map<string, { status: TaskStatus; startDate: string | null; dueDate: string | null; childCount: number }>();
-
-        // Flatten all items to iterate
         const allItems = DECREE_175_PHASES.flatMap(p => p.items);
 
         allItems.forEach(item => {
-            // Find children for this step
             const children = tasks.filter(t => t.TimelineStep === item.code);
-
             if (children.length === 0) {
                 map.set(item.code, { status: TaskStatus.Todo, startDate: null, dueDate: null, childCount: 0 });
                 return;
             }
 
-            // Status Logic:
-            // All Done -> Done
-            // Any InProgress or Done -> InProgress
-            // Else -> Todo
             const allDone = children.every(t => t.Status === TaskStatus.Done);
             const anyActive = children.some(t => t.Status === TaskStatus.InProgress || t.Status === TaskStatus.Done || t.Status === TaskStatus.Review);
 
@@ -93,7 +83,6 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({ tasks: initialTa
             if (allDone) status = TaskStatus.Done;
             else if (anyActive) status = TaskStatus.InProgress;
 
-            // Date Logic
             const startDates = children.map(t => new Date(t.StartDate).getTime()).filter(t => !isNaN(t));
             const dueDates = children.map(t => new Date(t.DueDate).getTime()).filter(t => !isNaN(t));
 
@@ -102,7 +91,6 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({ tasks: initialTa
 
             map.set(item.code, { status, startDate: minStart, dueDate: maxDue, childCount: children.length });
         });
-
         return map;
     }, [tasks]);
 
@@ -112,41 +100,35 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({ tasks: initialTa
         return allItems
             .map(item => {
                 const agg = stepAggregates.get(item.code);
-                if (!agg || !agg.startDate || !agg.dueDate) return null; // Skip if no dates (no children or empty dates)
+                if (!agg || !agg.startDate || !agg.dueDate) return null;
 
-                // Return a Synthetic Task for the Gantt
                 return {
                     TaskID: item.code,
                     Title: `${item.id}. ${item.title}`,
                     StartDate: agg.startDate,
                     DueDate: agg.dueDate,
-                    Status: agg.status,
+                    Status: agg.status, // Now includes InProgress check
                     Priority: 'Medium',
                     Description: 'Tổng hợp từ các công việc con',
                     AssigneeID: '',
-                    TimelineStep: item.code
+                    TimelineStep: item.code,
+                    ProjectID: projectID || 'SYNTHETIC' // Fix Missing ProjectID
                 } as Task;
             })
-            .filter((t): t is Task => t !== null); // Remove nulls
-    }, [stepAggregates]);
+            .filter((t): t is Task => t !== null);
+    }, [stepAggregates, projectID]);
 
 
-    // Basic state
+    // UI State
     const [showGantt, setShowGantt] = useState(true);
     const [expandedPhases, setExpandedPhases] = useState<Record<string, boolean>>({
-        'PHASE_1': true,
-        'PHASE_2': true,
-        'PHASE_3': true
+        'PHASE_1': true, 'PHASE_2': true, 'PHASE_3': true
     });
-
-    // Modal State
     const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
     const [selectedStep, setSelectedStep] = useState<{ name: string; code: string } | null>(null);
     const [editingTask, setEditingTask] = useState<Task | null>(null);
 
-    const togglePhase = (id: string) => {
-        setExpandedPhases(prev => ({ ...prev, [id]: !prev[id] }));
-    };
+    const togglePhase = (id: string) => setExpandedPhases(prev => ({ ...prev, [id]: !prev[id] }));
 
     const handleAddTask = (stepName: string, stepCode: string) => {
         setSelectedStep({ name: stepName, code: stepCode });
@@ -155,12 +137,12 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({ tasks: initialTa
     };
 
     const handleQuickStatusChange = (e: React.MouseEvent, task: Task) => {
-        e.stopPropagation(); // Prevent opening modal
+        e.stopPropagation();
         const statusCycle: Record<TaskStatus, TaskStatus> = {
             [TaskStatus.Todo]: TaskStatus.InProgress,
-            [TaskStatus.InProgress]: TaskStatus.Done,
-            [TaskStatus.Done]: TaskStatus.Todo,
-            [TaskStatus.Review]: TaskStatus.Done // Handle Review if exists
+            [TaskStatus.InProgress]: TaskStatus.Review,
+            [TaskStatus.Review]: TaskStatus.Done,
+            [TaskStatus.Done]: TaskStatus.Todo
         };
         const newStatus = statusCycle[task.Status] || TaskStatus.InProgress;
         handleSaveTask({ ...task, Status: newStatus });
@@ -173,18 +155,23 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({ tasks: initialTa
     };
 
     const handleSaveTask = (taskData: Partial<Task>) => {
+        let updatedTask: Task;
+
         if (taskData.TaskID) {
-            // Edit Mode
-            setTasks(prev => prev.map(t => t.TaskID === taskData.TaskID ? { ...t, ...taskData } as Task : t));
+            updatedTask = { ...editingTask, ...taskData } as Task;
+            setTasks(prev => prev.map(t => t.TaskID === updatedTask.TaskID ? updatedTask : t));
         } else {
-            // Create Mode
-            const newTask: Task = {
+            updatedTask = {
                 ...taskData as Task,
-                TaskID: `NEW_${Date.now()}`, // Temporary ID
-                ProjectID: projectID || 'PROJ_001',
+                TaskID: `NEW_${Date.now()}`,
+                ProjectID: projectID || 'PROJ_TEMP',
                 CreatedDate: new Date().toISOString()
-            };
-            setTasks(prev => [...prev, newTask]);
+            } as Task; // CreatedDate is handled? Need to update Type
+            setTasks(prev => [...prev, updatedTask]);
+        }
+
+        if (onSaveTask) {
+            onSaveTask(updatedTask);
         }
         setIsTaskModalOpen(false);
     };
@@ -213,7 +200,7 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({ tasks: initialTa
                 </div>
             </div>
 
-            {/* Gantt Chart Section (Parents Only) */}
+            {/* Gantt Chart Section */}
             {showGantt && (
                 <div className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
                     <div className="px-4 py-3 border-b border-gray-100 bg-gray-50 flex justify-between items-center">
@@ -240,7 +227,6 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({ tasks: initialTa
             <div className="space-y-4">
                 {DECREE_175_PHASES.map((phase) => (
                     <div key={phase.id} className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
-                        {/* Phase Header */}
                         <div
                             className="px-6 py-4 bg-gray-50 border-b border-gray-200 flex items-center justify-between cursor-pointer hover:bg-gray-100 transition-colors"
                             onClick={() => togglePhase(phase.id)}
@@ -252,28 +238,23 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({ tasks: initialTa
                             {expandedPhases[phase.id] ? <ChevronDown className="w-5 h-5 text-gray-400" /> : <ChevronRight className="w-5 h-5 text-gray-400" />}
                         </div>
 
-                        {/* Phase Items */}
                         {expandedPhases[phase.id] && (
                             <div className="divide-y divide-gray-100">
                                 {phase.items.map((item) => {
-                                    // Get Children and Aggregated Status
                                     const linkedTasks = tasks.filter(t => t.TimelineStep === item.code);
                                     const agg = stepAggregates.get(item.code);
                                     const parentStatus = agg?.status || TaskStatus.Todo;
                                     const isParentDone = parentStatus === TaskStatus.Done;
-                                    const isParentInProgress = parentStatus === TaskStatus.InProgress;
-                                    const isParentReview = parentStatus === TaskStatus.Review;
 
                                     return (
                                         <div key={item.id} className="p-4 hover:bg-slate-50 transition-colors group">
                                             <div className="flex items-start gap-4">
-                                                {/* Parent Status Icon */}
                                                 <div className="mt-1">
                                                     {isParentDone ? (
                                                         <CheckCircle2 className="w-5 h-5 text-emerald-500" />
-                                                    ) : isParentReview ? (
+                                                    ) : parentStatus === TaskStatus.Review ? (
                                                         <AlertCircle className="w-5 h-5 text-indigo-500" />
-                                                    ) : isParentInProgress ? (
+                                                    ) : parentStatus === TaskStatus.InProgress ? (
                                                         <Clock className="w-5 h-5 text-orange-500 animate-pulse" />
                                                     ) : (
                                                         <Circle className="w-5 h-5 text-gray-300" />
@@ -281,7 +262,6 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({ tasks: initialTa
                                                 </div>
 
                                                 <div className="flex-1">
-                                                    {/* Parent Title Line */}
                                                     <div className="flex justify-between items-start">
                                                         <h5 className={`text-sm font-medium ${isParentDone ? 'text-gray-900' : 'text-gray-600'}`}>
                                                             {item.id}. {item.title}
@@ -291,7 +271,6 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({ tasks: initialTa
                                                         </span>
                                                     </div>
 
-                                                    {/* Parent Date Summary (if available) */}
                                                     {(agg?.startDate || agg?.dueDate) && (
                                                         <div className="text-[10px] text-gray-400 mt-1 mb-2 flex gap-2">
                                                             {agg.startDate && <span>Bắt đầu: {new Date(agg.startDate).toLocaleDateString('vi-VN')}</span>}
@@ -299,7 +278,6 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({ tasks: initialTa
                                                         </div>
                                                     )}
 
-                                                    {/* Children List */}
                                                     {linkedTasks.length > 0 && (
                                                         <div className="mt-2 ml-[-4px] pl-4 border-l-2 border-gray-200 space-y-1">
                                                             {linkedTasks.map(t => (
@@ -308,29 +286,25 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({ tasks: initialTa
                                                                     onClick={() => handleEditTask(t)}
                                                                     className="flex items-center gap-2 text-xs cursor-pointer hover:bg-white p-1 rounded transition-colors group/task"
                                                                 >
-                                                                    {/* Quick Status Toggle */}
                                                                     <button
                                                                         onClick={(e) => handleQuickStatusChange(e, t)}
                                                                         className={`w-3 h-3 rounded-full mr-2 transition-transform hover:scale-125 focus:outline-none ${t.Status === 'Done' ? 'bg-emerald-500' :
-                                                                                t.Status === 'Review' ? 'bg-indigo-500' :
-                                                                                    t.Status === 'InProgress' ? 'bg-orange-500' :
-                                                                                        'bg-gray-300 hover:bg-gray-400'
+                                                                            t.Status === 'Review' ? 'bg-indigo-500' :
+                                                                                t.Status === 'InProgress' ? 'bg-orange-500' :
+                                                                                    'bg-gray-300 hover:bg-gray-400'
                                                                             }`}
                                                                         title="Bấm để chuyển trạng thái"
                                                                     />
-
                                                                     <span className={`font-medium transition-colors ${t.Status === 'Done' ? 'text-gray-400 line-through' :
-                                                                            t.Status === 'Review' ? 'text-indigo-600' :
-                                                                                t.Status === 'InProgress' ? 'text-orange-600' :
-                                                                                    'text-gray-700 hover:text-blue-600'
+                                                                        t.Status === 'Review' ? 'text-indigo-600' :
+                                                                            t.Status === 'InProgress' ? 'text-orange-600' :
+                                                                                'text-gray-700 hover:text-blue-600'
                                                                         }`}>
                                                                         {t.Title}
                                                                     </span>
-
                                                                     <span className="text-gray-400 text-[10px]">- {t.AssigneeID || 'Chưa giao'}</span>
                                                                     <span className="text-[10px] text-gray-400 ml-auto flex items-center gap-2">
                                                                         {t.DueDate ? new Date(t.DueDate).toLocaleDateString('vi-VN') : ''}
-                                                                        {/* Edit Hint */}
                                                                         <span className="opacity-0 group-hover/task:opacity-100 text-blue-600 text-[9px] font-bold uppercase tracking-wider">
                                                                             Sửa
                                                                         </span>
@@ -358,7 +332,6 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({ tasks: initialTa
                 ))}
             </div>
 
-            {/* Task Modal */}
             <ProjectTaskModal
                 isOpen={isTaskModalOpen}
                 onClose={() => setIsTaskModalOpen(false)}

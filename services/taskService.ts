@@ -1,66 +1,85 @@
-import { Task, TaskStatus, TaskPriority, Project } from '../types';
-import { mockTasks, mockProjects, loadTasksFromStorage, saveTasksToDB } from '../mockData';
+import { Task } from '../types';
+import { mockTasks } from '../mockData';
 
-export class TaskService {
-    private static TASKS_STORAGE_KEY = 'app_tasks';
+const STORAGE_KEY = 'cic_tasks_data';
 
-    static getAllTasks(): Task[] {
-        return loadTasksFromStorage(); // Uses existing mockData logic which checks localStorage
+// Helper to load
+const loadTasks = (): Task[] => {
+    try {
+        const data = localStorage.getItem(STORAGE_KEY);
+        // Fallback to mockTasks if empty to provide initial data demo
+        if (!data) return mockTasks;
+
+        const tasks = JSON.parse(data);
+        return Array.isArray(tasks) ? tasks : mockTasks;
+    } catch {
+        return mockTasks;
     }
+};
 
-    static getTasksByProject(projectId: string): Task[] {
-        return this.getAllTasks().filter(t => t.ProjectID === projectId);
+const saveToStorage = (tasks: Task[]) => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
+};
+
+export const TaskService = {
+    getAllTasks: (): Task[] => {
+        return loadTasks();
+    },
+
+    getTasksByProject: (projectId: string): Promise<Task[]> => {
+        return new Promise((resolve) => {
+            const allTasks = loadTasks();
+            const projectTasks = allTasks.filter(t => t.ProjectID === projectId);
+            resolve(projectTasks);
+        });
+    },
+
+    saveTasks: (tasks: Task[]): Promise<boolean> => {
+        return new Promise((resolve) => {
+            let allTasks = loadTasks();
+
+            const newIds = new Set(tasks.map(t => t.TaskID));
+            // Remove conflicts tasks from existing list (update logic)
+            allTasks = allTasks.filter(t => !newIds.has(t.TaskID));
+
+            // Append new/updated tasks
+            allTasks = [...allTasks, ...tasks];
+
+            saveToStorage(allTasks);
+            resolve(true);
+        });
+    },
+
+    saveTask: (task: Task): Promise<Task> => {
+        return new Promise((resolve) => {
+            let allTasks = loadTasks();
+            const index = allTasks.findIndex(t => t.TaskID === task.TaskID);
+
+            if (index !== -1) {
+                allTasks[index] = task;
+            } else {
+                allTasks.push(task);
+            }
+
+            saveToStorage(allTasks);
+            resolve(task);
+        });
+    },
+
+    updateTask: (task: Task): Promise<boolean> => {
+        return TaskService.saveTask(task).then(() => true);
+    },
+
+    deleteTask: (id: string): Promise<boolean> => {
+        return new Promise((resolve) => {
+            let allTasks = loadTasks();
+            const initialLen = allTasks.length;
+            allTasks = allTasks.filter(t => t.TaskID !== id);
+
+            if (allTasks.length !== initialLen) {
+                saveToStorage(allTasks);
+            }
+            resolve(true);
+        });
     }
-
-    static getTasksByProjectAndStage(projectId: string, stage: string): Task[] {
-        return this.getAllTasks().filter(t => t.ProjectID === projectId && t.TimelineStep === stage);
-    }
-
-    static saveTask(task: Task): Task {
-        const tasks = this.getAllTasks();
-        const existingIndex = tasks.findIndex(t => t.TaskID === task.TaskID);
-
-        let updatedTasks;
-        if (existingIndex >= 0) {
-            updatedTasks = tasks.map(t => t.TaskID === task.TaskID ? task : t);
-        } else {
-            updatedTasks = [task, ...tasks];
-        }
-
-        saveTasksToDB(updatedTasks);
-        this.updateProjectProgress(task.ProjectID, updatedTasks);
-        return task;
-    }
-
-    static saveTasks(newTasks: Task[]): void {
-        const tasks = this.getAllTasks();
-        // Remove old versions of these tasks if they exist (based on ID), then add new ones
-        const newIds = new Set(newTasks.map(t => t.TaskID));
-        const filteredTasks = tasks.filter(t => !newIds.has(t.TaskID));
-
-        const updatedTasks = [...newTasks, ...filteredTasks];
-        saveTasksToDB(updatedTasks);
-    }
-
-    static deleteTask(taskId: string): void {
-        const tasks = this.getAllTasks();
-        const task = tasks.find(t => t.TaskID === taskId);
-        if (!task) return;
-
-        const updatedTasks = tasks.filter(t => t.TaskID !== taskId);
-        saveTasksToDB(updatedTasks);
-        this.updateProjectProgress(task.ProjectID, updatedTasks);
-    }
-
-    // Logic to update project progress (if any) based on completed tasks
-    // For now, simpler logic: verify all tasks in a "stage" are done?
-    // Or just simple count? Let's assume progress is manual for now but we trigger an event?
-    // In this "mock" world, we might want to update the project object in localStorage too.
-    private static updateProjectProgress(projectId: string, allTasks: Task[]) {
-        // Implementation idea: 
-        // 1. Get all tasks for this project
-        // 2. Calculate % compeleted
-        // 3. Update Project.TotalProgress (if this field existed)
-        // For now, we will just ensure the UI gets fresh data by managing state where used.
-    }
-}
+};

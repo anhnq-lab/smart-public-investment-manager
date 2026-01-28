@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { ProjectService } from '@/services/ProjectService';
 import { NationalGatewayService, SyncResult } from '@/services/NationalGatewayService';
 import { Project, Task, BiddingPackage } from '@/types';
-import { useTasks } from '@/hooks/useTasks';
+import { useTasks, useUpdateTask } from '@/hooks/useTasks';
 import { ProjectHeader } from './components/ProjectHeader';
 import { ProjectInfoTab } from './components/tabs/ProjectInfoTab';
 import { ProjectPlanTab } from './components/tabs/ProjectPlanTab';
@@ -45,6 +45,7 @@ const ProjectDetail: React.FC = () => {
 
     // Derived Data
     const { data: tasks = [] } = useTasks({ projectId: project?.ProjectID });
+    const { mutate: saveTask } = useUpdateTask();
 
     // Sync Handler
     const handleSync = async () => {
@@ -135,7 +136,11 @@ const ProjectDetail: React.FC = () => {
                         />
                     )}
                     {activeTab === 'plan' && (
-                        <ProjectPlanTab tasks={tasks} projectID={project.ProjectID} />
+                        <ProjectPlanTab
+                            tasks={tasks}
+                            projectID={project.ProjectID}
+                            onSaveTask={(t) => saveTask(t)}
+                        />
                     )}
                     {activeTab !== 'info' && activeTab !== 'plan' && (
                         <div className="bg-white p-10 rounded-2xl border border-dashed border-gray-200 text-center text-gray-400">
