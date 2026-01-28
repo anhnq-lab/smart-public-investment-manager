@@ -262,6 +262,7 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({ tasks: initialTa
                                     const parentStatus = agg?.status || TaskStatus.Todo;
                                     const isParentDone = parentStatus === TaskStatus.Done;
                                     const isParentInProgress = parentStatus === TaskStatus.InProgress;
+                                    const isParentReview = parentStatus === TaskStatus.Review;
 
                                     return (
                                         <div key={item.id} className="p-4 hover:bg-slate-50 transition-colors group">
@@ -270,6 +271,8 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({ tasks: initialTa
                                                 <div className="mt-1">
                                                     {isParentDone ? (
                                                         <CheckCircle2 className="w-5 h-5 text-emerald-500" />
+                                                    ) : isParentReview ? (
+                                                        <AlertCircle className="w-5 h-5 text-indigo-500" />
                                                     ) : isParentInProgress ? (
                                                         <Clock className="w-5 h-5 text-orange-500 animate-pulse" />
                                                     ) : (
@@ -309,15 +312,17 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({ tasks: initialTa
                                                                     <button
                                                                         onClick={(e) => handleQuickStatusChange(e, t)}
                                                                         className={`w-3 h-3 rounded-full mr-2 transition-transform hover:scale-125 focus:outline-none ${t.Status === 'Done' ? 'bg-emerald-500' :
-                                                                                t.Status === 'InProgress' ? 'bg-orange-500' :
-                                                                                    'bg-gray-300 hover:bg-gray-400'
+                                                                                t.Status === 'Review' ? 'bg-indigo-500' :
+                                                                                    t.Status === 'InProgress' ? 'bg-orange-500' :
+                                                                                        'bg-gray-300 hover:bg-gray-400'
                                                                             }`}
                                                                         title="Bấm để chuyển trạng thái"
                                                                     />
 
                                                                     <span className={`font-medium transition-colors ${t.Status === 'Done' ? 'text-gray-400 line-through' :
-                                                                            t.Status === 'InProgress' ? 'text-orange-600' :
-                                                                                'text-gray-700 hover:text-blue-600'
+                                                                            t.Status === 'Review' ? 'text-indigo-600' :
+                                                                                t.Status === 'InProgress' ? 'text-orange-600' :
+                                                                                    'text-gray-700 hover:text-blue-600'
                                                                         }`}>
                                                                         {t.Title}
                                                                     </span>

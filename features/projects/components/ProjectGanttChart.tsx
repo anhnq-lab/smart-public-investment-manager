@@ -72,7 +72,7 @@ export const ProjectGanttChart: React.FC<ProjectGanttChartProps> = ({ tasks }) =
                         return (
                             <div key={task.TaskID} className="flex group hover:bg-blue-50/40 transition-colors">
                                 <div className="w-64 shrink-0 px-4 py-3 flex items-center gap-2">
-                                    <div className={`w-1.5 h-1.5 rounded-full shrink-0 ${task.Status === TaskStatus.Done ? 'bg-emerald-500' : task.Status === TaskStatus.InProgress ? 'bg-orange-500' : 'bg-gray-300'}`}></div>
+                                    <div className={`w-1.5 h-1.5 rounded-full shrink-0 ${task.Status === TaskStatus.Done ? 'bg-emerald-500' : task.Status === TaskStatus.Review ? 'bg-indigo-500' : task.Status === TaskStatus.InProgress ? 'bg-orange-500' : 'bg-gray-300'}`}></div>
                                     <span className="text-[11px] font-semibold text-gray-700 truncate" title={task.Title}>{task.Title}</span>
                                 </div>
                                 <div className="flex-1 relative h-10 flex items-center border-l border-gray-100">
@@ -84,7 +84,8 @@ export const ProjectGanttChart: React.FC<ProjectGanttChartProps> = ({ tasks }) =
                                     {/* Task Bar */}
                                     <div
                                         className={`absolute h-4 rounded-full shadow-sm flex items-center px-2 min-w-[20px] transition-all duration-700 ease-out cursor-pointer ${task.Status === TaskStatus.Done ? 'bg-emerald-500 shadow-emerald-100' :
-                                            task.Status === TaskStatus.InProgress ? 'bg-orange-500 shadow-orange-100' : 'bg-gray-200'
+                                            task.Status === TaskStatus.Review ? 'bg-indigo-500 shadow-indigo-100' :
+                                                task.Status === TaskStatus.InProgress ? 'bg-orange-500 shadow-orange-100' : 'bg-gray-200'
                                             }`}
                                         style={{ left: `${Math.max(0, leftPos)}%`, width: `${Math.max(5, width)}%` }}
                                         title={`${task.Title}: ${startDate.toLocaleDateString()} - ${dueDate.toLocaleDateString()}`}
