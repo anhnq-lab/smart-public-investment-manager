@@ -206,10 +206,56 @@ const Dashboard: React.FC = () => {
                 </div>
             </div>
 
-            {/* 3. CHARTS & BOTTOM ROW */}
+            {/* 3. PORTFOLIO STATUS ROW (Moved Up) */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                {/* Pie Chart: Project Status */}
+                <div className="lg:col-span-2 bg-white p-6 rounded-3xl shadow-sm border border-gray-100 flex flex-col">
+                    <h3 className="text-sm font-black text-gray-800 uppercase tracking-widest mb-4 flex items-center gap-2">
+                        <Activity className="w-4 h-4 text-blue-500" /> Trạng thái dự án
+                    </h3>
+                    <div className="flex-1 flex items-center justify-center relative min-h-[180px]">
+                        <ResponsiveContainer width="100%" height="100%">
+                            <PieChart>
+                                <Pie data={projectStatusData} cx="50%" cy="50%" innerRadius={60} outerRadius={80} paddingAngle={5} dataKey="value">
+                                    {projectStatusData.map((entry, index) => <Cell key={`cell-${index}`} fill={entry.color} stroke="none" />)}
+                                </Pie>
+                                <RechartsTooltip />
+                            </PieChart>
+                        </ResponsiveContainer>
+                        <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                            <span className="text-3xl font-black text-gray-800">{mockProjects.length}</span>
+                            <span className="text-[10px] text-gray-400 font-bold uppercase">Dự án</span>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Pie Chart: Groups */}
+                <div className="lg:col-span-2 bg-white p-6 rounded-3xl shadow-sm border border-gray-100 flex flex-col">
+                    <h3 className="text-sm font-black text-gray-800 uppercase tracking-widest mb-4 flex items-center gap-2">
+                        <Building2 className="w-4 h-4 text-purple-500" /> Phân loại nhóm dự án
+                    </h3>
+                    <div className="flex-1 flex items-center justify-center relative min-h-[180px]">
+                        <ResponsiveContainer width="100%" height="100%">
+                            <PieChart>
+                                <Pie data={groupData} cx="50%" cy="50%" innerRadius={60} outerRadius={80} paddingAngle={5} dataKey="value">
+                                    {groupData.map((entry, index) => <Cell key={`cell-${index}`} fill={entry.color} stroke="none" />)}
+                                </Pie>
+                                <RechartsTooltip />
+                            </PieChart>
+                        </ResponsiveContainer>
+                        <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                            <span className="text-3xl font-black text-gray-800">100%</span>
+                            <span className="text-[10px] text-gray-400 font-bold uppercase">Cơ cấu</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* 4. MAIN CHARTS & DETAILS */}
             <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
-                {/* Main Chart (2/3 width) - Changed to BarChart */}
+                {/* Main Content Column (2/3) */}
                 <div className="xl:col-span-2 space-y-8">
+                    {/* Disbursement Chart (Full Width in column) */}
                     <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
                         <div className="flex justify-between items-center mb-6">
                             <div className="flex items-center gap-3">
@@ -241,75 +287,62 @@ const Dashboard: React.FC = () => {
                         </div>
                     </div>
 
-                    {/* Portfolio Status Grid */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        {/* Pie Chart: Project Status */}
-                        <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 flex flex-col">
-                            <h3 className="text-sm font-black text-gray-800 uppercase tracking-widest mb-4 flex items-center gap-2">
-                                <Activity className="w-4 h-4 text-blue-500" /> Trạng thái dự án
+                    {/* NEW WIDGET FOR DIRECTOR: LEGAL & SITE CLEARANCE MONITOR */}
+                    <div className="bg-white p-6 rounded-3xl shadow-sm border border-orange-100 flex flex-col">
+                        <div className="flex justify-between items-center mb-4">
+                            <h3 className="text-sm font-black text-gray-800 uppercase tracking-widest flex items-center gap-2">
+                                <FileBox className="w-4 h-4 text-orange-500" /> Theo dõi Vướng mắc (GPMB & Pháp lý)
                             </h3>
-                            <div className="flex-1 flex items-center justify-center relative">
-                                <ResponsiveContainer width="100%" height={200}>
-                                    <PieChart>
-                                        <Pie data={projectStatusData} cx="50%" cy="50%" innerRadius={60} outerRadius={80} paddingAngle={5} dataKey="value">
-                                            {projectStatusData.map((entry, index) => <Cell key={`cell-${index}`} fill={entry.color} stroke="none" />)}
-                                        </Pie>
-                                        <RechartsTooltip />
-                                    </PieChart>
-                                </ResponsiveContainer>
-                                <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                                    <span className="text-3xl font-black text-gray-800">{mockProjects.length}</span>
-                                    <span className="text-[10px] text-gray-400 font-bold uppercase">Dự án</span>
-                                </div>
-                            </div>
-                            <div className="grid grid-cols-2 gap-3 mt-4">
-                                {projectStatusData.map((item, idx) => (
-                                    <div key={idx} className="flex items-center justify-between">
-                                        <div className="flex items-center gap-1.5 overflow-hidden">
-                                            <div className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: item.color }}></div>
-                                            <span className="text-[11px] font-bold text-gray-500 truncate" title={item.name}>{item.name}</span>
-                                        </div>
-                                        <span className="text-[11px] font-black text-gray-800">{item.value}</span>
-                                    </div>
-                                ))}
-                            </div>
+                            <button className="text-[10px] font-bold text-blue-600 hover:underline">Chi tiết</button>
                         </div>
 
-                        {/* Pie Chart: Groups */}
-                        <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 flex flex-col">
-                            <h3 className="text-sm font-black text-gray-800 uppercase tracking-widest mb-4 flex items-center gap-2">
-                                <Building2 className="w-4 h-4 text-purple-500" /> Phân loại nhóm dự án
-                            </h3>
-                            <div className="flex-1 flex items-center justify-center relative">
-                                <ResponsiveContainer width="100%" height={200}>
-                                    <PieChart>
-                                        <Pie data={groupData} cx="50%" cy="50%" innerRadius={60} outerRadius={80} paddingAngle={5} dataKey="value">
-                                            {groupData.map((entry, index) => <Cell key={`cell-${index}`} fill={entry.color} stroke="none" />)}
-                                        </Pie>
-                                        <RechartsTooltip />
-                                    </PieChart>
-                                </ResponsiveContainer>
-                                <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                                    <span className="text-3xl font-black text-gray-800">100%</span>
-                                    <span className="text-[10px] text-gray-400 font-bold uppercase">Cơ cấu</span>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            {/* Legal Issues */}
+                            <div className="p-4 bg-orange-50/50 rounded-2xl border border-orange-100">
+                                <h4 className="text-[11px] font-bold text-orange-800 uppercase mb-3 flex items-center gap-2">
+                                    <Briefcase className="w-3 h-3" /> Hồ sơ pháp lý
+                                </h4>
+                                <div className="space-y-3">
+                                    <div className="flex justify-between items-center">
+                                        <span className="text-xs text-gray-600 font-medium">Chờ phê duyệt chủ trương</span>
+                                        <span className="text-xs font-black text-gray-800 bg-white px-2 py-0.5 rounded border border-gray-100 shadow-sm">3 dự án</span>
+                                    </div>
+                                    <div className="flex justify-between items-center">
+                                        <span className="text-xs text-gray-600 font-medium">Đang điều chỉnh TMĐT</span>
+                                        <span className="text-xs font-black text-orange-600 bg-white px-2 py-0.5 rounded border border-orange-100 shadow-sm">1 dự án</span>
+                                    </div>
+                                    <div className="w-full bg-gray-200 h-1.5 rounded-full mt-2 overflow-hidden">
+                                        <div className="bg-orange-400 h-full rounded-full" style={{ width: '65%' }}></div>
+                                    </div>
+                                    <p className="text-[9px] text-gray-400 text-right mt-1">Hoàn thành 65% hồ sơ năm</p>
                                 </div>
                             </div>
-                            <div className="grid grid-cols-2 gap-3 mt-4">
-                                {groupData.map((item, idx) => (
-                                    <div key={idx} className="flex items-center justify-between">
-                                        <div className="flex items-center gap-1.5 overflow-hidden">
-                                            <div className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: item.color }}></div>
-                                            <span className="text-[11px] font-bold text-gray-500 truncate" title={item.name}>{item.name}</span>
-                                        </div>
-                                        <span className="text-[11px] font-black text-gray-800">{item.value}</span>
+
+                            {/* Site Clearance (GPMB) */}
+                            <div className="p-4 bg-blue-50/50 rounded-2xl border border-blue-100">
+                                <h4 className="text-[11px] font-bold text-blue-800 uppercase mb-3 flex items-center gap-2">
+                                    <Map className="w-3 h-3" /> Giải phóng mặt bằng
+                                </h4>
+                                <div className="space-y-3">
+                                    <div className="flex justify-between items-center">
+                                        <span className="text-xs text-gray-600 font-medium">Vướng mắc mặt bằng</span>
+                                        <span className="text-xs font-black text-red-600 bg-white px-2 py-0.5 rounded border border-red-100 shadow-sm animate-pulse">2 điểm nghẽn</span>
                                     </div>
-                                ))}
+                                    <div className="flex justify-between items-center">
+                                        <span className="text-xs text-gray-600 font-medium">Đã bàn giao mặt bằng</span>
+                                        <span className="text-xs font-black text-emerald-600 bg-white px-2 py-0.5 rounded border border-emerald-100 shadow-sm">85%</span>
+                                    </div>
+                                    <div className="w-full bg-gray-200 h-1.5 rounded-full mt-2 overflow-hidden">
+                                        <div className="bg-blue-500 h-full rounded-full" style={{ width: '85%' }}></div>
+                                    </div>
+                                    <p className="text-[9px] text-gray-400 text-right mt-1">Tăng 5% so với tháng trước</p>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                {/* Sidebar Column (1/3 width) - Remaining Widgets */}
+                {/* Sidebar Column (1/3) */}
                 <div className="space-y-6">
                     {/* UPCOMING DEADLINES - Mocked from Tasks */}
                     <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
