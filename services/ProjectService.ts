@@ -1,7 +1,7 @@
 // Project Service - CRUD operations for Projects
 import api from './api';
 import { mockProjects } from '../mockData';
-import { Project, ProjectStatus, ProjectGroup } from '../types';
+import { Project, ProjectStatus, ProjectGroup, BiddingPackage, PackageStatus, CapitalAllocation, Disbursement } from '../types';
 import type { QueryParams } from '../types/api';
 
 // Local storage key for persisted projects
@@ -209,6 +209,136 @@ export class ProjectService {
      */
     static async search(query: string): Promise<Project[]> {
         return this.getAll({ search: query });
+    }
+    /**
+     * Get bidding packages for a project
+     */
+    static async getPackagesByProject(projectId: string): Promise<BiddingPackage[]> {
+        // Mock data
+        return api.get(`/projects/${projectId}/packages`, () => {
+            return [
+                {
+                    PackageID: 'PKG-001',
+                    ProjectID: projectId,
+                    PackageNumber: 'XL-01',
+                    PackageName: 'Thi công xây dựng hạng mục chung',
+                    Price: 15000000000,
+                    SelectionMethod: 'OpenBidding',
+                    BidType: 'Online',
+                    ContractType: 'LumpSum',
+                    Status: PackageStatus.Contracted, // Assuming Contracted map to appropriate enum or use Casting if enum mismatch
+                    contractorName: 'Công ty CP Xây dựng Hà Tĩnh',
+                    NotificationCode: '20240233491',
+                    PostingDate: '2024-02-15',
+                    BidClosingDate: '2024-03-05',
+                    WinningPrice: 14850000000,
+                    Duration: '360 ngày',
+                    Field: 'Construction'
+                },
+                {
+                    PackageID: 'PKG-002',
+                    ProjectID: projectId,
+                    PackageNumber: 'TV-01',
+                    PackageName: 'Tư vấn giám sát thi công',
+                    Price: 500000000,
+                    SelectionMethod: 'Appointed',
+                    BidType: 'Offline',
+                    ContractType: 'TimeBased',
+                    Status: PackageStatus.Bidding,
+                    Duration: '360 ngày',
+                    Field: 'Consultancy'
+                },
+                {
+                    PackageID: 'PKG-003',
+                    ProjectID: projectId,
+                    PackageNumber: 'XL-02',
+                    PackageName: 'Thi công hệ thống điện nhẹ',
+                    Price: 2000000000,
+                    SelectionMethod: 'OpenBidding',
+                    BidType: 'Online',
+                    ContractType: 'LumpSum',
+                    Status: PackageStatus.Planning,
+                    Duration: '90 ngày',
+                    Field: 'Construction'
+                }
+            ] as unknown as BiddingPackage[];
+        });
+    }
+
+    /**
+     * Get capital and disbursement info
+     */
+    static async getCapitalInfo(projectId: string): Promise<{
+        allocations: CapitalAllocation[];
+        disbursements: Disbursement[];
+        summary: {
+            totalInvestment: number;
+            totalAllocated: number;
+            totalDisbursed: number;
+        }
+    }> {
+        return api.get(`/projects/${projectId}/capital`, () => {
+            const allocations: CapitalAllocation[] = [
+                {
+                    AllocationID: 'AL-2024-01',
+                    ProjectID: projectId,
+                    Year: 2024,
+                    Amount: 10000000000,
+                    Source: 'NganSachTrungUong',
+                    DateAssigned: '2024-01-15',
+                    DecisionNumber: 'QD-UBND-2024'
+                },
+                {
+                    AllocationID: 'AL-2025-01',
+                    ProjectID: projectId,
+                    Year: 2025,
+                    Amount: 5000000000,
+                    Source: 'NganSachDiaPhuong',
+                    DateAssigned: '2025-01-20',
+                    DecisionNumber: 'QD-UBND-2025'
+                }
+            ];
+
+            const disbursements: Disbursement[] = [
+                {
+                    DisbursementID: 'DIS-001',
+                    ProjectID: projectId,
+                    AllocationID: 'AL-2024-01',
+                    Amount: 3000000000,
+                    Date: '2024-03-10',
+                    Status: 'Approved',
+                    Description: 'Tạm ứng hợp đồng XL-01'
+                },
+                {
+                    DisbursementID: 'DIS-002',
+                    ProjectID: projectId,
+                    AllocationID: 'AL-2024-01',
+                    Amount: 2500000000,
+                    Date: '2024-06-20',
+                    Status: 'Approved',
+                    Description: 'Thanh toán đợt 1 XL-01'
+                },
+                {
+                    DisbursementID: 'DIS-003',
+                    ProjectID: projectId,
+                    AllocationID: 'AL-2024-01',
+                    Amount: 1000000000,
+                    Date: '2024-08-15',
+                    Status: 'Pending',
+                    Description: 'Thanh toán TV-01'
+                }
+            ];
+
+            return {
+                allocations,
+                disbursements,
+                summary: {
+                    totalInvestment: 25000000000,
+                    totalAllocated: 15000000000,
+                    totalDisbursed: 5500000000
+                }
+            };
+        });
     }
 }
 

@@ -101,32 +101,55 @@ export enum PackageStatus {
 }
 
 export interface BiddingPackage {
-    PackageID: string; // Changed to string for better ID handling
+    PackageID: string;
     ProjectID: string;
     PackageNumber: string; // Số hiệu gói thầu (VD: XL-01)
     PackageName: string;
     Price: number; // Giá gói thầu
-    SelectionMethod: string; // Đấu thầu rộng rãi, Chỉ định thầu...
-    BidType: string; // Qua mạng, Trực tiếp
-    ContractType: string; // Trọn gói, Đơn giá cố định...
-    // Detailed fields
+    SelectionMethod: 'OpenBidding' | 'Appointed' | 'Competitive' | 'Direct'; // Hình thức lựa chọn
+    BidType: 'Online' | 'Offline'; // Qua mạng / Trực tiếp
+    ContractType: 'LumpSum' | 'UnitPrice' | 'AdjustableUnitPrice' | 'TimeBased'; // Loại hợp đồng
     Status: PackageStatus;
-    NotificationCode?: string; // Số TBMT (VD: 20240212345)
-    PostingDate?: string; // Ngày đăng tải
-    BidClosingDate?: string; // Ngày đóng thầu
-    EstimatePrice?: number; // Dự toán gói thầu (thường = Giá gói thầu)
-    WinningContractorID?: string; // Nhà thầu trúng thầu
-    WinningPrice?: number; // Giá trúng thầu
 
-    // New Detailed Fields from Screenshot
-    KHLCNTCode?: string; // Mã KHLCNT (PL...)
-    Field?: string; // Lĩnh vực (Tư vấn, Xây lắp...)
-    Duration?: string; // Thời gian thực hiện (e.g., 60 ngày)
-    BidFee?: number; // Chi phí nộp e-HSDT
-    DecisionNumber?: string; // Số quyết định phê duyệt
-    DecisionDate?: string; // Ngày phê duyệt
-    DecisionAgency?: string; // Cơ quan ban hành quyết định
-    DecisionFile?: string; // File quyết định
+    // Detailed fields
+    NotificationCode?: string;
+    PostingDate?: string;
+    BidClosingDate?: string;
+    EstimatePrice?: number;
+    WinningContractorID?: string;
+    WinningPrice?: number;
+
+    // Legal & Process Fields
+    KHLCNTCode?: string; // Mã KHLCNT
+    Field?: 'Consultancy' | 'Construction' | 'NonConsultancy' | 'Goods' | 'Mixed';
+    Duration?: string;
+    DecisionNumber?: string;
+    DecisionDate?: string;
+
+    // Link to Contract
+    ContractID?: string;
+}
+
+export interface CapitalAllocation {
+    AllocationID: string;
+    ProjectID: string;
+    Year: number;
+    Amount: number; // Vốn bố trí
+    Source: 'NganSachTrungUong' | 'NganSachDiaPhuong' | 'ODA' | 'Khac';
+    DecisionNumber?: string;
+    DateAssigned: string;
+}
+
+// Ensure Disbursement matches
+export interface Disbursement {
+    DisbursementID: string;
+    ProjectID: string;
+    AllocationID?: string; // Link to specific allocation
+    PaymentID?: number;
+    Amount: number;
+    Date: string;
+    Description?: string;
+    Status: 'Pending' | 'Approved' | 'Rejected';
 }
 
 // NEW: Risk & Issue Management
@@ -350,30 +373,6 @@ export interface WorkflowStep {
     Status: 'Pending' | 'Approved' | 'Rejected';
     Comment?: string;
     Timestamp?: string;
-}
-
-// Module 3: Public Investment Management
-export interface CapitalPlan {
-    PlanID: string;
-    ProjectID: string;
-    Year: number;
-    Amount: number; // Kế hoạch vốn được giao
-    DecisionNumber: string; // Số quyết định
-    DateAssigned: string;
-    Source: string; // Nguồn vốn
-    DisbursedAmount: number; // Đã giải ngân
-}
-
-export interface Disbursement {
-    DisbursementID: string;
-    ProjectID: string;
-    PaymentID?: number; // Link to Payment
-    CapitalPlanID: string; // Link to Capital Plan
-    Amount: number;
-    Date: string;
-    TreasuryCode: string; // Mã giao dịch kho bạc
-    FormType: '03a' | '04a'; // Biểu mẫu kho bạc
-    Status: 'Pending' | 'Approved' | 'Rejected';
 }
 
 // Module 4: Contracts & Bidding Enhancements

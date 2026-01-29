@@ -8,6 +8,8 @@ import { ProjectHeader } from './components/ProjectHeader';
 import { ProjectInfoTab } from './components/tabs/ProjectInfoTab';
 import { ProjectPlanTab } from './components/tabs/ProjectPlanTab';
 import { ProjectBimTab } from './components/tabs/ProjectBimTab';
+import { ProjectPackagesTab } from './components/tabs/ProjectPackagesTab';
+import { ProjectCapitalTab } from './components/tabs/ProjectCapitalTab';
 import { Info, CalendarCheck, Briefcase, Mail, FolderOpen, Layers, Landmark } from 'lucide-react';
 
 const ProjectDetail: React.FC = () => {
@@ -139,10 +141,16 @@ const ProjectDetail: React.FC = () => {
                             onSaveTask={(t) => saveTask(t)}
                         />
                     )}
+                    {activeTab === 'packages' && (
+                        <ProjectPackagesTab projectID={project.ProjectID} />
+                    )}
+                    {activeTab === 'capital' && (
+                        <ProjectCapitalTab projectID={project.ProjectID} />
+                    )}
                     {activeTab === 'bim' && (
                         <ProjectBimTab projectID={project.ProjectID} />
                     )}
-                    {activeTab !== 'info' && activeTab !== 'plan' && activeTab !== 'bim' && (
+                    {activeTab !== 'info' && activeTab !== 'plan' && activeTab !== 'bim' && activeTab !== 'packages' && activeTab !== 'capital' && (
                         <div className="bg-white p-10 rounded-2xl border border-dashed border-gray-200 text-center text-gray-400">
                             <div className="mb-2"><Layers className="w-10 h-10 mx-auto text-gray-200" /></div>
                             <h3 className="font-bold text-gray-600">Tính năng đang cập nhật</h3>
