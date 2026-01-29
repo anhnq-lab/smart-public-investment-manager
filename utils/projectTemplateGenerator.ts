@@ -103,6 +103,9 @@ export const generateProjectTasks = (projectID: string, group: ProjectGroup, sta
     };
 
     // --- PHASE 1: PREPARATION ---
+
+    // 1.1: Investment Policy (Chủ trương đầu tư)
+    // Group C usually requires this, but simplified.
     tasks.push(createAutoTask(
         '1.1', 'PREP_POLICY',
         'Lập, thẩm định, phê duyệt Báo cáo đề xuất chủ trương đầu tư',
@@ -110,19 +113,32 @@ export const generateProjectTasks = (projectID: string, group: ProjectGroup, sta
         'Luật Đầu tư công 2019'
     ));
 
-    tasks.push(createAutoTask(
-        '1.2', 'PREP_SURVEY',
-        'Khảo sát xây dựng (Giai đoạn chuẩn bị)',
-        'Technical',
-        'Luật Xây dựng 2014, NĐ 15/2021'
-    ));
+    if (group === ProjectGroup.C) {
+        // Group C: Báo cáo KT-KT (Economic-Technical Report)
+        // Skip separate survey (usually combined)
+        tasks.push(createAutoTask(
+            '1.3', 'PREP_FS', // Map to same timeline step for Gantt viz, but title is differnet
+            'Lập, thẩm định, phê duyệt Báo cáo Kinh tế - Kỹ thuật (KT-KT)',
+            'Technical',
+            'Luật Xây dựng 2014, NĐ 15/2021 (Điều 5)'
+        ));
+    } else {
+        // Group A/B: Full Feasibility Study Sequence
+        tasks.push(createAutoTask(
+            '1.2', 'PREP_SURVEY',
+            'Khảo sát xây dựng (Giai đoạn chuẩn bị)',
+            'Technical',
+            'Luật Xây dựng 2014, NĐ 15/2021'
+        ));
 
-    tasks.push(createAutoTask(
-        '1.3', 'PREP_FS',
-        'Lập, thẩm định, phê duyệt Báo cáo NCKT (Dự án đầu tư)',
-        'Technical',
-        'NĐ 15/2021/NĐ-CP, NĐ 10/2021/NĐ-CP'
-    ));
+        tasks.push(createAutoTask(
+            '1.3', 'PREP_FS',
+            'Lập, thẩm định, phê duyệt Báo cáo NCKT (Dự án đầu tư)',
+            'Technical',
+            'NĐ 15/2021/NĐ-CP, NĐ 10/2021/NĐ-CP'
+        ));
+    }
+
 
     // --- PHASE 2: IMPLEMENTATION ---
     // Restart current date slightly to simulate parallel clearance & design
