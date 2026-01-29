@@ -224,13 +224,16 @@ export class ProjectService {
                     PackageName: 'Thi công xây dựng hạng mục chung',
                     Price: 15000000000,
                     SelectionMethod: 'OpenBidding',
+                    SelectionProcedure: 'OneStageOneEnvelope',
                     BidType: 'Online',
                     ContractType: 'LumpSum',
-                    Status: PackageStatus.Contracted, // Assuming Contracted map to appropriate enum or use Casting if enum mismatch
-                    contractorName: 'Công ty CP Xây dựng Hà Tĩnh',
-                    NotificationCode: '20240233491',
+                    Status: PackageStatus.Awarded,
+                    WinningContractorID: 'CT-001',
+                    NotificationCode: 'IB2400012345',
+                    KHLCNTCode: 'PL2400056789',
                     PostingDate: '2024-02-15',
                     BidClosingDate: '2024-03-05',
+                    BidOpeningDate: '2024-03-05',
                     WinningPrice: 14850000000,
                     Duration: '360 ngày',
                     Field: 'Construction'
@@ -242,11 +245,13 @@ export class ProjectService {
                     PackageName: 'Tư vấn giám sát thi công',
                     Price: 500000000,
                     SelectionMethod: 'Appointed',
+                    SelectionProcedure: 'Reduced',
                     BidType: 'Offline',
                     ContractType: 'TimeBased',
                     Status: PackageStatus.Bidding,
                     Duration: '360 ngày',
-                    Field: 'Consultancy'
+                    Field: 'Consultancy',
+                    KHLCNTCode: 'PL2400056789'
                 },
                 {
                     PackageID: 'PKG-003',
@@ -255,11 +260,13 @@ export class ProjectService {
                     PackageName: 'Thi công hệ thống điện nhẹ',
                     Price: 2000000000,
                     SelectionMethod: 'OpenBidding',
+                    SelectionProcedure: 'OneStageOneEnvelope',
                     BidType: 'Online',
                     ContractType: 'LumpSum',
                     Status: PackageStatus.Planning,
                     Duration: '90 ngày',
-                    Field: 'Construction'
+                    Field: 'Construction',
+                    KHLCNTCode: 'PL2400056789'
                 }
             ] as unknown as BiddingPackage[];
         });

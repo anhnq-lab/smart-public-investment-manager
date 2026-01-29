@@ -103,31 +103,68 @@ export enum PackageStatus {
 export interface BiddingPackage {
     PackageID: string;
     ProjectID: string;
-    PackageNumber: string; // Số hiệu gói thầu (VD: XL-01)
-    PackageName: string;
-    Price: number; // Giá gói thầu
-    SelectionMethod: 'OpenBidding' | 'Appointed' | 'Competitive' | 'Direct'; // Hình thức lựa chọn
-    BidType: 'Online' | 'Offline'; // Qua mạng / Trực tiếp
-    ContractType: 'LumpSum' | 'UnitPrice' | 'AdjustableUnitPrice' | 'TimeBased'; // Loại hợp đồng
+    // Core Info (Thông tin chung)
+    PackageNumber: string; // Số hiệu (VD: Gói thầu số 01)
+    PackageName: string;   // Tên gói thầu
+    Price: number;         // Giá gói thầu (Dự toán được duyệt)
+
+    // Legal Classification (Phân loại theo Luật Đấu thầu)
+    SelectionMethod:
+    | 'OpenBidding'            // Đấu thầu rộng rãi
+    | 'LimitedBidding'         // Đấu thầu hạn chế
+    | 'Appointed'              // Chỉ định thầu
+    | 'CompetitiveShopping'    // Chào hàng cạnh tranh
+    | 'DirectProcurement'      // Mua sắm trực tiếp
+    | 'SelfExecution'          // Tự thực hiện
+    | 'CommunityParticipation'; // Cộng đồng tham gia
+
+    SelectionProcedure:
+    | 'OneStageOneEnvelope'    // 1 giai đoạn 1 túi hồ sơ
+    | 'OneStageTwoEnvelope'    // 1 giai đoạn 2 túi hồ sơ
+    | 'TwoStageOneEnvelope'    // 2 giai đoạn 1 túi hồ sơ
+    | 'TwoStageTwoEnvelope'    // 2 giai đoạn 2 túi hồ sơ
+    | 'Reduced'                // Rút gọn
+    | 'Normal';                // Thông thường (cho chào hàng)
+
+    BidType: 'Online' | 'Offline'; // Qua mạng (E-Procurement) / Trực tiếp
+
+    ContractType:
+    | 'LumpSum'                // Trọn gói
+    | 'UnitPrice'              // Đơn giá cố định
+    | 'AdjustableUnitPrice'    // Đơn giá điều chỉnh
+    | 'TimeBased'              // Theo thời gian
+    | 'Percentage'             // Theo tỷ lệ phần trăm
+    | 'Mixed';                 // Hỗn hợp
+
+    Field:
+    | 'Construction'           // Xây lắp
+    | 'Consultancy'            // Tư vấn
+    | 'NonConsultancy'         // Phi tư vấn
+    | 'Goods'                  // Hàng hóa
+    | 'Mixed';                 // Hỗn hợp
+
+    // Status & Process (Quy trình)
     Status: PackageStatus;
 
-    // Detailed fields
-    NotificationCode?: string;
-    PostingDate?: string;
-    BidClosingDate?: string;
-    EstimatePrice?: number;
-    WinningContractorID?: string;
-    WinningPrice?: number;
+    // Key Codes & Dates (Mã định danh & Mốc thời gian)
+    KHLCNTCode?: string;          // Mã Kế hoạch lựa chọn nhà thầu (PL...)
+    NotificationCode?: string;    // Mã Thông báo mời thầu (TBMT: IB...)
 
-    // Legal & Process Fields
-    KHLCNTCode?: string; // Mã KHLCNT
-    Field?: 'Consultancy' | 'Construction' | 'NonConsultancy' | 'Goods' | 'Mixed';
-    Duration?: string;
-    DecisionNumber?: string;
-    DecisionDate?: string;
+    PostingDate?: string;         // Ngày đăng tải E-TBMT
+    BidClosingDate?: string;      // Thời điểm đóng thầu
+    BidOpeningDate?: string;      // Thời điểm mở thầu
 
-    // Link to Contract
-    ContractID?: string;
+    DecisionNumber?: string;      // Quyết định phê duyệt KHLCNT
+    DecisionDate?: string;        // Ngày phê duyệt
+
+    // Result (Kết quả)
+    WinningContractorID?: string; // Nhà thầu trúng thầu
+    WinningPrice?: number;        // Giá trúng thầu
+    ApprovalDate_Result?: string; // Ngày phê duyệt KQLCNT
+
+    // Execution
+    Duration: string;             // Thời gian thực hiện hợp đồng (VD: 360 ngày)
+    ContractID?: string;          // Link to Contract
 }
 
 export interface CapitalAllocation {
