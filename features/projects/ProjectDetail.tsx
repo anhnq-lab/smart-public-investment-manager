@@ -2,19 +2,16 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ProjectService } from '@/services/ProjectService';
 import { NationalGatewayService, SyncResult } from '@/services/NationalGatewayService';
-import { Project, Task, BiddingPackage } from '@/types';
+import { Project } from '@/types';
 import { useTasks, useUpdateTask } from '@/hooks/useTasks';
 import { ProjectHeader } from './components/ProjectHeader';
 import { ProjectInfoTab } from './components/tabs/ProjectInfoTab';
 import { ProjectPlanTab } from './components/tabs/ProjectPlanTab';
-import { FilePreviewModal } from './components/FilePreviewModal';
-// Icons for Tabs
-import { Info, CalendarCheck, PieChart, Briefcase, Mail, FolderOpen, Layers, Landmark } from 'lucide-react';
-import { mockBiddingPackages } from '@/mockData'; // TODO: Move to Service
+import { ProjectBimTab } from './components/tabs/ProjectBimTab';
+import { Info, CalendarCheck, Briefcase, Mail, FolderOpen, Layers, Landmark } from 'lucide-react';
 
 const ProjectDetail: React.FC = () => {
     const { id } = useParams<{ id: string }>();
-    const navigate = useNavigate();
 
     // State
     const [project, setProject] = useState<Project | null>(null);
@@ -142,7 +139,10 @@ const ProjectDetail: React.FC = () => {
                             onSaveTask={(t) => saveTask(t)}
                         />
                     )}
-                    {activeTab !== 'info' && activeTab !== 'plan' && (
+                    {activeTab === 'bim' && (
+                        <ProjectBimTab projectID={project.ProjectID} />
+                    )}
+                    {activeTab !== 'info' && activeTab !== 'plan' && activeTab !== 'bim' && (
                         <div className="bg-white p-10 rounded-2xl border border-dashed border-gray-200 text-center text-gray-400">
                             <div className="mb-2"><Layers className="w-10 h-10 mx-auto text-gray-200" /></div>
                             <h3 className="font-bold text-gray-600">Tính năng đang cập nhật</h3>

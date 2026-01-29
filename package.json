@@ -25,7 +25,8 @@
     "react-router-dom": "^7.10.1",
     "recharts": "^3.6.0",
     "three": "^0.149.0",
-    "web-ifc-three": "^0.0.126"
+    "web-ifc-three": "^0.0.126",
+    "web-ifc-viewer": "^1.0.218"
   },
   "devDependencies": {
     "@types/node": "^22.14.0",
