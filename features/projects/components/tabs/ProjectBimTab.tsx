@@ -12,6 +12,7 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
     const viewerRef = useRef<IfcViewerAPI | null>(null);
     const [isLoading, setIsLoading] = useState(false);
     const [isLoaded, setIsLoaded] = useState(false);
+    const [loadingProgress, setLoadingProgress] = useState(0);
 
     useEffect(() => {
         if (containerRef.current) {
@@ -21,7 +22,7 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
                 container,
                 backgroundColor: new Color(0xffffff)
             });
-            viewer.IFC.setWasmPath("wasm/");
+            viewer.IFC.setWasmPath("/wasm/"); // absolute path
 
             // Basic Setup
             viewer.grid.setGrid();
@@ -43,14 +44,28 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
 
         try {
             setIsLoading(true);
-            // Load IFC File
-            await viewerRef.current.IFC.loadIfc(file, true);
+            setLoadingProgress(0);
+
+            // Load IFC File with Progress Callback
+            await viewerRef.current.IFC.loadIfc(
+                file,
+                true,
+                (api) => { console.log('onError', api) },
+                (props) => {
+                    const total = props.total;
+                    const loaded = props.loaded;
+                    const percent = Math.round((loaded / total) * 100);
+                    setLoadingProgress(percent);
+                }
+            );
+
             setIsLoaded(true);
         } catch (error) {
             console.error("Error loading IFC:", error);
             alert("Không thể tải mô hình IFC. Vui lòng thử lại.");
         } finally {
             setIsLoading(false);
+            setLoadingProgress(0);
         }
     };
 
@@ -101,10 +116,19 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
                 ></div>
 
                 {isLoading && (
-                    <div className="absolute inset-0 flex items-center justify-center bg-white/80 backdrop-blur-sm z-10">
-                        <div className="flex flex-col items-center gap-3">
-                            <Loader2 className="w-8 h-8 text-blue-600 animate-spin" />
-                            <p className="text-gray-600 font-medium">Đang xử lý mô hình...</p>
+                    <div className="absolute inset-0 flex items-center justify-center bg-white/80 backdrop-blur-sm z-10 transition-all duration-300">
+                        <div className="flex flex-col items-center gap-4 w-64 bg-white p-6 rounded-2xl shadow-xl border border-gray-100">
+                            <Loader2 className="w-10 h-10 text-blue-600 animate-spin" />
+                            <div className="w-full space-y-2 text-center">
+                                <p className="text-gray-600 font-semibold text-sm">Đang xử lý mô hình...</p>
+                                <div className="w-full bg-gray-100 rounded-full h-2 overflow-hidden">
+                                    <div
+                                        className="bg-blue-600 h-full transition-all duration-200 ease-out"
+                                        style={{ width: `${loadingProgress}%` }}
+                                    ></div>
+                                </div>
+                                <p className="text-xs text-gray-400 font-mono">{loadingProgress}%</p>
+                            </div>
                         </div>
                     </div>
                 )}
