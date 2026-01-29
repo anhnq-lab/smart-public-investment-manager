@@ -21,6 +21,7 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
                 container,
                 backgroundColor: new Color(0xffffff)
             });
+            viewer.IFC.setWasmPath("wasm/");
 
             // Basic Setup
             viewer.grid.setGrid();
