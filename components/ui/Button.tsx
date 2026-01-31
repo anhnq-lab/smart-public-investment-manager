@@ -1,52 +1,250 @@
-
 import React from 'react';
 import { Loader2 } from 'lucide-react';
 
-interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-    variant?: 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger';
-    size?: 'sm' | 'md' | 'lg' | 'icon';
-    isLoading?: boolean;
+// ========================================
+// BUTTON COMPONENT - Design System v2
+// ========================================
+
+export type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'danger' | 'success' | 'outline' | 'link';
+export type ButtonSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+
+export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+    variant?: ButtonVariant;
+    size?: ButtonSize;
+    loading?: boolean;
+    loadingText?: string;
     leftIcon?: React.ReactNode;
     rightIcon?: React.ReactNode;
+    fullWidth?: boolean;
+    rounded?: boolean;
+    children: React.ReactNode;
 }
 
-export const Button: React.FC<ButtonProps> = ({
+const variantStyles: Record<ButtonVariant, string> = {
+    primary: `
+        bg-primary-500 text-white
+        shadow-lg shadow-primary-500/20
+        hover:bg-primary-600 hover:shadow-primary-500/30
+        active:bg-primary-700
+        focus-visible:ring-primary-500
+    `,
+    secondary: `
+        bg-white text-gray-700 
+        border border-gray-200 shadow-sm
+        hover:bg-gray-50 hover:border-gray-300
+        active:bg-gray-100
+        focus-visible:ring-gray-400
+    `,
+    ghost: `
+        bg-transparent text-gray-600
+        hover:bg-gray-100 hover:text-gray-900
+        active:bg-gray-200
+        focus-visible:ring-gray-400
+    `,
+    danger: `
+        bg-danger-500 text-white
+        shadow-lg shadow-danger-500/20
+        hover:bg-danger-600 hover:shadow-danger-500/30
+        active:bg-danger-700
+        focus-visible:ring-danger-500
+    `,
+    success: `
+        bg-success-500 text-white
+        shadow-lg shadow-success-500/20
+        hover:bg-success-600 hover:shadow-success-500/30
+        active:bg-success-700
+        focus-visible:ring-success-500
+    `,
+    outline: `
+        bg-transparent text-primary-500
+        border-2 border-primary-500
+        hover:bg-primary-50
+        active:bg-primary-100
+        focus-visible:ring-primary-500
+    `,
+    link: `
+        bg-transparent text-primary-500
+        underline-offset-4
+        hover:underline hover:text-primary-600
+        active:text-primary-700
+        focus-visible:ring-primary-500
+        p-0 h-auto
+    `,
+};
+
+const sizeStyles: Record<ButtonSize, string> = {
+    xs: 'px-2.5 py-1 text-xs gap-1',
+    sm: 'px-3 py-1.5 text-sm gap-1.5',
+    md: 'px-4 py-2 text-sm gap-2',
+    lg: 'px-5 py-2.5 text-base gap-2',
+    xl: 'px-6 py-3 text-lg gap-2.5',
+};
+
+const iconSizes: Record<ButtonSize, string> = {
+    xs: 'w-3 h-3',
+    sm: 'w-3.5 h-3.5',
+    md: 'w-4 h-4',
+    lg: 'w-5 h-5',
+    xl: 'w-5 h-5',
+};
+
+export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
+    (
+        {
+            variant = 'primary',
+            size = 'md',
+            loading = false,
+            loadingText,
+            leftIcon,
+            rightIcon,
+            fullWidth = false,
+            rounded = false,
+            disabled,
+            className = '',
+            children,
+            ...props
+        },
+        ref
+    ) => {
+        const isDisabled = disabled || loading;
+
+        const baseStyles = `
+            inline-flex items-center justify-center
+            font-semibold
+            transition-all duration-200 ease-out
+            focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2
+            disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none
+            select-none
+        `;
+
+        const roundedStyle = rounded ? 'rounded-full' : 'rounded-xl';
+        const widthStyle = fullWidth ? 'w-full' : '';
+
+        return (
+            <button
+                ref={ref}
+                disabled={isDisabled}
+                className={`
+                    ${baseStyles}
+                    ${variantStyles[variant]}
+                    ${sizeStyles[size]}
+                    ${roundedStyle}
+                    ${widthStyle}
+                    ${className}
+                `.replace(/\s+/g, ' ').trim()}
+                {...props}
+            >
+                {/* Loading Spinner */}
+                {loading && (
+                    <Loader2
+                        className={`${iconSizes[size]} animate-spin`}
+                        aria-hidden="true"
+                    />
+                )}
+
+                {/* Left Icon */}
+                {!loading && leftIcon && (
+                    <span className={iconSizes[size]} aria-hidden="true">
+                        {leftIcon}
+                    </span>
+                )}
+
+                {/* Button Text */}
+                <span className={loading && !loadingText ? 'opacity-0' : ''}>
+                    {loading && loadingText ? loadingText : children}
+                </span>
+
+                {/* Right Icon */}
+                {!loading && rightIcon && (
+                    <span className={iconSizes[size]} aria-hidden="true">
+                        {rightIcon}
+                    </span>
+                )}
+            </button>
+        );
+    }
+);
+
+Button.displayName = 'Button';
+
+// ========================================
+// ICON BUTTON VARIANT
+// ========================================
+
+export interface IconButtonProps extends Omit<ButtonProps, 'leftIcon' | 'rightIcon' | 'loadingText' | 'children'> {
+    icon: React.ReactNode;
+    'aria-label': string;
+}
+
+export const IconButton = React.forwardRef<HTMLButtonElement, IconButtonProps>(
+    ({ icon, size = 'md', className = '', 'aria-label': ariaLabel, ...props }, ref) => {
+        const iconOnlyPadding: Record<ButtonSize, string> = {
+            xs: 'p-1',
+            sm: 'p-1.5',
+            md: 'p-2',
+            lg: 'p-2.5',
+            xl: 'p-3',
+        };
+
+        return (
+            <Button
+                ref={ref}
+                size={size}
+                className={`${iconOnlyPadding[size]} ${className}`}
+                aria-label={ariaLabel}
+                {...props}
+            >
+                <span className={iconSizes[size]}>{icon}</span>
+            </Button>
+        );
+    }
+);
+
+IconButton.displayName = 'IconButton';
+
+// ========================================
+// BUTTON GROUP
+// ========================================
+
+interface ButtonGroupProps {
+    children: React.ReactNode;
+    className?: string;
+    attached?: boolean;
+}
+
+export const ButtonGroup: React.FC<ButtonGroupProps> = ({
     children,
     className = '',
-    variant = 'primary',
-    size = 'md',
-    isLoading = false,
-    leftIcon,
-    rightIcon,
-    ...props
+    attached = false
 }) => {
-    const baseStyles = "inline-flex items-center justify-center rounded-xl font-medium transition-all focus:outline-none focus:ring-2 focus:ring-offset-1 disabled:opacity-50 disabled:pointer-events-none active:scale-95";
+    if (attached) {
+        return (
+            <div className={`inline-flex ${className}`} role="group">
+                {React.Children.map(children, (child, index) => {
+                    if (!React.isValidElement(child)) return child;
 
-    const variants = {
-        primary: "bg-blue-600 text-white hover:bg-blue-700 shadow-lg shadow-blue-200 border border-transparent",
-        secondary: "bg-gray-100 text-gray-900 hover:bg-gray-200 border border-transparent",
-        outline: "bg-white text-gray-700 border border-gray-300 hover:bg-gray-50",
-        ghost: "bg-transparent text-gray-600 hover:bg-gray-100 hover:text-gray-900",
-        danger: "bg-red-50 text-red-600 hover:bg-red-100 border border-red-200"
-    };
+                    const isFirst = index === 0;
+                    const isLast = index === React.Children.count(children) - 1;
 
-    const sizes = {
-        sm: "h-8 px-3 text-xs",
-        md: "h-10 px-4 text-sm",
-        lg: "h-12 px-6 text-base",
-        icon: "h-10 w-10 p-2"
-    };
+                    return React.cloneElement(child as React.ReactElement<ButtonProps>, {
+                        className: `
+                            ${(child as React.ReactElement<ButtonProps>).props.className || ''}
+                            ${!isFirst ? '-ml-px' : ''}
+                            ${isFirst ? 'rounded-r-none' : ''}
+                            ${isLast ? 'rounded-l-none' : ''}
+                            ${!isFirst && !isLast ? 'rounded-none' : ''}
+                        `.trim(),
+                    });
+                })}
+            </div>
+        );
+    }
 
     return (
-        <button
-            className={`${baseStyles} ${variants[variant]} ${sizes[size]} ${className}`}
-            disabled={isLoading || props.disabled}
-            {...props}
-        >
-            {isLoading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
-            {!isLoading && leftIcon && <span className="mr-2">{leftIcon}</span>}
+        <div className={`inline-flex gap-2 ${className}`} role="group">
             {children}
-            {!isLoading && rightIcon && <span className="ml-2">{rightIcon}</span>}
-        </button>
+        </div>
     );
 };
+
+export default Button;
