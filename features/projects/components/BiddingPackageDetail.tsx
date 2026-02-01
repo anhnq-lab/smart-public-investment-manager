@@ -159,34 +159,40 @@ export const BiddingPackageDetail: React.FC<BiddingPackageDetailProps> = ({
                 </div>
 
                 {/* LIFECYCLE TIMELINE HEADER */}
-                <div className="shrink-0 bg-white border-b border-gray-200 px-6 py-4">
-                    <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Vòng đời gói thầu</h4>
-                    <div className="flex items-center">
+                <div className="shrink-0 bg-gradient-to-r from-slate-50 via-gray-50 to-slate-50 border-b border-gray-200 px-6 py-5">
+                    <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-4">Vòng đời gói thầu</h4>
+                    <div className="relative flex items-center justify-between">
+                        {/* Connector Line - Background */}
+                        <div className="absolute left-0 right-0 top-5 h-1.5 bg-gray-200 rounded-full" style={{ left: '2.5rem', right: '2.5rem' }} />
+                        {/* Connector Line - Progress */}
+                        <div
+                            className="absolute top-5 h-1.5 bg-gradient-to-r from-emerald-500 to-green-500 rounded-full transition-all duration-500"
+                            style={{
+                                left: '2.5rem',
+                                width: actualStage > 0 ? `calc(${Math.min((actualStage - 1) / (LIFECYCLE_STAGES.length - 1) * 100, 100)}% - 5rem)` : '0%'
+                            }}
+                        />
+
                         {LIFECYCLE_STAGES.map((stage, idx) => {
                             const isCompleted = actualStage > stage.id;
                             const isCurrent = actualStage === stage.id;
                             const isPending = actualStage < stage.id;
 
                             return (
-                                <React.Fragment key={stage.id}>
-                                    <div className="flex flex-col items-center">
-                                        <div className={`
-                                            w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold transition-all
-                                            ${isCompleted ? 'bg-green-500 text-white' :
-                                                isCurrent ? 'bg-blue-600 text-white ring-4 ring-blue-100' :
-                                                    'bg-gray-100 text-gray-400'}
-                                        `}>
-                                            {isCompleted ? <CheckCircle2 className="w-5 h-5" /> : <stage.icon className="w-5 h-5" />}
-                                        </div>
-                                        <span className={`text-[10px] mt-1.5 font-medium whitespace-nowrap ${isCompleted ? 'text-green-600' :
-                                                isCurrent ? 'text-blue-600' :
-                                                    'text-gray-400'
-                                            }`}>{stage.name}</span>
+                                <div key={stage.id} className="flex flex-col items-center z-10 relative" style={{ width: `${100 / LIFECYCLE_STAGES.length}%` }}>
+                                    <div className={`
+                                        w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold transition-all shadow-sm
+                                        ${isCompleted ? 'bg-gradient-to-br from-emerald-400 to-green-600 text-white shadow-green-200' :
+                                            isCurrent ? 'bg-gradient-to-br from-blue-500 to-blue-700 text-white ring-4 ring-blue-100 shadow-blue-200' :
+                                                'bg-white text-gray-400 border-2 border-gray-200'}
+                                    `}>
+                                        {isCompleted ? <CheckCircle2 className="w-5 h-5" /> : <stage.icon className="w-5 h-5" />}
                                     </div>
-                                    {idx < LIFECYCLE_STAGES.length - 1 && (
-                                        <div className={`flex-1 h-1 mx-1 rounded ${isCompleted ? 'bg-green-400' : 'bg-gray-200'}`} />
-                                    )}
-                                </React.Fragment>
+                                    <span className={`text-[11px] mt-2 font-medium whitespace-nowrap ${isCompleted ? 'text-green-600' :
+                                        isCurrent ? 'text-blue-600' :
+                                            'text-gray-400'
+                                        }`}>{stage.name}</span>
+                                </div>
                             );
                         })}
                     </div>
@@ -385,7 +391,7 @@ export const BiddingPackageDetail: React.FC<BiddingPackageDetailProps> = ({
                                             <InfoRow label="Thời gian thực hiện" value={relatedContract.Duration || pkg.Duration} />
                                             <InfoRow label="Trạng thái" value={
                                                 <span className={`px-2 py-0.5 rounded text-xs font-medium ${relatedContract.Status === 'Active' ? 'bg-green-100 text-green-600' :
-                                                        relatedContract.Status === 'Completed' ? 'bg-blue-100 text-blue-600' : 'bg-gray-100 text-gray-600'
+                                                    relatedContract.Status === 'Completed' ? 'bg-blue-100 text-blue-600' : 'bg-gray-100 text-gray-600'
                                                     }`}>
                                                     {relatedContract.Status === 'Active' ? 'Đang thực hiện' :
                                                         relatedContract.Status === 'Completed' ? 'Hoàn thành' : relatedContract.Status}
