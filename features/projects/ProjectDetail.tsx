@@ -1,9 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ProjectService } from '@/services/ProjectService';
 import { NationalGatewayService, SyncResult } from '@/services/NationalGatewayService';
-import { Project } from '@/types';
+import { Project, Employee } from '@/types';
 import { useTasks, useUpdateTask } from '@/hooks/useTasks';
+import { useBiddingPackages } from '@/hooks/useBiddingPackages';
+import { mockEmployees } from '@/mockData';
 import { ProjectHeader } from './components/ProjectHeader';
 import { ProjectInfoTab } from './components/tabs/ProjectInfoTab';
 import { ProjectPlanTab } from './components/tabs/ProjectPlanTab';
@@ -45,6 +47,15 @@ const ProjectDetail: React.FC = () => {
     // Derived Data
     const { data: tasks = [] } = useTasks({ projectId: project?.ProjectID });
     const { mutate: saveTask } = useUpdateTask();
+
+    // Get bidding packages for this project
+    const { data: packages = [] } = useBiddingPackages(project?.ProjectID || '');
+
+    // Get project members (filtered from mockEmployees by project.Members)
+    const projectMembers = useMemo<Employee[]>(() => {
+        if (!project?.Members) return mockEmployees.slice(0, 3); // Demo: show 3 employees if no Members
+        return mockEmployees.filter(emp => project.Members?.includes(emp.EmployeeID));
+    }, [project?.Members]);
 
     // Sync Handler
     const handleSync = async () => {
@@ -127,11 +138,20 @@ const ProjectDetail: React.FC = () => {
                     {activeTab === 'info' && (
                         <ProjectInfoTab
                             project={project}
-                            tasks={tasks}
+                            projectMembers={projectMembers}
+                            projectPackages={packages}
                             isSyncing={isSyncing}
                             syncResult={syncResult}
                             isGeneratingReport={isGeneratingReport}
                             onGenerateReport={handleGenerateReport}
+                            onViewMember={(employeeId) => {
+                                // TODO: Navigate to Personnel module
+                                console.log('View member:', employeeId);
+                            }}
+                            onViewPackage={(packageId) => {
+                                // Navigate to Packages tab
+                                setActiveTab('packages');
+                            }}
                         />
                     )}
                     {activeTab === 'plan' && (

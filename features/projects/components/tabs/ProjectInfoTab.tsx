@@ -1,12 +1,12 @@
 import React from 'react';
-import { Project, ProjectStage, InvestmentPolicyDecision, FeasibilityStudy } from '@/types';
+import { Project, ProjectStage, Employee, BiddingPackage } from '@/types';
 import { Landmark, FileBarChart, FileCheck, RefreshCw } from 'lucide-react';
 import { SyncResult } from '@/services/NationalGatewayService';
 import { LifecycleStepper } from '../LifecycleStepper';
-import { ComplianceChecklist } from '../ComplianceChecklist';
 import { DualProgressCard } from '../DualProgressCard';
 import { KeyMetricsHeader } from '../KeyMetricsHeader';
-import { LegalDocumentsSection } from '../LegalDocumentsSection';
+import { ProjectTeamSection } from '../ProjectTeamSection';
+import { ContractorsListSection } from '../ContractorsListSection';
 
 interface ProjectInfoTabProps {
     project: Project & {
@@ -15,44 +15,27 @@ interface ProjectInfoTabProps {
         FinancialProgress?: number;
         RequiresBIM?: boolean;
         BIMStatus?: string;
-        InvestmentPolicy?: InvestmentPolicyDecision;
-        FeasibilityStudy?: FeasibilityStudy;
     };
+    projectMembers: Employee[];
+    projectPackages: BiddingPackage[];
     isSyncing: boolean;
     syncResult: SyncResult | null;
     isGeneratingReport: boolean;
     onGenerateReport: (type: 'Monitoring' | 'Settlement') => void;
+    onViewMember?: (employeeId: string) => void;
+    onViewPackage?: (packageId: string) => void;
 }
 
-// Sample data for demo (will be replaced by API data)
-const sampleInvestmentPolicy: InvestmentPolicyDecision = {
-    DecisionNumber: '1395/QĐ-UBND',
-    DecisionDate: '06/06/2024',
-    Authority: 'UBND tỉnh Hà Tĩnh',
-    Objectives: 'Tăng cường năng lực y tế cơ sở',
-    PreliminaryInvestment: 153173978000,
-    CapitalSources: ['Ngân sách tỉnh', 'Vốn ODA'],
-    Duration: '3 năm',
-    Location: 'Tỉnh Hà Tĩnh',
-    DocumentPath: '/documents/1395-QD-UBND.pdf'
-};
-
-const sampleFeasibilityStudy: FeasibilityStudy = {
-    ReportID: 'FS-2024-001',
-    ProjectID: 'PR2400031160',
-    ApprovalNumber: '2810/QĐ-UBND',
-    ApprovalDate: '15/08/2024',
-    ApprovalAuthority: 'UBND tỉnh Hà Tĩnh',
-    TotalInvestment: 153173978000,
-    DesignPhases: 2,
-    ConstructionScale: 'Cải tạo, nâng cấp 25 Trạm Y tế xã',
-    MainTechnology: 'Công nghệ xây dựng tiêu chuẩn',
-    EnvironmentalApproval: '456/QĐ-TNMT',
-    DocumentPath: '/documents/BCNCKT-2024.pdf'
-};
-
 export const ProjectInfoTab: React.FC<ProjectInfoTabProps> = ({
-    project, isSyncing, syncResult, isGeneratingReport, onGenerateReport
+    project,
+    projectMembers,
+    projectPackages,
+    isSyncing,
+    syncResult,
+    isGeneratingReport,
+    onGenerateReport,
+    onViewMember,
+    onViewPackage
 }) => {
     // Calculate disbursed amount from financial progress
     const disbursedAmount = (project.FinancialProgress ?? 0) * project.TotalInvestment / 100;
@@ -136,16 +119,11 @@ export const ProjectInfoTab: React.FC<ProjectInfoTabProps> = ({
                         </div>
                     </div>
 
-                    {/* Legal Documents Section */}
+                    {/* Project Team Section */}
                     <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden p-5">
-                        <LegalDocumentsSection
-                            investmentPolicy={project.InvestmentPolicy || sampleInvestmentPolicy}
-                            feasibilityStudy={project.FeasibilityStudy || sampleFeasibilityStudy}
-                            approvalDecision={{
-                                number: project.DecisionNumber || '—',
-                                date: project.DecisionDate || '—',
-                                authority: project.DecisionAuthority || 'UBND Tỉnh'
-                            }}
+                        <ProjectTeamSection
+                            members={projectMembers}
+                            onViewMember={onViewMember}
                         />
                     </div>
                 </div>
@@ -158,8 +136,14 @@ export const ProjectInfoTab: React.FC<ProjectInfoTabProps> = ({
                         financialProgress={project.FinancialProgress ?? 0}
                     />
 
-                    {/* Compliance Checklist */}
-                    <ComplianceChecklist project={project} />
+                    {/* Contractors List */}
+                    <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden p-5">
+                        <ContractorsListSection
+                            contractors={[]}
+                            packages={projectPackages}
+                            onViewPackage={onViewPackage}
+                        />
+                    </div>
                 </div>
             </div>
         </div>
@@ -180,4 +164,3 @@ const InfoItem: React.FC<{
         </span>
     </div>
 );
-
