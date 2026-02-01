@@ -23,6 +23,64 @@ export enum ProjectStatus {
     Operation = 4    // Vận hành
 }
 
+// ═══════════════════════════════════════════════════════════════
+// PHÂN LOẠI DỰ ÁN - Luật Đầu tư công 58/2024/QH15
+// ═══════════════════════════════════════════════════════════════
+
+/** Giai đoạn dự án theo NĐ 175/2024 */
+export enum ProjectStage {
+    InvestmentPolicy = 'InvestmentPolicy',   // Chủ trương đầu tư
+    Preparation = 'Preparation',             // Chuẩn bị đầu tư
+    Execution = 'Execution',                 // Thực hiện đầu tư
+    Completion = 'Completion',               // Kết thúc đầu tư
+    Operation = 'Operation'                  // Vận hành
+}
+
+/** Lĩnh vực đầu tư */
+export enum ProjectSector {
+    Transport = 'Transport',           // Giao thông
+    Industry = 'Industry',             // Công nghiệp
+    Agriculture = 'Agriculture',       // Nông lâm ngư nghiệp
+    WaterResources = 'WaterResources', // Thủy lợi, cấp thoát nước
+    Health = 'Health',                 // Y tế
+    Education = 'Education',           // Giáo dục
+    Technology = 'Technology',         // Khoa học công nghệ
+    Other = 'Other'                    // Khác
+}
+
+/**
+ * Ngưỡng phân loại dự án - Luật Đầu tư công 58/2024/QH15
+ * Đơn vị: VND
+ */
+export const PROJECT_THRESHOLDS_2024 = {
+    // Quan trọng quốc gia
+    NATIONAL_IMPORTANCE: 30_000_000_000_000, // 30.000 tỷ
+
+    // Nhóm A - theo lĩnh vực
+    GROUP_A: {
+        TRANSPORT_INDUSTRY: 1_600_000_000_000,   // 1.600 tỷ
+        WATER_RESOURCES: 1_200_000_000_000,      // 1.200 tỷ
+        AGRICULTURE: 1_000_000_000_000,          // 1.000 tỷ
+        SOCIAL: 900_000_000_000                  // 900 tỷ (Y tế, GD, KHCN)
+    },
+
+    // Nhóm C - dưới ngưỡng này
+    GROUP_C: {
+        TRANSPORT_INDUSTRY: 240_000_000_000,     // 240 tỷ
+        WATER_RESOURCES: 160_000_000_000,        // 160 tỷ
+        AGRICULTURE: 120_000_000_000,            // 120 tỷ
+        SOCIAL: 90_000_000_000                   // 90 tỷ
+    },
+
+    // Thời hạn bố trí vốn tối đa (năm)
+    CAPITAL_DURATION: {
+        GROUP_QN: 6,
+        GROUP_A: 6,
+        GROUP_B: 4,
+        GROUP_C: 3
+    }
+} as const;
+
 export interface Project {
     ProjectID: string; // CHAR(13) - Mã số định danh duy nhất
     ProjectName: string; // NVARCHAR(500)
@@ -66,9 +124,82 @@ export interface Project {
         NationalProjectCode?: string;
         SyncError?: string;
     };
+
+    // Extended fields for lifecycle tracking (Phase 2 enhancement)
+    Stage?: ProjectStage;
+    Sector?: ProjectSector;
+    CalculatedGroup?: ProjectGroup;
+    PhysicalProgress?: number;   // Tiến độ khối lượng (%)
+    FinancialProgress?: number;  // Tiến độ giải ngân (%)
+    RequiresBIM?: boolean;
+    BIMStatus?: 'NotRequired' | 'Pending' | 'EIRApproved' | 'BEPApproved' | 'Active';
+    CDEProjectCode?: string;
 }
 
-// 3.2. Bảng dữ liệu: ConstructionWorks (Công trình Xây dựng)
+// ═══════════════════════════════════════════════════════════════
+// INTERFACES MỚI - Theo NĐ 175/2024 và Luật ĐTC 58/2024
+// ═══════════════════════════════════════════════════════════════
+
+/** Quyết định phê duyệt chủ trương đầu tư */
+export interface InvestmentPolicyDecision {
+    DecisionNumber: string;           // Số quyết định
+    DecisionDate: string;             // Ngày ban hành
+    Authority: string;                // Quốc hội / TTg / UBND
+    Objectives: string;               // Mục tiêu đầu tư
+    PreliminaryInvestment: number;    // Sơ bộ tổng mức đầu tư
+    CapitalSources: string[];         // Nguồn vốn
+    Duration: string;                 // Thời gian thực hiện
+    Location: string;                 // Địa điểm
+    DocumentPath?: string;            // Đường dẫn file scan
+}
+
+/** Báo cáo nghiên cứu khả thi (BCNCKT / F/S) */
+export interface FeasibilityStudy {
+    ReportID: string;
+    ProjectID: string;
+    ApprovalNumber: string;           // Số QĐ phê duyệt
+    ApprovalDate: string;             // Ngày phê duyệt
+    ApprovalAuthority: string;        // Cơ quan phê duyệt
+    TotalInvestment: number;          // Tổng mức đầu tư được duyệt
+    DesignPhases: 1 | 2 | 3;          // Số bước thiết kế
+    ConstructionScale: string;        // Quy mô xây dựng
+    MainTechnology: string;           // Giải pháp công nghệ chính
+    EnvironmentalApproval?: string;   // Số QĐ phê duyệt ĐTM
+    DocumentPath?: string;
+}
+
+/** Lịch sử chuyển giai đoạn */
+export interface StageTransition {
+    stage: ProjectStage;
+    startDate: string;
+    endDate?: string;
+    decisionNumber?: string;
+    decisionDate?: string;
+}
+
+/** Interface mở rộng đầy đủ cho Project (sử dụng cho detail views) */
+export interface ProjectExtended extends Project {
+    // Lifecycle
+    Stage: ProjectStage;
+    StageHistory: StageTransition[];
+
+    // Legal Documents
+    InvestmentPolicy?: InvestmentPolicyDecision;
+    FeasibilityStudy?: FeasibilityStudy;
+
+    // Classification
+    Sector: ProjectSector;
+    CalculatedGroup?: ProjectGroup;
+
+    // Progress
+    PhysicalProgress: number;
+    FinancialProgress: number;
+
+    // BIM (NĐ 175)
+    RequiresBIM: boolean;
+    BIMStatus: 'NotRequired' | 'Pending' | 'EIRApproved' | 'BEPApproved' | 'Active';
+    CDEProjectCode?: string;
+}
 export interface ConstructionWork {
     WorkID: string; // CHAR(13)
     ProjectID: string; // CHAR(13)
@@ -151,7 +282,7 @@ export interface BiddingPackage {
     | 'SelfExecution'          // Tự thực hiện
     | 'CommunityParticipation'; // Cộng đồng tham gia
 
-    SelectionProcedure:
+    SelectionProcedure?:
     | 'OneStageOneEnvelope'    // 1 giai đoạn 1 túi hồ sơ
     | 'OneStageTwoEnvelope'    // 1 giai đoạn 2 túi hồ sơ
     | 'TwoStageOneEnvelope'    // 2 giai đoạn 1 túi hồ sơ
@@ -169,7 +300,7 @@ export interface BiddingPackage {
     | 'Percentage'             // Theo tỷ lệ phần trăm
     | 'Mixed';                 // Hỗn hợp
 
-    Field:
+    Field?:
     | 'Construction'           // Xây lắp
     | 'Consultancy'            // Tư vấn
     | 'NonConsultancy'         // Phi tư vấn
@@ -196,7 +327,7 @@ export interface BiddingPackage {
     ApprovalDate_Result?: string; // Ngày phê duyệt KQLCNT
 
     // Execution
-    Duration: string;             // Thời gian thực hiện hợp đồng (VD: 360 ngày)
+    Duration?: string;            // Thời gian thực hiện hợp đồng (VD: 360 ngày)
     ContractID?: string;          // Link to Contract
 
     // KHLCNT Specific Fields (For Export)
@@ -227,12 +358,28 @@ export interface CapitalAllocation {
 export interface Disbursement {
     DisbursementID: string;
     ProjectID: string;
+    CapitalPlanID?: string; // Link to specific capital plan
     AllocationID?: string; // Link to specific allocation
     PaymentID?: number;
     Amount: number;
     Date: string;
+    TreasuryCode?: string; // Mã Kho bạc
+    FormType?: string; // Biểu mẫu (03a, 03b...)
     Description?: string;
     Status: 'Pending' | 'Approved' | 'Rejected';
+}
+
+// Capital Plan (Kế hoạch vốn)
+export interface CapitalPlan {
+    PlanID: string;
+    ProjectID: string;
+    Year: number;
+    Amount: number;
+    DecisionNumber?: string;
+    DateAssigned?: string;
+    Source: string;
+    DisbursedAmount?: number;
+    Status?: 'Draft' | 'Approved' | 'Allocated' | 'Closed';
 }
 
 // NEW: Risk & Issue Management
@@ -400,7 +547,7 @@ export interface Task {
     Description?: string;
     ProjectID: string;
     AssigneeID: string; // Link to Employee
-    StartDate: string; // ISO Date String
+    StartDate?: string; // ISO Date String (optional)
     DueDate: string;   // ISO Date String
     Status: TaskStatus;
     Priority: TaskPriority;

@@ -1,6 +1,6 @@
 
 import {
-    Project, ProjectGroup, InvestmentType, ProjectStatus,
+    Project, ProjectGroup, InvestmentType, ProjectStatus, ProjectStage, ProjectSector,
     Contractor, Contract, ContractStatus, Payment, PaymentType, PaymentStatus, Document, DocCategory,
     BiddingPackage, PackageStatus, Employee, EmployeeStatus, Task, TaskStatus, TaskPriority, AuditLog, Role,
     PackageIssue, RiskLevel, PackageHealthCheck,
@@ -242,7 +242,27 @@ export const mockProjects: Project[] = haTinhProjects.map((p, i) => {
         Coordinates: {
             lat: 18.33 + (Math.random() * 0.1 - 0.05), // Random spread
             lng: 105.9 + (Math.random() * 0.1 - 0.05)
-        }
+        },
+
+        // Phase 2 Enhancement: Lifecycle & Compliance
+        Stage: p.status === ProjectStatus.Preparation ? ProjectStage.Preparation :
+            p.status === ProjectStatus.Execution ? ProjectStage.Execution :
+                p.status === ProjectStatus.Finished ? ProjectStage.Completion :
+                    ProjectStage.Operation,
+
+        Sector: p.name.includes('Y tế') || p.name.includes('Bệnh viện') || p.name.includes('Trạm') ? ProjectSector.Health :
+            p.name.includes('Trường') || p.name.includes('Giáo dục') ? ProjectSector.Education :
+                p.name.includes('đường') || p.name.includes('Giao thông') ? ProjectSector.Transport :
+                    ProjectSector.Other,
+
+        // BIM Requirements (Group B+ or Grade II+)
+        RequiresBIM: p.total >= 80000000000 || (p.total > 100000000000),
+        BIMStatus: p.total >= 80000000000
+            ? (p.status === ProjectStatus.Execution ? 'Active' : 'Pending')
+            : 'NotRequired',
+
+        PhysicalProgress: progress,
+        FinancialProgress: paymentProgress
     };
 });
 
@@ -1395,9 +1415,9 @@ mockProjects.forEach((project, index) => {
                 PackageNumber: `${sc.type}-0${i + 1}`,
                 PackageName: sc.name || `Gói thầu số ${i + 1} - ${sc.type}`,
                 Price: sc.val * 1.05, // Estimate slightly higher than contract
-                SelectionMethod: sc.val > 1000000000 ? "Đấu thầu rộng rãi" : "Chỉ định thầu",
-                BidType: "Qua mạng",
-                ContractType: "Trọn gói",
+                SelectionMethod: sc.val > 1000000000 ? 'OpenBidding' : 'Appointed',
+                BidType: 'Online',
+                ContractType: 'LumpSum',
                 Status: PackageStatus.Awarded,
                 WinningContractorID: contractorID,
                 WinningPrice: sc.val,
@@ -1449,9 +1469,9 @@ mockProjects.forEach((project, index) => {
             PackageNumber: "XL-01",
             PackageName: `Thi công xây dựng công trình chính`,
             Price: project.TotalInvestment * 0.8,
-            SelectionMethod: "Đấu thầu rộng rãi",
-            BidType: "Qua mạng",
-            ContractType: "Đơn giá điều chỉnh",
+            SelectionMethod: 'OpenBidding',
+            BidType: 'Online',
+            ContractType: 'AdjustableUnitPrice',
             Status: pkgStatus,
             WinningContractorID: pkgStatus === PackageStatus.Awarded ? contractorID : undefined,
             WinningPrice: pkgStatus === PackageStatus.Awarded ? project.TotalInvestment * 0.78 : undefined
@@ -1494,15 +1514,15 @@ const truongChinhTriPackages: BiddingPackage[] = [
         PackageNumber: "01.1/TV-BVTC",
         PackageName: "01.1/TV-BVTC: Tư vấn khảo sát, lập Thiết kế bản vẽ thi công và dự toán công trình Đầu tư xây dựng Trường chính trị Trần Phú",
         Price: 1973350000,
-        SelectionMethod: "Đấu thầu rộng rãi",
-        BidType: "Qua mạng",
-        ContractType: "Trọn gói",
+        SelectionMethod: 'OpenBidding',
+        BidType: 'Online',
+        ContractType: 'LumpSum',
         Status: PackageStatus.Bidding,
         NotificationCode: "IB2500519537",
         PostingDate: "20/11/2025 16:47",
         BidClosingDate: "08/12/2025 07:40",
         KHLCNTCode: "PL2500295620",
-        Field: "Tư vấn",
+        Field: 'Consultancy',
         Duration: "60 ngày",
         BidFee: 330000,
         DecisionNumber: "241",
@@ -1516,9 +1536,9 @@ const truongChinhTriPackages: BiddingPackage[] = [
         PackageNumber: "01.2/TĐGTB",
         PackageName: "Thẩm định giá thiết bị vật tư công trình Đầu tư xây dựng Trường chính trị Trần Phú",
         Price: 60000000,
-        SelectionMethod: "Chỉ định thầu rút gọn",
-        BidType: "Không qua mạng",
-        ContractType: "Trọn gói",
+        SelectionMethod: 'Appointed',
+        BidType: 'Offline',
+        ContractType: 'LumpSum',
         Status: PackageStatus.Planning,
         PostingDate: "2025-11-20"
     },
@@ -1528,9 +1548,9 @@ const truongChinhTriPackages: BiddingPackage[] = [
         PackageNumber: "01.3/TVTT",
         PackageName: "Tư vấn thẩm tra thiết kế và dự toán công trình Đầu tư xây dựng Trường chính trị Trần Phú",
         Price: 237727000,
-        SelectionMethod: "Chỉ định thầu rút gọn",
-        BidType: "Không qua mạng",
-        ContractType: "Trọn gói",
+        SelectionMethod: 'Appointed',
+        BidType: 'Offline',
+        ContractType: 'LumpSum',
         Status: PackageStatus.Planning,
         PostingDate: "2025-11-20"
     }
@@ -1548,16 +1568,16 @@ const tramYTePackages: BiddingPackage[] = [
         Price: 2944652402,
         WinningPrice: 2885758000,
         WinningContractorID: "3001328159", // Vinaxim
-        SelectionMethod: "Đấu thầu rộng rãi",
-        BidType: "Qua mạng",
-        ContractType: "Trọn gói",
+        SelectionMethod: 'OpenBidding',
+        BidType: 'Online',
+        ContractType: 'LumpSum',
         Status: PackageStatus.Awarded,
         NotificationCode: "IB2400183847",
         PostingDate: "23/07/2024 07:38",
         DecisionNumber: "145",
         DecisionDate: "16/07/2024",
         DecisionAgency: "Ban quản lý dự án đầu tư xây dựng công trình dân dụng và công nghiệp tỉnh Hà Tĩnh",
-        Field: "Tư vấn",
+        Field: 'Consultancy',
         Duration: "30 ngày"
     },
     {
@@ -1566,9 +1586,9 @@ const tramYTePackages: BiddingPackage[] = [
         PackageNumber: "01.5/TV-TT",
         PackageName: "01.5/TV-TT: Tư vấn thẩm tra thiết kế, dự toán",
         Price: 341527205,
-        SelectionMethod: "Chỉ định thầu rút gọn",
-        BidType: "Không qua mạng",
-        ContractType: "Trọn gói",
+        SelectionMethod: 'Appointed',
+        BidType: 'Offline',
+        ContractType: 'LumpSum',
         Status: PackageStatus.Planning,
         Duration: "14 ngày"
     },
@@ -1578,9 +1598,9 @@ const tramYTePackages: BiddingPackage[] = [
         PackageNumber: "01.6/TV-CHTB",
         PackageName: "01.6/TV-CHTB: Tư vấn lập cấu hình, tính năng kỹ thuật trang thiết bị y tế",
         Price: 57750000,
-        SelectionMethod: "Chỉ định thầu rút gọn",
-        BidType: "Không qua mạng",
-        ContractType: "Trọn gói",
+        SelectionMethod: 'Appointed',
+        BidType: 'Offline',
+        ContractType: 'LumpSum',
         Status: PackageStatus.Planning,
         Duration: "20 ngày"
     },
@@ -1590,9 +1610,9 @@ const tramYTePackages: BiddingPackage[] = [
         PackageNumber: "01.7/TV-TĐG",
         PackageName: "01.7/TV-TĐG: Tư vấn thẩm định giá",
         Price: 138600000,
-        SelectionMethod: "Chỉ định thầu rút gọn",
-        BidType: "Không qua mạng",
-        ContractType: "Trọn gói",
+        SelectionMethod: 'Appointed',
+        BidType: 'Offline',
+        ContractType: 'LumpSum',
         Status: PackageStatus.Planning,
         Duration: "20 ngày"
     }
@@ -1607,12 +1627,12 @@ const kimAnhPackages: BiddingPackage[] = [
         PackageNumber: "PL2500186419", // Using KHLCNT number as proxy if needed, or mapping it to KHLCNTCode
         PackageName: "Điều chỉnh nguồn vốn và phê duyệt kế hoạch lựa chọn nhà thầu bổ sung dự án Xây dựng đường nối từ đường Quốc lộ 2 - Minh Trí - Xuân Hòa đi Khu công nghiệp sạch Sóc Sơn với đường Nội Bài - 35 - Minh Phú",
         Price: 52267727,
-        SelectionMethod: "Đấu thầu rộng rãi",
-        BidType: "Qua mạng",
-        ContractType: "Trọn gói",
+        SelectionMethod: 'OpenBidding',
+        BidType: 'Online',
+        ContractType: 'LumpSum',
         Status: PackageStatus.Planning,
         KHLCNTCode: "PL2500186419",
-        Field: "Hỗn hợp", // Inferring
+        Field: 'Mixed', // Inferring
         Duration: "—",
         DecisionNumber: "1032/QĐ-UBND",
         DecisionDate: "28/02/2025",
@@ -1624,12 +1644,12 @@ const kimAnhPackages: BiddingPackage[] = [
         PackageNumber: "PL2500138388",
         PackageName: "Kế hoạch lựa chọn nhà thầu dự án: Xây dựng đường nối Quốc lộ 2 - Minh Trí - Xuân Hòa đi Khu công nghiệp sạch Sóc Sơn với đường Nội Bài - 35 - Minh Phú",
         Price: 27570010110,
-        SelectionMethod: "Đấu thầu rộng rãi",
-        BidType: "Qua mạng",
-        ContractType: "Đơn giá điều chỉnh",
+        SelectionMethod: 'OpenBidding',
+        BidType: 'Online',
+        ContractType: 'AdjustableUnitPrice',
         Status: PackageStatus.Awarded, // "KHLCNT đã thực hiện xong"
         KHLCNTCode: "PL2500138388",
-        Field: "Xây lắp",
+        Field: 'Construction',
         Duration: "—"
     }
 ];
@@ -1643,9 +1663,9 @@ const vuBanPackages: BiddingPackage[] = [
         PackageNumber: "4",
         PackageName: "Gói thầu số 4: Tư vấn lập thiết kế bản vẽ thi công và dự toán",
         Price: 669709097,
-        SelectionMethod: "Chỉ định thầu rút gọn",
-        BidType: "Không qua mạng",
-        ContractType: "Trọn gói",
+        SelectionMethod: 'Appointed',
+        BidType: 'Offline',
+        ContractType: 'LumpSum',
         Duration: "30 ngày",
         DecisionAgency: "Ban Quản lý dự án đầu tư - Hạ tầng xã Kim Anh",
         WinningContractorID: "vn0107740913",
@@ -1661,9 +1681,9 @@ const vuBanPackages: BiddingPackage[] = [
         PackageNumber: "5",
         PackageName: "Gói thầu số 5: Tư vấn thẩm tra thiết kế bản vẽ thi công và dự toán",
         Price: 83393476,
-        SelectionMethod: "Chỉ định thầu rút gọn",
-        BidType: "Không qua mạng",
-        ContractType: "Trọn gói",
+        SelectionMethod: 'Appointed',
+        BidType: 'Offline',
+        ContractType: 'LumpSum',
         Duration: "30 ngày",
         DecisionAgency: "Ban Quản lý dự án đầu tư - Hạ tầng xã Kim Anh",
         WinningContractorID: "vn0108622278",
@@ -1679,9 +1699,9 @@ const vuBanPackages: BiddingPackage[] = [
         PackageNumber: "6",
         PackageName: "Gói thầu số 6: Tư vấn lập hồ sơ mời thầu, đánh giá hồ sơ dự thầu gói thầu 7",
         Price: 67614740,
-        SelectionMethod: "Chỉ định thầu rút gọn",
-        BidType: "Không qua mạng",
-        ContractType: "Trọn gói",
+        SelectionMethod: 'Appointed',
+        BidType: 'Offline',
+        ContractType: 'LumpSum',
         Duration: "30 ngày",
         DecisionAgency: "Ban Quản lý dự án đầu tư - Hạ tầng xã Kim Anh",
         WinningContractorID: "vn0107128531",
@@ -1697,11 +1717,11 @@ const vuBanPackages: BiddingPackage[] = [
         PackageNumber: "7",
         PackageName: "Gói thầu số 7: Toàn bộ phần xây dựng",
         Price: 18548389278,
-        SelectionMethod: "Đấu thầu rộng rãi",
-        BidType: "Qua mạng",
-        ContractType: "Đơn giá cố định",
+        SelectionMethod: 'OpenBidding',
+        BidType: 'Online',
+        ContractType: 'UnitPrice',
         Status: PackageStatus.Awarded,
-        Field: "Xây lắp",
+        Field: 'Construction',
         Duration: "360 ngày",
         NotificationCode: "IB2500605959",
         PostingDate: "29/12/2025 18:01",
@@ -1719,11 +1739,11 @@ const vuBanPackages: BiddingPackage[] = [
         PackageNumber: "8",
         PackageName: "Gói thầu số 8: Tư vấn giám sát thi công xây dựng",
         Price: 538963519,
-        SelectionMethod: "Chỉ định thầu rút gọn",
-        BidType: "Không qua mạng",
-        ContractType: "Trọn gói",
+        SelectionMethod: 'Appointed',
+        BidType: 'Offline',
+        ContractType: 'LumpSum',
         Status: PackageStatus.Awarded,
-        Field: "Tư vấn",
+        Field: 'Consultancy',
         Duration: "360 ngày",
         EstimatePrice: 552663414,
         WinningContractorID: "vn0104426593",
@@ -1740,11 +1760,11 @@ const vuBanPackages: BiddingPackage[] = [
         PackageNumber: "9",
         PackageName: "Gói thầu số 9: Bảo hiểm công trình",
         Price: 14300856,
-        SelectionMethod: "Chỉ định thầu rút gọn",
-        BidType: "Không qua mạng",
-        ContractType: "Theo tỷ lệ phần trăm", // Mapped roughly to logic or kept as string if type allows
+        SelectionMethod: 'Appointed',
+        BidType: 'Offline',
+        ContractType: 'Percentage', // Mapped roughly to logic or kept as string if type allows
         Status: PackageStatus.Awarded,
-        Field: "Phi tư vấn", // Keeping as Tu van per request table usually, or Non-Consulting. User said Tu van in table column 4
+        Field: 'NonConsultancy', // Keeping as Tu van per request table usually, or Non-Consulting. User said Tu van in table column 4
         Duration: "360 ngày",
         EstimatePrice: 14780061,
         WinningContractorID: "vn0304422444",

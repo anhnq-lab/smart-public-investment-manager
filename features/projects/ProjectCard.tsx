@@ -1,7 +1,8 @@
 import React from 'react';
-import { Project, ProjectStatus } from '../../types';
-import { MapPin, Building, ArrowRight, Wallet, Users, Calendar } from 'lucide-react';
+import { Project, ProjectStatus, ProjectGroup, ProjectStage } from '../../types';
+import { MapPin, Building, ArrowRight, Wallet, Users, Calendar, Layers } from 'lucide-react';
 import { formatCurrency } from '../../mockData';
+import { getGroupGradient, requiresBIM, getStageIndex } from '../../utils/projectCompliance';
 
 interface ProjectCardProps {
     project: Project;
@@ -37,6 +38,25 @@ const getStatusIconStyles = (status: ProjectStatus) => {
         case ProjectStatus.Operation: return { bg: 'bg-violet-50', text: 'text-violet-600' };
         default: return { bg: 'bg-gray-50', text: 'text-gray-500' };
     }
+};
+
+/** Mini stepper for lifecycle visualization */
+const StageIndicator: React.FC<{ stage?: ProjectStage }> = ({ stage }) => {
+    const stageIndex = stage ? getStageIndex(stage) : 0;
+    // Simplified 3-step: Chuẩn bị (0-1), Thực hiện (2), Kết thúc (3-4)
+    const activeStep = stageIndex <= 1 ? 0 : stageIndex <= 2 ? 1 : 2;
+
+    return (
+        <div className="flex gap-0.5 items-center">
+            {[0, 1, 2].map((i) => (
+                <div
+                    key={i}
+                    className={`h-1 w-4 rounded-full transition-all ${i <= activeStep ? 'bg-blue-500' : 'bg-gray-200'
+                        }`}
+                />
+            ))}
+        </div>
+    );
 };
 
 const ProgressBar: React.FC<{ value: number; colorClass: string }> = ({ value, colorClass }) => (
@@ -134,16 +154,40 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({ project, onClick, layo
                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-                <div className="absolute top-4 right-4">
+
+                {/* Top badges row */}
+                <div className="absolute top-4 left-4 right-4 flex justify-between items-start">
+                    {/* Group Badge - Left */}
+                    <span className={`${getGroupGradient(project.GroupCode)} text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wide shadow-md`}>
+                        {project.GroupCode === 'QN' ? 'QT Quốc gia' : `Nhóm ${project.GroupCode}`}
+                    </span>
+
+                    {/* Status Badge - Right */}
                     <span className={`${badgeColor} text-white text-[10px] font-bold px-3 py-1.5 rounded-full uppercase tracking-wide shadow-sm`}>
                         {getStatusLabel(project.Status)}
                     </span>
                 </div>
+
+                {/* Bottom info with stage indicator */}
                 <div className="absolute bottom-4 left-4 right-4 text-white">
-                    <h3 className="font-bold text-lg leading-tight mb-1 truncate" title={project.ProjectName}>{project.ProjectName}</h3>
-                    <div className="flex items-center gap-1.5 text-xs text-gray-200">
-                        <MapPin className="w-3.5 h-3.5" />
-                        <span>{project.LocationCode}</span>
+                    <div className="flex items-center justify-between mb-1">
+                        <h3 className="font-bold text-lg leading-tight truncate flex-1" title={project.ProjectName}>{project.ProjectName}</h3>
+                        {/* BIM indicator */}
+                        {project.RequiresBIM && (
+                            <span className={`ml-2 flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded ${project.BIMStatus === 'Active' ? 'bg-green-500/80' : 'bg-yellow-500/80'
+                                }`}>
+                                <Layers className="w-3 h-3" />
+                                BIM
+                            </span>
+                        )}
+                    </div>
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-1.5 text-xs text-gray-200">
+                            <MapPin className="w-3.5 h-3.5" />
+                            <span>{project.LocationCode}</span>
+                        </div>
+                        {/* Stage mini-stepper */}
+                        <StageIndicator stage={project.Stage} />
                     </div>
                 </div>
             </div>
