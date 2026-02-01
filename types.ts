@@ -100,6 +100,39 @@ export enum PackageStatus {
     Posted = 'Posted'          // Đã đăng tải TBMT
 }
 
+/**
+ * Hạn mức áp dụng hình thức lựa chọn nhà thầu theo NĐ 214/2025/NĐ-CP
+ * Hiệu lực: 04/08/2025, thay thế NĐ 24/2024 và NĐ 17/2025
+ */
+export const BIDDING_THRESHOLDS = {
+    /** Gói thầu ≤50 triệu: Không cần kế hoạch bố trí vốn, chỉ cần hóa đơn chứng từ */
+    DIRECT_PURCHASE: 50_000_000,
+
+    /** Chỉ định thầu rút gọn - Dự toán mua sắm không hình thành dự án */
+    CDT_SIMPLIFIED_ESTIMATE: 500_000_000,
+    /** Chỉ định thầu rút gọn - Gói thầu dịch vụ tư vấn */
+    CDT_SIMPLIFIED_CONSULTANCY: 800_000_000,
+    /** Chỉ định thầu rút gọn - Xây lắp, hàng hóa, phi tư vấn, hỗn hợp */
+    CDT_SIMPLIFIED_CONSTRUCTION: 2_000_000_000,
+
+    /** Chào giá trực tuyến rút gọn - Dự toán mua sắm */
+    ONLINE_QUOTATION_ESTIMATE: 2_000_000_000,
+    /** Chào giá trực tuyến rút gọn - Dự án */
+    ONLINE_QUOTATION_PROJECT: 5_000_000_000,
+
+    /** Chào hàng cạnh tranh (tăng từ 5 tỷ lên 10 tỷ) */
+    COMPETITIVE_SHOPPING: 10_000_000_000,
+} as const;
+
+/** Phân loại hình thức LCNT áp dụng theo hạn mức NĐ 214/2025 */
+export type ApplicableSelectionMethod =
+    | 'DirectPurchase'      // ≤50 triệu - Mua sắm trực tiếp
+    | 'SimplifiedCDT'       // CĐT rút gọn (theo loại gói thầu)
+    | 'NormalCDT'           // CĐT thông thường
+    | 'OnlineQuotation'     // Chào giá trực tuyến
+    | 'CompetitiveShopping' // Chào hàng cạnh tranh
+    | 'OpenBidding';        // Đấu thầu rộng rãi
+
 export interface BiddingPackage {
     PackageID: string;
     ProjectID: string;
@@ -172,6 +205,12 @@ export interface BiddingPackage {
     SelectionDuration?: string;   // Thời gian tổ chức lựa chọn nhà thầu (VD: 45 ngày)
     SelectionStartDate?: string;  // Thời gian bắt đầu tổ chức lựa chọn nhà thầu (VD: Tháng 12/2025)
     HasOption?: boolean;          // Tùy chọn mua thêm (Có/Không)
+
+    // NĐ 214/2025 Compliance Fields
+    ApplicableMethod?: ApplicableSelectionMethod; // Auto-detected từ Price + Field
+    IsSimplifiedCDT?: boolean;    // Có phải CĐT rút gọn không
+    SimplifiedReason?: string;    // Lý do áp dụng CĐT rút gọn (nếu có)
+    RequiresAppraisal?: boolean;  // Có cần thẩm định không (theo NĐ mới = false cho KHLCNT)
 }
 
 export interface CapitalAllocation {
