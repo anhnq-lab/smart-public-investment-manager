@@ -1259,8 +1259,117 @@ const specificContracts = [
 ];
 
 export const mockBiddingPackages: BiddingPackage[] = [];
-export const mockContracts: Contract[] = [];
-export const mockPayments: Payment[] = [];
+
+// Complete Contract for PKG-000 (Full Lifecycle Demo)
+export const mockContracts: Contract[] = [
+    {
+        ContractID: 'CTR-PKG-000',
+        PackageID: 'PKG-000',
+        ContractorID: 'CT-COMPLETE',
+        SignDate: '2024-04-15',
+        Value: 27800000000,
+        AdvanceRate: 20,
+        Warranty: 12,
+        Status: ContractStatus.Executing,
+    },
+    {
+        ContractID: 'CTR-PKG-001',
+        PackageID: 'PKG-001',
+        ContractorID: 'CT-001',
+        SignDate: '2024-03-25',
+        Value: 14850000000,
+        AdvanceRate: 20,
+        Warranty: 12,
+        Status: ContractStatus.Executing,
+    }
+];
+
+// Complete Payments for PKG-000 (Full lifecycle including settlement)
+export const mockPayments: Payment[] = [
+    // === Payments for PKG-000 - Complete Package ===
+    {
+        PaymentID: 1,
+        ContractID: 'CTR-PKG-000',
+        BatchNo: 1,
+        Type: PaymentType.Advance,
+        Amount: 5560000000, // 20% of 27.8 tỷ
+        TreasuryRef: 'PC-2024-00123',
+        Status: PaymentStatus.Transferred,
+    },
+    {
+        PaymentID: 2,
+        ContractID: 'CTR-PKG-000',
+        BatchNo: 2,
+        Type: PaymentType.Volume,
+        Amount: 4000000000,
+        TreasuryRef: 'PC-2024-00456',
+        Status: PaymentStatus.Transferred,
+    },
+    {
+        PaymentID: 3,
+        ContractID: 'CTR-PKG-000',
+        BatchNo: 3,
+        Type: PaymentType.Volume,
+        Amount: 5500000000,
+        TreasuryRef: 'PC-2024-00789',
+        Status: PaymentStatus.Transferred,
+    },
+    {
+        PaymentID: 4,
+        ContractID: 'CTR-PKG-000',
+        BatchNo: 4,
+        Type: PaymentType.Volume,
+        Amount: 6000000000,
+        TreasuryRef: 'PC-2025-00012',
+        Status: PaymentStatus.Transferred,
+    },
+    {
+        PaymentID: 5,
+        ContractID: 'CTR-PKG-000',
+        BatchNo: 5,
+        Type: PaymentType.Volume,
+        Amount: 4500000000,
+        TreasuryRef: 'PC-2025-00345',
+        Status: PaymentStatus.Transferred,
+    },
+    {
+        PaymentID: 6,
+        ContractID: 'CTR-PKG-000',
+        BatchNo: 6,
+        Type: PaymentType.Volume,
+        Amount: 850000000, // Thu hồi tạm ứng, giữ lại bảo hành 5%
+        TreasuryRef: 'PC-2025-00678',
+        Status: PaymentStatus.Transferred,
+    },
+    // === Payments for PKG-001 ===
+    {
+        PaymentID: 7,
+        ContractID: 'CTR-PKG-001',
+        BatchNo: 1,
+        Type: PaymentType.Advance,
+        Amount: 2970000000, // 20% of 14.85 tỷ
+        TreasuryRef: 'PC-2024-00088',
+        Status: PaymentStatus.Transferred,
+    },
+    {
+        PaymentID: 8,
+        ContractID: 'CTR-PKG-001',
+        BatchNo: 2,
+        Type: PaymentType.Volume,
+        Amount: 3500000000,
+        TreasuryRef: 'PC-2024-00234',
+        Status: PaymentStatus.Transferred,
+    },
+    {
+        PaymentID: 9,
+        ContractID: 'CTR-PKG-001',
+        BatchNo: 3,
+        Type: PaymentType.Volume,
+        Amount: 4200000000,
+        TreasuryRef: 'PC-2024-00567',
+        Status: PaymentStatus.Pending,
+    }
+];
 
 // GENERATE DATA: Project -> Package (1) -> Contract (1)
 mockProjects.forEach((project, index) => {
