@@ -1,8 +1,14 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { Task, TaskStatus } from '@/types';
-import { Layers, CheckCircle2, Circle, Clock, ChevronDown, ChevronRight, FileText, AlertCircle } from 'lucide-react';
+import {
+    Layers, CheckCircle2, Circle, Clock, ChevronDown, ChevronRight,
+    FileText, AlertCircle, Plus, Calendar, User, Flag
+} from 'lucide-react';
 import { ProjectGanttChart } from '../ProjectGanttChart';
 import { ProjectTaskModal } from '../ProjectTaskModal';
+import { PlanStatisticsHeader } from '../PlanStatisticsHeader';
+import { PhaseProgressCard } from '../PhaseProgressCard';
+import { MilestoneTimeline } from '../MilestoneTimeline';
 
 interface ProjectPlanTabProps {
     tasks: Task[];
@@ -107,12 +113,12 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({ tasks: initialTa
                     Title: `${item.id}. ${item.title}`,
                     StartDate: agg.startDate,
                     DueDate: agg.dueDate,
-                    Status: agg.status, // Now includes InProgress check
+                    Status: agg.status,
                     Priority: 'Medium',
                     Description: 'Tổng hợp từ các công việc con',
                     AssigneeID: '',
                     TimelineStep: item.code,
-                    ProjectID: projectID || 'SYNTHETIC' // Fix Missing ProjectID
+                    ProjectID: projectID || 'SYNTHETIC'
                 } as Task;
             })
             .filter((t): t is Task => t !== null);
@@ -122,7 +128,7 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({ tasks: initialTa
     // UI State
     const [showGantt, setShowGantt] = useState(true);
     const [expandedPhases, setExpandedPhases] = useState<Record<string, boolean>>({
-        'PHASE_1': true, 'PHASE_2': true, 'PHASE_3': true
+        'PHASE_1': false, 'PHASE_2': false, 'PHASE_3': false
     });
     const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
     const [selectedStep, setSelectedStep] = useState<{ name: string; code: string } | null>(null);
@@ -166,7 +172,7 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({ tasks: initialTa
                 TaskID: `NEW_${Date.now()}`,
                 ProjectID: projectID || 'PROJ_TEMP',
                 CreatedDate: new Date().toISOString()
-            } as Task; // CreatedDate is handled? Need to update Type
+            } as Task;
             setTasks(prev => [...prev, updatedTask]);
         }
 
@@ -176,160 +182,227 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({ tasks: initialTa
         setIsTaskModalOpen(false);
     };
 
+    // Priority color helper
+    const getPriorityColor = (priority?: string) => {
+        switch (priority) {
+            case 'High': return 'text-red-600 bg-red-50 border-red-200';
+            case 'Medium': return 'text-amber-600 bg-amber-50 border-amber-200';
+            case 'Low': return 'text-green-600 bg-green-50 border-green-200';
+            default: return 'text-gray-600 bg-gray-50 border-gray-200';
+        }
+    };
+
+    // Check if task is overdue
+    const isOverdue = (task: Task) => {
+        if (task.Status === TaskStatus.Done) return false;
+        if (!task.DueDate) return false;
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const dueDate = new Date(task.DueDate);
+        dueDate.setHours(0, 0, 0, 0);
+        return dueDate < today;
+    };
+
     return (
         <div className="animate-in slide-in-from-bottom-2 duration-500 space-y-6 max-w-6xl mx-auto py-4">
 
-            {/* Header */}
-            <div className="bg-blue-50 border border-blue-100 p-4 rounded-lg flex justify-between items-center">
-                <div>
-                    <h3 className="text-blue-900 font-bold flex items-center gap-2">
-                        <FileText className="w-5 h-5" />
-                        Kế hoạch thực hiện dự án
-                    </h3>
-                    <p className="text-xs text-blue-600 mt-1">
-                        Căn cứ theo Điều 4, Nghị định 175/NĐ-CP về trình tự đầu tư xây dựng.
-                    </p>
-                </div>
-                <div className="flex gap-2">
-                    <button
-                        onClick={() => setShowGantt(!showGantt)}
-                        className={`text-xs font-bold px-3 py-2 rounded-md transition-colors border ${showGantt ? 'bg-white text-blue-700 border-blue-200 shadow-sm' : 'bg-transparent text-blue-500 border-transparent hover:bg-blue-100'}`}
-                    >
-                        {showGantt ? 'Ẩn biểu đồ Gantt' : 'Xem biểu đồ Gantt'}
-                    </button>
-                </div>
-            </div>
+            {/* 1. Statistics Header */}
+            <PlanStatisticsHeader tasks={tasks} />
 
-            {/* Gantt Chart Section */}
-            {showGantt && (
-                <div className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
-                    <div className="px-4 py-3 border-b border-gray-100 bg-gray-50 flex justify-between items-center">
-                        <h4 className="font-bold text-gray-700 text-xs uppercase flex items-center gap-2">
-                            <Layers className="w-4 h-4" /> Tiến độ tổng thể (Gantt)
-                        </h4>
-                        <span className="text-[10px] text-gray-400 font-normal normal-case">
-                            * Chỉ hiển thị các hạng mục lớn đã có công việc thành phần
-                        </span>
-                    </div>
-                    <div className="p-4">
-                        {ganttTasks.length > 0 ? (
-                            <ProjectGanttChart tasks={ganttTasks} />
-                        ) : (
-                            <div className="h-32 flex items-center justify-center text-gray-400 text-sm italic">
-                                Chưa có công việc nào được cập nhật thời gian. Hãy thêm công việc bên dưới.
-                            </div>
-                        )}
-                    </div>
-                </div>
-            )}
-
-            {/* Standard Implementation Steps */}
-            <div className="space-y-4">
-                {DECREE_175_PHASES.map((phase) => (
-                    <div key={phase.id} className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
-                        <div
-                            className="px-6 py-4 bg-gray-50 border-b border-gray-200 flex items-center justify-between cursor-pointer hover:bg-gray-100 transition-colors"
-                            onClick={() => togglePhase(phase.id)}
-                        >
-                            <div>
-                                <h4 className="font-bold text-gray-800 text-sm uppercase">{phase.title}</h4>
-                                <p className="text-xs text-gray-500 mt-0.5">{phase.description}</p>
-                            </div>
-                            {expandedPhases[phase.id] ? <ChevronDown className="w-5 h-5 text-gray-400" /> : <ChevronRight className="w-5 h-5 text-gray-400" />}
+            {/* 2. Main Layout: Phases + Milestone Sidebar */}
+            <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+                {/* Left: Phases (3 cols) */}
+                <div className="lg:col-span-3 space-y-4">
+                    {/* Header */}
+                    <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-100 p-4 rounded-xl flex justify-between items-center">
+                        <div>
+                            <h3 className="text-blue-900 font-bold flex items-center gap-2">
+                                <FileText className="w-5 h-5" />
+                                Kế hoạch thực hiện dự án
+                            </h3>
+                            <p className="text-xs text-blue-600 mt-1">
+                                Căn cứ theo Điều 4, Nghị định 175/NĐ-CP về trình tự đầu tư xây dựng.
+                            </p>
                         </div>
+                        <div className="flex gap-2">
+                            <button
+                                onClick={() => setShowGantt(!showGantt)}
+                                className={`text-xs font-bold px-3 py-2 rounded-lg transition-colors border ${showGantt ? 'bg-white text-blue-700 border-blue-200 shadow-sm' : 'bg-transparent text-blue-500 border-transparent hover:bg-blue-100'}`}
+                            >
+                                {showGantt ? 'Ẩn biểu đồ Gantt' : 'Xem biểu đồ Gantt'}
+                            </button>
+                        </div>
+                    </div>
 
-                        {expandedPhases[phase.id] && (
-                            <div className="divide-y divide-gray-100">
-                                {phase.items.map((item) => {
-                                    const linkedTasks = tasks.filter(t => t.TimelineStep === item.code);
-                                    const agg = stepAggregates.get(item.code);
-                                    const parentStatus = agg?.status || TaskStatus.Todo;
-                                    const isParentDone = parentStatus === TaskStatus.Done;
+                    {/* Gantt Chart Section */}
+                    {showGantt && (
+                        <div className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
+                            <div className="px-4 py-3 border-b border-gray-100 bg-gray-50 flex justify-between items-center">
+                                <h4 className="font-bold text-gray-700 text-xs uppercase flex items-center gap-2">
+                                    <Layers className="w-4 h-4" /> Tiến độ tổng thể (Gantt)
+                                </h4>
+                                <span className="text-[10px] text-gray-400 font-normal normal-case">
+                                    * Chỉ hiển thị các hạng mục lớn đã có công việc thành phần
+                                </span>
+                            </div>
+                            <div className="p-4">
+                                {ganttTasks.length > 0 ? (
+                                    <ProjectGanttChart tasks={ganttTasks} />
+                                ) : (
+                                    <div className="h-32 flex items-center justify-center text-gray-400 text-sm italic">
+                                        Chưa có công việc nào được cập nhật thời gian. Hãy thêm công việc bên dưới.
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    )}
 
-                                    return (
-                                        <div key={item.id} className="p-4 hover:bg-slate-50 transition-colors group">
-                                            <div className="flex items-start gap-4">
-                                                <div className="mt-1">
-                                                    {isParentDone ? (
-                                                        <CheckCircle2 className="w-5 h-5 text-emerald-500" />
-                                                    ) : parentStatus === TaskStatus.Review ? (
-                                                        <AlertCircle className="w-5 h-5 text-indigo-500" />
-                                                    ) : parentStatus === TaskStatus.InProgress ? (
-                                                        <Clock className="w-5 h-5 text-orange-500 animate-pulse" />
-                                                    ) : (
-                                                        <Circle className="w-5 h-5 text-gray-300" />
-                                                    )}
-                                                </div>
+                    {/* Phase Cards with Expandable Items */}
+                    <div className="space-y-3">
+                        {DECREE_175_PHASES.map((phase) => (
+                            <div key={phase.id}>
+                                {/* Phase Header Card */}
+                                <PhaseProgressCard
+                                    phase={phase}
+                                    tasks={tasks}
+                                    isExpanded={expandedPhases[phase.id]}
+                                    onToggle={() => togglePhase(phase.id)}
+                                />
 
-                                                <div className="flex-1">
-                                                    <div className="flex justify-between items-start">
-                                                        <h5 className={`text-sm font-medium ${isParentDone ? 'text-gray-900' : 'text-gray-600'}`}>
-                                                            {item.id}. {item.title}
-                                                        </h5>
-                                                        <span className="text-[10px] bg-gray-100 text-gray-500 px-2 py-0.5 rounded border border-gray-200 opacity-0 group-hover:opacity-100 transition-opacity">
-                                                            Điều 4 - NĐ175
-                                                        </span>
-                                                    </div>
+                                {/* Expanded Items */}
+                                {expandedPhases[phase.id] && (
+                                    <div className="mt-2 ml-4 border-l-2 border-gray-200 pl-4 space-y-2">
+                                        {phase.items.map((item) => {
+                                            const linkedTasks = tasks.filter(t => t.TimelineStep === item.code);
+                                            const agg = stepAggregates.get(item.code);
+                                            const parentStatus = agg?.status || TaskStatus.Todo;
+                                            const isParentDone = parentStatus === TaskStatus.Done;
 
-                                                    {(agg?.startDate || agg?.dueDate) && (
-                                                        <div className="text-[10px] text-gray-400 mt-1 mb-2 flex gap-2">
-                                                            {agg.startDate && <span>Bắt đầu: {new Date(agg.startDate).toLocaleDateString('vi-VN')}</span>}
-                                                            {agg.dueDate && <span>Kết thúc: {new Date(agg.dueDate).toLocaleDateString('vi-VN')}</span>}
+                                            return (
+                                                <div key={item.id} className="bg-white border border-gray-100 rounded-lg p-4 hover:border-gray-200 transition-colors group">
+                                                    <div className="flex items-start gap-3">
+                                                        {/* Status Icon */}
+                                                        <div className="mt-0.5">
+                                                            {isParentDone ? (
+                                                                <CheckCircle2 className="w-5 h-5 text-emerald-500" />
+                                                            ) : parentStatus === TaskStatus.Review ? (
+                                                                <AlertCircle className="w-5 h-5 text-indigo-500" />
+                                                            ) : parentStatus === TaskStatus.InProgress ? (
+                                                                <Clock className="w-5 h-5 text-orange-500 animate-pulse" />
+                                                            ) : (
+                                                                <Circle className="w-5 h-5 text-gray-300" />
+                                                            )}
                                                         </div>
-                                                    )}
 
-                                                    {linkedTasks.length > 0 && (
-                                                        <div className="mt-2 ml-[-4px] pl-4 border-l-2 border-gray-200 space-y-1">
-                                                            {linkedTasks.map(t => (
-                                                                <div
-                                                                    key={t.TaskID}
-                                                                    onClick={() => handleEditTask(t)}
-                                                                    className="flex items-center gap-2 text-xs cursor-pointer hover:bg-white p-1 rounded transition-colors group/task"
+                                                        {/* Content */}
+                                                        <div className="flex-1 min-w-0">
+                                                            <div className="flex justify-between items-start">
+                                                                <h5 className={`text-sm font-medium ${isParentDone ? 'text-gray-900' : 'text-gray-700'}`}>
+                                                                    {item.id}. {item.title}
+                                                                </h5>
+                                                                <button
+                                                                    onClick={() => handleAddTask(item.title, item.code)}
+                                                                    className="opacity-0 group-hover:opacity-100 transition-opacity px-2 py-1 text-xs font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 rounded border border-blue-200 flex items-center gap-1"
                                                                 >
-                                                                    <button
-                                                                        onClick={(e) => handleQuickStatusChange(e, t)}
-                                                                        className={`w-3 h-3 rounded-full mr-2 transition-transform hover:scale-125 focus:outline-none ${t.Status === 'Done' ? 'bg-emerald-500' :
-                                                                            t.Status === 'Review' ? 'bg-indigo-500' :
-                                                                                t.Status === 'InProgress' ? 'bg-orange-500' :
-                                                                                    'bg-gray-300 hover:bg-gray-400'
-                                                                            }`}
-                                                                        title="Bấm để chuyển trạng thái"
-                                                                    />
-                                                                    <span className={`font-medium transition-colors ${t.Status === 'Done' ? 'text-gray-400 line-through' :
-                                                                        t.Status === 'Review' ? 'text-indigo-600' :
-                                                                            t.Status === 'InProgress' ? 'text-orange-600' :
-                                                                                'text-gray-700 hover:text-blue-600'
-                                                                        }`}>
-                                                                        {t.Title}
-                                                                    </span>
-                                                                    <span className="text-gray-400 text-[10px]">- {t.AssigneeID || 'Chưa giao'}</span>
-                                                                    <span className="text-[10px] text-gray-400 ml-auto flex items-center gap-2">
-                                                                        {t.DueDate ? new Date(t.DueDate).toLocaleDateString('vi-VN') : ''}
-                                                                        <span className="opacity-0 group-hover/task:opacity-100 text-blue-600 text-[9px] font-bold uppercase tracking-wider">
-                                                                            Sửa
-                                                                        </span>
+                                                                    <Plus className="w-3 h-3" />
+                                                                    Thêm
+                                                                </button>
+                                                            </div>
+
+                                                            {/* Date range */}
+                                                            {(agg?.startDate || agg?.dueDate) && (
+                                                                <div className="text-[10px] text-gray-400 mt-1 flex items-center gap-3">
+                                                                    <span className="flex items-center gap-1">
+                                                                        <Calendar className="w-3 h-3" />
+                                                                        {agg.startDate && new Date(agg.startDate).toLocaleDateString('vi-VN')}
+                                                                        {agg.startDate && agg.dueDate && ' → '}
+                                                                        {agg.dueDate && new Date(agg.dueDate).toLocaleDateString('vi-VN')}
                                                                     </span>
                                                                 </div>
-                                                            ))}
+                                                            )}
+
+                                                            {/* Task List */}
+                                                            {linkedTasks.length > 0 && (
+                                                                <div className="mt-3 space-y-2">
+                                                                    {linkedTasks.map(t => (
+                                                                        <div
+                                                                            key={t.TaskID}
+                                                                            onClick={() => handleEditTask(t)}
+                                                                            className={`flex items-center gap-3 p-2 rounded-lg cursor-pointer transition-all hover:shadow-sm ${isOverdue(t) ? 'bg-red-50 border border-red-100' : 'bg-gray-50 hover:bg-white border border-transparent hover:border-gray-100'
+                                                                                }`}
+                                                                        >
+                                                                            {/* Status Toggle */}
+                                                                            <button
+                                                                                onClick={(e) => handleQuickStatusChange(e, t)}
+                                                                                className={`w-4 h-4 rounded-full transition-transform hover:scale-125 focus:outline-none ring-2 ring-offset-1 ${t.Status === 'Done' ? 'bg-emerald-500 ring-emerald-200' :
+                                                                                        t.Status === 'Review' ? 'bg-indigo-500 ring-indigo-200' :
+                                                                                            t.Status === 'InProgress' ? 'bg-orange-500 ring-orange-200' :
+                                                                                                'bg-gray-200 ring-gray-100 hover:bg-gray-300'
+                                                                                    }`}
+                                                                                title="Click để chuyển trạng thái"
+                                                                            />
+
+                                                                            {/* Task Title */}
+                                                                            <span className={`flex-1 text-sm font-medium ${t.Status === 'Done' ? 'text-gray-400 line-through' :
+                                                                                    isOverdue(t) ? 'text-red-700' :
+                                                                                        t.Status === 'Review' ? 'text-indigo-700' :
+                                                                                            t.Status === 'InProgress' ? 'text-orange-700' :
+                                                                                                'text-gray-700'
+                                                                                }`}>
+                                                                                {t.Title}
+                                                                            </span>
+
+                                                                            {/* Priority Badge */}
+                                                                            {t.Priority && (
+                                                                                <span className={`text-[10px] px-1.5 py-0.5 rounded border ${getPriorityColor(t.Priority)}`}>
+                                                                                    <Flag className="w-2.5 h-2.5 inline mr-0.5" />
+                                                                                    {t.Priority}
+                                                                                </span>
+                                                                            )}
+
+                                                                            {/* Assignee */}
+                                                                            {t.AssigneeID && (
+                                                                                <span className="text-xs text-gray-500 flex items-center gap-1">
+                                                                                    <User className="w-3 h-3" />
+                                                                                    {t.AssigneeID}
+                                                                                </span>
+                                                                            )}
+
+                                                                            {/* Due Date */}
+                                                                            {t.DueDate && (
+                                                                                <span className={`text-xs ${isOverdue(t) ? 'text-red-600 font-semibold' : 'text-gray-400'}`}>
+                                                                                    {new Date(t.DueDate).toLocaleDateString('vi-VN')}
+                                                                                </span>
+                                                                            )}
+                                                                        </div>
+                                                                    ))}
+                                                                </div>
+                                                            )}
+
+                                                            {/* Empty state */}
+                                                            {linkedTasks.length === 0 && (
+                                                                <p className="text-xs text-gray-400 mt-2 italic">
+                                                                    Chưa có công việc nào
+                                                                </p>
+                                                            )}
                                                         </div>
-                                                    )}
+                                                    </div>
                                                 </div>
-                                                <div className="opacity-0 group-hover:opacity-100 transition-opacity">
-                                                    <button
-                                                        onClick={() => handleAddTask(item.title, item.code)}
-                                                        className="px-3 py-1.5 text-xs font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-md border border-blue-200"
-                                                    >
-                                                        + Thêm công việc
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    );
-                                })}
+                                            );
+                                        })}
+                                    </div>
+                                )}
                             </div>
-                        )}
+                        ))}
                     </div>
-                ))}
+                </div>
+
+                {/* Right: Milestone Timeline (1 col) */}
+                <div className="lg:col-span-1">
+                    <div className="sticky top-4">
+                        <MilestoneTimeline />
+                    </div>
+                </div>
             </div>
 
             <ProjectTaskModal
