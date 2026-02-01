@@ -41,7 +41,7 @@ export const ProjectInfoTab: React.FC<ProjectInfoTabProps> = ({
     const disbursedAmount = (project.FinancialProgress ?? 0) * project.TotalInvestment / 100;
 
     return (
-        <div className="animate-in slide-in-from-bottom-2 duration-500 space-y-6 max-w-6xl mx-auto py-4">
+        <div className="animate-in slide-in-from-bottom-2 duration-500 space-y-6 py-4">
 
             {/* LIFECYCLE STEPPER - Full Width */}
             <LifecycleStepper

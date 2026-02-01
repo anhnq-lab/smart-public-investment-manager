@@ -2077,6 +2077,549 @@ const generateDefaultTasks = (): Task[] => {
         TimelineStep: '2. Lựa chọn nhà thầu'
     });
 
+    // ============================================================
+    // COMPREHENSIVE SAMPLE DATA FOR COMPLETED PROJECT
+    // Project: DA7632186 - Tu bổ, tôn tạo Khu di tích Quốc gia đặc biệt Đại thi hào Nguyễn Du
+    // This provides full lifecycle tasks across all NĐ 175 phases
+    // ============================================================
+    const completedProjectId = 'DA7632186';
+
+    // PHASE 1: GIAI ĐOẠN CHUẨN BỊ DỰ ÁN (All completed)
+    tasks.push(
+        // 1.1 Lập đề xuất chương trình, dự án (ODA) - N/A for this project
+        {
+            TaskID: 'TSK-DA7632186-0101',
+            Title: 'Xác định không thuộc nguồn ODA',
+            Description: 'Xác nhận dự án sử dụng ngân sách tỉnh',
+            ProjectID: completedProjectId,
+            AssigneeID: 'NV1001',
+            StartDate: '2021-01-10',
+            DueDate: '2021-01-15',
+            Status: TaskStatus.Done,
+            Priority: TaskPriority.Medium,
+            TimelineStep: 'PREP_ODA'
+        },
+        // 1.2 Lập, thẩm định Báo cáo NCTKT / Đề xuất chủ trương đầu tư
+        {
+            TaskID: 'TSK-DA7632186-0201',
+            Title: 'Lập báo cáo đề xuất chủ trương đầu tư',
+            Description: 'Xây dựng báo cáo đề xuất chủ trương đầu tư theo Luật ĐTC',
+            ProjectID: completedProjectId,
+            AssigneeID: 'NV1002',
+            StartDate: '2021-01-15',
+            DueDate: '2021-02-28',
+            Status: TaskStatus.Done,
+            Priority: TaskPriority.High,
+            TimelineStep: 'PREP_POLICY'
+        },
+        {
+            TaskID: 'TSK-DA7632186-0202',
+            Title: 'Thẩm định chủ trương đầu tư tại Sở KHĐT',
+            Description: 'Nộp hồ sơ và phối hợp thẩm định tại Sở KHĐT',
+            ProjectID: completedProjectId,
+            AssigneeID: 'NV1001',
+            StartDate: '2021-03-01',
+            DueDate: '2021-03-25',
+            Status: TaskStatus.Done,
+            Priority: TaskPriority.High,
+            TimelineStep: 'PREP_POLICY'
+        },
+        {
+            TaskID: 'TSK-DA7632186-0203',
+            Title: 'UBND tỉnh phê duyệt chủ trương đầu tư',
+            Description: 'QĐ phê duyệt chủ trương đầu tư số 456/QĐ-UBND',
+            ProjectID: completedProjectId,
+            AssigneeID: 'NV1001',
+            StartDate: '2021-03-26',
+            DueDate: '2021-04-05',
+            Status: TaskStatus.Done,
+            Priority: TaskPriority.Urgent,
+            TimelineStep: 'PREP_POLICY'
+        },
+        // 1.3 Khảo sát xây dựng phục vụ lập dự án
+        {
+            TaskID: 'TSK-DA7632186-0301',
+            Title: 'Khảo sát địa hình, địa chất khu vực dự án',
+            Description: 'Khảo sát chi tiết địa hình, địa chất công trình',
+            ProjectID: completedProjectId,
+            AssigneeID: 'NV1005',
+            StartDate: '2021-04-10',
+            DueDate: '2021-05-15',
+            Status: TaskStatus.Done,
+            Priority: TaskPriority.Medium,
+            TimelineStep: 'PREP_SURVEY'
+        },
+        {
+            TaskID: 'TSK-DA7632186-0302',
+            Title: 'Đánh giá hiện trạng di tích',
+            Description: 'Khảo sát, đánh giá hiện trạng các hạng mục di tích cần tu bổ',
+            ProjectID: completedProjectId,
+            AssigneeID: 'NV1033',
+            StartDate: '2021-04-15',
+            DueDate: '2021-05-20',
+            Status: TaskStatus.Done,
+            Priority: TaskPriority.High,
+            TimelineStep: 'PREP_SURVEY'
+        },
+        // 1.4 Lập, thẩm định, phê duyệt Quy hoạch xây dựng (N/A - đã có QH)
+        {
+            TaskID: 'TSK-DA7632186-0401',
+            Title: 'Rà soát quy hoạch chi tiết đã được duyệt',
+            Description: 'Xác nhận phù hợp với QH chi tiết 1/500 đã phê duyệt',
+            ProjectID: completedProjectId,
+            AssigneeID: 'NV1002',
+            StartDate: '2021-05-01',
+            DueDate: '2021-05-10',
+            Status: TaskStatus.Done,
+            Priority: TaskPriority.Medium,
+            TimelineStep: 'PREP_PLANNING'
+        },
+        // 1.5 Lập, thẩm định Báo cáo NCKT / Báo cáo KT-KT
+        {
+            TaskID: 'TSK-DA7632186-0501',
+            Title: 'Lập Báo cáo nghiên cứu khả thi dự án',
+            Description: 'Thuê đơn vị tư vấn lập báo cáo NCKT theo NĐ175',
+            ProjectID: completedProjectId,
+            AssigneeID: 'NV1001',
+            StartDate: '2021-05-25',
+            DueDate: '2021-08-30',
+            Status: TaskStatus.Done,
+            Priority: TaskPriority.Urgent,
+            TimelineStep: 'PREP_FEASIBILITY'
+        },
+        {
+            TaskID: 'TSK-DA7632186-0502',
+            Title: 'Thẩm định BC NCKT tại Sở Xây dựng',
+            Description: 'Nộp hồ sơ và phối hợp thẩm định tại SXD',
+            ProjectID: completedProjectId,
+            AssigneeID: 'NV1002',
+            StartDate: '2021-09-01',
+            DueDate: '2021-10-15',
+            Status: TaskStatus.Done,
+            Priority: TaskPriority.High,
+            TimelineStep: 'PREP_FEASIBILITY'
+        },
+        // 1.6 Quyết định đầu tư xây dựng
+        {
+            TaskID: 'TSK-DA7632186-0601',
+            Title: 'Trình hồ sơ phê duyệt dự án',
+            Description: 'Hoàn thiện hồ sơ trình UBND tỉnh phê duyệt dự án',
+            ProjectID: completedProjectId,
+            AssigneeID: 'NV1001',
+            StartDate: '2021-10-20',
+            DueDate: '2021-11-05',
+            Status: TaskStatus.Done,
+            Priority: TaskPriority.Urgent,
+            TimelineStep: 'PREP_DECISION'
+        },
+        {
+            TaskID: 'TSK-DA7632186-0602',
+            Title: 'UBND tỉnh ban hành QĐ phê duyệt dự án',
+            Description: 'QĐ phê duyệt dự án đầu tư số 2156/QĐ-UBND',
+            ProjectID: completedProjectId,
+            AssigneeID: 'NV1001',
+            StartDate: '2021-11-10',
+            DueDate: '2021-11-20',
+            Status: TaskStatus.Done,
+            Priority: TaskPriority.Urgent,
+            TimelineStep: 'PREP_DECISION'
+        }
+    );
+
+    // PHASE 2: GIAI ĐOẠN THỰC HIỆN DỰ ÁN (All completed)
+    tasks.push(
+        // 2.1 Chuẩn bị mặt bằng xây dựng, rà phá bom mìn
+        {
+            TaskID: 'TSK-DA7632186-0701',
+            Title: 'Rà phá bom mìn, vật nổ khu vực dự án',
+            Description: 'Thuê đơn vị chuyên ngành rà phá bom mìn',
+            ProjectID: completedProjectId,
+            AssigneeID: 'NV1005',
+            StartDate: '2021-12-01',
+            DueDate: '2021-12-20',
+            Status: TaskStatus.Done,
+            Priority: TaskPriority.High,
+            TimelineStep: 'IMPL_SITE'
+        },
+        {
+            TaskID: 'TSK-DA7632186-0702',
+            Title: 'Bàn giao mặt bằng thi công',
+            Description: 'Lập biên bản bàn giao mặt bằng cho nhà thầu',
+            ProjectID: completedProjectId,
+            AssigneeID: 'NV1002',
+            StartDate: '2021-12-21',
+            DueDate: '2021-12-25',
+            Status: TaskStatus.Done,
+            Priority: TaskPriority.Medium,
+            TimelineStep: 'IMPL_SITE'
+        },
+        // 2.2 Khảo sát xây dựng phục vụ thiết kế
+        {
+            TaskID: 'TSK-DA7632186-0801',
+            Title: 'Khảo sát chi tiết phục vụ thiết kế BVTC',
+            Description: 'Khảo sát bổ sung cho thiết kế bản vẽ thi công',
+            ProjectID: completedProjectId,
+            AssigneeID: 'NV1033',
+            StartDate: '2022-01-05',
+            DueDate: '2022-01-25',
+            Status: TaskStatus.Done,
+            Priority: TaskPriority.Medium,
+            TimelineStep: 'IMPL_SURVEY'
+        },
+        // 2.3 Lập, thẩm định, phê duyệt Thiết kế & Dự toán
+        {
+            TaskID: 'TSK-DA7632186-0901',
+            Title: 'Lập thiết kế bản vẽ thi công và dự toán',
+            Description: 'Đơn vị tư vấn thiết kế thực hiện BVTC-DT',
+            ProjectID: completedProjectId,
+            AssigneeID: 'NV1001',
+            StartDate: '2022-01-10',
+            DueDate: '2022-03-30',
+            Status: TaskStatus.Done,
+            Priority: TaskPriority.Urgent,
+            TimelineStep: 'IMPL_DESIGN'
+        },
+        {
+            TaskID: 'TSK-DA7632186-0902',
+            Title: 'Thẩm định thiết kế tại Sở Xây dựng',
+            Description: 'Nộp hồ sơ thẩm định TK BVTC tại SXD',
+            ProjectID: completedProjectId,
+            AssigneeID: 'NV1002',
+            StartDate: '2022-04-01',
+            DueDate: '2022-04-25',
+            Status: TaskStatus.Done,
+            Priority: TaskPriority.High,
+            TimelineStep: 'IMPL_DESIGN'
+        },
+        {
+            TaskID: 'TSK-DA7632186-0903',
+            Title: 'Phê duyệt thiết kế BVTC và dự toán',
+            Description: 'CĐT phê duyệt TKBVTC-DT các gói thầu',
+            ProjectID: completedProjectId,
+            AssigneeID: 'NV1001',
+            StartDate: '2022-04-26',
+            DueDate: '2022-05-10',
+            Status: TaskStatus.Done,
+            Priority: TaskPriority.Urgent,
+            TimelineStep: 'IMPL_DESIGN'
+        },
+        // 2.4 Cấp Giấy phép xây dựng
+        {
+            TaskID: 'TSK-DA7632186-1001',
+            Title: 'Xin cấp giấy phép xây dựng',
+            Description: 'Lập hồ sơ xin GPXD tại Sở Xây dựng',
+            ProjectID: completedProjectId,
+            AssigneeID: 'NV1005',
+            StartDate: '2022-05-15',
+            DueDate: '2022-06-10',
+            Status: TaskStatus.Done,
+            Priority: TaskPriority.High,
+            TimelineStep: 'IMPL_PERMIT'
+        },
+        // 2.5 Lựa chọn nhà thầu và ký kết hợp đồng
+        {
+            TaskID: 'TSK-DA7632186-1101',
+            Title: 'Lập kế hoạch lựa chọn nhà thầu',
+            Description: 'Lập KHLCNT trình cấp có thẩm quyền phê duyệt',
+            ProjectID: completedProjectId,
+            AssigneeID: 'NV1001',
+            StartDate: '2022-05-01',
+            DueDate: '2022-05-20',
+            Status: TaskStatus.Done,
+            Priority: TaskPriority.High,
+            TimelineStep: 'IMPL_BIDDING'
+        },
+        {
+            TaskID: 'TSK-DA7632186-1102',
+            Title: 'Tổ chức đấu thầu gói XL-01 Tu bổ Nhà thờ',
+            Description: 'Đăng tải, mở thầu, đánh giá HSDT gói XL-01',
+            ProjectID: completedProjectId,
+            AssigneeID: 'NV1002',
+            StartDate: '2022-05-25',
+            DueDate: '2022-07-15',
+            Status: TaskStatus.Done,
+            Priority: TaskPriority.Urgent,
+            TimelineStep: 'IMPL_BIDDING'
+        },
+        {
+            TaskID: 'TSK-DA7632186-1103',
+            Title: 'Ký hợp đồng với nhà thầu XL-01',
+            Description: 'Đàm phán và ký hợp đồng với CT TNHH XD Hà Tĩnh',
+            ProjectID: completedProjectId,
+            AssigneeID: 'NV1001',
+            StartDate: '2022-07-20',
+            DueDate: '2022-07-30',
+            Status: TaskStatus.Done,
+            Priority: TaskPriority.Urgent,
+            TimelineStep: 'IMPL_BIDDING'
+        },
+        // 2.6 Thi công xây dựng công trình
+        {
+            TaskID: 'TSK-DA7632186-1201',
+            Title: 'Khởi công xây dựng công trình',
+            Description: 'Tổ chức lễ khởi công dự án',
+            ProjectID: completedProjectId,
+            AssigneeID: 'NV1001',
+            StartDate: '2022-08-01',
+            DueDate: '2022-08-05',
+            Status: TaskStatus.Done,
+            Priority: TaskPriority.High,
+            TimelineStep: 'IMPL_CONSTRUCTION'
+        },
+        {
+            TaskID: 'TSK-DA7632186-1202',
+            Title: 'Thi công tu bổ Nhà thờ chính',
+            Description: 'Thi công các hạng mục tu bổ nhà thờ Nguyễn Du',
+            ProjectID: completedProjectId,
+            AssigneeID: 'NV1033',
+            StartDate: '2022-08-10',
+            DueDate: '2023-06-30',
+            Status: TaskStatus.Done,
+            Priority: TaskPriority.Urgent,
+            TimelineStep: 'IMPL_CONSTRUCTION'
+        },
+        {
+            TaskID: 'TSK-DA7632186-1203',
+            Title: 'Thi công cải tạo cảnh quan sân vườn',
+            Description: 'Cải tạo, tôn tạo hệ thống cảnh quan khu di tích',
+            ProjectID: completedProjectId,
+            AssigneeID: 'NV1005',
+            StartDate: '2023-03-01',
+            DueDate: '2023-08-30',
+            Status: TaskStatus.Done,
+            Priority: TaskPriority.High,
+            TimelineStep: 'IMPL_CONSTRUCTION'
+        },
+        // 2.7 Giám sát thi công xây dựng
+        {
+            TaskID: 'TSK-DA7632186-1301',
+            Title: 'Giám sát thi công gói XL-01',
+            Description: 'Thực hiện giám sát toàn bộ quá trình thi công',
+            ProjectID: completedProjectId,
+            AssigneeID: 'NV1002',
+            StartDate: '2022-08-10',
+            DueDate: '2023-08-30',
+            Status: TaskStatus.Done,
+            Priority: TaskPriority.High,
+            TimelineStep: 'IMPL_SUPERVISION'
+        },
+        {
+            TaskID: 'TSK-DA7632186-1302',
+            Title: 'Lập báo cáo giám sát hàng tháng',
+            Description: 'Tổng hợp, báo cáo tiến độ và chất lượng thi công',
+            ProjectID: completedProjectId,
+            AssigneeID: 'NV1033',
+            StartDate: '2022-09-01',
+            DueDate: '2023-08-30',
+            Status: TaskStatus.Done,
+            Priority: TaskPriority.Medium,
+            TimelineStep: 'IMPL_SUPERVISION'
+        },
+        // 2.8 Tạm ứng, thanh toán khối lượng hoàn thành
+        {
+            TaskID: 'TSK-DA7632186-1401',
+            Title: 'Tạm ứng hợp đồng (20%)',
+            Description: 'Thực hiện tạm ứng lần 1 theo hợp đồng',
+            ProjectID: completedProjectId,
+            AssigneeID: 'NV1001',
+            StartDate: '2022-08-15',
+            DueDate: '2022-08-25',
+            Status: TaskStatus.Done,
+            Priority: TaskPriority.High,
+            TimelineStep: 'IMPL_PAYMENT'
+        },
+        {
+            TaskID: 'TSK-DA7632186-1402',
+            Title: 'Thanh toán khối lượng đợt 1',
+            Description: 'Thanh toán 30% giá trị hợp đồng',
+            ProjectID: completedProjectId,
+            AssigneeID: 'NV1002',
+            StartDate: '2023-02-01',
+            DueDate: '2023-02-20',
+            Status: TaskStatus.Done,
+            Priority: TaskPriority.High,
+            TimelineStep: 'IMPL_PAYMENT'
+        },
+        {
+            TaskID: 'TSK-DA7632186-1403',
+            Title: 'Thanh toán khối lượng đợt 2',
+            Description: 'Thanh toán 40% giá trị hợp đồng',
+            ProjectID: completedProjectId,
+            AssigneeID: 'NV1001',
+            StartDate: '2023-07-01',
+            DueDate: '2023-07-20',
+            Status: TaskStatus.Done,
+            Priority: TaskPriority.High,
+            TimelineStep: 'IMPL_PAYMENT'
+        },
+        // 2.9 Nghiệm thu hoàn thành công trình
+        {
+            TaskID: 'TSK-DA7632186-1501',
+            Title: 'Nghiệm thu từng phần công trình',
+            Description: 'Nghiệm thu các hạng mục theo tiến độ thi công',
+            ProjectID: completedProjectId,
+            AssigneeID: 'NV1033',
+            StartDate: '2023-06-01',
+            DueDate: '2023-08-25',
+            Status: TaskStatus.Done,
+            Priority: TaskPriority.High,
+            TimelineStep: 'IMPL_ACCEPTANCE'
+        },
+        {
+            TaskID: 'TSK-DA7632186-1502',
+            Title: 'Nghiệm thu hoàn thành công trình',
+            Description: 'Tổ chức nghiệm thu hoàn thành đưa vào sử dụng',
+            ProjectID: completedProjectId,
+            AssigneeID: 'NV1001',
+            StartDate: '2023-09-01',
+            DueDate: '2023-09-15',
+            Status: TaskStatus.Done,
+            Priority: TaskPriority.Urgent,
+            TimelineStep: 'IMPL_ACCEPTANCE'
+        }
+    );
+
+    // PHASE 3: GIAI ĐOẠN KẾT THÚC XÂY DỰNG (All completed)
+    tasks.push(
+        // 3.1 Quyết toán hợp đồng xây dựng
+        {
+            TaskID: 'TSK-DA7632186-1601',
+            Title: 'Quyết toán hợp đồng XL-01',
+            Description: 'Lập hồ sơ quyết toán hợp đồng với nhà thầu',
+            ProjectID: completedProjectId,
+            AssigneeID: 'NV1002',
+            StartDate: '2023-09-20',
+            DueDate: '2023-10-30',
+            Status: TaskStatus.Done,
+            Priority: TaskPriority.High,
+            TimelineStep: 'CLOSE_CONTRACT_SETTLEMENT'
+        },
+        {
+            TaskID: 'TSK-DA7632186-1602',
+            Title: 'Thanh lý hợp đồng với nhà thầu',
+            Description: 'Ký biên bản thanh lý hợp đồng',
+            ProjectID: completedProjectId,
+            AssigneeID: 'NV1001',
+            StartDate: '2023-11-01',
+            DueDate: '2023-11-15',
+            Status: TaskStatus.Done,
+            Priority: TaskPriority.Medium,
+            TimelineStep: 'CLOSE_CONTRACT_SETTLEMENT'
+        },
+        // 3.2 Quyết toán vốn đầu tư dự án hoàn thành
+        {
+            TaskID: 'TSK-DA7632186-1701',
+            Title: 'Lập báo cáo quyết toán vốn đầu tư',
+            Description: 'Tổng hợp chi phí, lập BC quyết toán dự án hoàn thành',
+            ProjectID: completedProjectId,
+            AssigneeID: 'NV1001',
+            StartDate: '2023-11-15',
+            DueDate: '2023-12-30',
+            Status: TaskStatus.Done,
+            Priority: TaskPriority.Urgent,
+            TimelineStep: 'CLOSE_CAPITAL_SETTLEMENT'
+        },
+        {
+            TaskID: 'TSK-DA7632186-1702',
+            Title: 'Kiểm toán quyết toán dự án',
+            Description: 'Phối hợp cơ quan kiểm toán thực hiện',
+            ProjectID: completedProjectId,
+            AssigneeID: 'NV1002',
+            StartDate: '2024-01-05',
+            DueDate: '2024-02-28',
+            Status: TaskStatus.Done,
+            Priority: TaskPriority.High,
+            TimelineStep: 'CLOSE_CAPITAL_SETTLEMENT'
+        },
+        {
+            TaskID: 'TSK-DA7632186-1703',
+            Title: 'Phê duyệt quyết toán dự án',
+            Description: 'UBND tỉnh phê duyệt quyết toán dự án hoàn thành',
+            ProjectID: completedProjectId,
+            AssigneeID: 'NV1001',
+            StartDate: '2024-03-01',
+            DueDate: '2024-03-20',
+            Status: TaskStatus.Done,
+            Priority: TaskPriority.Urgent,
+            TimelineStep: 'CLOSE_CAPITAL_SETTLEMENT'
+        },
+        // 3.3 Bàn giao công trình đưa vào sử dụng
+        {
+            TaskID: 'TSK-DA7632186-1801',
+            Title: 'Lập hồ sơ bàn giao công trình',
+            Description: 'Chuẩn bị hồ sơ, biên bản bàn giao cho đơn vị sử dụng',
+            ProjectID: completedProjectId,
+            AssigneeID: 'NV1033',
+            StartDate: '2023-09-16',
+            DueDate: '2023-09-25',
+            Status: TaskStatus.Done,
+            Priority: TaskPriority.High,
+            TimelineStep: 'CLOSE_HANDOVER'
+        },
+        {
+            TaskID: 'TSK-DA7632186-1802',
+            Title: 'Tổ chức lễ khánh thành và bàn giao',
+            Description: 'Tổ chức khánh thành, bàn giao cho Ban QL Di tích',
+            ProjectID: completedProjectId,
+            AssigneeID: 'NV1001',
+            StartDate: '2023-09-26',
+            DueDate: '2023-09-30',
+            Status: TaskStatus.Done,
+            Priority: TaskPriority.High,
+            TimelineStep: 'CLOSE_HANDOVER'
+        },
+        // 3.4 Bảo hành công trình xây dựng
+        {
+            TaskID: 'TSK-DA7632186-1901',
+            Title: 'Theo dõi công tác bảo hành 24 tháng',
+            Description: 'Giám sát nhà thầu thực hiện nghĩa vụ bảo hành',
+            ProjectID: completedProjectId,
+            AssigneeID: 'NV1005',
+            StartDate: '2023-10-01',
+            DueDate: '2025-09-30',
+            Status: TaskStatus.Done,
+            Priority: TaskPriority.Medium,
+            TimelineStep: 'CLOSE_WARRANTY'
+        },
+        {
+            TaskID: 'TSK-DA7632186-1902',
+            Title: 'Xác nhận hết thời hạn bảo hành',
+            Description: 'Lập biên bản xác nhận hết bảo hành, hoàn trả bảo lãnh',
+            ProjectID: completedProjectId,
+            AssigneeID: 'NV1001',
+            StartDate: '2025-10-01',
+            DueDate: '2025-10-15',
+            Status: TaskStatus.Done,
+            Priority: TaskPriority.Medium,
+            TimelineStep: 'CLOSE_WARRANTY'
+        },
+        // 3.5 Bàn giao hồ sơ lưu trữ
+        {
+            TaskID: 'TSK-DA7632186-2001',
+            Title: 'Hoàn thiện hồ sơ hoàn công',
+            Description: 'Tập hợp đầy đủ hồ sơ hoàn công công trình',
+            ProjectID: completedProjectId,
+            AssigneeID: 'NV1033',
+            StartDate: '2023-09-20',
+            DueDate: '2023-10-30',
+            Status: TaskStatus.Done,
+            Priority: TaskPriority.High,
+            TimelineStep: 'CLOSE_ARCHIVE'
+        },
+        {
+            TaskID: 'TSK-DA7632186-2002',
+            Title: 'Bàn giao hồ sơ cho Kho lưu trữ',
+            Description: 'Nộp hồ sơ dự án vào Kho lưu trữ tỉnh',
+            ProjectID: completedProjectId,
+            AssigneeID: 'NV1002',
+            StartDate: '2024-04-01',
+            DueDate: '2024-04-15',
+            Status: TaskStatus.Done,
+            Priority: TaskPriority.Medium,
+            TimelineStep: 'CLOSE_ARCHIVE'
+        }
+    );
+
     return tasks;
 };
 
@@ -2089,7 +2632,7 @@ export const saveTasksToDB = (tasks: Task[]) => {
 };
 
 // Version number to force refresh when data structure changes
-const TASKS_DATA_VERSION = '2026-01-07-v2';
+const TASKS_DATA_VERSION = '2026-02-01-v3';
 
 export const loadTasksFromStorage = (): Task[] => {
     if (typeof localStorage === 'undefined') {

@@ -103,7 +103,7 @@ const ProjectDetail: React.FC = () => {
 
     return (
         <div className="min-h-screen bg-[#F8FAFC]">
-            <div className="container mx-auto px-4 py-6 max-w-7xl">
+            <div className="container mx-auto px-4 py-6">
                 {/* 1. Header */}
                 <ProjectHeader
                     project={project}

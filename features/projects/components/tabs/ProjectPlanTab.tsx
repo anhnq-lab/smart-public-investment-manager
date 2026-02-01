@@ -124,6 +124,28 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({ tasks: initialTa
             .filter((t): t is Task => t !== null);
     }, [stepAggregates, projectID]);
 
+    // 4. Compute Milestone Dates for Timeline
+    const milestoneData = useMemo(() => {
+        // Helper to get the completion date for a specific TimelineStep code
+        const getCompletionDate = (code: string): string | undefined => {
+            const completedTasks = tasks.filter(t => t.TimelineStep === code && t.Status === TaskStatus.Done);
+            if (completedTasks.length === 0) return undefined;
+
+            // Get the max DueDate (latest completion)
+            const dates = completedTasks.map(t => new Date(t.DueDate).getTime()).filter(d => !isNaN(d));
+            if (dates.length === 0) return undefined;
+            return new Date(Math.max(...dates)).toISOString().split('T')[0];
+        };
+
+        return {
+            policyApprovalDate: getCompletionDate('PREP_POLICY'),
+            projectApprovalDate: getCompletionDate('PREP_DECISION'),
+            groundbreakingDate: getCompletionDate('IMPL_CONSTRUCTION'),
+            completionDate: getCompletionDate('IMPL_ACCEPTANCE'),
+            handoverDate: getCompletionDate('CLOSE_HANDOVER')
+        };
+    }, [tasks]);
+
 
     // UI State
     const [showGantt, setShowGantt] = useState(true);
@@ -204,7 +226,7 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({ tasks: initialTa
     };
 
     return (
-        <div className="animate-in slide-in-from-bottom-2 duration-500 space-y-6 max-w-6xl mx-auto py-4">
+        <div className="animate-in slide-in-from-bottom-2 duration-500 space-y-6 py-4">
 
             {/* 1. Statistics Header */}
             <PlanStatisticsHeader tasks={tasks} />
@@ -335,19 +357,19 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({ tasks: initialTa
                                                                             <button
                                                                                 onClick={(e) => handleQuickStatusChange(e, t)}
                                                                                 className={`w-4 h-4 rounded-full transition-transform hover:scale-125 focus:outline-none ring-2 ring-offset-1 ${t.Status === 'Done' ? 'bg-emerald-500 ring-emerald-200' :
-                                                                                        t.Status === 'Review' ? 'bg-indigo-500 ring-indigo-200' :
-                                                                                            t.Status === 'InProgress' ? 'bg-orange-500 ring-orange-200' :
-                                                                                                'bg-gray-200 ring-gray-100 hover:bg-gray-300'
+                                                                                    t.Status === 'Review' ? 'bg-indigo-500 ring-indigo-200' :
+                                                                                        t.Status === 'InProgress' ? 'bg-orange-500 ring-orange-200' :
+                                                                                            'bg-gray-200 ring-gray-100 hover:bg-gray-300'
                                                                                     }`}
                                                                                 title="Click để chuyển trạng thái"
                                                                             />
 
                                                                             {/* Task Title */}
                                                                             <span className={`flex-1 text-sm font-medium ${t.Status === 'Done' ? 'text-gray-400 line-through' :
-                                                                                    isOverdue(t) ? 'text-red-700' :
-                                                                                        t.Status === 'Review' ? 'text-indigo-700' :
-                                                                                            t.Status === 'InProgress' ? 'text-orange-700' :
-                                                                                                'text-gray-700'
+                                                                                isOverdue(t) ? 'text-red-700' :
+                                                                                    t.Status === 'Review' ? 'text-indigo-700' :
+                                                                                        t.Status === 'InProgress' ? 'text-orange-700' :
+                                                                                            'text-gray-700'
                                                                                 }`}>
                                                                                 {t.Title}
                                                                             </span>
@@ -400,7 +422,7 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({ tasks: initialTa
                 {/* Right: Milestone Timeline (1 col) */}
                 <div className="lg:col-span-1">
                     <div className="sticky top-4">
-                        <MilestoneTimeline />
+                        <MilestoneTimeline milestoneData={milestoneData} />
                     </div>
                 </div>
             </div>
