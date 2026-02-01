@@ -165,6 +165,13 @@ export interface BiddingPackage {
     // Execution
     Duration: string;             // Thời gian thực hiện hợp đồng (VD: 360 ngày)
     ContractID?: string;          // Link to Contract
+
+    // KHLCNT Specific Fields (For Export)
+    FundingSource?: string;       // Nguồn vốn (VD: Ngân sách tỉnh và ngân sách trung ương)
+    Description?: string;         // Tóm tắt công việc chính của gói thầu
+    SelectionDuration?: string;   // Thời gian tổ chức lựa chọn nhà thầu (VD: 45 ngày)
+    SelectionStartDate?: string;  // Thời gian bắt đầu tổ chức lựa chọn nhà thầu (VD: Tháng 12/2025)
+    HasOption?: boolean;          // Tùy chọn mua thêm (Có/Không)
 }
 
 export interface CapitalAllocation {
