@@ -211,7 +211,11 @@ export const ProjectPackagesTab: React.FC<ProjectPackagesTabProps> = ({ projectI
                         </thead>
                         <tbody className="divide-y divide-gray-100">
                             {filteredPackages?.map((pkg) => (
-                                <tr key={pkg.PackageID} className="hover:bg-gray-50 transition-colors">
+                                <tr
+                                    key={pkg.PackageID}
+                                    className="hover:bg-blue-50 transition-colors cursor-pointer group"
+                                    onClick={() => handleView(pkg)}
+                                >
                                     <td className="px-6 py-4">
                                         <div className="flex flex-col gap-1">
                                             <div className="flex items-center gap-2">
@@ -276,7 +280,7 @@ export const ProjectPackagesTab: React.FC<ProjectPackagesTabProps> = ({ projectI
                                             <span className="text-gray-400 italic text-xs">Chưa có kết quả</span>
                                         )}
                                     </td>
-                                    <td className="px-6 py-4 text-right">
+                                    <td className="px-6 py-4 text-right" onClick={(e) => e.stopPropagation()}>
                                         <ActionDropdown
                                             pkg={pkg}
                                             isOpen={openDropdownId === pkg.PackageID}
@@ -328,6 +332,10 @@ export const ProjectPackagesTab: React.FC<ProjectPackagesTabProps> = ({ projectI
                     setSelectedPackage(null);
                 }}
                 package_data={selectedPackage}
+                onEdit={(pkg) => {
+                    setIsDetailModalOpen(false);
+                    handleEdit(pkg);
+                }}
             />
 
             {/* Delete Confirmation */}
