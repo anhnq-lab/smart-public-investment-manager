@@ -156,12 +156,6 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({ project, onClick, layo
                     </span>
                 </div>
 
-                {/* Contractor */}
-                <div className="flex items-center gap-2 mb-3 py-2 px-2.5 bg-gray-50 rounded-lg">
-                    <Building className="w-3.5 h-3.5 text-gray-400 shrink-0" />
-                    <span className="text-xs text-gray-600 truncate flex-1">{project.MainContractorName || "Đang lựa chọn"}</span>
-                </div>
-
                 {/* Progress */}
                 <div className="space-y-2 mb-3">
                     <div>
@@ -180,10 +174,12 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({ project, onClick, layo
                     </div>
                 </div>
 
-                {/* Budget Footer */}
-                <div className="mt-auto pt-2 border-t border-gray-100 flex items-center justify-between">
-                    <span className="text-[10px] text-gray-400 uppercase font-semibold">Ngân sách</span>
-                    <span className="text-base font-bold text-gray-900 tabular-nums">{formatCurrency(project.TotalInvestment)}</span>
+                {/* Total Investment Footer */}
+                <div className="mt-auto pt-3 border-t border-gray-100">
+                    <div className="flex items-center justify-between">
+                        <span className="text-[10px] text-gray-400 uppercase font-semibold tracking-wide">Tổng mức ĐT</span>
+                        <span className="text-lg font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent tabular-nums">{formatCurrency(project.TotalInvestment)}</span>
+                    </div>
                 </div>
             </div>
         </div>
