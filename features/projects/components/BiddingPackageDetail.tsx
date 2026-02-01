@@ -3,7 +3,8 @@ import { useQuery } from '@tanstack/react-query';
 import {
     X, ExternalLink, Calendar, FileText, Building2, Banknote, Clock, Award,
     TrendingDown, TrendingUp, CreditCard, Receipt, ChevronRight, Edit, ArrowLeft,
-    PieChart, BarChart3, Users, AlertTriangle, CheckCircle2
+    PieChart, BarChart3, Users, AlertTriangle, CheckCircle2, Phone, Mail, MapPin,
+    Percent, CalendarCheck, Briefcase, Target, DollarSign
 } from 'lucide-react';
 import { BiddingPackage, PackageStatus, Payment } from '../../../types';
 import { formatCurrency, formatDate } from '../../../utils/format';
@@ -21,7 +22,7 @@ interface BiddingPackageDetailProps {
     onEdit?: (pkg: BiddingPackage) => void;
 }
 
-type TabType = 'info' | 'price' | 'payments' | 'documents' | 'timeline';
+type TabType = 'info' | 'price' | 'payments' | 'timeline';
 
 const getStatusConfig = (status: PackageStatus) => {
     const configs = {
@@ -64,12 +65,16 @@ export const BiddingPackageDetail: React.FC<BiddingPackageDetailProps> = ({
     const savings = pkg.WinningPrice && pkg.Price ? pkg.Price - pkg.WinningPrice : 0;
     const savingsPercent = pkg.Price && savings > 0 ? ((savings / pkg.Price) * 100).toFixed(2) : '0';
     const totalPaid = relatedPayments.reduce((sum, p) => sum + p.Amount, 0);
-    const paymentProgress = relatedContract ? (totalPaid / relatedContract.ContractValue * 100) : 0;
+    const contractValue = relatedContract?.ContractValue || pkg.WinningPrice || 0;
+    const paymentProgress = contractValue > 0 ? (totalPaid / contractValue * 100) : 0;
+
+    // Estimate price (giá dự toán) - typically package price is the estimate
+    const estimatedPrice = pkg.Price;
 
     const tabs = [
         { id: 'info', label: 'Thông tin gói thầu', icon: FileText },
         { id: 'price', label: 'So sánh giá', icon: BarChart3 },
-        { id: 'payments', label: 'Thanh toán', icon: CreditCard, badge: relatedPayments.length },
+        { id: 'payments', label: 'Hợp đồng & Thanh toán', icon: CreditCard },
         { id: 'timeline', label: 'Tiến độ', icon: Clock },
     ] as const;
 
@@ -100,8 +105,8 @@ export const BiddingPackageDetail: React.FC<BiddingPackageDetailProps> = ({
                                     {statusConfig.label}
                                 </span>
                                 <span className={`px-2 py-0.5 rounded text-xs font-medium border ${pkg.Field === 'Construction' ? 'bg-blue-50 text-blue-600 border-blue-200' :
-                                        pkg.Field === 'Consultancy' ? 'bg-purple-50 text-purple-600 border-purple-200' :
-                                            'bg-gray-50 text-gray-600 border-gray-200'
+                                    pkg.Field === 'Consultancy' ? 'bg-purple-50 text-purple-600 border-purple-200' :
+                                        'bg-gray-50 text-gray-600 border-gray-200'
                                     }`}>
                                     {labels.field[pkg.Field as keyof typeof labels.field] || pkg.Field}
                                 </span>
@@ -140,11 +145,11 @@ export const BiddingPackageDetail: React.FC<BiddingPackageDetailProps> = ({
                     </div>
                 </div>
 
-                {/* Quick Stats */}
+                {/* Quick Stats - Enhanced with Giá dự toán */}
                 <div className="shrink-0 grid grid-cols-4 gap-4 px-6 py-4 bg-gray-50 border-b border-gray-100">
                     <div className="text-center">
-                        <p className="text-xs text-gray-500">Giá gói thầu</p>
-                        <p className="text-lg font-bold text-gray-800">{formatCurrency(pkg.Price)}</p>
+                        <p className="text-xs text-gray-500">Giá dự toán</p>
+                        <p className="text-lg font-bold text-gray-800">{formatCurrency(estimatedPrice)}</p>
                     </div>
                     <div className="text-center">
                         <p className="text-xs text-gray-500">Giá trúng thầu</p>
@@ -162,7 +167,7 @@ export const BiddingPackageDetail: React.FC<BiddingPackageDetailProps> = ({
                     </div>
                 </div>
 
-                {/* Tabs */}
+                {/* Tabs - Fixed badge issue */}
                 <div className="shrink-0 flex border-b border-gray-100 px-6 bg-white">
                     {tabs.map(tab => (
                         <button
@@ -178,11 +183,6 @@ export const BiddingPackageDetail: React.FC<BiddingPackageDetailProps> = ({
                         >
                             <tab.icon className="w-4 h-4" />
                             {tab.label}
-                            {tab.badge && tab.badge > 0 && (
-                                <span className="px-1.5 py-0.5 text-[10px] font-bold bg-primary-100 text-primary-600 rounded-full">
-                                    {tab.badge}
-                                </span>
-                            )}
                         </button>
                     ))}
                 </div>
@@ -212,22 +212,21 @@ export const BiddingPackageDetail: React.FC<BiddingPackageDetailProps> = ({
                                 </div>
 
                                 {/* KHLCNT Info */}
-                                {(pkg.KHLCNTCode || pkg.DecisionNumber) && (
-                                    <div className="bg-gray-50 rounded-xl border border-gray-200 p-4">
-                                        <h4 className="font-semibold text-gray-800 mb-3">Kế hoạch LCNT</h4>
-                                        <div className="space-y-2 text-sm">
-                                            {pkg.KHLCNTCode && <InfoRow label="Mã KHLCNT" value={<span className="font-mono">{pkg.KHLCNTCode}</span>} />}
-                                            {pkg.DecisionNumber && <InfoRow label="QĐ phê duyệt" value={pkg.DecisionNumber} />}
-                                            {pkg.DecisionDate && <InfoRow label="Ngày phê duyệt" value={formatDate(pkg.DecisionDate)} />}
-                                        </div>
+                                <div className="bg-gray-50 rounded-xl border border-gray-200 p-4">
+                                    <h4 className="font-semibold text-gray-800 mb-3">Kế hoạch LCNT</h4>
+                                    <div className="space-y-2 text-sm">
+                                        <InfoRow label="Mã KHLCNT" value={pkg.KHLCNTCode ? <span className="font-mono">{pkg.KHLCNTCode}</span> : '-'} />
+                                        <InfoRow label="QĐ phê duyệt KHLCNT" value={pkg.DecisionNumber || '-'} />
+                                        <InfoRow label="Ngày phê duyệt" value={pkg.DecisionDate ? formatDate(pkg.DecisionDate) : '-'} />
+                                        <InfoRow label="Mã TBMT" value={pkg.NotificationCode ? <span className="font-mono text-blue-600">{pkg.NotificationCode}</span> : '-'} />
                                     </div>
-                                )}
+                                </div>
                             </div>
 
                             {/* Right Column - Contractor & Timeline */}
                             <div className="space-y-4">
                                 {/* Winning Contractor */}
-                                {winningContractor && (
+                                {winningContractor ? (
                                     <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl border border-green-200 p-4">
                                         <h4 className="font-semibold text-gray-800 mb-3 flex items-center gap-2">
                                             <Award className="w-4 h-4 text-green-600" />
@@ -239,28 +238,47 @@ export const BiddingPackageDetail: React.FC<BiddingPackageDetailProps> = ({
                                             </div>
                                             <div>
                                                 <p className="font-semibold text-gray-800">{winningContractor.ContractorName}</p>
-                                                <p className="text-xs text-gray-500">{winningContractor.TaxCode}</p>
+                                                <p className="text-xs text-gray-500">MST: {winningContractor.TaxCode}</p>
                                             </div>
                                         </div>
                                         <div className="space-y-2 text-sm">
                                             <InfoRow label="Giá trúng thầu" value={<span className="font-bold text-green-600">{formatCurrency(pkg.WinningPrice || 0)}</span>} />
-                                            {pkg.ApprovalDate_Result && <InfoRow label="Ngày phê duyệt" value={formatDate(pkg.ApprovalDate_Result)} />}
+                                            {pkg.ApprovalDate_Result && <InfoRow label="Ngày phê duyệt KQLCNT" value={formatDate(pkg.ApprovalDate_Result)} />}
+                                            {winningContractor.Address && <InfoRow label="Địa chỉ" value={winningContractor.Address} />}
+                                            {winningContractor.Phone && <InfoRow label="Điện thoại" value={winningContractor.Phone} />}
                                         </div>
+                                    </div>
+                                ) : (
+                                    <div className="bg-gray-50 rounded-xl border border-gray-200 p-4 text-center">
+                                        <Users className="w-8 h-8 text-gray-300 mx-auto mb-2" />
+                                        <p className="text-gray-500 text-sm">Chưa có kết quả trúng thầu</p>
                                     </div>
                                 )}
 
                                 {/* Related Contract */}
-                                {relatedContract && (
+                                {relatedContract ? (
                                     <div className="bg-blue-50 rounded-xl border border-blue-200 p-4">
                                         <h4 className="font-semibold text-gray-800 mb-3 flex items-center gap-2">
                                             <FileText className="w-4 h-4 text-blue-600" />
-                                            Hợp đồng liên quan
+                                            Hợp đồng
                                         </h4>
                                         <div className="space-y-2 text-sm">
-                                            <InfoRow label="Số hợp đồng" value={relatedContract.ContractNumber} />
-                                            <InfoRow label="Giá trị HĐ" value={formatCurrency(relatedContract.ContractValue)} />
+                                            <InfoRow label="Số hợp đồng" value={<span className="font-mono">{relatedContract.ContractNumber}</span>} />
+                                            <InfoRow label="Giá trị HĐ" value={<span className="font-bold">{formatCurrency(relatedContract.ContractValue)}</span>} />
                                             <InfoRow label="Ngày ký" value={formatDate(relatedContract.SigningDate)} />
+                                            <InfoRow label="Trạng thái" value={
+                                                <span className={`px-2 py-0.5 rounded text-xs font-medium ${relatedContract.Status === 'Active' ? 'bg-green-100 text-green-600' :
+                                                    relatedContract.Status === 'Completed' ? 'bg-blue-100 text-blue-600' : 'bg-gray-100 text-gray-600'}`}>
+                                                    {relatedContract.Status === 'Active' ? 'Đang thực hiện' :
+                                                        relatedContract.Status === 'Completed' ? 'Hoàn thành' : relatedContract.Status}
+                                                </span>
+                                            } />
                                         </div>
+                                    </div>
+                                ) : (
+                                    <div className="bg-gray-50 rounded-xl border border-gray-200 p-4 text-center">
+                                        <FileText className="w-8 h-8 text-gray-300 mx-auto mb-2" />
+                                        <p className="text-gray-500 text-sm">Chưa có hợp đồng</p>
                                     </div>
                                 )}
 
@@ -285,28 +303,35 @@ export const BiddingPackageDetail: React.FC<BiddingPackageDetailProps> = ({
                     {/* Tab: Price Comparison */}
                     {activeTab === 'price' && (
                         <div className="space-y-6">
-                            {/* Price Cards */}
-                            <div className="grid grid-cols-3 gap-4">
+                            {/* Price Cards - 4 columns with Giá dự toán */}
+                            <div className="grid grid-cols-4 gap-4">
                                 <div className="bg-white rounded-xl border border-gray-200 p-5">
                                     <div className="flex items-center justify-between mb-3">
-                                        <span className="text-sm text-gray-500">Giá dự toán (Gói thầu)</span>
+                                        <span className="text-sm text-gray-500">Giá dự toán</span>
+                                        <Target className="w-5 h-5 text-gray-400" />
+                                    </div>
+                                    <p className="text-xl font-bold text-gray-800">{formatCurrency(estimatedPrice)}</p>
+                                </div>
+                                <div className="bg-white rounded-xl border border-gray-200 p-5">
+                                    <div className="flex items-center justify-between mb-3">
+                                        <span className="text-sm text-gray-500">Giá gói thầu</span>
                                         <Banknote className="w-5 h-5 text-gray-400" />
                                     </div>
-                                    <p className="text-2xl font-bold text-gray-800">{formatCurrency(pkg.Price)}</p>
+                                    <p className="text-xl font-bold text-gray-800">{formatCurrency(pkg.Price)}</p>
                                 </div>
                                 <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl border border-green-200 p-5">
                                     <div className="flex items-center justify-between mb-3">
                                         <span className="text-sm text-green-600">Giá trúng thầu</span>
                                         <Award className="w-5 h-5 text-green-500" />
                                     </div>
-                                    <p className="text-2xl font-bold text-green-600">{pkg.WinningPrice ? formatCurrency(pkg.WinningPrice) : '-'}</p>
+                                    <p className="text-xl font-bold text-green-600">{pkg.WinningPrice ? formatCurrency(pkg.WinningPrice) : '-'}</p>
                                 </div>
                                 <div className={`rounded-xl border p-5 ${savings > 0 ? 'bg-gradient-to-br from-blue-50 to-indigo-50 border-blue-200' : 'bg-gray-50 border-gray-200'}`}>
                                     <div className="flex items-center justify-between mb-3">
                                         <span className={`text-sm ${savings > 0 ? 'text-blue-600' : 'text-gray-500'}`}>Tiết kiệm</span>
-                                        {savings > 0 ? <TrendingDown className="w-5 h-5 text-blue-500" /> : <TrendingUp className="w-5 h-5 text-gray-400" />}
+                                        {savings > 0 ? <TrendingDown className="w-5 h-5 text-blue-500" /> : <Percent className="w-5 h-5 text-gray-400" />}
                                     </div>
-                                    <p className={`text-2xl font-bold ${savings > 0 ? 'text-blue-600' : 'text-gray-400'}`}>
+                                    <p className={`text-xl font-bold ${savings > 0 ? 'text-blue-600' : 'text-gray-400'}`}>
                                         {savings > 0 ? formatCurrency(savings) : '-'}
                                     </p>
                                     {savings > 0 && <p className="text-sm text-blue-500 mt-1">{savingsPercent}% so với dự toán</p>}
@@ -320,7 +345,7 @@ export const BiddingPackageDetail: React.FC<BiddingPackageDetailProps> = ({
                                     <div className="space-y-4">
                                         <div>
                                             <div className="flex justify-between text-sm mb-1">
-                                                <span className="text-gray-600">Giá gói thầu</span>
+                                                <span className="text-gray-600">Giá dự toán / Gói thầu</span>
                                                 <span className="font-medium">{formatCurrency(pkg.Price)}</span>
                                             </div>
                                             <div className="h-8 bg-gray-100 rounded-lg overflow-hidden">
@@ -339,6 +364,20 @@ export const BiddingPackageDetail: React.FC<BiddingPackageDetailProps> = ({
                                                 />
                                             </div>
                                         </div>
+                                        {relatedContract && (
+                                            <div>
+                                                <div className="flex justify-between text-sm mb-1">
+                                                    <span className="text-blue-600">Giá trị hợp đồng</span>
+                                                    <span className="font-medium text-blue-600">{formatCurrency(relatedContract.ContractValue)}</span>
+                                                </div>
+                                                <div className="h-8 bg-blue-100 rounded-lg overflow-hidden">
+                                                    <div
+                                                        className="h-full bg-blue-500 rounded-lg transition-all"
+                                                        style={{ width: `${(relatedContract.ContractValue / pkg.Price) * 100}%` }}
+                                                    />
+                                                </div>
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
                             )}
@@ -352,48 +391,100 @@ export const BiddingPackageDetail: React.FC<BiddingPackageDetailProps> = ({
                         </div>
                     )}
 
-                    {/* Tab: Payments */}
+                    {/* Tab: Payments - Enhanced with Contractor & Contract */}
                     {activeTab === 'payments' && (
                         <div className="space-y-6">
+                            {/* Contractor & Contract Overview */}
+                            <div className="grid grid-cols-2 gap-4">
+                                {/* Contractor Card */}
+                                <div className={`rounded-xl border p-4 ${winningContractor ? 'bg-gradient-to-br from-green-50 to-emerald-50 border-green-200' : 'bg-gray-50 border-gray-200'}`}>
+                                    <h4 className="font-semibold text-gray-800 mb-3 flex items-center gap-2">
+                                        <Users className={`w-4 h-4 ${winningContractor ? 'text-green-600' : 'text-gray-400'}`} />
+                                        Nhà thầu thực hiện
+                                    </h4>
+                                    {winningContractor ? (
+                                        <div className="space-y-2">
+                                            <p className="font-semibold text-gray-800">{winningContractor.ContractorName}</p>
+                                            <div className="text-sm text-gray-600 space-y-1">
+                                                <p className="flex items-center gap-2"><Briefcase className="w-3.5 h-3.5" /> MST: {winningContractor.TaxCode}</p>
+                                                {winningContractor.Phone && <p className="flex items-center gap-2"><Phone className="w-3.5 h-3.5" /> {winningContractor.Phone}</p>}
+                                                {winningContractor.Email && <p className="flex items-center gap-2"><Mail className="w-3.5 h-3.5" /> {winningContractor.Email}</p>}
+                                                {winningContractor.Address && <p className="flex items-center gap-2"><MapPin className="w-3.5 h-3.5" /> {winningContractor.Address}</p>}
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <p className="text-gray-500 text-sm">Chưa có nhà thầu được chọn</p>
+                                    )}
+                                </div>
+
+                                {/* Contract Card */}
+                                <div className={`rounded-xl border p-4 ${relatedContract ? 'bg-blue-50 border-blue-200' : 'bg-gray-50 border-gray-200'}`}>
+                                    <h4 className="font-semibold text-gray-800 mb-3 flex items-center gap-2">
+                                        <FileText className={`w-4 h-4 ${relatedContract ? 'text-blue-600' : 'text-gray-400'}`} />
+                                        Hợp đồng
+                                    </h4>
+                                    {relatedContract ? (
+                                        <div className="space-y-2 text-sm">
+                                            <p className="font-semibold text-gray-800">Số: {relatedContract.ContractNumber}</p>
+                                            <div className="grid grid-cols-2 gap-2 text-gray-600">
+                                                <p>Giá trị: <span className="font-bold text-blue-600">{formatCurrency(relatedContract.ContractValue)}</span></p>
+                                                <p>Ngày ký: {formatDate(relatedContract.SigningDate)}</p>
+                                                <p>Thời gian: {relatedContract.Duration || pkg.Duration}</p>
+                                                <p>Trạng thái: <span className={`font-medium ${relatedContract.Status === 'Active' ? 'text-green-600' : 'text-gray-600'}`}>
+                                                    {relatedContract.Status === 'Active' ? 'Đang thực hiện' : relatedContract.Status}
+                                                </span></p>
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <p className="text-gray-500 text-sm">Chưa có hợp đồng ký kết</p>
+                                    )}
+                                </div>
+                            </div>
+
                             {relatedContract ? (
                                 <>
                                     {/* Payment Progress */}
                                     <div className="bg-white rounded-xl border border-gray-200 p-5">
                                         <div className="flex items-center justify-between mb-4">
-                                            <h4 className="font-semibold text-gray-800">Tiến độ thanh toán</h4>
-                                            <span className="text-sm text-gray-500">
-                                                {formatCurrency(totalPaid)} / {formatCurrency(relatedContract.ContractValue)}
-                                            </span>
+                                            <div>
+                                                <h4 className="font-semibold text-gray-800">Tiến độ thanh toán</h4>
+                                                <p className="text-sm text-gray-500">Theo giá trị hợp đồng</p>
+                                            </div>
+                                            <div className="text-right">
+                                                <span className="text-lg font-bold text-green-600">{formatCurrency(totalPaid)}</span>
+                                                <span className="text-gray-400"> / </span>
+                                                <span className="text-sm text-gray-600">{formatCurrency(contractValue)}</span>
+                                            </div>
                                         </div>
-                                        <div className="h-3 bg-gray-100 rounded-full overflow-hidden">
+                                        <div className="h-4 bg-gray-100 rounded-full overflow-hidden mb-2">
                                             <div
                                                 className="h-full bg-gradient-to-r from-green-500 to-emerald-500 rounded-full transition-all"
                                                 style={{ width: `${Math.min(paymentProgress, 100)}%` }}
                                             />
                                         </div>
-                                        <div className="flex justify-between mt-2 text-sm">
-                                            <span className="text-gray-500">Đã thanh toán: <span className="font-medium text-green-600">{paymentProgress.toFixed(1)}%</span></span>
-                                            <span className="text-gray-500">Còn lại: <span className="font-medium text-gray-700">{formatCurrency(relatedContract.ContractValue - totalPaid)}</span></span>
+                                        <div className="flex justify-between text-sm">
+                                            <span className="text-gray-500">Đã thanh toán: <span className="font-bold text-green-600">{paymentProgress.toFixed(1)}%</span></span>
+                                            <span className="text-gray-500">Còn lại: <span className="font-bold text-orange-600">{formatCurrency(contractValue - totalPaid)}</span></span>
                                         </div>
                                     </div>
 
                                     {/* Payment List */}
                                     <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-                                        <div className="px-4 py-3 border-b border-gray-100 flex items-center justify-between">
+                                        <div className="px-4 py-3 border-b border-gray-100 flex items-center justify-between bg-gray-50">
                                             <h4 className="font-semibold text-gray-800">Danh sách thanh toán</h4>
-                                            <span className="text-sm text-gray-500">{relatedPayments.length} lần thanh toán</span>
+                                            <span className="px-2 py-0.5 bg-blue-100 text-blue-600 rounded text-xs font-medium">{relatedPayments.length} đợt</span>
                                         </div>
                                         {relatedPayments.length > 0 ? (
                                             <div className="divide-y divide-gray-100">
                                                 {relatedPayments.map((payment, idx) => (
-                                                    <div key={payment.PaymentID} className="px-4 py-3 flex items-center justify-between hover:bg-gray-50">
+                                                    <div key={payment.PaymentID} className="px-4 py-4 flex items-center justify-between hover:bg-gray-50">
                                                         <div className="flex items-center gap-3">
                                                             <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${payment.Status === 'Paid' ? 'bg-green-100 text-green-600' : 'bg-yellow-100 text-yellow-600'}`}>
                                                                 {payment.Status === 'Paid' ? <CheckCircle2 className="w-5 h-5" /> : <Clock className="w-5 h-5" />}
                                                             </div>
                                                             <div>
                                                                 <p className="font-medium text-gray-800">Đợt {idx + 1}: {payment.Description}</p>
-                                                                <p className="text-xs text-gray-500">{formatDate(payment.PaymentDate) || 'Chờ thanh toán'}</p>
+                                                                <p className="text-xs text-gray-500">{payment.PaymentDate ? formatDate(payment.PaymentDate) : 'Chờ thanh toán'}</p>
                                                             </div>
                                                         </div>
                                                         <div className="text-right">
@@ -408,16 +499,17 @@ export const BiddingPackageDetail: React.FC<BiddingPackageDetailProps> = ({
                                         ) : (
                                             <div className="p-8 text-center text-gray-500">
                                                 <Receipt className="w-10 h-10 mx-auto mb-2 text-gray-300" />
-                                                <p>Chưa có thanh toán nào</p>
+                                                <p>Chưa có thanh toán nào được ghi nhận</p>
+                                                <p className="text-sm text-gray-400 mt-1">Các đợt thanh toán sẽ hiển thị tại đây</p>
                                             </div>
                                         )}
                                     </div>
                                 </>
                             ) : (
-                                <div className="bg-gray-50 rounded-xl p-8 text-center">
-                                    <CreditCard className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-                                    <p className="text-gray-500">Chưa có hợp đồng để quản lý thanh toán</p>
-                                    <p className="text-sm text-gray-400 mt-1">Gói thầu cần có kết quả trúng thầu và hợp đồng ký kết</p>
+                                <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-6 text-center">
+                                    <AlertTriangle className="w-12 h-12 text-yellow-400 mx-auto mb-3" />
+                                    <p className="font-medium text-gray-700">Chưa có hợp đồng để quản lý thanh toán</p>
+                                    <p className="text-sm text-gray-500 mt-1">Gói thầu cần có kết quả trúng thầu và hợp đồng ký kết để theo dõi thanh toán</p>
                                 </div>
                             )}
                         </div>
@@ -474,6 +566,13 @@ export const BiddingPackageDetail: React.FC<BiddingPackageDetailProps> = ({
                                             code={relatedContract?.ContractNumber}
                                             isComplete={!!relatedContract}
                                         />
+                                        <TimelineFullStep
+                                            step={6}
+                                            title="Thực hiện hợp đồng"
+                                            description="Triển khai thi công và nghiệm thu"
+                                            isComplete={relatedContract?.Status === 'Active' || relatedContract?.Status === 'Completed'}
+                                            extraInfo={relatedContract ? `Tiến độ thanh toán: ${paymentProgress.toFixed(0)}%` : undefined}
+                                        />
                                     </div>
                                 </div>
                             </div>
@@ -505,9 +604,9 @@ const TimelineStep = ({ label, date, isActive, isCritical = false }: {
     </div>
 );
 
-const TimelineFullStep = ({ step, title, description, date, code, extraDate, extraLabel, isComplete, link }: {
+const TimelineFullStep = ({ step, title, description, date, code, extraDate, extraLabel, isComplete, link, extraInfo }: {
     step: number; title: string; description: string; date?: string; code?: string;
-    extraDate?: string; extraLabel?: string; isComplete: boolean; link?: string;
+    extraDate?: string; extraLabel?: string; isComplete: boolean; link?: string; extraInfo?: string;
 }) => (
     <div className="relative flex gap-4 pl-6">
         <div className={`absolute left-4 -translate-x-1/2 w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold ${isComplete ? 'bg-green-500 text-white' : 'bg-gray-200 text-gray-500'}`}>
@@ -521,6 +620,7 @@ const TimelineFullStep = ({ step, title, description, date, code, extraDate, ext
             <p className="text-sm text-gray-500 mt-0.5">{description}</p>
             {date && <p className="text-xs text-gray-600 mt-1">📅 {formatDate(date)}</p>}
             {extraDate && <p className="text-xs text-gray-600">{extraLabel}: {formatDate(extraDate)}</p>}
+            {extraInfo && <p className="text-xs text-blue-600 mt-1">📊 {extraInfo}</p>}
             {link && (
                 <a href={link} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-xs text-blue-600 hover:underline mt-1">
                     <ExternalLink className="w-3 h-3" /> Xem trên MSC
