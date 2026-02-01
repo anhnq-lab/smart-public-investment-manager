@@ -119,42 +119,119 @@ export const ProjectPackagesTab: React.FC<ProjectPackagesTabProps> = ({ projectI
     return (
         <div className="space-y-6">
             {/* Header / Statistics */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
-                    <div className="flex justify-between items-start">
-                        <div>
-                            <p className="text-gray-500 text-sm font-medium">Tổng số gói thầu</p>
-                            <h3 className="text-2xl font-bold text-gray-800 mt-1">{packages?.length || 0}</h3>
+            <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
+                {/* Main Stats Row */}
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                    {/* Total Packages */}
+                    <div className="flex items-center gap-4">
+                        <div className="p-3 bg-blue-50 rounded-xl text-blue-600">
+                            <Briefcase size={24} />
                         </div>
-                        <div className="p-2 bg-blue-50 rounded-lg text-blue-600">
-                            <Briefcase size={20} />
+                        <div>
+                            <p className="text-sm text-gray-500">Tổng gói thầu</p>
+                            <h3 className="text-2xl font-bold text-gray-800 tabular-nums">{packages?.length || 0}</h3>
                         </div>
                     </div>
-                </div>
-                <div className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
-                    <div className="flex justify-between items-start">
+
+                    {/* Total Value */}
+                    <div className="flex items-center gap-4">
+                        <div className="p-3 bg-emerald-50 rounded-xl text-emerald-600">
+                            <FileText size={24} />
+                        </div>
                         <div>
-                            <p className="text-gray-500 text-sm font-medium">Tổng giá trị (Dự toán)</p>
-                            <h3 className="text-2xl font-bold text-gray-800 mt-1">
+                            <p className="text-sm text-gray-500">Tổng giá trị (DT)</p>
+                            <h3 className="text-2xl font-bold text-gray-800 tabular-nums">
                                 {formatCurrency(packages?.reduce((sum, p) => sum + (p.Price || 0), 0) || 0)}
                             </h3>
                         </div>
-                        <div className="p-2 bg-green-50 rounded-lg text-green-600">
-                            <FileText size={20} />
+                    </div>
+
+                    {/* Awarded Packages */}
+                    <div className="flex items-center gap-4">
+                        <div className="p-3 bg-indigo-50 rounded-xl text-indigo-600">
+                            <CheckCircle2 size={24} />
+                        </div>
+                        <div>
+                            <p className="text-sm text-gray-500">Đã có kết quả</p>
+                            <h3 className="text-2xl font-bold text-gray-800 tabular-nums">
+                                {packages?.filter(p => p.Status === PackageStatus.Awarded).length || 0}
+                                <span className="text-sm font-normal text-gray-400">/{packages?.length || 0}</span>
+                            </h3>
+                        </div>
+                    </div>
+
+                    {/* In Progress */}
+                    <div className="flex items-center gap-4">
+                        <div className="p-3 bg-amber-50 rounded-xl text-amber-600">
+                            <Clock size={24} />
+                        </div>
+                        <div>
+                            <p className="text-sm text-gray-500">Đang thực hiện</p>
+                            <h3 className="text-2xl font-bold text-gray-800 tabular-nums">
+                                {packages?.filter(p => p.Status === PackageStatus.Bidding || p.Status === PackageStatus.Evaluating).length || 0}
+                            </h3>
                         </div>
                     </div>
                 </div>
-                <div className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
-                    <div className="flex justify-between items-start">
-                        <div>
-                            <p className="text-gray-500 text-sm font-medium">Đã có kết quả</p>
-                            <h3 className="text-2xl font-bold text-gray-800 mt-1">
-                                {packages?.filter(p => p.Status === PackageStatus.Awarded).length || 0}
-                            </h3>
-                        </div>
-                        <div className="p-2 bg-indigo-50 rounded-lg text-indigo-600">
-                            <CheckCircle2 size={20} />
-                        </div>
+
+                {/* Progress Bar */}
+                <div className="mt-6 pt-5 border-t border-gray-100">
+                    <div className="flex items-center justify-between mb-2">
+                        <span className="text-sm font-medium text-gray-700">Tiến độ hoàn thành đấu thầu</span>
+                        <span className="text-sm font-bold text-gray-800 tabular-nums">
+                            {packages?.length > 0
+                                ? Math.round((packages.filter(p => p.Status === PackageStatus.Awarded).length / packages.length) * 100)
+                                : 0}%
+                        </span>
+                    </div>
+                    <div className="h-3 bg-gray-100 rounded-full overflow-hidden flex">
+                        {/* Awarded */}
+                        <div
+                            className="h-full bg-gradient-to-r from-emerald-500 to-green-600 transition-all"
+                            style={{ width: `${packages?.length > 0 ? (packages.filter(p => p.Status === PackageStatus.Awarded).length / packages.length) * 100 : 0}%` }}
+                            title="Đã có kết quả"
+                        />
+                        {/* Evaluating */}
+                        <div
+                            className="h-full bg-gradient-to-r from-yellow-400 to-amber-500 transition-all"
+                            style={{ width: `${packages?.length > 0 ? (packages.filter(p => p.Status === PackageStatus.Evaluating).length / packages.length) * 100 : 0}%` }}
+                            title="Đang xét thầu"
+                        />
+                        {/* Bidding */}
+                        <div
+                            className="h-full bg-gradient-to-r from-blue-400 to-blue-500 transition-all"
+                            style={{ width: `${packages?.length > 0 ? (packages.filter(p => p.Status === PackageStatus.Bidding).length / packages.length) * 100 : 0}%` }}
+                            title="Đang mời thầu"
+                        />
+                        {/* Posted */}
+                        <div
+                            className="h-full bg-gradient-to-r from-indigo-300 to-indigo-400 transition-all"
+                            style={{ width: `${packages?.length > 0 ? (packages.filter(p => p.Status === PackageStatus.Posted).length / packages.length) * 100 : 0}%` }}
+                            title="Đã đăng tải"
+                        />
+                    </div>
+                    {/* Legend */}
+                    <div className="flex flex-wrap gap-4 mt-3 text-xs">
+                        <span className="flex items-center gap-1.5">
+                            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+                            <span className="text-gray-600">Đã có kết quả ({packages?.filter(p => p.Status === PackageStatus.Awarded).length || 0})</span>
+                        </span>
+                        <span className="flex items-center gap-1.5">
+                            <span className="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
+                            <span className="text-gray-600">Đang xét thầu ({packages?.filter(p => p.Status === PackageStatus.Evaluating).length || 0})</span>
+                        </span>
+                        <span className="flex items-center gap-1.5">
+                            <span className="w-2.5 h-2.5 rounded-full bg-blue-500"></span>
+                            <span className="text-gray-600">Đang mời thầu ({packages?.filter(p => p.Status === PackageStatus.Bidding).length || 0})</span>
+                        </span>
+                        <span className="flex items-center gap-1.5">
+                            <span className="w-2.5 h-2.5 rounded-full bg-indigo-400"></span>
+                            <span className="text-gray-600">Đã đăng tải ({packages?.filter(p => p.Status === PackageStatus.Posted).length || 0})</span>
+                        </span>
+                        <span className="flex items-center gap-1.5">
+                            <span className="w-2.5 h-2.5 rounded-full bg-gray-300"></span>
+                            <span className="text-gray-600">Trong kế hoạch ({packages?.filter(p => p.Status === PackageStatus.Planning).length || 0})</span>
+                        </span>
                     </div>
                 </div>
             </div>
@@ -238,9 +315,9 @@ export const ProjectPackagesTab: React.FC<ProjectPackagesTabProps> = ({ projectI
                                         <div className="flex flex-col gap-1">
                                             <span className="font-medium text-slate-800">Ban QLDA</span>
                                             <span className={`text-[10px] px-1.5 py-0.5 rounded w-fit ${pkg.Field === 'Construction' ? 'bg-blue-100 text-blue-700' :
-                                                    pkg.Field === 'Consultancy' ? 'bg-purple-100 text-purple-700' :
-                                                        pkg.Field === 'Goods' ? 'bg-orange-100 text-orange-700' :
-                                                            'bg-gray-100 text-gray-600'
+                                                pkg.Field === 'Consultancy' ? 'bg-purple-100 text-purple-700' :
+                                                    pkg.Field === 'Goods' ? 'bg-orange-100 text-orange-700' :
+                                                        'bg-gray-100 text-gray-600'
                                                 }`}>
                                                 {pkg.Field === 'Construction' ? 'Xây lắp' :
                                                     pkg.Field === 'Consultancy' ? 'Tư vấn' :
