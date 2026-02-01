@@ -9,7 +9,7 @@ import { BiddingPackageDetail } from '../BiddingPackageDetail';
 import {
     Briefcase, CheckCircle2, FileText, Search, Plus,
     MoreVertical, Eye, Edit, Trash2, ExternalLink,
-    Copy, X, AlertTriangle, Loader2
+    Copy, X, AlertTriangle, Loader2, Clock, Circle
 } from 'lucide-react';
 
 // ========================================
@@ -417,9 +417,38 @@ export const ProjectPackagesTab: React.FC<ProjectPackagesTabProps> = ({ projectI
 
                                     {/* Trạng thái */}
                                     <td className="border border-slate-200 px-2 py-3 text-center align-top">
-                                        <span className={`inline-block px-2 py-1 rounded text-[10px] font-semibold ${getStatusColor(pkg.Status)}`}>
-                                            {getStatusLabel(pkg.Status)}
-                                        </span>
+                                        <div className="flex flex-col items-center gap-1.5">
+                                            {/* Status Badge */}
+                                            <span className={`inline-flex items-center gap-1 px-2 py-1 rounded text-[10px] font-semibold ${getStatusColor(pkg.Status)}`}>
+                                                {pkg.Status === PackageStatus.Planning && <Circle className="w-2.5 h-2.5" />}
+                                                {pkg.Status === PackageStatus.Posted && <FileText className="w-2.5 h-2.5" />}
+                                                {pkg.Status === PackageStatus.Bidding && <Clock className="w-2.5 h-2.5 animate-pulse" />}
+                                                {pkg.Status === PackageStatus.Evaluating && <AlertTriangle className="w-2.5 h-2.5" />}
+                                                {pkg.Status === PackageStatus.Awarded && <CheckCircle2 className="w-2.5 h-2.5" />}
+                                                {getStatusLabel(pkg.Status)}
+                                            </span>
+                                            {/* Mini Progress Indicator */}
+                                            <div className="flex gap-0.5">
+                                                <span className={`w-2 h-1 rounded-full ${pkg.Status === PackageStatus.Planning || pkg.Status === PackageStatus.Posted || pkg.Status === PackageStatus.Bidding || pkg.Status === PackageStatus.Evaluating || pkg.Status === PackageStatus.Awarded ? 'bg-emerald-500' : 'bg-gray-200'}`}></span>
+                                                <span className={`w-2 h-1 rounded-full ${pkg.Status === PackageStatus.Posted || pkg.Status === PackageStatus.Bidding || pkg.Status === PackageStatus.Evaluating || pkg.Status === PackageStatus.Awarded ? 'bg-emerald-500' : 'bg-gray-200'}`}></span>
+                                                <span className={`w-2 h-1 rounded-full ${pkg.Status === PackageStatus.Bidding || pkg.Status === PackageStatus.Evaluating || pkg.Status === PackageStatus.Awarded ? 'bg-emerald-500' : 'bg-gray-200'}`}></span>
+                                                <span className={`w-2 h-1 rounded-full ${pkg.Status === PackageStatus.Evaluating || pkg.Status === PackageStatus.Awarded ? 'bg-emerald-500' : 'bg-gray-200'}`}></span>
+                                                <span className={`w-2 h-1 rounded-full ${pkg.Status === PackageStatus.Awarded ? 'bg-emerald-500' : 'bg-gray-200'}`}></span>
+                                            </div>
+                                            {/* Next Action Hint */}
+                                            {pkg.Status === PackageStatus.Planning && (
+                                                <span className="text-[9px] text-gray-400 italic">→ Lập E-HSMT</span>
+                                            )}
+                                            {pkg.Status === PackageStatus.Posted && (
+                                                <span className="text-[9px] text-blue-500 italic">→ Chờ mở thầu</span>
+                                            )}
+                                            {pkg.Status === PackageStatus.Bidding && (
+                                                <span className="text-[9px] text-amber-600 italic">→ Đang chấm thầu</span>
+                                            )}
+                                            {pkg.Status === PackageStatus.Evaluating && (
+                                                <span className="text-[9px] text-yellow-600 italic">→ Chờ phê duyệt</span>
+                                            )}
+                                        </div>
                                     </td>
 
                                     {/* Thao tác */}
