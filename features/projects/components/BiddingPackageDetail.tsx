@@ -1,18 +1,17 @@
 import React, { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
 import {
     X, ExternalLink, Calendar, FileText, Building2, Banknote, Clock, Award,
-    TrendingDown, TrendingUp, CreditCard, Receipt, ChevronRight, Edit, ArrowLeft,
-    PieChart, BarChart3, Users, AlertTriangle, CheckCircle2, Phone, Mail, MapPin,
-    Percent, CalendarCheck, Briefcase, Target, DollarSign
+    TrendingDown, CreditCard, Receipt, Edit, ArrowLeft, BarChart3, Users,
+    AlertTriangle, CheckCircle2, Phone, Mail, MapPin, Target, DollarSign,
+    ClipboardList, Gavel, FileSignature, Calculator, Shield, Percent, Package
 } from 'lucide-react';
-import { BiddingPackage, PackageStatus, Payment } from '../../../types';
+import { BiddingPackage, PackageStatus } from '../../../types';
 import { formatCurrency, formatDate } from '../../../utils/format';
-import ApiClient from '../../../services/api';
 import { mockPayments, mockContractors, mockContracts } from '../../../mockData';
 
 // ========================================
-// BIDDING PACKAGE DETAIL - Full Featured View
+// BIDDING PACKAGE DETAIL - Full Lifecycle Management
+// 7 Stages: KHLCNT → TBMT → Bidding → Evaluation → Contract → Execution → Settlement
 // ========================================
 
 interface BiddingPackageDetailProps {
@@ -22,16 +21,27 @@ interface BiddingPackageDetailProps {
     onEdit?: (pkg: BiddingPackage) => void;
 }
 
-type TabType = 'info' | 'price' | 'payments' | 'timeline';
+type TabType = 'khlcnt' | 'selection' | 'contract' | 'settlement';
+
+// Lifecycle stages configuration
+const LIFECYCLE_STAGES = [
+    { id: 1, name: 'Kế hoạch', status: ['Planning'], icon: ClipboardList, color: 'gray' },
+    { id: 2, name: 'TBMT', status: ['Posted'], icon: ExternalLink, color: 'indigo' },
+    { id: 3, name: 'Mời thầu', status: ['Bidding'], icon: Users, color: 'blue' },
+    { id: 4, name: 'Đánh giá', status: ['Evaluating'], icon: Gavel, color: 'yellow' },
+    { id: 5, name: 'Hợp đồng', status: ['Awarded'], icon: FileSignature, color: 'green' },
+    { id: 6, name: 'Thực hiện', status: [], icon: Building2, color: 'cyan' },
+    { id: 7, name: 'Quyết toán', status: [], icon: Calculator, color: 'emerald' },
+];
 
 const getStatusConfig = (status: PackageStatus) => {
     const configs = {
-        [PackageStatus.Planning]: { label: 'Trong kế hoạch', bg: 'bg-gray-100', text: 'text-gray-600', border: 'border-gray-200' },
-        [PackageStatus.Posted]: { label: 'Đã đăng tải', bg: 'bg-indigo-100', text: 'text-indigo-700', border: 'border-indigo-200' },
-        [PackageStatus.Bidding]: { label: 'Đang mời thầu', bg: 'bg-blue-100', text: 'text-blue-700', border: 'border-blue-200' },
-        [PackageStatus.Evaluating]: { label: 'Đang xét thầu', bg: 'bg-yellow-100', text: 'text-yellow-700', border: 'border-yellow-200' },
-        [PackageStatus.Awarded]: { label: 'Đã có kết quả', bg: 'bg-green-100', text: 'text-green-700', border: 'border-green-200' },
-        [PackageStatus.Cancelled]: { label: 'Hủy thầu', bg: 'bg-red-100', text: 'text-red-700', border: 'border-red-200' },
+        [PackageStatus.Planning]: { label: 'Trong kế hoạch', bg: 'bg-gray-100', text: 'text-gray-600', border: 'border-gray-200', stage: 1 },
+        [PackageStatus.Posted]: { label: 'Đã đăng TBMT', bg: 'bg-indigo-100', text: 'text-indigo-700', border: 'border-indigo-200', stage: 2 },
+        [PackageStatus.Bidding]: { label: 'Đang mời thầu', bg: 'bg-blue-100', text: 'text-blue-700', border: 'border-blue-200', stage: 3 },
+        [PackageStatus.Evaluating]: { label: 'Đang xét thầu', bg: 'bg-yellow-100', text: 'text-yellow-700', border: 'border-yellow-200', stage: 4 },
+        [PackageStatus.Awarded]: { label: 'Đã có KQLCNT', bg: 'bg-green-100', text: 'text-green-700', border: 'border-green-200', stage: 5 },
+        [PackageStatus.Cancelled]: { label: 'Hủy thầu', bg: 'bg-red-100', text: 'text-red-700', border: 'border-red-200', stage: 0 },
     };
     return configs[status] || configs[PackageStatus.Planning];
 };
@@ -49,12 +59,13 @@ export const BiddingPackageDetail: React.FC<BiddingPackageDetailProps> = ({
     package_data: pkg,
     onEdit,
 }) => {
-    const [activeTab, setActiveTab] = useState<TabType>('info');
+    const [activeTab, setActiveTab] = useState<TabType>('khlcnt');
 
     if (!isOpen || !pkg) return null;
 
     const statusConfig = getStatusConfig(pkg.Status);
     const labels = getLabelMaps();
+    const currentStage = statusConfig.stage;
 
     // Get related data
     const relatedContract = mockContracts.find(c => c.PackageID === pkg.PackageID);
@@ -68,14 +79,16 @@ export const BiddingPackageDetail: React.FC<BiddingPackageDetailProps> = ({
     const contractValue = relatedContract?.ContractValue || pkg.WinningPrice || 0;
     const paymentProgress = contractValue > 0 ? (totalPaid / contractValue * 100) : 0;
 
-    // Estimate price (giá dự toán) - typically package price is the estimate
-    const estimatedPrice = pkg.Price;
+    // Determine actual stage (including contract execution stages)
+    const actualStage = relatedContract
+        ? (relatedContract.Status === 'Completed' ? 7 : 6)
+        : currentStage;
 
     const tabs = [
-        { id: 'info', label: 'Thông tin gói thầu', icon: FileText },
-        { id: 'price', label: 'So sánh giá', icon: BarChart3 },
-        { id: 'payments', label: 'Hợp đồng & Thanh toán', icon: CreditCard },
-        { id: 'timeline', label: 'Tiến độ', icon: Clock },
+        { id: 'khlcnt', label: 'KHLCNT & TBMT', icon: ClipboardList, stages: [1, 2] },
+        { id: 'selection', label: 'Lựa chọn nhà thầu', icon: Users, stages: [3, 4] },
+        { id: 'contract', label: 'Hợp đồng & Thanh toán', icon: FileSignature, stages: [5, 6] },
+        { id: 'settlement', label: 'Quyết toán', icon: Calculator, stages: [7] },
     ] as const;
 
     return (
@@ -87,9 +100,9 @@ export const BiddingPackageDetail: React.FC<BiddingPackageDetailProps> = ({
             />
 
             {/* Modal - Full width */}
-            <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-5xl max-h-[92vh] overflow-hidden animate-scale-in flex flex-col">
-                {/* Header */}
-                <div className="shrink-0 px-6 py-4 border-b border-gray-100 bg-gradient-to-r from-primary-50 via-blue-50 to-indigo-50">
+            <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-6xl max-h-[95vh] overflow-hidden animate-scale-in flex flex-col">
+                {/* Header with Package Info */}
+                <div className="shrink-0 px-6 py-4 border-b border-gray-100 bg-gradient-to-r from-slate-50 via-blue-50 to-indigo-50">
                     <div className="flex items-start justify-between">
                         <div className="flex-1">
                             <button
@@ -111,9 +124,9 @@ export const BiddingPackageDetail: React.FC<BiddingPackageDetailProps> = ({
                                     {labels.field[pkg.Field as keyof typeof labels.field] || pkg.Field}
                                 </span>
                             </div>
-                            <h2 className="text-base text-gray-600 leading-relaxed max-w-3xl">{pkg.PackageName}</h2>
+                            <h2 className="text-base text-gray-600 leading-relaxed max-w-4xl line-clamp-2">{pkg.PackageName}</h2>
 
-                            <div className="flex items-center gap-4 mt-3">
+                            <div className="flex items-center gap-3 mt-3">
                                 {pkg.NotificationCode && (
                                     <a
                                         href={`https://muasamcong.mpi.gov.vn/web/guest/contractor-selection?type=es-contractor-selection&noticeNo=${pkg.NotificationCode}`}
@@ -145,339 +158,276 @@ export const BiddingPackageDetail: React.FC<BiddingPackageDetailProps> = ({
                     </div>
                 </div>
 
-                {/* Quick Stats - Enhanced with Giá dự toán */}
-                <div className="shrink-0 grid grid-cols-4 gap-4 px-6 py-4 bg-gray-50 border-b border-gray-100">
-                    <div className="text-center">
-                        <p className="text-xs text-gray-500">Giá dự toán</p>
-                        <p className="text-lg font-bold text-gray-800">{formatCurrency(estimatedPrice)}</p>
-                    </div>
-                    <div className="text-center">
-                        <p className="text-xs text-gray-500">Giá trúng thầu</p>
-                        <p className="text-lg font-bold text-green-600">{pkg.WinningPrice ? formatCurrency(pkg.WinningPrice) : '-'}</p>
-                    </div>
-                    <div className="text-center">
-                        <p className="text-xs text-gray-500">Tiết kiệm</p>
-                        <p className={`text-lg font-bold ${savings > 0 ? 'text-blue-600' : 'text-gray-400'}`}>
-                            {savings > 0 ? `${savingsPercent}%` : '-'}
-                        </p>
-                    </div>
-                    <div className="text-center">
-                        <p className="text-xs text-gray-500">Thời gian thực hiện</p>
-                        <p className="text-lg font-bold text-gray-800">{pkg.Duration || '-'}</p>
+                {/* LIFECYCLE TIMELINE HEADER */}
+                <div className="shrink-0 bg-white border-b border-gray-200 px-6 py-4">
+                    <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Vòng đời gói thầu</h4>
+                    <div className="flex items-center">
+                        {LIFECYCLE_STAGES.map((stage, idx) => {
+                            const isCompleted = actualStage > stage.id;
+                            const isCurrent = actualStage === stage.id;
+                            const isPending = actualStage < stage.id;
+
+                            return (
+                                <React.Fragment key={stage.id}>
+                                    <div className="flex flex-col items-center">
+                                        <div className={`
+                                            w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold transition-all
+                                            ${isCompleted ? 'bg-green-500 text-white' :
+                                                isCurrent ? 'bg-blue-600 text-white ring-4 ring-blue-100' :
+                                                    'bg-gray-100 text-gray-400'}
+                                        `}>
+                                            {isCompleted ? <CheckCircle2 className="w-5 h-5" /> : <stage.icon className="w-5 h-5" />}
+                                        </div>
+                                        <span className={`text-[10px] mt-1.5 font-medium whitespace-nowrap ${isCompleted ? 'text-green-600' :
+                                                isCurrent ? 'text-blue-600' :
+                                                    'text-gray-400'
+                                            }`}>{stage.name}</span>
+                                    </div>
+                                    {idx < LIFECYCLE_STAGES.length - 1 && (
+                                        <div className={`flex-1 h-1 mx-1 rounded ${isCompleted ? 'bg-green-400' : 'bg-gray-200'}`} />
+                                    )}
+                                </React.Fragment>
+                            );
+                        })}
                     </div>
                 </div>
 
-                {/* Tabs - Fixed badge issue */}
-                <div className="shrink-0 flex border-b border-gray-100 px-6 bg-white">
-                    {tabs.map(tab => (
-                        <button
-                            key={tab.id}
-                            onClick={() => setActiveTab(tab.id)}
-                            className={`
-                                flex items-center gap-2 px-4 py-3 text-sm font-medium 
-                                border-b-2 transition-colors -mb-px
-                                ${activeTab === tab.id
-                                    ? 'text-primary-600 border-primary-600'
-                                    : 'text-gray-500 border-transparent hover:text-gray-700'}
-                            `}
-                        >
-                            <tab.icon className="w-4 h-4" />
-                            {tab.label}
-                        </button>
-                    ))}
+                {/* Tabs - 4 Lifecycle Groups */}
+                <div className="shrink-0 flex border-b border-gray-100 px-6 bg-gray-50">
+                    {tabs.map(tab => {
+                        const tabHasProgress = tab.stages.some(s => actualStage >= s);
+                        return (
+                            <button
+                                key={tab.id}
+                                onClick={() => setActiveTab(tab.id)}
+                                className={`
+                                    flex items-center gap-2 px-4 py-3 text-sm font-medium 
+                                    border-b-2 transition-colors -mb-px
+                                    ${activeTab === tab.id
+                                        ? 'text-blue-600 border-blue-600 bg-white'
+                                        : tabHasProgress
+                                            ? 'text-gray-600 border-transparent hover:text-gray-800'
+                                            : 'text-gray-400 border-transparent'}
+                                `}
+                            >
+                                <tab.icon className="w-4 h-4" />
+                                {tab.label}
+                            </button>
+                        );
+                    })}
                 </div>
 
                 {/* Content */}
-                <div className="flex-1 overflow-y-auto p-6">
-                    {/* Tab: Info */}
-                    {activeTab === 'info' && (
+                <div className="flex-1 overflow-y-auto p-6 bg-gray-50">
+                    {/* Tab 1: KHLCNT & TBMT */}
+                    {activeTab === 'khlcnt' && (
                         <div className="grid grid-cols-2 gap-6">
-                            {/* Left Column - Basic Info */}
+                            {/* Left: KHLCNT Info */}
                             <div className="space-y-4">
-                                <div className="bg-white rounded-xl border border-gray-200 p-4">
-                                    <h4 className="font-semibold text-gray-800 mb-3 flex items-center gap-2">
-                                        <Building2 className="w-4 h-4 text-gray-500" />
-                                        Phân loại pháp lý
-                                    </h4>
-                                    <div className="space-y-2 text-sm">
-                                        <InfoRow label="Lĩnh vực" value={labels.field[pkg.Field as keyof typeof labels.field] || pkg.Field} />
-                                        <InfoRow label="Hình thức LCNT" value={labels.method[pkg.SelectionMethod as keyof typeof labels.method] || pkg.SelectionMethod} />
-                                        <InfoRow label="Phương thức" value={labels.procedure[pkg.SelectionProcedure as keyof typeof labels.procedure] || pkg.SelectionProcedure} />
-                                        <InfoRow label="Loại hợp đồng" value={labels.contractType[pkg.ContractType as keyof typeof labels.contractType] || pkg.ContractType} />
-                                        <InfoRow
-                                            label="Hình thức đấu thầu"
-                                            value={<span className={pkg.BidType === 'Online' ? 'text-blue-600' : ''}>{pkg.BidType === 'Online' ? '🌐 Qua mạng' : '📋 Trực tiếp'}</span>}
-                                        />
-                                    </div>
-                                </div>
+                                <SectionCard title="Kế hoạch lựa chọn nhà thầu" icon={ClipboardList} color="blue">
+                                    <InfoRow label="Mã KHLCNT" value={pkg.KHLCNTCode ? <span className="font-mono">{pkg.KHLCNTCode}</span> : '-'} />
+                                    <InfoRow label="QĐ phê duyệt KHLCNT" value={pkg.DecisionNumber || '-'} />
+                                    <InfoRow label="Ngày phê duyệt" value={pkg.DecisionDate ? formatDate(pkg.DecisionDate) : '-'} />
+                                    <div className="border-t border-gray-100 my-2" />
+                                    <InfoRow label="Giá gói thầu" value={<span className="font-bold text-gray-900">{formatCurrency(pkg.Price)}</span>} />
+                                    <InfoRow label="Nguồn vốn" value={pkg.FundingSource || 'Ngân sách Nhà nước'} />
+                                    <InfoRow label="Thời gian thực hiện" value={pkg.Duration || '-'} />
+                                </SectionCard>
 
-                                {/* KHLCNT Info */}
-                                <div className="bg-gray-50 rounded-xl border border-gray-200 p-4">
-                                    <h4 className="font-semibold text-gray-800 mb-3">Kế hoạch LCNT</h4>
-                                    <div className="space-y-2 text-sm">
-                                        <InfoRow label="Mã KHLCNT" value={pkg.KHLCNTCode ? <span className="font-mono">{pkg.KHLCNTCode}</span> : '-'} />
-                                        <InfoRow label="QĐ phê duyệt KHLCNT" value={pkg.DecisionNumber || '-'} />
-                                        <InfoRow label="Ngày phê duyệt" value={pkg.DecisionDate ? formatDate(pkg.DecisionDate) : '-'} />
-                                        <InfoRow label="Mã TBMT" value={pkg.NotificationCode ? <span className="font-mono text-blue-600">{pkg.NotificationCode}</span> : '-'} />
-                                    </div>
-                                </div>
+                                <SectionCard title="Phương thức đấu thầu" icon={Gavel} color="purple">
+                                    <InfoRow label="Lĩnh vực" value={labels.field[pkg.Field as keyof typeof labels.field] || pkg.Field} />
+                                    <InfoRow label="Hình thức LCNT" value={labels.method[pkg.SelectionMethod as keyof typeof labels.method] || pkg.SelectionMethod} />
+                                    <InfoRow label="Phương thức" value={labels.procedure[pkg.SelectionProcedure as keyof typeof labels.procedure] || pkg.SelectionProcedure} />
+                                    <InfoRow label="Loại hợp đồng" value={labels.contractType[pkg.ContractType as keyof typeof labels.contractType] || pkg.ContractType} />
+                                    <InfoRow
+                                        label="Hình thức đấu thầu"
+                                        value={<span className={pkg.BidType === 'Online' ? 'text-blue-600' : ''}>{pkg.BidType === 'Online' ? '🌐 Qua mạng (E-Bidding)' : '📋 Trực tiếp'}</span>}
+                                    />
+                                </SectionCard>
                             </div>
 
-                            {/* Right Column - Contractor & Timeline */}
+                            {/* Right: TBMT Info */}
                             <div className="space-y-4">
-                                {/* Winning Contractor */}
-                                {winningContractor ? (
-                                    <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl border border-green-200 p-4">
-                                        <h4 className="font-semibold text-gray-800 mb-3 flex items-center gap-2">
-                                            <Award className="w-4 h-4 text-green-600" />
-                                            Nhà thầu trúng thầu
-                                        </h4>
-                                        <div className="flex items-center gap-3 mb-3">
-                                            <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
-                                                <Users className="w-6 h-6 text-green-600" />
+                                <SectionCard title="Thông báo mời thầu (TBMT)" icon={ExternalLink} color="indigo">
+                                    {pkg.NotificationCode ? (
+                                        <>
+                                            <InfoRow label="Mã TBMT" value={<span className="font-mono text-blue-600">{pkg.NotificationCode}</span>} />
+                                            <InfoRow label="Ngày đăng tải" value={pkg.PostingDate ? formatDate(pkg.PostingDate) : '-'} />
+                                            <InfoRow label="Thời điểm đóng thầu" value={pkg.BidClosingDate ? formatDate(pkg.BidClosingDate) : '-'} highlight />
+                                            <InfoRow label="Thời điểm mở thầu" value={pkg.BidOpeningDate ? formatDate(pkg.BidOpeningDate) : '-'} />
+                                            <div className="mt-3">
+                                                <a
+                                                    href={`https://muasamcong.mpi.gov.vn/web/guest/contractor-selection?noticeNo=${pkg.NotificationCode}`}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition-colors"
+                                                >
+                                                    <ExternalLink className="w-4 h-4" />
+                                                    Xem TBMT trên Hệ thống ĐTQG
+                                                </a>
                                             </div>
-                                            <div>
-                                                <p className="font-semibold text-gray-800">{winningContractor.ContractorName}</p>
-                                                <p className="text-xs text-gray-500">MST: {winningContractor.TaxCode}</p>
-                                            </div>
+                                        </>
+                                    ) : (
+                                        <div className="text-center py-6">
+                                            <ExternalLink className="w-10 h-10 text-gray-300 mx-auto mb-2" />
+                                            <p className="text-gray-500">Chưa đăng tải TBMT</p>
+                                            <p className="text-xs text-gray-400 mt-1">Gói thầu đang trong giai đoạn lập kế hoạch</p>
                                         </div>
-                                        <div className="space-y-2 text-sm">
-                                            <InfoRow label="Giá trúng thầu" value={<span className="font-bold text-green-600">{formatCurrency(pkg.WinningPrice || 0)}</span>} />
-                                            {pkg.ApprovalDate_Result && <InfoRow label="Ngày phê duyệt KQLCNT" value={formatDate(pkg.ApprovalDate_Result)} />}
-                                            {winningContractor.Address && <InfoRow label="Địa chỉ" value={winningContractor.Address} />}
-                                            {winningContractor.Phone && <InfoRow label="Điện thoại" value={winningContractor.Phone} />}
-                                        </div>
-                                    </div>
-                                ) : (
-                                    <div className="bg-gray-50 rounded-xl border border-gray-200 p-4 text-center">
-                                        <Users className="w-8 h-8 text-gray-300 mx-auto mb-2" />
-                                        <p className="text-gray-500 text-sm">Chưa có kết quả trúng thầu</p>
-                                    </div>
-                                )}
+                                    )}
+                                </SectionCard>
 
-                                {/* Related Contract */}
-                                {relatedContract ? (
-                                    <div className="bg-blue-50 rounded-xl border border-blue-200 p-4">
-                                        <h4 className="font-semibold text-gray-800 mb-3 flex items-center gap-2">
-                                            <FileText className="w-4 h-4 text-blue-600" />
-                                            Hợp đồng
-                                        </h4>
-                                        <div className="space-y-2 text-sm">
-                                            <InfoRow label="Số hợp đồng" value={<span className="font-mono">{relatedContract.ContractNumber}</span>} />
-                                            <InfoRow label="Giá trị HĐ" value={<span className="font-bold">{formatCurrency(relatedContract.ContractValue)}</span>} />
+                                <SectionCard title="Thời gian tổ chức LCNT" icon={Calendar} color="cyan">
+                                    <InfoRow label="Thời gian tổ chức" value={pkg.SelectionDuration || '45 ngày'} />
+                                    <InfoRow label="Thời gian bắt đầu" value={pkg.SelectionStartDate || '-'} />
+                                    <InfoRow label="Tùy chọn mua thêm" value={pkg.HasOption ? 'Có' : 'Không'} />
+                                </SectionCard>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Tab 2: Lựa chọn nhà thầu */}
+                    {activeTab === 'selection' && (
+                        <div className="grid grid-cols-2 gap-6">
+                            {/* Left: Bidders */}
+                            <div className="space-y-4">
+                                <SectionCard title="Nhà thầu tham gia" icon={Users} color="blue">
+                                    {actualStage >= 3 ? (
+                                        <div className="space-y-3">
+                                            <p className="text-sm text-gray-500 italic">Danh sách nhà thầu đăng ký và nộp HSDT</p>
+                                            {/* Mock bidders - In real app, fetch from API */}
+                                            {[
+                                                { name: 'Công ty CP Xây dựng ABC', submitted: true },
+                                                { name: 'Công ty TNHH Thương mại XYZ', submitted: true },
+                                                { name: 'Doanh nghiệp Tư nhân DEF', submitted: false },
+                                            ].map((bidder, idx) => (
+                                                <div key={idx} className={`flex items-center justify-between p-3 rounded-lg border ${bidder.submitted ? 'bg-green-50 border-green-200' : 'bg-gray-50 border-gray-200'}`}>
+                                                    <div className="flex items-center gap-2">
+                                                        <Building2 className="w-4 h-4 text-gray-400" />
+                                                        <span className="text-sm font-medium">{bidder.name}</span>
+                                                    </div>
+                                                    <span className={`text-xs px-2 py-0.5 rounded-full ${bidder.submitted ? 'bg-green-100 text-green-600' : 'bg-gray-100 text-gray-500'}`}>
+                                                        {bidder.submitted ? 'Đã nộp HSDT' : 'Đã đăng ký'}
+                                                    </span>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    ) : (
+                                        <EmptyState icon={Users} message="Chưa có nhà thầu tham gia" hint="Gói thầu cần đăng TBMT trước" />
+                                    )}
+                                </SectionCard>
+                            </div>
+
+                            {/* Right: Evaluation & Result */}
+                            <div className="space-y-4">
+                                <SectionCard title="Đánh giá HSDT" icon={BarChart3} color="yellow">
+                                    {actualStage >= 4 ? (
+                                        <div className="space-y-2">
+                                            <InfoRow label="Ngày mở thầu" value={pkg.BidOpeningDate ? formatDate(pkg.BidOpeningDate) : '-'} />
+                                            <InfoRow label="Biên bản mở thầu" value="Đã lập" />
+                                            <InfoRow label="Báo cáo đánh giá" value="Đã hoàn thành" />
+                                        </div>
+                                    ) : (
+                                        <EmptyState icon={BarChart3} message="Chưa đánh giá HSDT" hint="Chờ hết thời gian nộp HSDT" />
+                                    )}
+                                </SectionCard>
+
+                                <SectionCard title="Kết quả lựa chọn nhà thầu" icon={Award} color="green">
+                                    {pkg.WinningContractorID && winningContractor ? (
+                                        <div className="space-y-3">
+                                            <div className="flex items-center gap-3 p-3 bg-green-50 rounded-lg border border-green-200">
+                                                <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
+                                                    <Award className="w-6 h-6 text-green-600" />
+                                                </div>
+                                                <div>
+                                                    <p className="font-semibold text-gray-800">{winningContractor.ContractorName}</p>
+                                                    <p className="text-xs text-gray-500">MST: {winningContractor.TaxCode}</p>
+                                                </div>
+                                            </div>
+                                            <InfoRow label="Giá trúng thầu" value={<span className="font-bold text-green-600">{formatCurrency(pkg.WinningPrice || 0)}</span>} />
+                                            <InfoRow label="Tiết kiệm" value={savings > 0 ? <span className="text-blue-600">{formatCurrency(savings)} ({savingsPercent}%)</span> : '-'} />
+                                            <InfoRow label="Ngày phê duyệt KQLCNT" value={pkg.ApprovalDate_Result ? formatDate(pkg.ApprovalDate_Result) : '-'} />
+                                        </div>
+                                    ) : (
+                                        <EmptyState icon={Award} message="Chưa có kết quả LCNT" hint="Đang trong quá trình đánh giá" />
+                                    )}
+                                </SectionCard>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Tab 3: Hợp đồng & Thanh toán */}
+                    {activeTab === 'contract' && (
+                        <div className="space-y-6">
+                            {/* Contract & Contractor Overview */}
+                            <div className="grid grid-cols-2 gap-4">
+                                <SectionCard title="Nhà thầu thực hiện" icon={Building2} color="green">
+                                    {winningContractor ? (
+                                        <div className="space-y-2">
+                                            <p className="font-semibold text-gray-800">{winningContractor.ContractorName}</p>
+                                            <div className="text-sm text-gray-600 space-y-1.5">
+                                                <p className="flex items-center gap-2"><Target className="w-3.5 h-3.5 text-gray-400" /> MST: {winningContractor.TaxCode}</p>
+                                                {winningContractor.Phone && <p className="flex items-center gap-2"><Phone className="w-3.5 h-3.5 text-gray-400" /> {winningContractor.Phone}</p>}
+                                                {winningContractor.Email && <p className="flex items-center gap-2"><Mail className="w-3.5 h-3.5 text-gray-400" /> {winningContractor.Email}</p>}
+                                                {winningContractor.Address && <p className="flex items-center gap-2"><MapPin className="w-3.5 h-3.5 text-gray-400" /> {winningContractor.Address}</p>}
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <EmptyState icon={Building2} message="Chưa có nhà thầu" />
+                                    )}
+                                </SectionCard>
+
+                                <SectionCard title="Hợp đồng" icon={FileSignature} color="blue">
+                                    {relatedContract ? (
+                                        <div className="space-y-2">
+                                            <InfoRow label="Số hợp đồng" value={<span className="font-mono font-semibold">{relatedContract.ContractNumber}</span>} />
+                                            <InfoRow label="Giá trị HĐ" value={<span className="font-bold text-blue-600">{formatCurrency(relatedContract.ContractValue)}</span>} />
                                             <InfoRow label="Ngày ký" value={formatDate(relatedContract.SigningDate)} />
+                                            <InfoRow label="Thời gian thực hiện" value={relatedContract.Duration || pkg.Duration} />
                                             <InfoRow label="Trạng thái" value={
                                                 <span className={`px-2 py-0.5 rounded text-xs font-medium ${relatedContract.Status === 'Active' ? 'bg-green-100 text-green-600' :
-                                                    relatedContract.Status === 'Completed' ? 'bg-blue-100 text-blue-600' : 'bg-gray-100 text-gray-600'}`}>
+                                                        relatedContract.Status === 'Completed' ? 'bg-blue-100 text-blue-600' : 'bg-gray-100 text-gray-600'
+                                                    }`}>
                                                     {relatedContract.Status === 'Active' ? 'Đang thực hiện' :
                                                         relatedContract.Status === 'Completed' ? 'Hoàn thành' : relatedContract.Status}
                                                 </span>
                                             } />
                                         </div>
-                                    </div>
-                                ) : (
-                                    <div className="bg-gray-50 rounded-xl border border-gray-200 p-4 text-center">
-                                        <FileText className="w-8 h-8 text-gray-300 mx-auto mb-2" />
-                                        <p className="text-gray-500 text-sm">Chưa có hợp đồng</p>
-                                    </div>
-                                )}
-
-                                {/* Timeline Visual */}
-                                <div className="bg-indigo-50 rounded-xl border border-indigo-200 p-4">
-                                    <h4 className="font-semibold text-gray-800 mb-4 flex items-center gap-2">
-                                        <Calendar className="w-4 h-4 text-indigo-600" />
-                                        Mốc thời gian
-                                    </h4>
-                                    <div className="relative pl-6 space-y-4">
-                                        <div className="absolute left-2 top-2 bottom-2 w-0.5 bg-indigo-200" />
-                                        <TimelineStep label="Đăng tải TBMT" date={pkg.PostingDate} isActive={!!pkg.PostingDate} />
-                                        <TimelineStep label="Đóng thầu" date={pkg.BidClosingDate} isActive={!!pkg.BidClosingDate} isCritical />
-                                        <TimelineStep label="Mở thầu" date={pkg.BidOpeningDate} isActive={!!pkg.BidOpeningDate} />
-                                        <TimelineStep label="Phê duyệt KQLCNT" date={pkg.ApprovalDate_Result} isActive={pkg.Status === PackageStatus.Awarded} />
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    )}
-
-                    {/* Tab: Price Comparison */}
-                    {activeTab === 'price' && (
-                        <div className="space-y-6">
-                            {/* Price Cards - 4 columns with Giá dự toán */}
-                            <div className="grid grid-cols-4 gap-4">
-                                <div className="bg-white rounded-xl border border-gray-200 p-5">
-                                    <div className="flex items-center justify-between mb-3">
-                                        <span className="text-sm text-gray-500">Giá dự toán</span>
-                                        <Target className="w-5 h-5 text-gray-400" />
-                                    </div>
-                                    <p className="text-xl font-bold text-gray-800">{formatCurrency(estimatedPrice)}</p>
-                                </div>
-                                <div className="bg-white rounded-xl border border-gray-200 p-5">
-                                    <div className="flex items-center justify-between mb-3">
-                                        <span className="text-sm text-gray-500">Giá gói thầu</span>
-                                        <Banknote className="w-5 h-5 text-gray-400" />
-                                    </div>
-                                    <p className="text-xl font-bold text-gray-800">{formatCurrency(pkg.Price)}</p>
-                                </div>
-                                <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl border border-green-200 p-5">
-                                    <div className="flex items-center justify-between mb-3">
-                                        <span className="text-sm text-green-600">Giá trúng thầu</span>
-                                        <Award className="w-5 h-5 text-green-500" />
-                                    </div>
-                                    <p className="text-xl font-bold text-green-600">{pkg.WinningPrice ? formatCurrency(pkg.WinningPrice) : '-'}</p>
-                                </div>
-                                <div className={`rounded-xl border p-5 ${savings > 0 ? 'bg-gradient-to-br from-blue-50 to-indigo-50 border-blue-200' : 'bg-gray-50 border-gray-200'}`}>
-                                    <div className="flex items-center justify-between mb-3">
-                                        <span className={`text-sm ${savings > 0 ? 'text-blue-600' : 'text-gray-500'}`}>Tiết kiệm</span>
-                                        {savings > 0 ? <TrendingDown className="w-5 h-5 text-blue-500" /> : <Percent className="w-5 h-5 text-gray-400" />}
-                                    </div>
-                                    <p className={`text-xl font-bold ${savings > 0 ? 'text-blue-600' : 'text-gray-400'}`}>
-                                        {savings > 0 ? formatCurrency(savings) : '-'}
-                                    </p>
-                                    {savings > 0 && <p className="text-sm text-blue-500 mt-1">{savingsPercent}% so với dự toán</p>}
-                                </div>
-                            </div>
-
-                            {/* Visual Comparison Bar */}
-                            {pkg.WinningPrice && (
-                                <div className="bg-white rounded-xl border border-gray-200 p-6">
-                                    <h4 className="font-semibold text-gray-800 mb-4">So sánh trực quan</h4>
-                                    <div className="space-y-4">
-                                        <div>
-                                            <div className="flex justify-between text-sm mb-1">
-                                                <span className="text-gray-600">Giá dự toán / Gói thầu</span>
-                                                <span className="font-medium">{formatCurrency(pkg.Price)}</span>
-                                            </div>
-                                            <div className="h-8 bg-gray-100 rounded-lg overflow-hidden">
-                                                <div className="h-full bg-gray-400 rounded-lg" style={{ width: '100%' }} />
-                                            </div>
-                                        </div>
-                                        <div>
-                                            <div className="flex justify-between text-sm mb-1">
-                                                <span className="text-green-600">Giá trúng thầu</span>
-                                                <span className="font-medium text-green-600">{formatCurrency(pkg.WinningPrice)}</span>
-                                            </div>
-                                            <div className="h-8 bg-green-100 rounded-lg overflow-hidden">
-                                                <div
-                                                    className="h-full bg-green-500 rounded-lg transition-all"
-                                                    style={{ width: `${(pkg.WinningPrice / pkg.Price) * 100}%` }}
-                                                />
-                                            </div>
-                                        </div>
-                                        {relatedContract && (
-                                            <div>
-                                                <div className="flex justify-between text-sm mb-1">
-                                                    <span className="text-blue-600">Giá trị hợp đồng</span>
-                                                    <span className="font-medium text-blue-600">{formatCurrency(relatedContract.ContractValue)}</span>
-                                                </div>
-                                                <div className="h-8 bg-blue-100 rounded-lg overflow-hidden">
-                                                    <div
-                                                        className="h-full bg-blue-500 rounded-lg transition-all"
-                                                        style={{ width: `${(relatedContract.ContractValue / pkg.Price) * 100}%` }}
-                                                    />
-                                                </div>
-                                            </div>
-                                        )}
-                                    </div>
-                                </div>
-                            )}
-
-                            {!pkg.WinningPrice && (
-                                <div className="bg-gray-50 rounded-xl p-8 text-center">
-                                    <PieChart className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-                                    <p className="text-gray-500">Chưa có kết quả trúng thầu để so sánh</p>
-                                </div>
-                            )}
-                        </div>
-                    )}
-
-                    {/* Tab: Payments - Enhanced with Contractor & Contract */}
-                    {activeTab === 'payments' && (
-                        <div className="space-y-6">
-                            {/* Contractor & Contract Overview */}
-                            <div className="grid grid-cols-2 gap-4">
-                                {/* Contractor Card */}
-                                <div className={`rounded-xl border p-4 ${winningContractor ? 'bg-gradient-to-br from-green-50 to-emerald-50 border-green-200' : 'bg-gray-50 border-gray-200'}`}>
-                                    <h4 className="font-semibold text-gray-800 mb-3 flex items-center gap-2">
-                                        <Users className={`w-4 h-4 ${winningContractor ? 'text-green-600' : 'text-gray-400'}`} />
-                                        Nhà thầu thực hiện
-                                    </h4>
-                                    {winningContractor ? (
-                                        <div className="space-y-2">
-                                            <p className="font-semibold text-gray-800">{winningContractor.ContractorName}</p>
-                                            <div className="text-sm text-gray-600 space-y-1">
-                                                <p className="flex items-center gap-2"><Briefcase className="w-3.5 h-3.5" /> MST: {winningContractor.TaxCode}</p>
-                                                {winningContractor.Phone && <p className="flex items-center gap-2"><Phone className="w-3.5 h-3.5" /> {winningContractor.Phone}</p>}
-                                                {winningContractor.Email && <p className="flex items-center gap-2"><Mail className="w-3.5 h-3.5" /> {winningContractor.Email}</p>}
-                                                {winningContractor.Address && <p className="flex items-center gap-2"><MapPin className="w-3.5 h-3.5" /> {winningContractor.Address}</p>}
-                                            </div>
-                                        </div>
                                     ) : (
-                                        <p className="text-gray-500 text-sm">Chưa có nhà thầu được chọn</p>
+                                        <EmptyState icon={FileSignature} message="Chưa ký hợp đồng" />
                                     )}
-                                </div>
-
-                                {/* Contract Card */}
-                                <div className={`rounded-xl border p-4 ${relatedContract ? 'bg-blue-50 border-blue-200' : 'bg-gray-50 border-gray-200'}`}>
-                                    <h4 className="font-semibold text-gray-800 mb-3 flex items-center gap-2">
-                                        <FileText className={`w-4 h-4 ${relatedContract ? 'text-blue-600' : 'text-gray-400'}`} />
-                                        Hợp đồng
-                                    </h4>
-                                    {relatedContract ? (
-                                        <div className="space-y-2 text-sm">
-                                            <p className="font-semibold text-gray-800">Số: {relatedContract.ContractNumber}</p>
-                                            <div className="grid grid-cols-2 gap-2 text-gray-600">
-                                                <p>Giá trị: <span className="font-bold text-blue-600">{formatCurrency(relatedContract.ContractValue)}</span></p>
-                                                <p>Ngày ký: {formatDate(relatedContract.SigningDate)}</p>
-                                                <p>Thời gian: {relatedContract.Duration || pkg.Duration}</p>
-                                                <p>Trạng thái: <span className={`font-medium ${relatedContract.Status === 'Active' ? 'text-green-600' : 'text-gray-600'}`}>
-                                                    {relatedContract.Status === 'Active' ? 'Đang thực hiện' : relatedContract.Status}
-                                                </span></p>
-                                            </div>
-                                        </div>
-                                    ) : (
-                                        <p className="text-gray-500 text-sm">Chưa có hợp đồng ký kết</p>
-                                    )}
-                                </div>
+                                </SectionCard>
                             </div>
 
+                            {/* Payment Progress */}
                             {relatedContract ? (
                                 <>
-                                    {/* Payment Progress */}
-                                    <div className="bg-white rounded-xl border border-gray-200 p-5">
+                                    <SectionCard title="Tiến độ thanh toán" icon={DollarSign} color="emerald">
                                         <div className="flex items-center justify-between mb-4">
                                             <div>
-                                                <h4 className="font-semibold text-gray-800">Tiến độ thanh toán</h4>
-                                                <p className="text-sm text-gray-500">Theo giá trị hợp đồng</p>
-                                            </div>
-                                            <div className="text-right">
                                                 <span className="text-lg font-bold text-green-600">{formatCurrency(totalPaid)}</span>
                                                 <span className="text-gray-400"> / </span>
-                                                <span className="text-sm text-gray-600">{formatCurrency(contractValue)}</span>
+                                                <span className="text-gray-600">{formatCurrency(contractValue)}</span>
                                             </div>
+                                            <span className="text-lg font-bold text-green-600">{paymentProgress.toFixed(1)}%</span>
                                         </div>
-                                        <div className="h-4 bg-gray-100 rounded-full overflow-hidden mb-2">
+                                        <div className="h-4 bg-gray-100 rounded-full overflow-hidden">
                                             <div
                                                 className="h-full bg-gradient-to-r from-green-500 to-emerald-500 rounded-full transition-all"
                                                 style={{ width: `${Math.min(paymentProgress, 100)}%` }}
                                             />
                                         </div>
-                                        <div className="flex justify-between text-sm">
-                                            <span className="text-gray-500">Đã thanh toán: <span className="font-bold text-green-600">{paymentProgress.toFixed(1)}%</span></span>
-                                            <span className="text-gray-500">Còn lại: <span className="font-bold text-orange-600">{formatCurrency(contractValue - totalPaid)}</span></span>
+                                        <div className="flex justify-between text-sm mt-2">
+                                            <span className="text-gray-500">Đã thanh toán</span>
+                                            <span className="text-orange-600 font-medium">Còn lại: {formatCurrency(contractValue - totalPaid)}</span>
                                         </div>
-                                    </div>
+                                    </SectionCard>
 
                                     {/* Payment List */}
-                                    <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-                                        <div className="px-4 py-3 border-b border-gray-100 flex items-center justify-between bg-gray-50">
-                                            <h4 className="font-semibold text-gray-800">Danh sách thanh toán</h4>
-                                            <span className="px-2 py-0.5 bg-blue-100 text-blue-600 rounded text-xs font-medium">{relatedPayments.length} đợt</span>
-                                        </div>
+                                    <SectionCard title="Danh sách đợt thanh toán" icon={Receipt} color="gray" badge={`${relatedPayments.length} đợt`}>
                                         {relatedPayments.length > 0 ? (
-                                            <div className="divide-y divide-gray-100">
+                                            <div className="space-y-3">
                                                 {relatedPayments.map((payment, idx) => (
-                                                    <div key={payment.PaymentID} className="px-4 py-4 flex items-center justify-between hover:bg-gray-50">
+                                                    <div key={payment.PaymentID} className="flex items-center justify-between p-3 rounded-lg border border-gray-200 hover:bg-gray-50">
                                                         <div className="flex items-center gap-3">
                                                             <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${payment.Status === 'Paid' ? 'bg-green-100 text-green-600' : 'bg-yellow-100 text-yellow-600'}`}>
                                                                 {payment.Status === 'Paid' ? <CheckCircle2 className="w-5 h-5" /> : <Clock className="w-5 h-5" />}
@@ -497,84 +447,78 @@ export const BiddingPackageDetail: React.FC<BiddingPackageDetailProps> = ({
                                                 ))}
                                             </div>
                                         ) : (
-                                            <div className="p-8 text-center text-gray-500">
-                                                <Receipt className="w-10 h-10 mx-auto mb-2 text-gray-300" />
-                                                <p>Chưa có thanh toán nào được ghi nhận</p>
-                                                <p className="text-sm text-gray-400 mt-1">Các đợt thanh toán sẽ hiển thị tại đây</p>
-                                            </div>
+                                            <EmptyState icon={Receipt} message="Chưa có thanh toán" hint="Các đợt thanh toán sẽ hiển thị tại đây" />
                                         )}
-                                    </div>
+                                    </SectionCard>
                                 </>
                             ) : (
                                 <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-6 text-center">
                                     <AlertTriangle className="w-12 h-12 text-yellow-400 mx-auto mb-3" />
-                                    <p className="font-medium text-gray-700">Chưa có hợp đồng để quản lý thanh toán</p>
-                                    <p className="text-sm text-gray-500 mt-1">Gói thầu cần có kết quả trúng thầu và hợp đồng ký kết để theo dõi thanh toán</p>
+                                    <p className="font-medium text-gray-700">Chưa có hợp đồng để quản lý</p>
+                                    <p className="text-sm text-gray-500 mt-1">Gói thầu cần có kết quả trúng thầu và hợp đồng ký kết</p>
                                 </div>
                             )}
                         </div>
                     )}
 
-                    {/* Tab: Timeline */}
-                    {activeTab === 'timeline' && (
-                        <div className="space-y-6">
-                            <div className="bg-white rounded-xl border border-gray-200 p-6">
-                                <h4 className="font-semibold text-gray-800 mb-6">Quy trình lựa chọn nhà thầu</h4>
-                                <div className="relative">
-                                    {/* Timeline line */}
-                                    <div className="absolute left-6 top-0 bottom-0 w-0.5 bg-gray-200" />
+                    {/* Tab 4: Quyết toán */}
+                    {activeTab === 'settlement' && (
+                        <div className="grid grid-cols-2 gap-6">
+                            <div className="space-y-4">
+                                <SectionCard title="Nghiệm thu công trình" icon={CheckCircle2} color="green">
+                                    {relatedContract?.Status === 'Completed' ? (
+                                        <div className="space-y-2">
+                                            <InfoRow label="Ngày nghiệm thu" value="15/01/2026" />
+                                            <InfoRow label="Biên bản nghiệm thu" value="Đã ký" />
+                                            <InfoRow label="Chất lượng" value={<span className="text-green-600 font-medium">Đạt yêu cầu</span>} />
+                                        </div>
+                                    ) : (
+                                        <EmptyState icon={CheckCircle2} message="Chưa nghiệm thu" hint="Hoàn thành hợp đồng để nghiệm thu" />
+                                    )}
+                                </SectionCard>
 
-                                    <div className="space-y-6">
-                                        <TimelineFullStep
-                                            step={1}
-                                            title="Lập kế hoạch LCNT"
-                                            description="Phê duyệt kế hoạch lựa chọn nhà thầu"
-                                            date={pkg.DecisionDate}
-                                            code={pkg.KHLCNTCode}
-                                            isComplete={!!pkg.DecisionNumber}
-                                        />
-                                        <TimelineFullStep
-                                            step={2}
-                                            title="Đăng tải E-TBMT"
-                                            description="Thông báo mời thầu trên hệ thống đấu thầu quốc gia"
-                                            date={pkg.PostingDate}
-                                            code={pkg.NotificationCode}
-                                            isComplete={!!pkg.NotificationCode}
-                                            link={pkg.NotificationCode ? `https://muasamcong.mpi.gov.vn/web/guest/contractor-selection?noticeNo=${pkg.NotificationCode}` : undefined}
-                                        />
-                                        <TimelineFullStep
-                                            step={3}
-                                            title="Đóng/Mở thầu"
-                                            description="Hết hạn nộp HSDT và mở thầu công khai"
-                                            date={pkg.BidClosingDate}
-                                            extraDate={pkg.BidOpeningDate}
-                                            extraLabel="Mở thầu"
-                                            isComplete={!!pkg.BidOpeningDate}
-                                        />
-                                        <TimelineFullStep
-                                            step={4}
-                                            title="Phê duyệt KQLCNT"
-                                            description="Công bố kết quả lựa chọn nhà thầu"
-                                            date={pkg.ApprovalDate_Result}
-                                            isComplete={pkg.Status === PackageStatus.Awarded}
-                                        />
-                                        <TimelineFullStep
-                                            step={5}
-                                            title="Ký hợp đồng"
-                                            description="Hoàn thiện và ký kết hợp đồng"
-                                            date={relatedContract?.SigningDate}
-                                            code={relatedContract?.ContractNumber}
-                                            isComplete={!!relatedContract}
-                                        />
-                                        <TimelineFullStep
-                                            step={6}
-                                            title="Thực hiện hợp đồng"
-                                            description="Triển khai thi công và nghiệm thu"
-                                            isComplete={relatedContract?.Status === 'Active' || relatedContract?.Status === 'Completed'}
-                                            extraInfo={relatedContract ? `Tiến độ thanh toán: ${paymentProgress.toFixed(0)}%` : undefined}
-                                        />
+                                <SectionCard title="Quyết toán hợp đồng" icon={Calculator} color="blue">
+                                    {relatedContract?.Status === 'Completed' ? (
+                                        <div className="space-y-2">
+                                            <InfoRow label="Giá trị quyết toán" value={<span className="font-bold text-blue-600">{formatCurrency(contractValue)}</span>} />
+                                            <InfoRow label="Đã thanh toán" value={<span className="text-green-600">{formatCurrency(totalPaid)}</span>} />
+                                            <InfoRow label="Còn giữ lại (BH)" value={<span className="text-orange-600">{formatCurrency(contractValue * 0.05)}</span>} />
+                                            <InfoRow label="Ngày quyết toán" value="20/01/2026" />
+                                        </div>
+                                    ) : (
+                                        <EmptyState icon={Calculator} message="Chưa quyết toán" hint="Hoàn thành nghiệm thu để quyết toán" />
+                                    )}
+                                </SectionCard>
+                            </div>
+
+                            <div className="space-y-4">
+                                <SectionCard title="Bảo hành công trình" icon={Shield} color="purple">
+                                    {relatedContract?.Status === 'Completed' ? (
+                                        <div className="space-y-2">
+                                            <InfoRow label="Thời gian bảo hành" value="24 tháng" />
+                                            <InfoRow label="Bắt đầu từ" value="15/01/2026" />
+                                            <InfoRow label="Kết thúc" value="15/01/2028" />
+                                            <InfoRow label="Giá trị bảo lãnh BH" value={<span className="font-medium">{formatCurrency(contractValue * 0.05)}</span>} />
+                                            <InfoRow label="Trạng thái" value={<span className="px-2 py-0.5 bg-green-100 text-green-600 rounded text-xs font-medium">Đang trong bảo hành</span>} />
+                                        </div>
+                                    ) : (
+                                        <EmptyState icon={Shield} message="Chưa có thông tin bảo hành" hint="Hoàn thành quyết toán để bắt đầu bảo hành" />
+                                    )}
+                                </SectionCard>
+
+                                <SectionCard title="Tổng hợp" icon={Package} color="slate">
+                                    <div className="space-y-2">
+                                        <InfoRow label="Giá gói thầu" value={formatCurrency(pkg.Price)} />
+                                        <InfoRow label="Giá trúng thầu" value={pkg.WinningPrice ? formatCurrency(pkg.WinningPrice) : '-'} />
+                                        <InfoRow label="Giá trị HĐ" value={relatedContract ? formatCurrency(relatedContract.ContractValue) : '-'} />
+                                        <div className="border-t border-gray-200 my-2" />
+                                        <InfoRow label="Tiết kiệm so với dự toán" value={
+                                            savings > 0
+                                                ? <span className="font-bold text-blue-600">{formatCurrency(savings)} ({savingsPercent}%)</span>
+                                                : '-'
+                                        } />
                                     </div>
-                                </div>
+                                </SectionCard>
                             </div>
                         </div>
                     )}
@@ -584,49 +528,57 @@ export const BiddingPackageDetail: React.FC<BiddingPackageDetailProps> = ({
     );
 };
 
+// ========================================
 // Helper Components
-const InfoRow = ({ label, value }: { label: string; value: React.ReactNode }) => (
-    <div className="flex justify-between py-1.5">
-        <span className="text-gray-500">{label}</span>
-        <span className="font-medium text-gray-800 text-right">{value || '-'}</span>
-    </div>
-);
+// ========================================
 
-const TimelineStep = ({ label, date, isActive, isCritical = false }: {
-    label: string; date?: string; isActive: boolean; isCritical?: boolean
-}) => (
-    <div className="relative flex items-center gap-3">
-        <div className={`absolute -left-6 w-4 h-4 rounded-full border-2 ${isActive ? 'bg-indigo-600 border-indigo-600' : 'bg-white border-gray-300'}`} />
-        <div className="flex-1">
-            <p className={`text-sm font-medium ${isActive ? 'text-gray-800' : 'text-gray-400'}`}>{label}</p>
-            <p className={`text-xs ${isCritical && date ? 'text-red-500' : 'text-gray-500'}`}>{date ? formatDate(date) : 'Chưa có'}</p>
-        </div>
-    </div>
-);
+const SectionCard = ({ title, icon: Icon, color, children, badge }: {
+    title: string;
+    icon: React.ElementType;
+    color: string;
+    children: React.ReactNode;
+    badge?: string;
+}) => {
+    const colorMap: Record<string, string> = {
+        blue: 'text-blue-600',
+        green: 'text-green-600',
+        purple: 'text-purple-600',
+        indigo: 'text-indigo-600',
+        yellow: 'text-yellow-600',
+        cyan: 'text-cyan-600',
+        emerald: 'text-emerald-600',
+        gray: 'text-gray-600',
+        slate: 'text-slate-600',
+    };
 
-const TimelineFullStep = ({ step, title, description, date, code, extraDate, extraLabel, isComplete, link, extraInfo }: {
-    step: number; title: string; description: string; date?: string; code?: string;
-    extraDate?: string; extraLabel?: string; isComplete: boolean; link?: string; extraInfo?: string;
-}) => (
-    <div className="relative flex gap-4 pl-6">
-        <div className={`absolute left-4 -translate-x-1/2 w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold ${isComplete ? 'bg-green-500 text-white' : 'bg-gray-200 text-gray-500'}`}>
-            {isComplete ? <CheckCircle2 className="w-3 h-3" /> : step}
-        </div>
-        <div className="flex-1 pb-2">
-            <div className="flex items-center gap-2">
-                <h5 className={`font-semibold ${isComplete ? 'text-gray-800' : 'text-gray-400'}`}>{title}</h5>
-                {code && <span className="text-xs font-mono bg-gray-100 px-2 py-0.5 rounded">{code}</span>}
+    return (
+        <div className="bg-white rounded-xl border border-gray-200 p-4">
+            <div className="flex items-center justify-between mb-3">
+                <h4 className="font-semibold text-gray-800 flex items-center gap-2">
+                    <Icon className={`w-4 h-4 ${colorMap[color] || 'text-gray-500'}`} />
+                    {title}
+                </h4>
+                {badge && (
+                    <span className="px-2 py-0.5 bg-blue-100 text-blue-600 rounded text-xs font-medium">{badge}</span>
+                )}
             </div>
-            <p className="text-sm text-gray-500 mt-0.5">{description}</p>
-            {date && <p className="text-xs text-gray-600 mt-1">📅 {formatDate(date)}</p>}
-            {extraDate && <p className="text-xs text-gray-600">{extraLabel}: {formatDate(extraDate)}</p>}
-            {extraInfo && <p className="text-xs text-blue-600 mt-1">📊 {extraInfo}</p>}
-            {link && (
-                <a href={link} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-xs text-blue-600 hover:underline mt-1">
-                    <ExternalLink className="w-3 h-3" /> Xem trên MSC
-                </a>
-            )}
+            <div className="space-y-2 text-sm">{children}</div>
         </div>
+    );
+};
+
+const InfoRow = ({ label, value, highlight }: { label: string; value: React.ReactNode; highlight?: boolean }) => (
+    <div className={`flex justify-between py-1.5 ${highlight ? 'bg-yellow-50 -mx-2 px-2 rounded' : ''}`}>
+        <span className="text-gray-500">{label}</span>
+        <span className={`font-medium text-gray-800 text-right ${highlight ? 'text-orange-600' : ''}`}>{value || '-'}</span>
+    </div>
+);
+
+const EmptyState = ({ icon: Icon, message, hint }: { icon: React.ElementType; message: string; hint?: string }) => (
+    <div className="text-center py-6">
+        <Icon className="w-10 h-10 text-gray-300 mx-auto mb-2" />
+        <p className="text-gray-500">{message}</p>
+        {hint && <p className="text-xs text-gray-400 mt-1">{hint}</p>}
     </div>
 );
 
