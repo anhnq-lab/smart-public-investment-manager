@@ -299,12 +299,22 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({ tasks: initialTa
                                             const agg = stepAggregates.get(item.code);
                                             const parentStatus = agg?.status || TaskStatus.Todo;
                                             const isParentDone = parentStatus === TaskStatus.Done;
+                                            const isParentActive = parentStatus === TaskStatus.InProgress || parentStatus === TaskStatus.Review;
+                                            const completedCount = linkedTasks.filter(t => t.Status === TaskStatus.Done).length;
+
+                                            // Determine step border color based on status
+                                            const stepBorderColor = isParentDone
+                                                ? 'border-l-emerald-500'
+                                                : isParentActive
+                                                    ? 'border-l-blue-500'
+                                                    : 'border-l-gray-200';
 
                                             return (
-                                                <div key={item.id} className="bg-white border border-gray-100 rounded-lg p-4 hover:border-gray-200 transition-colors group">
-                                                    <div className="flex items-start gap-3">
+                                                <div key={item.id} className={`bg-white border border-gray-100 rounded-lg p-3 hover:border-gray-200 transition-colors group border-l-4 ${stepBorderColor}`}>
+                                                    {/* Step Header Row */}
+                                                    <div className="flex items-center gap-3">
                                                         {/* Status Icon */}
-                                                        <div className="mt-0.5">
+                                                        <div className="shrink-0">
                                                             {isParentDone ? (
                                                                 <CheckCircle2 className="w-5 h-5 text-emerald-500" />
                                                             ) : parentStatus === TaskStatus.Review ? (
@@ -316,99 +326,123 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({ tasks: initialTa
                                                             )}
                                                         </div>
 
-                                                        {/* Content */}
+                                                        {/* Title + Meta */}
                                                         <div className="flex-1 min-w-0">
-                                                            <div className="flex justify-between items-start">
-                                                                <h5 className={`text-sm font-medium ${isParentDone ? 'text-gray-900' : 'text-gray-700'}`}>
-                                                                    {item.id}. {item.title}
-                                                                </h5>
-                                                                <button
-                                                                    onClick={() => handleAddTask(item.title, item.code)}
-                                                                    className="opacity-0 group-hover:opacity-100 transition-opacity px-2 py-1 text-xs font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 rounded border border-blue-200 flex items-center gap-1"
-                                                                >
-                                                                    <Plus className="w-3 h-3" />
-                                                                    Thêm
-                                                                </button>
-                                                            </div>
+                                                            <h5 className={`text-sm font-medium ${isParentDone ? 'text-gray-900' : 'text-gray-700'}`}>
+                                                                {item.id}. {item.title}
+                                                            </h5>
+                                                        </div>
 
-                                                            {/* Date range */}
-                                                            {(agg?.startDate || agg?.dueDate) && (
-                                                                <div className="text-[10px] text-gray-400 mt-1 flex items-center gap-3">
-                                                                    <span className="flex items-center gap-1">
-                                                                        <Calendar className="w-3 h-3" />
-                                                                        {agg.startDate && new Date(agg.startDate).toLocaleDateString('vi-VN')}
-                                                                        {agg.startDate && agg.dueDate && ' → '}
-                                                                        {agg.dueDate && new Date(agg.dueDate).toLocaleDateString('vi-VN')}
-                                                                    </span>
-                                                                </div>
-                                                            )}
+                                                        {/* Date Range Badge */}
+                                                        {(agg?.startDate || agg?.dueDate) && (
+                                                            <span className="hidden sm:flex items-center gap-1 text-[10px] text-gray-400 bg-gray-50 px-2 py-0.5 rounded border border-gray-100 shrink-0">
+                                                                <Calendar className="w-3 h-3" />
+                                                                {agg.startDate && new Date(agg.startDate).toLocaleDateString('vi-VN')}
+                                                                {agg.startDate && agg.dueDate && ' → '}
+                                                                {agg.dueDate && new Date(agg.dueDate).toLocaleDateString('vi-VN')}
+                                                            </span>
+                                                        )}
 
-                                                            {/* Task List */}
-                                                            {linkedTasks.length > 0 && (
-                                                                <div className="mt-3 space-y-2">
+                                                        {/* Task Count Badge */}
+                                                        <span className={`shrink-0 text-[10px] px-2 py-0.5 rounded font-medium ${linkedTasks.length === 0
+                                                                ? 'bg-gray-100 text-gray-500'
+                                                                : completedCount === linkedTasks.length
+                                                                    ? 'bg-emerald-100 text-emerald-700'
+                                                                    : 'bg-blue-100 text-blue-700'
+                                                            }`}>
+                                                            {completedCount}/{linkedTasks.length} việc
+                                                        </span>
+
+                                                        {/* Add Task Button */}
+                                                        <button
+                                                            onClick={() => handleAddTask(item.title, item.code)}
+                                                            className="opacity-0 group-hover:opacity-100 transition-opacity px-2 py-1 text-xs font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 rounded border border-blue-200 flex items-center gap-1 shrink-0"
+                                                        >
+                                                            <Plus className="w-3 h-3" />
+                                                            Thêm
+                                                        </button>
+                                                    </div>
+
+                                                    {/* Task Table (Compact) */}
+                                                    {linkedTasks.length > 0 && (
+                                                        <div className="mt-3 border border-gray-100 rounded-lg overflow-hidden">
+                                                            <table className="w-full text-xs">
+                                                                <thead>
+                                                                    <tr className="bg-gray-50 text-gray-500">
+                                                                        <th className="px-2 py-1.5 text-left font-medium w-8"></th>
+                                                                        <th className="px-2 py-1.5 text-left font-medium">Công việc</th>
+                                                                        <th className="px-2 py-1.5 text-left font-medium w-20 hidden sm:table-cell">Phụ trách</th>
+                                                                        <th className="px-2 py-1.5 text-left font-medium w-24 hidden sm:table-cell">Hạn</th>
+                                                                        <th className="px-2 py-1.5 text-center font-medium w-16">Ưu tiên</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody className="divide-y divide-gray-50">
                                                                     {linkedTasks.map(t => (
-                                                                        <div
+                                                                        <tr
                                                                             key={t.TaskID}
                                                                             onClick={() => handleEditTask(t)}
-                                                                            className={`flex items-center gap-3 p-2 rounded-lg cursor-pointer transition-all hover:shadow-sm ${isOverdue(t) ? 'bg-red-50 border border-red-100' : 'bg-gray-50 hover:bg-white border border-transparent hover:border-gray-100'
-                                                                                }`}
+                                                                            className={`cursor-pointer transition-colors hover:bg-gray-50 ${isOverdue(t) ? 'bg-red-50/50' : ''}`}
                                                                         >
-                                                                            {/* Status Toggle */}
-                                                                            <button
-                                                                                onClick={(e) => handleQuickStatusChange(e, t)}
-                                                                                className={`w-4 h-4 rounded-full transition-transform hover:scale-125 focus:outline-none ring-2 ring-offset-1 ${t.Status === 'Done' ? 'bg-emerald-500 ring-emerald-200' :
-                                                                                    t.Status === 'Review' ? 'bg-indigo-500 ring-indigo-200' :
-                                                                                        t.Status === 'InProgress' ? 'bg-orange-500 ring-orange-200' :
-                                                                                            'bg-gray-200 ring-gray-100 hover:bg-gray-300'
-                                                                                    }`}
-                                                                                title="Click để chuyển trạng thái"
-                                                                            />
+                                                                            {/* Status Dot */}
+                                                                            <td className="px-2 py-2">
+                                                                                <button
+                                                                                    onClick={(e) => handleQuickStatusChange(e, t)}
+                                                                                    className={`w-4 h-4 rounded-full transition-transform hover:scale-125 focus:outline-none ring-2 ring-offset-1 ${t.Status === 'Done' ? 'bg-emerald-500 ring-emerald-200' :
+                                                                                            t.Status === 'Review' ? 'bg-indigo-500 ring-indigo-200' :
+                                                                                                t.Status === 'InProgress' ? 'bg-orange-500 ring-orange-200' :
+                                                                                                    'bg-gray-200 ring-gray-100 hover:bg-gray-300'
+                                                                                        }`}
+                                                                                    title="Click để chuyển trạng thái"
+                                                                                />
+                                                                            </td>
 
-                                                                            {/* Task Title */}
-                                                                            <span className={`flex-1 text-sm font-medium ${t.Status === 'Done' ? 'text-gray-400 line-through' :
-                                                                                isOverdue(t) ? 'text-red-700' :
-                                                                                    t.Status === 'Review' ? 'text-indigo-700' :
-                                                                                        t.Status === 'InProgress' ? 'text-orange-700' :
-                                                                                            'text-gray-700'
+                                                                            {/* Title */}
+                                                                            <td className={`px-2 py-2 font-medium ${t.Status === 'Done' ? 'text-gray-400 line-through' :
+                                                                                    isOverdue(t) ? 'text-red-700' :
+                                                                                        t.Status === 'Review' ? 'text-indigo-700' :
+                                                                                            t.Status === 'InProgress' ? 'text-orange-700' :
+                                                                                                'text-gray-700'
                                                                                 }`}>
                                                                                 {t.Title}
-                                                                            </span>
-
-                                                                            {/* Priority Badge */}
-                                                                            {t.Priority && (
-                                                                                <span className={`text-[10px] px-1.5 py-0.5 rounded border ${getPriorityColor(t.Priority)}`}>
-                                                                                    <Flag className="w-2.5 h-2.5 inline mr-0.5" />
-                                                                                    {t.Priority}
-                                                                                </span>
-                                                                            )}
+                                                                            </td>
 
                                                                             {/* Assignee */}
-                                                                            {t.AssigneeID && (
-                                                                                <span className="text-xs text-gray-500 flex items-center gap-1">
-                                                                                    <User className="w-3 h-3" />
-                                                                                    {t.AssigneeID}
-                                                                                </span>
-                                                                            )}
+                                                                            <td className="px-2 py-2 text-gray-500 hidden sm:table-cell">
+                                                                                {t.AssigneeID && (
+                                                                                    <span className="flex items-center gap-1">
+                                                                                        <User className="w-3 h-3" />
+                                                                                        {t.AssigneeID}
+                                                                                    </span>
+                                                                                )}
+                                                                            </td>
 
                                                                             {/* Due Date */}
-                                                                            {t.DueDate && (
-                                                                                <span className={`text-xs ${isOverdue(t) ? 'text-red-600 font-semibold' : 'text-gray-400'}`}>
-                                                                                    {new Date(t.DueDate).toLocaleDateString('vi-VN')}
-                                                                                </span>
-                                                                            )}
-                                                                        </div>
-                                                                    ))}
-                                                                </div>
-                                                            )}
+                                                                            <td className={`px-2 py-2 hidden sm:table-cell ${isOverdue(t) ? 'text-red-600 font-semibold' : 'text-gray-400'}`}>
+                                                                                {t.DueDate && new Date(t.DueDate).toLocaleDateString('vi-VN')}
+                                                                            </td>
 
-                                                            {/* Empty state */}
-                                                            {linkedTasks.length === 0 && (
-                                                                <p className="text-xs text-gray-400 mt-2 italic">
-                                                                    Chưa có công việc nào
-                                                                </p>
-                                                            )}
+                                                                            {/* Priority */}
+                                                                            <td className="px-2 py-2 text-center">
+                                                                                {t.Priority && (
+                                                                                    <span className={`inline-flex items-center gap-0.5 text-[10px] px-1.5 py-0.5 rounded border ${getPriorityColor(t.Priority)}`}>
+                                                                                        <Flag className="w-2.5 h-2.5" />
+                                                                                        {t.Priority}
+                                                                                    </span>
+                                                                                )}
+                                                                            </td>
+                                                                        </tr>
+                                                                    ))}
+                                                                </tbody>
+                                                            </table>
                                                         </div>
-                                                    </div>
+                                                    )}
+
+                                                    {/* Empty state */}
+                                                    {linkedTasks.length === 0 && (
+                                                        <p className="text-xs text-gray-400 mt-2 italic">
+                                                            Chưa có công việc nào được tạo. Click "Thêm" để bắt đầu.
+                                                        </p>
+                                                    )}
                                                 </div>
                                             );
                                         })}
