@@ -1,12 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query';
-import { X, Loader2, Save, Calendar, FileText, Building2, AlertCircle } from 'lucide-react';
-import { BiddingPackage, PackageStatus } from '../../../types';
+import { X, Loader2, Save, Calendar, FileText, Building2, AlertCircle, Lightbulb } from 'lucide-react';
+import { BiddingPackage, PackageStatus, BIDDING_THRESHOLDS } from '../../../types';
 import { formatCurrency } from '../../../utils/format';
 import ApiClient from '../../../services/api';
+import { detectApplicableMethod, getMethodGuidance, formatThreshold } from '../../../utils/biddingCompliance';
 
 // ========================================
-// BIDDING PACKAGE MODAL - NĐ 175/2024 Compliance
+// BIDDING PACKAGE MODAL - NĐ 214/2025 Compliance
 // ========================================
 
 interface BiddingPackageModalProps {
@@ -132,6 +133,16 @@ export const BiddingPackageModal: React.FC<BiddingPackageModalProps> = ({
         queryFn: () => ApiClient.get('/api/contractors'),
         enabled: isOpen,
     });
+
+    // NĐ 214/2025: Auto-detect applicable selection method based on price + field
+    const methodGuidance = useMemo(() => {
+        const price = parseFloat(formData.Price) || 0;
+        if (price === 0) return null;
+
+        const field = formData.Field as BiddingPackage['Field'];
+        const method = detectApplicableMethod(price, field, true);
+        return getMethodGuidance(method);
+    }, [formData.Price, formData.Field]);
 
     // Initialize form when editing
     useEffect(() => {
@@ -395,6 +406,28 @@ export const BiddingPackageModal: React.FC<BiddingPackageModalProps> = ({
                                         <p className="mt-1 text-xs text-red-500">{errors.Duration}</p>
                                     )}
                                 </div>
+
+                                {/* NĐ 214/2025 Guidance Banner */}
+                                {methodGuidance && (
+                                    <div className="col-span-2 p-4 bg-blue-50 border border-blue-200 rounded-xl">
+                                        <div className="flex items-start gap-3">
+                                            <Lightbulb className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+                                            <div className="flex-1">
+                                                <h5 className="text-sm font-semibold text-blue-800">
+                                                    Gợi ý theo NĐ 214/2025
+                                                </h5>
+                                                <p className="text-sm text-blue-700 mt-1">
+                                                    Với giá gói thầu <strong>{formatCurrency(parseFloat(formData.Price) || 0)}</strong>
+                                                    {' '}và lĩnh vực <strong>{FIELD_OPTIONS.find(o => o.value === formData.Field)?.label}</strong>,
+                                                    {' '}có thể áp dụng: <strong>{methodGuidance.label}</strong>
+                                                </p>
+                                                <p className="text-xs text-blue-600 mt-1">
+                                                    {methodGuidance.description} • <em>{methodGuidance.legalBasis}</em>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
                             </div>
                         )}
 

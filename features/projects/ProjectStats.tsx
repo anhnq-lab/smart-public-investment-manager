@@ -21,7 +21,7 @@ export const ProjectStats: React.FC<ProjectStatsProps> = ({ projects }) => {
     return (
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
             <div className="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-4">
-                <div className="p-3 bg-blue-50 text-blue-600 rounded-xl">
+                <div className="p-3 bg-blue-50 text-blue-600 rounded-xl ring-2 ring-blue-100">
                     <FolderOpen className="w-6 h-6" />
                 </div>
                 <div>
@@ -36,7 +36,7 @@ export const ProjectStats: React.FC<ProjectStatsProps> = ({ projects }) => {
             </div>
 
             <div className="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-4">
-                <div className="p-3 bg-emerald-50 text-emerald-600 rounded-xl">
+                <div className="p-3 bg-emerald-50 text-emerald-600 rounded-xl ring-2 ring-emerald-100">
                     <Wallet className="w-6 h-6" />
                 </div>
                 <div>
@@ -46,7 +46,7 @@ export const ProjectStats: React.FC<ProjectStatsProps> = ({ projects }) => {
             </div>
 
             <div className="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-4">
-                <div className="p-3 bg-purple-50 text-purple-600 rounded-xl">
+                <div className="p-3 bg-violet-50 text-violet-600 rounded-xl ring-2 ring-violet-100">
                     <TrendingUp className="w-6 h-6" />
                 </div>
                 <div>
@@ -56,7 +56,7 @@ export const ProjectStats: React.FC<ProjectStatsProps> = ({ projects }) => {
             </div>
 
             <div className="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-4">
-                <div className="p-3 bg-orange-50 text-orange-600 rounded-xl">
+                <div className="p-3 bg-amber-50 text-amber-600 rounded-xl ring-2 ring-amber-100">
                     <AlertCircle className="w-6 h-6" />
                 </div>
                 <div>

@@ -21,11 +21,21 @@ const getStatusLabel = (status: ProjectStatus) => {
 
 const getStatusColor = (status: ProjectStatus) => {
     switch (status) {
-        case ProjectStatus.Preparation: return 'bg-orange-400';
-        case ProjectStatus.Execution: return 'bg-blue-500';
-        case ProjectStatus.Finished: return 'bg-emerald-500';
-        case ProjectStatus.Operation: return 'bg-purple-500';
+        case ProjectStatus.Preparation: return 'bg-gradient-to-r from-amber-400 to-orange-500';
+        case ProjectStatus.Execution: return 'bg-gradient-to-r from-blue-500 to-blue-600';
+        case ProjectStatus.Finished: return 'bg-gradient-to-r from-emerald-500 to-emerald-600';
+        case ProjectStatus.Operation: return 'bg-gradient-to-r from-violet-500 to-purple-600';
         default: return 'bg-gray-400';
+    }
+};
+
+const getStatusIconStyles = (status: ProjectStatus) => {
+    switch (status) {
+        case ProjectStatus.Preparation: return { bg: 'bg-amber-50', text: 'text-amber-600' };
+        case ProjectStatus.Execution: return { bg: 'bg-blue-50', text: 'text-blue-600' };
+        case ProjectStatus.Finished: return { bg: 'bg-emerald-50', text: 'text-emerald-600' };
+        case ProjectStatus.Operation: return { bg: 'bg-violet-50', text: 'text-violet-600' };
+        default: return { bg: 'bg-gray-50', text: 'text-gray-500' };
     }
 };
 
@@ -141,10 +151,15 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({ project, onClick, layo
             {/* Content Body */}
             <div className="p-5 flex-1 flex flex-col">
                 {/* Contractor Info */}
-                <div className="flex items-center gap-3 mb-6">
-                    <div className="w-9 h-9 rounded-full bg-orange-50 flex items-center justify-center text-orange-500 shrink-0">
-                        <Building className="w-5 h-5" />
-                    </div>
+                <div className="flex items-center gap-3 mb-5">
+                    {(() => {
+                        const iconStyles = getStatusIconStyles(project.Status);
+                        return (
+                            <div className={`w-9 h-9 rounded-full ${iconStyles.bg} flex items-center justify-center ${iconStyles.text} shrink-0 ring-2 ring-white shadow-sm`}>
+                                <Building className="w-5 h-5" />
+                            </div>
+                        );
+                    })()}
                     <div className="overflow-hidden">
                         <p className="text-[10px] text-gray-400 font-semibold uppercase tracking-wider">NHÀ THẦU CHÍNH</p>
                         <p className="text-sm font-medium text-gray-700 truncate" title={project.MainContractorName}>{project.MainContractorName || "Đang lựa chọn"}</p>
@@ -155,22 +170,22 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({ project, onClick, layo
                 </div>
 
                 {/* Progress Stats */}
-                <div className="space-y-4 mb-6">
+                <div className="space-y-3 mb-5">
                     <div>
-                        <div className="flex justify-between text-xs mb-1.5">
-                            <span className="text-gray-500">Tiến độ dự án</span>
-                            <span className="font-bold text-blue-600">{project.Progress || 0}%</span>
+                        <div className="flex justify-between text-sm mb-2">
+                            <span className="text-gray-600 font-medium">Tiến độ dự án</span>
+                            <span className="font-bold text-blue-600 tabular-nums">{project.Progress || 0}%</span>
                         </div>
-                        <ProgressBar value={project.Progress || 0} colorClass="bg-blue-500" />
+                        <ProgressBar value={project.Progress || 0} colorClass="bg-gradient-to-r from-blue-400 to-blue-600" />
                     </div>
 
                     {/* Disbursement with Tooltip */}
                     <div className="group/tooltip relative">
-                        <div className="flex justify-between text-xs mb-1.5">
-                            <span className="text-gray-500">Tỷ lệ giải ngân</span>
-                            <span className="font-bold text-emerald-600">{project.PaymentProgress || 0}%</span>
+                        <div className="flex justify-between text-sm mb-2">
+                            <span className="text-gray-600 font-medium">Tỷ lệ giải ngân</span>
+                            <span className="font-bold text-emerald-600 tabular-nums">{project.PaymentProgress || 0}%</span>
                         </div>
-                        <ProgressBar value={project.PaymentProgress || 0} colorClass="bg-emerald-500" />
+                        <ProgressBar value={project.PaymentProgress || 0} colorClass="bg-gradient-to-r from-emerald-400 to-emerald-600" />
 
                         {/* Hover Tooltip */}
                         <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 hidden group-hover/tooltip:block z-10 w-max animate-in fade-in zoom-in-95 duration-200">
@@ -183,13 +198,13 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({ project, onClick, layo
                 </div>
 
                 {/* Footer */}
-                <div className="mt-auto pt-4 border-t border-gray-100 flex items-center justify-between">
-                    <div>
-                        <p className="text-[10px] text-gray-400 font-semibold uppercase tracking-wider mb-0.5">NGÂN SÁCH</p>
-                        <p className="text-base font-bold text-gray-900 font-mono">{formatCurrency(project.TotalInvestment)}</p>
+                <div className="mt-auto pt-4 border-t border-gray-100/80 flex items-center justify-between gap-4">
+                    <div className="flex-1 min-w-0">
+                        <p className="text-[10px] text-gray-400 font-semibold uppercase tracking-wider mb-1">NGÂN SÁCH</p>
+                        <p className="text-lg font-bold text-gray-900 font-mono truncate">{formatCurrency(project.TotalInvestment)}</p>
                     </div>
-                    <div className="w-8 h-8 rounded-full bg-gray-50 text-gray-400 flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition-colors">
-                        <ArrowRight className="w-4 h-4" />
+                    <div className="w-10 h-10 rounded-xl bg-gray-100 text-gray-500 flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition-all duration-300 shrink-0 shadow-sm">
+                        <ArrowRight className="w-5 h-5" />
                     </div>
                 </div>
             </div>

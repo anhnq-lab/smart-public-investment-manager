@@ -95,20 +95,27 @@ const ProjectList: React.FC = () => {
                                 <label className="text-xs font-bold text-gray-400 uppercase tracking-wider block mb-2">Trạng thái</label>
                                 <div className="space-y-1">
                                     {[
-                                        { val: 'all', label: 'Tất cả' },
-                                        { val: ProjectStatus.Preparation.toString(), label: 'Chuẩn bị đầu tư' },
-                                        { val: ProjectStatus.Execution.toString(), label: 'Thực hiện đầu tư' },
-                                        { val: ProjectStatus.Finished.toString(), label: 'Hoàn thành' },
+                                        { val: 'all', label: 'Tất cả', color: 'bg-gray-400' },
+                                        { val: ProjectStatus.Preparation.toString(), label: 'Chuẩn bị đầu tư', color: 'bg-gradient-to-r from-amber-400 to-orange-500' },
+                                        { val: ProjectStatus.Execution.toString(), label: 'Thực hiện đầu tư', color: 'bg-gradient-to-r from-blue-500 to-blue-600' },
+                                        { val: ProjectStatus.Finished.toString(), label: 'Hoàn thành', color: 'bg-gradient-to-r from-emerald-500 to-emerald-600' },
                                     ].map(opt => (
-                                        <label key={opt.val} className="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors">
+                                        <label
+                                            key={opt.val}
+                                            className={`flex items-center gap-3 p-2.5 rounded-xl cursor-pointer transition-all duration-200 ${selectedStatus === opt.val
+                                                    ? 'bg-blue-50 ring-1 ring-blue-200'
+                                                    : 'hover:bg-gray-50'
+                                                }`}
+                                        >
                                             <input
                                                 type="radio"
                                                 name="status"
                                                 checked={selectedStatus === opt.val}
                                                 onChange={() => setSelectedStatus(opt.val)}
-                                                className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
+                                                className="sr-only"
                                             />
-                                            <span className={`text-sm ${selectedStatus === opt.val ? 'font-bold text-gray-800' : 'text-gray-600'}`}>{opt.label}</span>
+                                            <span className={`w-2.5 h-2.5 rounded-full shrink-0 ${opt.color} ring-2 ring-white shadow-sm`}></span>
+                                            <span className={`text-sm ${selectedStatus === opt.val ? 'font-bold text-gray-800' : 'text-gray-600 font-medium'}`}>{opt.label}</span>
                                         </label>
                                     ))}
                                 </div>
