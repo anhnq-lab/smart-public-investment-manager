@@ -5,13 +5,16 @@ import {
     AlertTriangle, CheckCircle2, Phone, Mail, MapPin, Target, DollarSign,
     ClipboardList, Gavel, FileSignature, Calculator, Shield, Percent, Package
 } from 'lucide-react';
-import { BiddingPackage, PackageStatus } from '../../../types';
+import { BiddingPackage, PackageStatus, ContractStatus, PaymentStatus } from '../../../types';
 import { formatCurrency, formatDate } from '../../../utils/format';
 import { mockPayments, mockContractors, mockContracts } from '../../../mockData';
 
 // ========================================
 // BIDDING PACKAGE DETAIL - Full Lifecycle Management
-// 7 Stages: KHLCNT → TBMT → Bidding → Evaluation → Contract → Execution → Settlement
+// Differentiated by Package Field:
+// - XÂY LẮP: KHLCNT → TBMT → Bidding → Evaluation → Contract → Execution → Acceptance → Warranty → Settlement
+// - TƯ VẤN: KHLCNT → TBMT → Bidding → Evaluation → Contract → Execution → Settlement (NO Acceptance/Warranty)
+// - HÀNG HÓA: KHLCNT → TBMT → Bidding → Evaluation → Contract → Delivery → Warranty → Settlement
 // ========================================
 
 interface BiddingPackageDetailProps {
@@ -23,16 +26,44 @@ interface BiddingPackageDetailProps {
 
 type TabType = 'khlcnt' | 'selection' | 'contract' | 'settlement';
 
-// Lifecycle stages configuration
-const LIFECYCLE_STAGES = [
-    { id: 1, name: 'Kế hoạch', status: ['Planning'], icon: ClipboardList, color: 'gray' },
-    { id: 2, name: 'TBMT', status: ['Posted'], icon: ExternalLink, color: 'indigo' },
-    { id: 3, name: 'Mời thầu', status: ['Bidding'], icon: Users, color: 'blue' },
-    { id: 4, name: 'Đánh giá', status: ['Evaluating'], icon: Gavel, color: 'yellow' },
-    { id: 5, name: 'Hợp đồng', status: ['Awarded'], icon: FileSignature, color: 'green' },
-    { id: 6, name: 'Thực hiện', status: [], icon: Building2, color: 'cyan' },
-    { id: 7, name: 'Quyết toán', status: [], icon: Calculator, color: 'emerald' },
-];
+// Helper: Get lifecycle stages based on package field
+const getLifecycleStages = (field?: string) => {
+    // Stages 1-5 are common to all package types
+    const commonStages = [
+        { id: 1, name: 'Kế hoạch', status: ['Planning'], icon: ClipboardList },
+        { id: 2, name: 'TBMT', status: ['Posted'], icon: ExternalLink },
+        { id: 3, name: 'Mời thầu', status: ['Bidding'], icon: Users },
+        { id: 4, name: 'Đánh giá', status: ['Evaluating'], icon: Gavel },
+        { id: 5, name: 'Hợp đồng', status: ['Awarded'], icon: FileSignature },
+    ];
+
+    switch (field) {
+        case 'Construction': // Xây lắp
+            return [
+                ...commonStages,
+                { id: 6, name: 'Thực hiện', status: [], icon: Building2 },
+                { id: 7, name: 'Nghiệm thu', status: [], icon: CheckCircle2 },
+                { id: 8, name: 'Bảo hành', status: [], icon: Shield },
+                { id: 9, name: 'Quyết toán', status: [], icon: Calculator },
+            ];
+        case 'Goods': // Hàng hóa
+            return [
+                ...commonStages,
+                { id: 6, name: 'Giao hàng', status: [], icon: Package },
+                { id: 7, name: 'Bảo hành', status: [], icon: Shield },
+                { id: 8, name: 'Quyết toán', status: [], icon: Calculator },
+            ];
+        case 'Consultancy': // Tư vấn - NO acceptance/warranty for consulting services
+        case 'NonConsultancy': // Phi tư vấn
+        case 'Mixed':
+        default:
+            return [
+                ...commonStages,
+                { id: 6, name: 'Thực hiện', status: [], icon: Building2 },
+                { id: 7, name: 'Quyết toán', status: [], icon: Calculator },
+            ];
+    }
+};
 
 const getStatusConfig = (status: PackageStatus) => {
     const configs = {
@@ -63,6 +94,8 @@ export const BiddingPackageDetail: React.FC<BiddingPackageDetailProps> = ({
 
     if (!isOpen || !pkg) return null;
 
+    // Get lifecycle stages based on package field type
+    const lifecycleStages = getLifecycleStages(pkg.Field);
     const statusConfig = getStatusConfig(pkg.Status);
     const labels = getLabelMaps();
     const currentStage = statusConfig.stage;
@@ -76,19 +109,26 @@ export const BiddingPackageDetail: React.FC<BiddingPackageDetailProps> = ({
     const savings = pkg.WinningPrice && pkg.Price ? pkg.Price - pkg.WinningPrice : 0;
     const savingsPercent = pkg.Price && savings > 0 ? ((savings / pkg.Price) * 100).toFixed(2) : '0';
     const totalPaid = relatedPayments.reduce((sum, p) => sum + p.Amount, 0);
-    const contractValue = relatedContract?.ContractValue || pkg.WinningPrice || 0;
+    const contractValue = relatedContract?.Value || pkg.WinningPrice || 0; // Fixed: Value instead of ContractValue
     const paymentProgress = contractValue > 0 ? (totalPaid / contractValue * 100) : 0;
 
-    // Determine actual stage (including contract execution stages)
+    // Determine actual stage (including contract execution stages) based on field type
+    const maxStage = lifecycleStages.length;
+    const settlementStageId = lifecycleStages[maxStage - 1].id; // Last stage is always settlement
+    const executionStageId = 6; // Execution is always stage 6
+
+    // Use enum values for comparison
     const actualStage = relatedContract
-        ? (relatedContract.Status === 'Completed' ? 7 : 6)
+        ? (relatedContract.Status === ContractStatus.Liquidated ? settlementStageId : executionStageId)
         : currentStage;
 
+    // Dynamic tabs based on package field type
+    const hasWarranty = pkg.Field === 'Construction' || pkg.Field === 'Goods';
     const tabs = [
         { id: 'khlcnt', label: 'KHLCNT & TBMT', icon: ClipboardList, stages: [1, 2] },
         { id: 'selection', label: 'Lựa chọn nhà thầu', icon: Users, stages: [3, 4] },
         { id: 'contract', label: 'Hợp đồng & Thanh toán', icon: FileSignature, stages: [5, 6] },
-        { id: 'settlement', label: 'Quyết toán', icon: Calculator, stages: [7] },
+        { id: 'settlement', label: hasWarranty ? 'Nghiệm thu & Quyết toán' : 'Quyết toán', icon: Calculator, stages: hasWarranty ? [7, 8, 9] : [7] },
     ] as const;
 
     return (
@@ -169,17 +209,17 @@ export const BiddingPackageDetail: React.FC<BiddingPackageDetailProps> = ({
                             className="absolute top-5 h-1.5 bg-gradient-to-r from-emerald-500 to-green-500 rounded-full transition-all duration-500"
                             style={{
                                 left: '2.5rem',
-                                width: actualStage > 0 ? `calc(${Math.min((actualStage - 1) / (LIFECYCLE_STAGES.length - 1) * 100, 100)}% - 5rem)` : '0%'
+                                width: actualStage > 0 ? `calc(${Math.min((actualStage - 1) / (lifecycleStages.length - 1) * 100, 100)}% - 5rem)` : '0%'
                             }}
                         />
 
-                        {LIFECYCLE_STAGES.map((stage, idx) => {
+                        {lifecycleStages.map((stage, idx) => {
                             const isCompleted = actualStage > stage.id;
                             const isCurrent = actualStage === stage.id;
                             const isPending = actualStage < stage.id;
 
                             return (
-                                <div key={stage.id} className="flex flex-col items-center z-10 relative" style={{ width: `${100 / LIFECYCLE_STAGES.length}%` }}>
+                                <div key={stage.id} className="flex flex-col items-center z-10 relative" style={{ width: `${100 / lifecycleStages.length}%` }}>
                                     <div className={`
                                         w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold transition-all shadow-sm
                                         ${isCompleted ? 'bg-gradient-to-br from-emerald-400 to-green-600 text-white shadow-green-200' :

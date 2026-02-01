@@ -1278,117 +1278,235 @@ const specificContracts = [
     { pid: "DA009", code: "114/2022/HĐTV", val: 272969000, cName: "Liên danh 3001313321 - 3002103239", type: "TV", date: "02/12/2022", name: "Lập BCNCKT" }
 ];
 
-export const mockBiddingPackages: BiddingPackage[] = [];
+// ═══════════════════════════════════════════════════════════════════════════════
+// SAMPLE DATA: 2 Complete Packages - 1 Tư vấn (Consultancy), 1 Xây lắp (Construction)
+// With full lifecycle data: Contractors, Contracts, Payments, Settlement
+// ═══════════════════════════════════════════════════════════════════════════════
 
-// Complete Contract for PKG-000 (Full Lifecycle Demo)
-export const mockContracts: Contract[] = [
+export const mockBiddingPackages: BiddingPackage[] = [
+    // ═══════════════════════════════════════════════════════════════
+    // PACKAGE 1: TƯ VẤN - Thiết kế BVTC (Consultancy - Completed)
+    // Lifecycle: KHLCNT → TBMT → Mời thầu → Đánh giá → Hợp đồng → Thực hiện → Quyết toán
+    // NO Nghiệm thu/Bảo hành for consultancy packages
+    // ═══════════════════════════════════════════════════════════════
     {
-        ContractID: 'CTR-PKG-000',
-        PackageID: 'PKG-000',
-        ContractorID: 'CT-COMPLETE',
-        SignDate: '2024-04-15',
-        Value: 27800000000,
-        AdvanceRate: 20,
-        Warranty: 12,
-        Status: ContractStatus.Executing,
+        PackageID: 'PKG-TV-DEMO-001',
+        ProjectID: 'DA007', // 19 Trạm Y tế
+        PackageNumber: 'TV-01',
+        PackageName: 'Tư vấn lập Báo cáo NCKT và Thiết kế BVTC',
+        Price: 650_000_000,
+        Field: 'Consultancy',
+        SelectionMethod: 'Appointed', // Chỉ định thầu rút gọn
+        SelectionProcedure: 'Reduced',
+        BidType: 'Online',
+        ContractType: 'LumpSum',
+        Status: PackageStatus.Awarded,
+
+        // KHLCNT Info
+        KHLCNTCode: 'PL20240001-TV',
+        DecisionNumber: 'QĐ-156/2024/KHLCNT',
+        DecisionDate: '2024-01-15',
+        FundingSource: 'Ngân sách tỉnh',
+        Description: 'Tư vấn lập Báo cáo nghiên cứu khả thi và Thiết kế bản vẽ thi công cho 19 Trạm Y tế xã trên địa bàn tỉnh.',
+        SelectionDuration: '30 ngày',
+        SelectionStartDate: 'Tháng 02/2024',
+
+        // TBMT Info
+        NotificationCode: 'IB2024001234',
+        PostingDate: '2024-02-01',
+        BidClosingDate: '2024-02-20',
+        BidOpeningDate: '2024-02-20',
+
+        // Result
+        WinningContractorID: 'MST-TV-VINAXIM',
+        WinningPrice: 594_422_460,
+        ApprovalDate_Result: '2024-03-10',
+
+        // Execution
+        Duration: '120 ngày',
+        ContractID: 'CTR-TV-DEMO-001',
     },
+
+    // ═══════════════════════════════════════════════════════════════
+    // PACKAGE 2: XÂY LẮP - Thi công xây dựng (Construction - Completed)
+    // Lifecycle: KHLCNT → TBMT → Mời thầu → Đánh giá → Hợp đồng → Thực hiện → Nghiệm thu → Bảo hành → Quyết toán
+    // HAS Nghiệm thu/Bảo hành stages
+    // ═══════════════════════════════════════════════════════════════
     {
-        ContractID: 'CTR-PKG-001',
-        PackageID: 'PKG-001',
-        ContractorID: 'CT-001',
-        SignDate: '2024-03-25',
-        Value: 14850000000,
-        AdvanceRate: 20,
-        Warranty: 12,
-        Status: ContractStatus.Executing,
+        PackageID: 'PKG-XL-DEMO-001',
+        ProjectID: 'DA007', // 19 Trạm Y tế
+        PackageNumber: 'XL-00',
+        PackageName: 'Thi công xây dựng phần thân và hoàn thiện công trình nhà học 5 tầng',
+        Price: 28_500_000_000,
+        Field: 'Construction',
+        SelectionMethod: 'OpenBidding', // Đấu thầu rộng rãi
+        SelectionProcedure: 'OneStageTwoEnvelope',
+        BidType: 'Online',
+        ContractType: 'LumpSum',
+        Status: PackageStatus.Awarded,
+
+        // KHLCNT Info
+        KHLCNTCode: 'PL20240002-XL',
+        DecisionNumber: 'QĐ-289/2024/KHLCNT',
+        DecisionDate: '2024-01-20',
+        FundingSource: 'Ngân sách tỉnh và ngân sách trung ương',
+        Description: 'Thi công xây dựng phần thân và hoàn thiện công trình nhà học 5 tầng, bao gồm: Móng cọc, kết cấu bê tông cốt thép, xây trát hoàn thiện, M&E.',
+        SelectionDuration: '45 ngày',
+        SelectionStartDate: 'Tháng 02/2024',
+
+        // TBMT Info
+        NotificationCode: 'IB2024005678',
+        PostingDate: '2024-02-10',
+        BidClosingDate: '2024-03-25',
+        BidOpeningDate: '2024-03-25',
+
+        // Result
+        WinningContractorID: 'MST-XL-THANHLOI',
+        WinningPrice: 27_800_000_000,
+        ApprovalDate_Result: '2024-04-05',
+
+        // Execution
+        Duration: '540 ngày',
+        ContractID: 'CTR-XL-DEMO-001',
     }
 ];
 
-// Complete Payments for PKG-000 (Full lifecycle including settlement)
-export const mockPayments: Payment[] = [
-    // === Payments for PKG-000 - Complete Package ===
+// ═══════════════════════════════════════════════════════════════════════════════
+// CONTRACTORS for Demo Packages
+// ═══════════════════════════════════════════════════════════════════════════════
+mockContractors.push(
     {
-        PaymentID: 1,
-        ContractID: 'CTR-PKG-000',
+        ContractorID: 'MST-TV-VINAXIM',
+        CapCertCode: 'TVXD-2024-001',
+        FullName: 'Công ty CP Tư vấn Thiết kế Xây dựng VINAXIM',
+        IsForeign: false,
+        Address: 'Số 123 Đường Nguyễn Trãi, Quận Thanh Xuân, Hà Nội',
+        ContactInfo: 'Tel: 024.3568.9999 | Email: vinaxim@tvxd.vn',
+    },
+    {
+        ContractorID: 'MST-XL-THANHLOI',
+        CapCertCode: 'XLDG-2024-002',
+        FullName: 'Công ty TNHH Xây dựng Thành Lợi',
+        IsForeign: false,
+        Address: '456 Đường Lê Duẩn, TP. Hà Tĩnh, Tỉnh Hà Tĩnh',
+        ContactInfo: 'Tel: 039.384.5678 | Email: thanhloi@xaydung.vn',
+    }
+);
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// CONTRACTS for Demo Packages
+// ═══════════════════════════════════════════════════════════════════════════════
+export const mockContracts: Contract[] = [
+    // Contract for Tư vấn Package (COMPLETED/LIQUIDATED)
+    {
+        ContractID: 'CTR-TV-DEMO-001',
+        PackageID: 'PKG-TV-DEMO-001',
+        ContractorID: 'MST-TV-VINAXIM',
+        SignDate: '2024-03-15',
+        Value: 594_422_460,
+        AdvanceRate: 30, // Tư vấn có tỷ lệ tạm ứng cao hơn
+        Warranty: 0, // NO WARRANTY for consultancy
+        Status: ContractStatus.Liquidated, // Đã quyết toán xong
+    },
+    // Contract for Xây lắp Package (EXECUTING - In Warranty Period)
+    {
+        ContractID: 'CTR-XL-DEMO-001',
+        PackageID: 'PKG-XL-DEMO-001',
+        ContractorID: 'MST-XL-THANHLOI',
+        SignDate: '2024-04-15',
+        Value: 27_800_000_000,
+        AdvanceRate: 15,
+        Warranty: 24, // 24 tháng bảo hành
+        Status: ContractStatus.Executing, // Đang trong giai đoạn bảo hành
+    }
+];
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// PAYMENTS for Demo Packages
+// ═══════════════════════════════════════════════════════════════════════════════
+export const mockPayments: Payment[] = [
+    // ═══════════════════════════════════════════════════════════════
+    // PAYMENTS FOR TƯ VẤN PACKAGE (CTR-TV-DEMO-001)
+    // Consultancy: Tạm ứng → Thanh toán đợt 1 → Quyết toán (100%)
+    // ═══════════════════════════════════════════════════════════════
+    {
+        PaymentID: 101,
+        ContractID: 'CTR-TV-DEMO-001',
         BatchNo: 1,
         Type: PaymentType.Advance,
-        Amount: 5560000000, // 20% of 27.8 tỷ
-        TreasuryRef: 'PC-2024-00123',
+        Amount: 178_326_738, // 30% của 594,422,460
+        TreasuryRef: 'KB-TV-2024-001',
         Status: PaymentStatus.Transferred,
     },
     {
-        PaymentID: 2,
-        ContractID: 'CTR-PKG-000',
+        PaymentID: 102,
+        ContractID: 'CTR-TV-DEMO-001',
         BatchNo: 2,
         Type: PaymentType.Volume,
-        Amount: 4000000000,
-        TreasuryRef: 'PC-2024-00456',
+        Amount: 237_768_984, // 40% - Sau khi hoàn thành 50% khối lượng
+        TreasuryRef: 'KB-TV-2024-002',
         Status: PaymentStatus.Transferred,
     },
     {
-        PaymentID: 3,
-        ContractID: 'CTR-PKG-000',
+        PaymentID: 103,
+        ContractID: 'CTR-TV-DEMO-001',
         BatchNo: 3,
         Type: PaymentType.Volume,
-        Amount: 5500000000,
-        TreasuryRef: 'PC-2024-00789',
+        Amount: 178_326_738, // 30% còn lại - Quyết toán
+        TreasuryRef: 'KB-TV-2024-003',
+        Status: PaymentStatus.Transferred, // Đã thanh toán 100%
+    },
+
+    // ═══════════════════════════════════════════════════════════════
+    // PAYMENTS FOR XÂY LẮP PACKAGE (CTR-XL-DEMO-001)
+    // Construction: Tạm ứng → Thanh toán đợt 1-5 → Giữ lại 5% bảo hành
+    // ═══════════════════════════════════════════════════════════════
+    {
+        PaymentID: 201,
+        ContractID: 'CTR-XL-DEMO-001',
+        BatchNo: 1,
+        Type: PaymentType.Advance,
+        Amount: 4_170_000_000, // 15% của 27.8 tỷ
+        TreasuryRef: 'KB-XL-2024-001',
         Status: PaymentStatus.Transferred,
     },
     {
-        PaymentID: 4,
-        ContractID: 'CTR-PKG-000',
+        PaymentID: 202,
+        ContractID: 'CTR-XL-DEMO-001',
+        BatchNo: 2,
+        Type: PaymentType.Volume,
+        Amount: 5_560_000_000, // ~20% - Hoàn thành móng
+        TreasuryRef: 'KB-XL-2024-002',
+        Status: PaymentStatus.Transferred,
+    },
+    {
+        PaymentID: 203,
+        ContractID: 'CTR-XL-DEMO-001',
+        BatchNo: 3,
+        Type: PaymentType.Volume,
+        Amount: 6_950_000_000, // ~25% - Hoàn thành kết cấu
+        TreasuryRef: 'KB-XL-2024-003',
+        Status: PaymentStatus.Transferred,
+    },
+    {
+        PaymentID: 204,
+        ContractID: 'CTR-XL-DEMO-001',
         BatchNo: 4,
         Type: PaymentType.Volume,
-        Amount: 6000000000,
-        TreasuryRef: 'PC-2025-00012',
+        Amount: 5_560_000_000, // ~20% - Hoàn thiện thô
+        TreasuryRef: 'KB-XL-2025-001',
         Status: PaymentStatus.Transferred,
     },
     {
-        PaymentID: 5,
-        ContractID: 'CTR-PKG-000',
+        PaymentID: 205,
+        ContractID: 'CTR-XL-DEMO-001',
         BatchNo: 5,
         Type: PaymentType.Volume,
-        Amount: 4500000000,
-        TreasuryRef: 'PC-2025-00345',
-        Status: PaymentStatus.Transferred,
+        Amount: 4_170_000_000, // ~15% - Hoàn thiện tinh (trừ 5% bảo hành)
+        TreasuryRef: 'KB-XL-2025-002',
+        Status: PaymentStatus.Pending, // Đang chờ duyệt
     },
-    {
-        PaymentID: 6,
-        ContractID: 'CTR-PKG-000',
-        BatchNo: 6,
-        Type: PaymentType.Volume,
-        Amount: 850000000, // Thu hồi tạm ứng, giữ lại bảo hành 5%
-        TreasuryRef: 'PC-2025-00678',
-        Status: PaymentStatus.Transferred,
-    },
-    // === Payments for PKG-001 ===
-    {
-        PaymentID: 7,
-        ContractID: 'CTR-PKG-001',
-        BatchNo: 1,
-        Type: PaymentType.Advance,
-        Amount: 2970000000, // 20% of 14.85 tỷ
-        TreasuryRef: 'PC-2024-00088',
-        Status: PaymentStatus.Transferred,
-    },
-    {
-        PaymentID: 8,
-        ContractID: 'CTR-PKG-001',
-        BatchNo: 2,
-        Type: PaymentType.Volume,
-        Amount: 3500000000,
-        TreasuryRef: 'PC-2024-00234',
-        Status: PaymentStatus.Transferred,
-    },
-    {
-        PaymentID: 9,
-        ContractID: 'CTR-PKG-001',
-        BatchNo: 3,
-        Type: PaymentType.Volume,
-        Amount: 4200000000,
-        TreasuryRef: 'PC-2024-00567',
-        Status: PaymentStatus.Pending,
-    }
+    // 5% giữ lại bảo hành = 1,390,000,000 sẽ thanh toán sau khi hết bảo hành
 ];
 
 // GENERATE DATA: Project -> Package (1) -> Contract (1)
