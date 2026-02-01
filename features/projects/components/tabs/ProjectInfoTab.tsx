@@ -1,10 +1,12 @@
 import React from 'react';
-import { Project, Task, ProjectStage } from '@/types';
-import { Landmark, FileBarChart, FileCheck, RefreshCw, ChevronDown } from 'lucide-react';
+import { Project, ProjectStage, InvestmentPolicyDecision, FeasibilityStudy } from '@/types';
+import { Landmark, FileBarChart, FileCheck, RefreshCw } from 'lucide-react';
 import { SyncResult } from '@/services/NationalGatewayService';
 import { LifecycleStepper } from '../LifecycleStepper';
 import { ComplianceChecklist } from '../ComplianceChecklist';
 import { DualProgressCard } from '../DualProgressCard';
+import { KeyMetricsHeader } from '../KeyMetricsHeader';
+import { LegalDocumentsSection } from '../LegalDocumentsSection';
 
 interface ProjectInfoTabProps {
     project: Project & {
@@ -13,6 +15,8 @@ interface ProjectInfoTabProps {
         FinancialProgress?: number;
         RequiresBIM?: boolean;
         BIMStatus?: string;
+        InvestmentPolicy?: InvestmentPolicyDecision;
+        FeasibilityStudy?: FeasibilityStudy;
     };
     isSyncing: boolean;
     syncResult: SyncResult | null;
@@ -20,9 +24,39 @@ interface ProjectInfoTabProps {
     onGenerateReport: (type: 'Monitoring' | 'Settlement') => void;
 }
 
+// Sample data for demo (will be replaced by API data)
+const sampleInvestmentPolicy: InvestmentPolicyDecision = {
+    DecisionNumber: '1395/QĐ-UBND',
+    DecisionDate: '06/06/2024',
+    Authority: 'UBND tỉnh Hà Tĩnh',
+    Objectives: 'Tăng cường năng lực y tế cơ sở',
+    PreliminaryInvestment: 153173978000,
+    CapitalSources: ['Ngân sách tỉnh', 'Vốn ODA'],
+    Duration: '3 năm',
+    Location: 'Tỉnh Hà Tĩnh',
+    DocumentPath: '/documents/1395-QD-UBND.pdf'
+};
+
+const sampleFeasibilityStudy: FeasibilityStudy = {
+    ReportID: 'FS-2024-001',
+    ProjectID: 'PR2400031160',
+    ApprovalNumber: '2810/QĐ-UBND',
+    ApprovalDate: '15/08/2024',
+    ApprovalAuthority: 'UBND tỉnh Hà Tĩnh',
+    TotalInvestment: 153173978000,
+    DesignPhases: 2,
+    ConstructionScale: 'Cải tạo, nâng cấp 25 Trạm Y tế xã',
+    MainTechnology: 'Công nghệ xây dựng tiêu chuẩn',
+    EnvironmentalApproval: '456/QĐ-TNMT',
+    DocumentPath: '/documents/BCNCKT-2024.pdf'
+};
+
 export const ProjectInfoTab: React.FC<ProjectInfoTabProps> = ({
     project, isSyncing, syncResult, isGeneratingReport, onGenerateReport
 }) => {
+    // Calculate disbursed amount from financial progress
+    const disbursedAmount = (project.FinancialProgress ?? 0) * project.TotalInvestment / 100;
+
     return (
         <div className="animate-in slide-in-from-bottom-2 duration-500 space-y-6 max-w-6xl mx-auto py-4">
 
@@ -32,58 +66,57 @@ export const ProjectInfoTab: React.FC<ProjectInfoTabProps> = ({
                 stageHistory={[]}
             />
 
+            {/* KEY METRICS HEADER - Full Width */}
+            <KeyMetricsHeader
+                totalInvestment={project.TotalInvestment}
+                disbursedAmount={disbursedAmount}
+                physicalProgress={project.PhysicalProgress ?? 0}
+            />
+
+            {/* National Gateway Section - Compact */}
+            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl shadow-sm border border-blue-100 overflow-hidden">
+                <div className="px-5 py-3 flex justify-between items-center">
+                    <div className="flex items-center gap-4">
+                        <div className={`w-10 h-10 rounded-full flex items-center justify-center ${project.SyncStatus?.IsSynced || syncResult?.success ? 'bg-emerald-100 text-emerald-600' : 'bg-gray-100 text-gray-400'}`}>
+                            <RefreshCw className={`w-5 h-5 ${isSyncing ? 'animate-spin' : ''}`} />
+                        </div>
+                        <div>
+                            <div className="flex items-center gap-2">
+                                <Landmark className="w-4 h-4 text-blue-600" />
+                                <h3 className="font-bold text-blue-800 text-xs uppercase">Cổng CSDLQG (NĐ 111)</h3>
+                            </div>
+                            <p className="text-sm font-bold text-gray-800 mt-0.5">
+                                {isSyncing ? 'Đang kết nối...' : (
+                                    (project.SyncStatus?.IsSynced || syncResult?.success)
+                                        ? `✓ Mã: ${syncResult?.nationalCode || project.SyncStatus?.NationalProjectCode || 'ND111-2024'}`
+                                        : 'Chưa đồng bộ'
+                                )}
+                            </p>
+                        </div>
+                    </div>
+                    <div className="flex gap-2">
+                        <button
+                            onClick={() => onGenerateReport('Monitoring')}
+                            disabled={isGeneratingReport}
+                            className="px-3 py-1.5 bg-white text-blue-700 text-xs font-bold rounded-md border border-blue-200 hover:bg-blue-50 flex items-center gap-2 transition-all shadow-sm"
+                        >
+                            <FileBarChart className="w-3.5 h-3.5" /> Báo cáo GS
+                        </button>
+                        <button
+                            onClick={() => onGenerateReport('Settlement')}
+                            disabled={isGeneratingReport}
+                            className="px-3 py-1.5 bg-white text-blue-700 text-xs font-bold rounded-md border border-blue-200 hover:bg-blue-50 flex items-center gap-2 transition-all shadow-sm"
+                        >
+                            <FileCheck className="w-3.5 h-3.5" /> Báo cáo QT
+                        </button>
+                    </div>
+                </div>
+            </div>
+
             {/* 2-Column Layout */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {/* LEFT COLUMN - 2/3 width */}
                 <div className="lg:col-span-2 space-y-6">
-                    {/* National Gateway Section */}
-                    <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl shadow-sm border border-blue-100 overflow-hidden">
-                        <div className="px-5 py-3 border-b border-blue-100 flex justify-between items-center">
-                            <h3 className="font-bold text-blue-800 text-xs uppercase flex items-center gap-2">
-                                <Landmark className="w-4 h-4" /> Cổng kết nối Quốc gia (NĐ 111)
-                            </h3>
-                            <div className="flex gap-2">
-                                <button
-                                    onClick={() => onGenerateReport('Monitoring')}
-                                    disabled={isGeneratingReport}
-                                    className="px-3 py-1.5 bg-white text-blue-700 text-xs font-bold rounded-md border border-blue-200 hover:bg-blue-50 flex items-center gap-2 transition-all shadow-sm"
-                                >
-                                    <FileBarChart className="w-3.5 h-3.5" /> Báo cáo GS
-                                </button>
-                                <button
-                                    onClick={() => onGenerateReport('Settlement')}
-                                    disabled={isGeneratingReport}
-                                    className="px-3 py-1.5 bg-white text-blue-700 text-xs font-bold rounded-md border border-blue-200 hover:bg-blue-50 flex items-center gap-2 transition-all shadow-sm"
-                                >
-                                    <FileCheck className="w-3.5 h-3.5" /> Báo cáo QT
-                                </button>
-                            </div>
-                        </div>
-                        <div className="p-4">
-                            <div className="flex items-center justify-between">
-                                <div className="flex items-center gap-4">
-                                    <div className={`w-10 h-10 rounded-full flex items-center justify-center ${project.SyncStatus?.IsSynced || syncResult?.success ? 'bg-emerald-100 text-emerald-600' : 'bg-gray-100 text-gray-400'}`}>
-                                        <RefreshCw className={`w-5 h-5 ${isSyncing ? 'animate-spin' : ''}`} />
-                                    </div>
-                                    <div>
-                                        <p className="text-sm font-bold text-gray-800">
-                                            {isSyncing ? 'Đang kết nối...' : (
-                                                (project.SyncStatus?.IsSynced || syncResult?.success)
-                                                    ? `✓ Mã CSDLQG: ${syncResult?.nationalCode || project.SyncStatus?.NationalProjectCode || 'ND111-PR2400-2025'}`
-                                                    : 'Chưa đồng bộ'
-                                            )}
-                                        </p>
-                                        {(project.SyncStatus?.LastSyncDate || syncResult?.timestamp) && (
-                                            <p className="text-[10px] text-gray-400 mt-0.5">
-                                                Cập nhật: {syncResult?.timestamp ? new Date(syncResult.timestamp).toLocaleString('vi-VN') : project.SyncStatus?.LastSyncDate}
-                                            </p>
-                                        )}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
                     {/* General Info Section */}
                     <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
                         <div className="px-5 py-3 bg-gray-50 border-b border-gray-200">
@@ -98,33 +131,22 @@ export const ProjectInfoTab: React.FC<ProjectInfoTabProps> = ({
                                 <InfoItem label="Địa điểm" value={project.LocationCode} />
                                 <InfoItem label="Thời gian thực hiện" value={project.Duration || '5 Năm'} />
                                 <InfoItem label="Hình thức quản lý" value={project.ManagementForm || 'Chủ đầu tư trực tiếp quản lý'} />
-                                <InfoItem
-                                    label="Tổng mức đầu tư"
-                                    value={new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(project.TotalInvestment)}
-                                    highlight
-                                />
                                 <InfoItem label="Nguồn vốn" value={project.CapitalSource || 'Ngân sách tỉnh'} />
                             </div>
-
-                            {/* Decision Info */}
-                            <div className="mt-5 pt-4 border-t border-gray-100">
-                                <label className="text-xs font-bold text-gray-400 uppercase mb-3 block">Quyết định phê duyệt</label>
-                                <div className="bg-gray-50 p-4 rounded-lg border border-gray-100 grid grid-cols-3 gap-4">
-                                    <div>
-                                        <span className="text-xs text-gray-500 block">Số quyết định</span>
-                                        <span className="text-sm font-bold text-gray-900">{project.DecisionNumber || '—'}</span>
-                                    </div>
-                                    <div>
-                                        <span className="text-xs text-gray-500 block">Ngày quyết định</span>
-                                        <span className="text-sm font-bold text-gray-900">{project.DecisionDate || '—'}</span>
-                                    </div>
-                                    <div>
-                                        <span className="text-xs text-gray-500 block">Cơ quan ban hành</span>
-                                        <span className="text-sm font-bold text-gray-900">{project.DecisionAuthority || 'UBND Tỉnh'}</span>
-                                    </div>
-                                </div>
-                            </div>
                         </div>
+                    </div>
+
+                    {/* Legal Documents Section */}
+                    <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden p-5">
+                        <LegalDocumentsSection
+                            investmentPolicy={project.InvestmentPolicy || sampleInvestmentPolicy}
+                            feasibilityStudy={project.FeasibilityStudy || sampleFeasibilityStudy}
+                            approvalDecision={{
+                                number: project.DecisionNumber || '—',
+                                date: project.DecisionDate || '—',
+                                authority: project.DecisionAuthority || 'UBND Tỉnh'
+                            }}
+                        />
                     </div>
                 </div>
 
