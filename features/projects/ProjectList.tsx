@@ -96,15 +96,17 @@ const ProjectList: React.FC = () => {
                                 <div className="space-y-1">
                                     {[
                                         { val: 'all', label: 'Tất cả', color: 'bg-gray-400' },
+                                        { val: 'InvestmentPolicy', label: 'Chủ trương đầu tư', color: 'bg-gradient-to-r from-purple-400 to-purple-600' },
                                         { val: ProjectStatus.Preparation.toString(), label: 'Chuẩn bị đầu tư', color: 'bg-gradient-to-r from-amber-400 to-orange-500' },
                                         { val: ProjectStatus.Execution.toString(), label: 'Thực hiện đầu tư', color: 'bg-gradient-to-r from-blue-500 to-blue-600' },
                                         { val: ProjectStatus.Finished.toString(), label: 'Hoàn thành', color: 'bg-gradient-to-r from-emerald-500 to-emerald-600' },
+                                        { val: 'Operation', label: 'Vận hành khai thác', color: 'bg-gradient-to-r from-violet-500 to-violet-600' },
                                     ].map(opt => (
                                         <label
                                             key={opt.val}
                                             className={`flex items-center gap-3 p-2.5 rounded-xl cursor-pointer transition-all duration-200 ${selectedStatus === opt.val
-                                                    ? 'bg-blue-50 ring-1 ring-blue-200'
-                                                    : 'hover:bg-gray-50'
+                                                ? 'bg-blue-50 ring-1 ring-blue-200'
+                                                : 'hover:bg-gray-50'
                                                 }`}
                                         >
                                             <input
