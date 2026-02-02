@@ -152,6 +152,20 @@ const ProjectDetail: React.FC = () => {
                                 // Navigate to Packages tab
                                 setActiveTab('packages');
                             }}
+                            onStageChange={(newStage, entry) => {
+                                // Update project stage
+                                setProject(prev => prev ? {
+                                    ...prev,
+                                    Stage: newStage,
+                                    StageHistory: [...(prev.StageHistory || []), entry]
+                                } : null);
+                                console.log('Stage changed to:', newStage, entry);
+                                // TODO: Persist to API
+                            }}
+                            onHistoryUpdate={(history) => {
+                                setProject(prev => prev ? { ...prev, StageHistory: history } : null);
+                            }}
+                            canEditLifecycle={true}
                         />
                     )}
                     {activeTab === 'plan' && (
