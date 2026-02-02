@@ -4,7 +4,7 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 const { v4: uuidv4 } = require('uuid');
-const { convert2xkt } = require('@xeokit/xeokit-convert/convert2xkt.js');
+const { spawn } = require('child_process');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -51,7 +51,7 @@ app.get('/', (req, res) => {
     res.json({
         status: 'ok',
         service: 'IFC to XKT Converter API',
-        version: '1.0.0',
+        version: '1.0.1',
         endpoints: {
             convert: 'POST /convert - Upload IFC file and get XKT',
             download: 'GET /download/:id - Download converted XKT file',
@@ -66,6 +66,50 @@ app.get('/health', (req, res) => {
 
 // Store conversion jobs
 const jobs = new Map();
+
+// Convert IFC to XKT using CLI
+function runConvert2xkt(inputPath, outputPath) {
+    return new Promise((resolve, reject) => {
+        // Use npx to run convert2xkt CLI
+        const args = [
+            'convert2xkt',
+            '-s', inputPath,
+            '-o', outputPath
+        ];
+
+        console.log(`Running: npx ${args.join(' ')}`);
+
+        const process = spawn('npx', args, {
+            cwd: path.join(__dirname, '..'),
+            shell: true
+        });
+
+        let stdout = '';
+        let stderr = '';
+
+        process.stdout.on('data', (data) => {
+            stdout += data.toString();
+            console.log(`[stdout] ${data}`);
+        });
+
+        process.stderr.on('data', (data) => {
+            stderr += data.toString();
+            console.log(`[stderr] ${data}`);
+        });
+
+        process.on('close', (code) => {
+            if (code === 0) {
+                resolve({ stdout, stderr });
+            } else {
+                reject(new Error(`Process exited with code ${code}: ${stderr}`));
+            }
+        });
+
+        process.on('error', (err) => {
+            reject(err);
+        });
+    });
+}
 
 // Convert IFC to XKT
 app.post('/convert', upload.single('file'), async (req, res) => {
@@ -101,20 +145,14 @@ app.post('/convert', upload.single('file'), async (req, res) => {
     try {
         console.log(`[${jobId}] Starting conversion: ${req.file.originalname}`);
 
-        await convert2xkt({
-            source: inputPath,
-            output: outputPath,
-            log: (msg) => {
-                console.log(`[${jobId}] ${msg}`);
-                // Update progress based on log messages
-                const job = jobs.get(jobId);
-                if (job) {
-                    if (msg.includes('Parsing')) job.progress = 20;
-                    else if (msg.includes('Converting')) job.progress = 50;
-                    else if (msg.includes('Writing')) job.progress = 80;
-                }
-            }
-        });
+        jobs.set(jobId, { ...jobs.get(jobId), progress: 20 });
+
+        await runConvert2xkt(inputPath, outputPath);
+
+        // Verify output exists
+        if (!fs.existsSync(outputPath)) {
+            throw new Error('Output file was not created');
+        }
 
         // Update job status
         jobs.set(jobId, {
@@ -128,7 +166,7 @@ app.post('/convert', upload.single('file'), async (req, res) => {
         console.log(`[${jobId}] Conversion completed`);
 
         // Cleanup input file
-        fs.unlinkSync(inputPath);
+        if (fs.existsSync(inputPath)) fs.unlinkSync(inputPath);
 
     } catch (error) {
         console.error(`[${jobId}] Conversion failed:`, error);
