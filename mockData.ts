@@ -2738,6 +2738,598 @@ const generateDefaultTasks = (): Task[] => {
         }
     );
 
+    // ============================================================
+    // COMPREHENSIVE SAMPLE DATA FOR TRƯỜNG CHÍNH TRỊ TRẦN PHÚ
+    // Project: PR2500060068 - Đầu tư xây dựng Trường Chính trị Trần Phú
+    // This provides full lifecycle tasks demonstrating the new features:
+    // - Dependencies (FS/SS/FF/SF)
+    // - Progress tracking (0-100%)
+    // - Resource allocation
+    // - Critical path
+    // ============================================================
+    const tranPhuProjectId = 'PR2500060068';
+
+    // PHASE 1: GIAI ĐOẠN CHUẨN BỊ DỰ ÁN
+    tasks.push(
+        // 1.1 Không phải ODA
+        {
+            TaskID: 'TSK-TCTTP-0101',
+            Title: 'Xác định nguồn vốn ngân sách tỉnh',
+            Description: 'Xác nhận dự án sử dụng 100% ngân sách địa phương, không thuộc nguồn ODA',
+            ProjectID: tranPhuProjectId,
+            AssigneeID: 'NV1001',
+            StartDate: '2025-01-05',
+            DueDate: '2025-01-10',
+            Status: TaskStatus.Done,
+            Priority: TaskPriority.Medium,
+            TimelineStep: 'PREP_ODA',
+            ProgressPercent: 100,
+            IsCritical: false
+        },
+
+        // 1.2 Lập, thẩm định Báo cáo NCTKT / Đề xuất chủ trương đầu tư
+        {
+            TaskID: 'TSK-TCTTP-0201',
+            Title: 'Lập báo cáo đề xuất chủ trương đầu tư',
+            Description: 'Xây dựng báo cáo đề xuất chủ trương theo Luật Đầu tư công 2019, phù hợp Đề án 02-DA/TU',
+            ProjectID: tranPhuProjectId,
+            AssigneeID: 'NV1002',
+            StartDate: '2025-01-10',
+            DueDate: '2025-02-15',
+            Status: TaskStatus.Done,
+            Priority: TaskPriority.High,
+            TimelineStep: 'PREP_POLICY',
+            ProgressPercent: 100,
+            IsCritical: true,
+            Dependencies: [{ TaskID: 'TSK-TCTTP-0101', Type: 'FS' as const, LagDays: 0 }],
+            LegalBasis: 'Điều 30 Luật Đầu tư công 2019',
+            OutputDocument: 'Báo cáo đề xuất chủ trương ĐT'
+        },
+        {
+            TaskID: 'TSK-TCTTP-0202',
+            Title: 'Thẩm định chủ trương đầu tư tại Sở KHĐT',
+            Description: 'Nộp hồ sơ và phối hợp Sở KHĐT thẩm định theo quy định',
+            ProjectID: tranPhuProjectId,
+            AssigneeID: 'NV1001',
+            StartDate: '2025-02-16',
+            DueDate: '2025-03-15',
+            Status: TaskStatus.Done,
+            Priority: TaskPriority.High,
+            TimelineStep: 'PREP_POLICY',
+            ProgressPercent: 100,
+            IsCritical: true,
+            Dependencies: [{ TaskID: 'TSK-TCTTP-0201', Type: 'FS' as const, LagDays: 1 }],
+            DurationDays: 28,
+            OutputDocument: 'Báo cáo thẩm định của Sở KHĐT'
+        },
+        {
+            TaskID: 'TSK-TCTTP-0203',
+            Title: 'HĐND tỉnh quyết định chủ trương đầu tư',
+            Description: 'Trình HĐND tỉnh quyết định chủ trương đầu tư dự án nhóm B',
+            ProjectID: tranPhuProjectId,
+            AssigneeID: 'NV1002',
+            StartDate: '2025-03-16',
+            DueDate: '2025-04-10',
+            Status: TaskStatus.Done,
+            Priority: TaskPriority.Urgent,
+            TimelineStep: 'PREP_POLICY',
+            ProgressPercent: 100,
+            IsCritical: true,
+            Dependencies: [{ TaskID: 'TSK-TCTTP-0202', Type: 'FS' as const, LagDays: 1 }],
+            OutputDocument: 'Nghị quyết HĐND tỉnh'
+        },
+
+        // 1.3 Khảo sát xây dựng phục vụ lập dự án
+        {
+            TaskID: 'TSK-TCTTP-0301',
+            Title: 'Khảo sát địa hình khu đất xây dựng',
+            Description: 'Khảo sát địa hình 1/500 khu vực xây dựng Trường Chính trị',
+            ProjectID: tranPhuProjectId,
+            AssigneeID: 'NV1033',
+            StartDate: '2025-04-01',
+            DueDate: '2025-04-20',
+            Status: TaskStatus.Done,
+            Priority: TaskPriority.Medium,
+            TimelineStep: 'PREP_SURVEY',
+            ProgressPercent: 100,
+            Dependencies: [{ TaskID: 'TSK-TCTTP-0203', Type: 'SS' as const, LagDays: -10 }],
+            Assignees: [
+                { EmployeeID: 'NV1033', AllocationPercent: 50, Role: 'Lead' },
+                { EmployeeID: 'NV1035', AllocationPercent: 30, Role: 'Support' }
+            ]
+        },
+        {
+            TaskID: 'TSK-TCTTP-0302',
+            Title: 'Khảo sát địa chất công trình',
+            Description: 'Khảo sát địa chất, khoan thăm dò 15 hố khoan, thí nghiệm mẫu đất',
+            ProjectID: tranPhuProjectId,
+            AssigneeID: 'NV1034',
+            StartDate: '2025-04-15',
+            DueDate: '2025-05-15',
+            Status: TaskStatus.Done,
+            Priority: TaskPriority.High,
+            TimelineStep: 'PREP_SURVEY',
+            ProgressPercent: 100,
+            Dependencies: [{ TaskID: 'TSK-TCTTP-0301', Type: 'SS' as const, LagDays: 14 }]
+        },
+        {
+            TaskID: 'TSK-TCTTP-0303',
+            Title: 'Đánh giá hiện trạng công trình hiện hữu',
+            Description: 'Khảo sát, đánh giá các hạng mục công trình hiện có cần giữ lại hoặc phá dỡ',
+            ProjectID: tranPhuProjectId,
+            AssigneeID: 'NV1027',
+            StartDate: '2025-04-10',
+            DueDate: '2025-04-30',
+            Status: TaskStatus.Done,
+            Priority: TaskPriority.Medium,
+            TimelineStep: 'PREP_SURVEY',
+            ProgressPercent: 100
+        },
+
+        // 1.4 Quy hoạch xây dựng
+        {
+            TaskID: 'TSK-TCTTP-0401',
+            Title: 'Rà soát quy hoạch chi tiết 1/500',
+            Description: 'Xác nhận phù hợp với QH chi tiết xây dựng đã được phê duyệt',
+            ProjectID: tranPhuProjectId,
+            AssigneeID: 'NV1002',
+            StartDate: '2025-04-20',
+            DueDate: '2025-05-05',
+            Status: TaskStatus.Done,
+            Priority: TaskPriority.Medium,
+            TimelineStep: 'PREP_PLANNING',
+            ProgressPercent: 100
+        },
+
+        // 1.5 Lập, thẩm định Báo cáo NCKT
+        {
+            TaskID: 'TSK-TCTTP-0501',
+            Title: 'Lập Báo cáo nghiên cứu khả thi dự án',
+            Description: 'Thuê đơn vị tư vấn lập báo cáo NCKT theo NĐ175/2024',
+            ProjectID: tranPhuProjectId,
+            AssigneeID: 'NV1001',
+            StartDate: '2025-05-01',
+            DueDate: '2025-07-15',
+            Status: TaskStatus.Done,
+            Priority: TaskPriority.High,
+            TimelineStep: 'PREP_FEASIBILITY',
+            ProgressPercent: 100,
+            IsCritical: true,
+            Dependencies: [
+                { TaskID: 'TSK-TCTTP-0302', Type: 'FS' as const, LagDays: 0 },
+                { TaskID: 'TSK-TCTTP-0401', Type: 'FS' as const, LagDays: 0 }
+            ],
+            DurationDays: 75,
+            EstimatedCost: 850000000,
+            LegalBasis: 'Điều 54 Luật XD 2014',
+            OutputDocument: 'Báo cáo NCKT dự án'
+        },
+        {
+            TaskID: 'TSK-TCTTP-0502',
+            Title: 'Lập ĐTM và thủ tục môi trường',
+            Description: 'Lập báo cáo đánh giá tác động môi trường trình Sở TNMT',
+            ProjectID: tranPhuProjectId,
+            AssigneeID: 'NV1027',
+            StartDate: '2025-05-15',
+            DueDate: '2025-07-30',
+            Status: TaskStatus.Done,
+            Priority: TaskPriority.High,
+            TimelineStep: 'PREP_FEASIBILITY',
+            ProgressPercent: 100,
+            Dependencies: [{ TaskID: 'TSK-TCTTP-0501', Type: 'SS' as const, LagDays: 14 }]
+        },
+        {
+            TaskID: 'TSK-TCTTP-0503',
+            Title: 'Thẩm định BCNCKT tại Sở Xây dựng',
+            Description: 'Phối hợp Sở XD thẩm định BCNCKT theo Điều 58 Luật XD',
+            ProjectID: tranPhuProjectId,
+            AssigneeID: 'NV1001',
+            StartDate: '2025-07-20',
+            DueDate: '2025-08-30',
+            Status: TaskStatus.Done,
+            Priority: TaskPriority.High,
+            TimelineStep: 'PREP_FEASIBILITY',
+            ProgressPercent: 100,
+            IsCritical: true,
+            Dependencies: [
+                { TaskID: 'TSK-TCTTP-0501', Type: 'FS' as const, LagDays: 5 },
+                { TaskID: 'TSK-TCTTP-0502', Type: 'FS' as const, LagDays: -10 }
+            ],
+            OutputDocument: 'Báo cáo thẩm định Sở XD'
+        },
+
+        // 1.6 Quyết định đầu tư xây dựng
+        {
+            TaskID: 'TSK-TCTTP-0601',
+            Title: 'Trình phê duyệt dự án đầu tư',
+            Description: 'Hoàn thiện hồ sơ trình UBND tỉnh phê duyệt dự án',
+            ProjectID: tranPhuProjectId,
+            AssigneeID: 'NV1001',
+            StartDate: '2025-09-01',
+            DueDate: '2025-09-20',
+            Status: TaskStatus.Done,
+            Priority: TaskPriority.Urgent,
+            TimelineStep: 'PREP_DECISION',
+            ProgressPercent: 100,
+            IsCritical: true,
+            Dependencies: [{ TaskID: 'TSK-TCTTP-0503', Type: 'FS' as const, LagDays: 2 }]
+        },
+        {
+            TaskID: 'TSK-TCTTP-0602',
+            Title: 'UBND tỉnh ban hành QĐ phê duyệt dự án',
+            Description: 'QĐ số 2810/QĐ-UBND ngày 11/11/2025 phê duyệt dự án',
+            ProjectID: tranPhuProjectId,
+            AssigneeID: 'NV1002',
+            StartDate: '2025-10-01',
+            DueDate: '2025-11-11',
+            Status: TaskStatus.Done,
+            Priority: TaskPriority.Urgent,
+            TimelineStep: 'PREP_DECISION',
+            ProgressPercent: 100,
+            IsCritical: true,
+            Dependencies: [{ TaskID: 'TSK-TCTTP-0601', Type: 'FS' as const, LagDays: 10 }],
+            OutputDocument: 'QĐ 2810/QĐ-UBND'
+        },
+
+        // PHASE 2: GIAI ĐOẠN THỰC HIỆN DỰ ÁN
+        // 2.1 Chuẩn bị mặt bằng
+        {
+            TaskID: 'TSK-TCTTP-1101',
+            Title: 'Lập phương án GPMB',
+            Description: 'Lập phương án bồi thường, hỗ trợ GPMB theo Luật Đất đai 2024',
+            ProjectID: tranPhuProjectId,
+            AssigneeID: 'NV1033',
+            StartDate: '2025-11-15',
+            DueDate: '2025-12-30',
+            Status: TaskStatus.Done,
+            Priority: TaskPriority.High,
+            TimelineStep: 'IMPL_SITE',
+            ProgressPercent: 100,
+            Dependencies: [{ TaskID: 'TSK-TCTTP-0602', Type: 'FS' as const, LagDays: 4 }]
+        },
+        {
+            TaskID: 'TSK-TCTTP-1102',
+            Title: 'Thực hiện chi trả bồi thường GPMB',
+            Description: 'Chi trả tiền bồi thường cho 5 hộ dân bị ảnh hưởng',
+            ProjectID: tranPhuProjectId,
+            AssigneeID: 'NV1015',
+            StartDate: '2026-01-02',
+            DueDate: '2026-01-31',
+            Status: TaskStatus.Done,
+            Priority: TaskPriority.High,
+            TimelineStep: 'IMPL_SITE',
+            ProgressPercent: 100,
+            Dependencies: [{ TaskID: 'TSK-TCTTP-1101', Type: 'FS' as const, LagDays: 3 }],
+            EstimatedCost: 2500000000
+        },
+        {
+            TaskID: 'TSK-TCTTP-1103',
+            Title: 'Bàn giao mặt bằng sạch',
+            Description: 'Nghiệm thu và bàn giao mặt bằng sạch cho thi công',
+            ProjectID: tranPhuProjectId,
+            AssigneeID: 'NV1001',
+            StartDate: '2026-01-20',
+            DueDate: '2026-02-01',
+            Status: TaskStatus.InProgress,
+            Priority: TaskPriority.Urgent,
+            TimelineStep: 'IMPL_SITE',
+            ProgressPercent: 75,
+            IsCritical: true,
+            Dependencies: [{ TaskID: 'TSK-TCTTP-1102', Type: 'SS' as const, LagDays: 10 }]
+        },
+
+        // 2.2 Khảo sát phục vụ thiết kế
+        {
+            TaskID: 'TSK-TCTTP-1201',
+            Title: 'Khảo sát bổ sung phục vụ thiết kế BVTC',
+            Description: 'Khảo sát địa chất bổ sung tại vị trí công trình chính',
+            ProjectID: tranPhuProjectId,
+            AssigneeID: 'NV1034',
+            StartDate: '2025-12-01',
+            DueDate: '2025-12-30',
+            Status: TaskStatus.Done,
+            Priority: TaskPriority.Medium,
+            TimelineStep: 'IMPL_SURVEY',
+            ProgressPercent: 100,
+            Dependencies: [{ TaskID: 'TSK-TCTTP-0602', Type: 'FS' as const, LagDays: 20 }]
+        },
+
+        // 2.3 Thiết kế & Dự toán
+        {
+            TaskID: 'TSK-TCTTP-1301',
+            Title: 'Lập hồ sơ thiết kế BVTC',
+            Description: 'Thuê đơn vị tư vấn lập TKBVTC các hạng mục công trình',
+            ProjectID: tranPhuProjectId,
+            AssigneeID: 'NV1027',
+            StartDate: '2025-12-01',
+            DueDate: '2026-02-28',
+            Status: TaskStatus.InProgress,
+            Priority: TaskPriority.High,
+            TimelineStep: 'IMPL_DESIGN',
+            ProgressPercent: 85,
+            IsCritical: true,
+            Dependencies: [
+                { TaskID: 'TSK-TCTTP-0602', Type: 'FS' as const, LagDays: 20 },
+                { TaskID: 'TSK-TCTTP-1201', Type: 'SS' as const, LagDays: 0 }
+            ],
+            Assignees: [
+                { EmployeeID: 'NV1027', AllocationPercent: 40, Role: 'Lead' },
+                { EmployeeID: 'NV1028', AllocationPercent: 30, Role: 'Support' },
+                { EmployeeID: 'NV1029', AllocationPercent: 20, Role: 'Support' }
+            ],
+            DurationDays: 90,
+            EstimatedCost: 1200000000
+        },
+        {
+            TaskID: 'TSK-TCTTP-1302',
+            Title: 'Lập dự toán xây dựng công trình',
+            Description: 'Lập dự toán chi tiết theo Thông tư 11/2021/TT-BXD',
+            ProjectID: tranPhuProjectId,
+            AssigneeID: 'NV1015',
+            StartDate: '2026-01-15',
+            DueDate: '2026-02-20',
+            Status: TaskStatus.InProgress,
+            Priority: TaskPriority.High,
+            TimelineStep: 'IMPL_DESIGN',
+            ProgressPercent: 70,
+            Dependencies: [{ TaskID: 'TSK-TCTTP-1301', Type: 'SS' as const, LagDays: 45 }]
+        },
+        {
+            TaskID: 'TSK-TCTTP-1303',
+            Title: 'Thẩm định thiết kế BVTC và dự toán',
+            Description: 'Thẩm định TKBVTC và dự toán tại Sở Xây dựng',
+            ProjectID: tranPhuProjectId,
+            AssigneeID: 'NV1001',
+            StartDate: '2026-02-25',
+            DueDate: '2026-03-25',
+            Status: TaskStatus.Todo,
+            Priority: TaskPriority.High,
+            TimelineStep: 'IMPL_DESIGN',
+            ProgressPercent: 0,
+            IsCritical: true,
+            Dependencies: [
+                { TaskID: 'TSK-TCTTP-1301', Type: 'FS' as const, LagDays: 0 },
+                { TaskID: 'TSK-TCTTP-1302', Type: 'FS' as const, LagDays: 5 }
+            ]
+        },
+        {
+            TaskID: 'TSK-TCTTP-1304',
+            Title: 'Phê duyệt thiết kế BVTC và dự toán',
+            Description: 'Chủ đầu tư phê duyệt TKBVTC và tổng dự toán',
+            ProjectID: tranPhuProjectId,
+            AssigneeID: 'NV1002',
+            StartDate: '2026-03-26',
+            DueDate: '2026-04-10',
+            Status: TaskStatus.Todo,
+            Priority: TaskPriority.Urgent,
+            TimelineStep: 'IMPL_DESIGN',
+            ProgressPercent: 0,
+            IsCritical: true,
+            Dependencies: [{ TaskID: 'TSK-TCTTP-1303', Type: 'FS' as const, LagDays: 1 }]
+        },
+
+        // 2.4 Giấy phép xây dựng
+        {
+            TaskID: 'TSK-TCTTP-1401',
+            Title: 'Lập hồ sơ xin GPXD',
+            Description: 'Chuẩn bị hồ sơ xin giấy phép xây dựng theo Điều 95 Luật XD',
+            ProjectID: tranPhuProjectId,
+            AssigneeID: 'NV1033',
+            StartDate: '2026-03-20',
+            DueDate: '2026-04-05',
+            Status: TaskStatus.Todo,
+            Priority: TaskPriority.High,
+            TimelineStep: 'IMPL_PERMIT',
+            ProgressPercent: 0,
+            Dependencies: [{ TaskID: 'TSK-TCTTP-1303', Type: 'SS' as const, LagDays: 20 }]
+        },
+        {
+            TaskID: 'TSK-TCTTP-1402',
+            Title: 'Cấp giấy phép xây dựng',
+            Description: 'Sở Xây dựng cấp GPXD cho công trình',
+            ProjectID: tranPhuProjectId,
+            AssigneeID: 'NV1001',
+            StartDate: '2026-04-05',
+            DueDate: '2026-04-25',
+            Status: TaskStatus.Todo,
+            Priority: TaskPriority.High,
+            TimelineStep: 'IMPL_PERMIT',
+            ProgressPercent: 0,
+            IsCritical: true,
+            Dependencies: [{ TaskID: 'TSK-TCTTP-1401', Type: 'FS' as const, LagDays: 0 }],
+            OutputDocument: 'Giấy phép xây dựng'
+        },
+
+        // 2.5 Lựa chọn nhà thầu
+        {
+            TaskID: 'TSK-TCTTP-1501',
+            Title: 'Lập kế hoạch lựa chọn nhà thầu',
+            Description: 'Lập KHLCNT trình phê duyệt theo Luật Đấu thầu 2023',
+            ProjectID: tranPhuProjectId,
+            AssigneeID: 'NV1001',
+            StartDate: '2026-03-01',
+            DueDate: '2026-03-20',
+            Status: TaskStatus.Todo,
+            Priority: TaskPriority.High,
+            TimelineStep: 'IMPL_BIDDING',
+            ProgressPercent: 0,
+            Dependencies: [{ TaskID: 'TSK-TCTTP-1302', Type: 'FS' as const, LagDays: 5 }],
+            LegalBasis: 'Điều 39 Luật Đấu thầu 2023'
+        },
+        {
+            TaskID: 'TSK-TCTTP-1502',
+            Title: 'Phê duyệt KHLCNT',
+            Description: 'UBND tỉnh phê duyệt kế hoạch lựa chọn nhà thầu',
+            ProjectID: tranPhuProjectId,
+            AssigneeID: 'NV1002',
+            StartDate: '2026-03-21',
+            DueDate: '2026-04-05',
+            Status: TaskStatus.Todo,
+            Priority: TaskPriority.High,
+            TimelineStep: 'IMPL_BIDDING',
+            ProgressPercent: 0,
+            Dependencies: [{ TaskID: 'TSK-TCTTP-1501', Type: 'FS' as const, LagDays: 1 }]
+        },
+        {
+            TaskID: 'TSK-TCTTP-1503',
+            Title: 'Lập HSMT gói thầu XL-01 (Xây lắp)',
+            Description: 'Lập hồ sơ mời thầu gói XL-01: Xây dựng Nhà học chính và Hội trường',
+            ProjectID: tranPhuProjectId,
+            AssigneeID: 'NV1027',
+            StartDate: '2026-04-01',
+            DueDate: '2026-04-20',
+            Status: TaskStatus.Todo,
+            Priority: TaskPriority.High,
+            TimelineStep: 'IMPL_BIDDING',
+            ProgressPercent: 0,
+            Dependencies: [
+                { TaskID: 'TSK-TCTTP-1304', Type: 'FS' as const, LagDays: -10 },
+                { TaskID: 'TSK-TCTTP-1502', Type: 'SS' as const, LagDays: 0 }
+            ],
+            Assignees: [
+                { EmployeeID: 'NV1027', AllocationPercent: 50, Role: 'Lead' },
+                { EmployeeID: 'NV1028', AllocationPercent: 30, Role: 'Support' }
+            ]
+        },
+        {
+            TaskID: 'TSK-TCTTP-1504',
+            Title: 'Phê duyệt và phát hành HSMT gói XL-01',
+            Description: 'Phê duyệt HSMT và đăng tải trên Hệ thống mạng đấu thầu quốc gia',
+            ProjectID: tranPhuProjectId,
+            AssigneeID: 'NV1001',
+            StartDate: '2026-04-21',
+            DueDate: '2026-04-30',
+            Status: TaskStatus.Todo,
+            Priority: TaskPriority.Urgent,
+            TimelineStep: 'IMPL_BIDDING',
+            ProgressPercent: 0,
+            IsCritical: true,
+            Dependencies: [{ TaskID: 'TSK-TCTTP-1503', Type: 'FS' as const, LagDays: 1 }]
+        },
+        {
+            TaskID: 'TSK-TCTTP-1505',
+            Title: 'Tổ chức đấu thầu gói XL-01',
+            Description: 'Mở thầu, đánh giá HSDT và trình phê duyệt kết quả',
+            ProjectID: tranPhuProjectId,
+            AssigneeID: 'NV1033',
+            StartDate: '2026-05-01',
+            DueDate: '2026-06-30',
+            Status: TaskStatus.Todo,
+            Priority: TaskPriority.High,
+            TimelineStep: 'IMPL_BIDDING',
+            ProgressPercent: 0,
+            IsCritical: true,
+            Dependencies: [{ TaskID: 'TSK-TCTTP-1504', Type: 'FS' as const, LagDays: 1 }],
+            DurationDays: 60
+        },
+        {
+            TaskID: 'TSK-TCTTP-1506',
+            Title: 'Ký kết hợp đồng gói XL-01',
+            Description: 'Thương thảo và ký hợp đồng với nhà thầu trúng thầu',
+            ProjectID: tranPhuProjectId,
+            AssigneeID: 'NV1001',
+            StartDate: '2026-07-01',
+            DueDate: '2026-07-15',
+            Status: TaskStatus.Todo,
+            Priority: TaskPriority.Urgent,
+            TimelineStep: 'IMPL_BIDDING',
+            ProgressPercent: 0,
+            IsCritical: true,
+            Dependencies: [{ TaskID: 'TSK-TCTTP-1505', Type: 'FS' as const, LagDays: 1 }],
+            OutputDocument: 'Hợp đồng xây lắp XL-01'
+        },
+
+        // 2.6 Thi công xây dựng
+        {
+            TaskID: 'TSK-TCTTP-1601',
+            Title: 'Khởi công xây dựng công trình',
+            Description: 'Tổ chức lễ khởi công, triển khai thi công hạng mục đầu tiên',
+            ProjectID: tranPhuProjectId,
+            AssigneeID: 'NV1002',
+            StartDate: '2026-07-20',
+            DueDate: '2026-07-25',
+            Status: TaskStatus.Todo,
+            Priority: TaskPriority.High,
+            TimelineStep: 'IMPL_CONSTRUCTION',
+            ProgressPercent: 0,
+            Dependencies: [
+                { TaskID: 'TSK-TCTTP-1506', Type: 'FS' as const, LagDays: 5 },
+                { TaskID: 'TSK-TCTTP-1402', Type: 'FS' as const, LagDays: 0 },
+                { TaskID: 'TSK-TCTTP-1103', Type: 'FS' as const, LagDays: 0 }
+            ]
+        },
+        {
+            TaskID: 'TSK-TCTTP-1602',
+            Title: 'Thi công phần móng công trình chính',
+            Description: 'Đào đất, ép cọc, đổ bê tông móng Nhà học chính',
+            ProjectID: tranPhuProjectId,
+            AssigneeID: 'NV1033',
+            StartDate: '2026-07-26',
+            DueDate: '2026-10-30',
+            Status: TaskStatus.Todo,
+            Priority: TaskPriority.High,
+            TimelineStep: 'IMPL_CONSTRUCTION',
+            ProgressPercent: 0,
+            IsCritical: true,
+            Dependencies: [{ TaskID: 'TSK-TCTTP-1601', Type: 'FS' as const, LagDays: 1 }],
+            DurationDays: 96
+        },
+        {
+            TaskID: 'TSK-TCTTP-1603',
+            Title: 'Thi công phần thân công trình chính',
+            Description: 'Thi công kết cấu khung, sàn, tường Nhà học chính 5 tầng',
+            ProjectID: tranPhuProjectId,
+            AssigneeID: 'NV1034',
+            StartDate: '2026-11-01',
+            DueDate: '2027-06-30',
+            Status: TaskStatus.Todo,
+            Priority: TaskPriority.High,
+            TimelineStep: 'IMPL_CONSTRUCTION',
+            ProgressPercent: 0,
+            IsCritical: true,
+            Dependencies: [{ TaskID: 'TSK-TCTTP-1602', Type: 'FS' as const, LagDays: 2 }],
+            DurationDays: 242
+        },
+
+        // 2.7 Giám sát thi công
+        {
+            TaskID: 'TSK-TCTTP-1701',
+            Title: 'Triển khai giám sát thi công',
+            Description: 'Cử cán bộ giám sát hiện trường theo Điều 120 Luật XD',
+            ProjectID: tranPhuProjectId,
+            AssigneeID: 'NV1027',
+            StartDate: '2026-07-20',
+            DueDate: '2029-06-30',
+            Status: TaskStatus.Todo,
+            Priority: TaskPriority.High,
+            TimelineStep: 'IMPL_SUPERVISION',
+            ProgressPercent: 0,
+            Dependencies: [{ TaskID: 'TSK-TCTTP-1601', Type: 'SS' as const, LagDays: 0 }],
+            Assignees: [
+                { EmployeeID: 'NV1027', AllocationPercent: 30, Role: 'Lead' },
+                { EmployeeID: 'NV1035', AllocationPercent: 50, Role: 'Field' },
+                { EmployeeID: 'NV1036', AllocationPercent: 40, Role: 'Field' }
+            ]
+        },
+
+        // 2.8 Thanh toán
+        {
+            TaskID: 'TSK-TCTTP-1801',
+            Title: 'Tạm ứng hợp đồng XL-01 (20%)',
+            Description: 'Lập hồ sơ tạm ứng 20% giá trị hợp đồng theo quy định',
+            ProjectID: tranPhuProjectId,
+            AssigneeID: 'NV1015',
+            StartDate: '2026-07-16',
+            DueDate: '2026-07-31',
+            Status: TaskStatus.Todo,
+            Priority: TaskPriority.High,
+            TimelineStep: 'IMPL_PAYMENT',
+            ProgressPercent: 0,
+            Dependencies: [{ TaskID: 'TSK-TCTTP-1506', Type: 'FS' as const, LagDays: 1 }],
+            EstimatedCost: 15000000000
+        }
+    );
+
     return tasks;
 };
 
@@ -2750,7 +3342,7 @@ export const saveTasksToDB = (tasks: Task[]) => {
 };
 
 // Version number to force refresh when data structure changes
-const TASKS_DATA_VERSION = '2026-02-01-v3';
+const TASKS_DATA_VERSION = '2026-02-02-v1-tranphu';
 
 export const loadTasksFromStorage = (): Task[] => {
     if (typeof localStorage === 'undefined') {

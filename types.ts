@@ -342,6 +342,12 @@ export interface BiddingPackage {
     IsSimplifiedCDT?: boolean;    // Có phải CĐT rút gọn không
     SimplifiedReason?: string;    // Lý do áp dụng CĐT rút gọn (nếu có)
     RequiresAppraisal?: boolean;  // Có cần thẩm định không (theo NĐ mới = false cho KHLCNT)
+
+    // Additional fields for compliance
+    BidFee?: number;              // Phí bán HSMT
+    EstimatePrice?: number;       // Giá gói thầu (dự toán)
+    DecisionAgency?: string;      // Cơ quan phê duyệt
+    DecisionFile?: string;        // Tên file quyết định
 }
 
 export interface CapitalAllocation {
