@@ -10,8 +10,12 @@ import {
     ArrowUp, ArrowRight as ArrowRightIcon, List, Square, RotateCw,
     MousePointer, Grid3X3, Slice, Target, Home, Move, Crosshair,
     Focus, Settings2, Info, Building2, Cuboid, Minus, Plus,
-    PanelLeftClose, PanelRightClose, Sun, Moon, AlertCircle, CheckCircle
+    PanelLeftClose, PanelRightClose, PanelLeft, PanelRight,
+    Sun, Moon, AlertCircle, CheckCircle, Menu, Smartphone
 } from 'lucide-react';
+
+// IFC Converter API URL
+const IFC_CONVERTER_API = 'https://smart-public-investment-manager.onrender.com';
 
 interface ProjectBimTabProps {
     projectID: string;
@@ -48,6 +52,27 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
     const [isDarkMode, setIsDarkMode] = useState(true);
     const [fileName, setFileName] = useState('');
     const [viewerReady, setViewerReady] = useState(false);
+    const [isMobile, setIsMobile] = useState(false);
+    const [isTablet, setIsTablet] = useState(false);
+
+    // Detect screen size for responsive layout
+    useEffect(() => {
+        const checkScreenSize = () => {
+            const width = window.innerWidth;
+            setIsMobile(width < 768);
+            setIsTablet(width >= 768 && width < 1024);
+
+            // Auto-hide sidebars on tablet/mobile
+            if (width < 1024) {
+                setShowModelTree(false);
+                setShowProperties(false);
+            }
+        };
+
+        checkScreenSize();
+        window.addEventListener('resize', checkScreenSize);
+        return () => window.removeEventListener('resize', checkScreenSize);
+    }, []);
 
     // Initialize xeokit viewer
     useEffect(() => {
@@ -335,10 +360,10 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
             title={title}
             disabled={disabled}
             className={`p-2 rounded-lg transition-all ${active
-                    ? 'bg-blue-500 text-white shadow-lg shadow-blue-500/30'
-                    : disabled
-                        ? 'text-slate-600 cursor-not-allowed'
-                        : 'text-slate-400 hover:bg-white/10 hover:text-white'
+                ? 'bg-blue-500 text-white shadow-lg shadow-blue-500/30'
+                : disabled
+                    ? 'text-slate-600 cursor-not-allowed'
+                    : 'text-slate-400 hover:bg-white/10 hover:text-white'
                 }`}
         >
             {children}
@@ -350,8 +375,8 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
         <button
             onClick={() => setCameraView(view)}
             className={`px-2 py-1 rounded text-[10px] font-medium transition-all flex items-center gap-1 ${activeView === view
-                    ? 'bg-blue-500 text-white'
-                    : 'text-slate-400 hover:bg-white/10 hover:text-white'
+                ? 'bg-blue-500 text-white'
+                : 'text-slate-400 hover:bg-white/10 hover:text-white'
                 }`}
             title={label}
         >
@@ -362,13 +387,28 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
 
     return (
         <div className={`flex flex-col overflow-hidden rounded-xl border ${isDarkMode ? 'bg-slate-900 border-slate-700/50' : 'bg-gray-100 border-gray-200'}`}
-            style={{ height: 'calc(100vh - 200px)', minHeight: '600px' }}>
+            style={{
+                height: isMobile ? 'calc(100vh - 120px)' : 'calc(100vh - 200px)',
+                minHeight: isMobile ? '400px' : '600px',
+                touchAction: 'none' // Better touch handling for 3D
+            }}>
 
-            {/* HEADER TOOLBAR */}
-            <div className={`h-12 ${isDarkMode ? 'bg-slate-800/90 border-slate-700/50' : 'bg-white border-gray-200'} border-b flex items-center justify-between px-3 shrink-0`}>
+            {/* HEADER TOOLBAR - Responsive */}
+            <div className={`${isMobile ? 'h-14' : 'h-12'} ${isDarkMode ? 'bg-slate-800/90 border-slate-700/50' : 'bg-white border-gray-200'} border-b flex items-center justify-between ${isMobile ? 'px-2' : 'px-3'} shrink-0`}>
                 <div className="flex items-center gap-2">
-                    {/* Logo/Title */}
-                    <div className="flex items-center gap-2 px-2 py-1 rounded-lg bg-gradient-to-r from-blue-500/10 to-cyan-500/10 border border-blue-500/20">
+                    {/* Toggle sidebars on mobile/tablet */}
+                    {(isMobile || isTablet) && (
+                        <button
+                            onClick={() => setShowModelTree(!showModelTree)}
+                            className={`p-2 rounded-lg transition-all ${showModelTree ? 'bg-blue-500 text-white' : 'text-slate-400 hover:bg-white/10'}`}
+                            title="Model Tree"
+                        >
+                            <PanelLeft className="w-5 h-5" />
+                        </button>
+                    )}
+
+                    {/* Logo/Title - Hidden on mobile */}
+                    <div className={`${isMobile ? 'hidden' : 'flex'} items-center gap-2 px-2 py-1 rounded-lg bg-gradient-to-r from-blue-500/10 to-cyan-500/10 border border-blue-500/20`}>
                         <Building2 className="w-4 h-4 text-blue-400" />
                         <span className="text-xs font-bold text-blue-400 uppercase tracking-wide">xeokit BIM</span>
                     </div>
@@ -404,10 +444,10 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
 
                     <div className="h-5 w-px bg-slate-700" />
 
-                    {/* Upload button */}
-                    <label className={`flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-400 hover:to-cyan-400 text-white text-xs font-semibold rounded-lg cursor-pointer transition-all shadow-lg shadow-blue-500/25 ${status === 'loading' ? 'opacity-50 pointer-events-none' : ''}`}>
-                        <Upload className="w-3.5 h-3.5" />
-                        <span>Upload IFC</span>
+                    {/* Upload button - Touch friendly */}
+                    <label className={`flex items-center gap-1.5 ${isMobile ? 'px-3 py-2' : 'px-3 py-1.5'} bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-400 hover:to-cyan-400 text-white ${isMobile ? 'text-sm' : 'text-xs'} font-semibold rounded-lg cursor-pointer transition-all shadow-lg shadow-blue-500/25 ${status === 'loading' ? 'opacity-50 pointer-events-none' : ''}`}>
+                        <Upload className={isMobile ? 'w-5 h-5' : 'w-3.5 h-3.5'} />
+                        <span className={isMobile ? 'hidden sm:inline' : ''}>{isMobile ? '' : 'Upload IFC'}</span>
                         <input
                             type="file"
                             accept=".ifc"
@@ -416,6 +456,17 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
                             disabled={status === 'loading'}
                         />
                     </label>
+
+                    {/* Toggle properties on mobile/tablet */}
+                    {(isMobile || isTablet) && (
+                        <button
+                            onClick={() => setShowProperties(!showProperties)}
+                            className={`p-2 rounded-lg transition-all ${showProperties ? 'bg-blue-500 text-white' : 'text-slate-400 hover:bg-white/10'}`}
+                            title="Properties"
+                        >
+                            <PanelRight className="w-5 h-5" />
+                        </button>
+                    )}
 
                     {/* Theme toggle */}
                     <button
@@ -462,9 +513,9 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
             )}
 
             <div className="flex-1 flex overflow-hidden">
-                {/* LEFT SIDEBAR - Model Tree */}
+                {/* LEFT SIDEBAR - Model Tree (Responsive) */}
                 {showModelTree && (
-                    <div className={`w-64 ${isDarkMode ? 'bg-slate-800/80 border-slate-700/30' : 'bg-white border-gray-200'} border-r flex flex-col shrink-0`}>
+                    <div className={`${isMobile ? 'absolute left-0 top-0 bottom-0 z-20 w-64' : isTablet ? 'absolute left-0 top-0 bottom-0 z-20 w-56' : 'w-64'} ${isDarkMode ? 'bg-slate-800/95 border-slate-700/30' : 'bg-white/95 border-gray-200'} ${isMobile || isTablet ? 'backdrop-blur-sm shadow-2xl' : ''} border-r flex flex-col shrink-0`}>
                         <div className="p-2.5 border-b border-slate-700/30 flex items-center justify-between">
                             <div className="flex items-center gap-2">
                                 <Layers className="w-4 h-4 text-blue-400" />
@@ -674,9 +725,9 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
                     </div>
                 </div>
 
-                {/* RIGHT SIDEBAR - Properties */}
+                {/* RIGHT SIDEBAR - Properties (Responsive) */}
                 {showProperties && (
-                    <div className={`w-72 ${isDarkMode ? 'bg-slate-800/80 border-slate-700/30' : 'bg-white border-gray-200'} border-l flex flex-col shrink-0`}>
+                    <div className={`${isMobile ? 'absolute right-0 top-0 bottom-0 z-20 w-64' : isTablet ? 'absolute right-0 top-0 bottom-0 z-20 w-60' : 'w-72'} ${isDarkMode ? 'bg-slate-800/95 border-slate-700/30' : 'bg-white/95 border-gray-200'} ${isMobile || isTablet ? 'backdrop-blur-sm shadow-2xl' : ''} border-l flex flex-col shrink-0`}>
                         <div className="p-2.5 border-b border-slate-700/30 flex items-center justify-between">
                             <div className="flex items-center gap-2">
                                 <Info className="w-4 h-4 text-blue-400" />
@@ -742,19 +793,25 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
                 )}
             </div>
 
-            {/* FOOTER STATUS BAR */}
-            <div className={`h-8 ${isDarkMode ? 'bg-slate-800/90 border-slate-700/50' : 'bg-white border-gray-200'} border-t flex items-center justify-between px-3 text-[10px] text-slate-500 shrink-0`}>
-                <div className="flex items-center gap-4">
-                    <span>Viewer: <span className="text-cyan-400">xeokit SDK + WebIFC</span></span>
-                    <span>•</span>
-                    <span>{modelLoaded ? `${fileName} | ${objectCount} elements` : 'No model'}</span>
+            {/* FOOTER STATUS BAR - Responsive */}
+            <div className={`${isMobile ? 'h-10' : 'h-8'} ${isDarkMode ? 'bg-slate-800/90 border-slate-700/50' : 'bg-white border-gray-200'} border-t flex items-center justify-between ${isMobile ? 'px-2' : 'px-3'} text-[10px] text-slate-500 shrink-0`}>
+                <div className="flex items-center gap-2 md:gap-4">
+                    <span className="hidden md:inline">Viewer: <span className="text-cyan-400">xeokit SDK</span></span>
+                    <span className="hidden md:inline">•</span>
+                    <span className="truncate max-w-[150px] md:max-w-none">{modelLoaded ? `${fileName} | ${objectCount} elements` : 'No model'}</span>
                 </div>
-                <div className="flex items-center gap-4">
-                    <span>LMB: Rotate</span>
-                    <span>•</span>
-                    <span>RMB: Pan</span>
-                    <span>•</span>
-                    <span>Scroll: Zoom</span>
+                <div className="flex items-center gap-2 md:gap-4">
+                    {isMobile || isTablet ? (
+                        <span className="text-[9px]">Touch: Rotate • 2-finger: Pan/Zoom</span>
+                    ) : (
+                        <>
+                            <span>LMB: Rotate</span>
+                            <span>•</span>
+                            <span>RMB: Pan</span>
+                            <span>•</span>
+                            <span>Scroll: Zoom</span>
+                        </>
+                    )}
                 </div>
             </div>
         </div>
