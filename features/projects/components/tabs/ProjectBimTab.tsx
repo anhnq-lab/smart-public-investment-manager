@@ -237,7 +237,7 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
         try {
             // Step 1: Upload IFC to backend for conversion
             const formData = new FormData();
-            formData.append('ifc', file);
+            formData.append('file', file);
 
             setLoadingProgress(10);
             const uploadResponse = await fetch(`${IFC_CONVERTER_API}/convert`, {
@@ -249,7 +249,7 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
                 throw new Error(`Upload failed: ${uploadResponse.statusText}`);
             }
 
-            const { id: conversionId } = await uploadResponse.json();
+            const { jobId: conversionId } = await uploadResponse.json();
             setStatusMessage(`Đang convert "${file.name}" sang XKT...`);
             setLoadingProgress(30);
 
@@ -265,7 +265,7 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
                 if (statusData.status === 'completed') {
                     xktUrl = `${IFC_CONVERTER_API}/download/${conversionId}`;
                     break;
-                } else if (statusData.status === 'error') {
+                } else if (statusData.status === 'failed') {
                     throw new Error(statusData.error || 'Conversion failed');
                 }
 
