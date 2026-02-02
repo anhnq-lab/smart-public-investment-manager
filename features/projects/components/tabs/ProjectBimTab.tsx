@@ -136,7 +136,7 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
                 // Initialize IfcAPI (required by WebIFCLoaderPlugin)
                 setStatusMessage('Đang tải WebIFC module...');
                 const ifcAPI = new WebIFC.IfcAPI();
-                ifcAPI.SetWasmPath('https://cdn.jsdelivr.net/npm/web-ifc@0.0.39/');
+                ifcAPI.SetWasmPath('https://cdn.jsdelivr.net/npm/web-ifc@0.0.75/');
 
                 await ifcAPI.Init();
 
