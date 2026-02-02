@@ -404,28 +404,36 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
         }
     };
 
-    // Tool button component
-    const ToolBtn = ({ active, onClick, title, children, disabled }: {
+    // Tool button component - iPad-friendly with min 48px touch target
+    const ToolBtn = ({ active, onClick, title, children, disabled, size = 'md' }: {
         active?: boolean;
         onClick?: () => void;
         title: string;
         children: React.ReactNode;
         disabled?: boolean;
-    }) => (
-        <button
-            onClick={onClick}
-            title={title}
-            disabled={disabled}
-            className={`p-2 rounded-lg transition-all ${active
-                ? 'bg-blue-500 text-white shadow-lg shadow-blue-500/30'
-                : disabled
-                    ? 'text-slate-600 cursor-not-allowed'
-                    : 'text-slate-400 hover:bg-white/10 hover:text-white'
-                }`}
-        >
-            {children}
-        </button>
-    );
+        size?: 'sm' | 'md' | 'lg';
+    }) => {
+        const sizeClasses = {
+            sm: 'w-10 h-10',
+            md: 'w-12 h-12',
+            lg: 'w-14 h-14'
+        };
+        return (
+            <button
+                onClick={onClick}
+                title={title}
+                disabled={disabled}
+                className={`${sizeClasses[size]} flex items-center justify-center rounded-xl transition-all backdrop-blur-sm ${active
+                    ? 'bg-blue-500 text-white shadow-lg shadow-blue-500/40'
+                    : disabled
+                        ? 'text-slate-600 cursor-not-allowed bg-slate-800/30'
+                        : 'text-slate-300 bg-slate-800/60 hover:bg-slate-700/80 hover:text-white active:scale-95'
+                    }`}
+            >
+                {children}
+            </button>
+        );
+    };
 
     // View button component
     const ViewBtn = ({ view, icon: Icon, label }: { view: string; icon: any; label: string }) => (
@@ -491,46 +499,40 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
                 </div>
 
                 <div className="flex items-center gap-2">
-                    {/* View buttons */}
-                    <div className="flex bg-slate-800/80 rounded-lg p-0.5 border border-slate-700/50">
-                        <ViewBtn view="iso" icon={Box} label="3D" />
-                        <ViewBtn view="top" icon={ArrowUp} label="Trên" />
-                        <ViewBtn view="front" icon={Square} label="Trước" />
-                        <ViewBtn view="right" icon={ArrowRightIcon} label="Phải" />
-                    </div>
-
-                    <div className="h-5 w-px bg-slate-700" />
-
-                    {/* Upload button - Touch friendly */}
-                    <label className={`flex items-center gap-1.5 ${isMobile ? 'px-3 py-2' : 'px-3 py-1.5'} bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-400 hover:to-cyan-400 text-white ${isMobile ? 'text-sm' : 'text-xs'} font-semibold rounded-lg cursor-pointer transition-all shadow-lg shadow-blue-500/25 ${status === 'loading' ? 'opacity-50 pointer-events-none' : ''}`}>
-                        <Upload className={isMobile ? 'w-5 h-5' : 'w-3.5 h-3.5'} />
-                        <span className={isMobile ? 'hidden sm:inline' : ''}>{isMobile ? '' : 'Upload IFC'}</span>
-                        <input
-                            type="file"
-                            accept=".ifc"
-                            className="hidden"
-                            onChange={handleFileUpload}
-                            disabled={status === 'loading'}
-                        />
-                    </label>
-
-                    {/* Toggle properties on mobile/tablet */}
-                    {(isMobile || isTablet) && (
-                        <button
-                            onClick={() => setShowProperties(!showProperties)}
-                            className={`p-2 rounded-lg transition-all ${showProperties ? 'bg-blue-500 text-white' : 'text-slate-400 hover:bg-white/10'}`}
-                            title="Properties"
-                        >
-                            <PanelRight className="w-5 h-5" />
-                        </button>
+                    {/* View buttons - Desktop only (tablet has floating bar) */}
+                    {!isTablet && !isMobile && (
+                        <div className="flex bg-slate-800/80 rounded-lg p-0.5 border border-slate-700/50">
+                            <ViewBtn view="iso" icon={Box} label="3D" />
+                            <ViewBtn view="top" icon={ArrowUp} label="Top" />
+                            <ViewBtn view="front" icon={Square} label="Front" />
+                            <ViewBtn view="right" icon={ArrowRightIcon} label="Right" />
+                        </div>
                     )}
 
-                    {/* Theme toggle */}
+                    {/* Upload button - Desktop only (tablet has floating bar) */}
+                    {!isTablet && !isMobile && (
+                        <>
+                            <div className="h-5 w-px bg-slate-700" />
+                            <label className={`flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-400 hover:to-cyan-400 text-white text-xs font-semibold rounded-lg cursor-pointer transition-all shadow-lg shadow-blue-500/25 ${status === 'loading' ? 'opacity-50 pointer-events-none' : ''}`}>
+                                <Upload className="w-3.5 h-3.5" />
+                                <span>Upload IFC</span>
+                                <input
+                                    type="file"
+                                    accept=".ifc"
+                                    className="hidden"
+                                    onChange={handleFileUpload}
+                                    disabled={status === 'loading'}
+                                />
+                            </label>
+                        </>
+                    )}
+
+                    {/* Theme toggle - Always visible */}
                     <button
                         onClick={() => setIsDarkMode(!isDarkMode)}
-                        className="p-1.5 rounded-lg text-slate-400 hover:bg-white/10 hover:text-white transition-all"
+                        className="w-10 h-10 flex items-center justify-center rounded-xl text-slate-400 hover:bg-white/10 hover:text-white transition-all"
                     >
-                        {isDarkMode ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+                        {isDarkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
                     </button>
                 </div>
             </div>
@@ -606,52 +608,32 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
                     </div>
                 )}
 
-                {/* LEFT TOOLBAR */}
-                <div className={`w-12 ${isDarkMode ? 'bg-slate-800/50 border-slate-700/30' : 'bg-gray-50 border-gray-200'} border-r flex flex-col items-center py-2 gap-1 shrink-0`}>
-                    <ToolBtn onClick={fitToView} title="Về góc nhìn mặc định (Home)">
-                        <Home className="w-4 h-4" />
-                    </ToolBtn>
-                    <ToolBtn onClick={fitToView} title="Zoom vừa màn hình (F)" disabled={!modelLoaded}>
-                        <Focus className="w-4 h-4" />
-                    </ToolBtn>
+                {/* LEFT TOOLBAR - Hidden on iPad, show on desktop only */}
+                {!isTablet && !isMobile && (
+                    <div className={`w-14 ${isDarkMode ? 'bg-slate-800/50 border-slate-700/30' : 'bg-gray-50 border-gray-200'} border-r flex flex-col items-center py-3 gap-2 shrink-0`}>
+                        <ToolBtn onClick={fitToView} title="Fit to View" size="sm">
+                            <Home className="w-5 h-5" />
+                        </ToolBtn>
+                        <ToolBtn onClick={fitToView} title="Focus" disabled={!modelLoaded} size="sm">
+                            <Focus className="w-5 h-5" />
+                        </ToolBtn>
 
-                    <div className="h-px w-6 bg-slate-700/50 my-1" />
+                        <div className="h-px w-8 bg-slate-700/50 my-1" />
 
-                    <ToolBtn
-                        active={sectionEnabled}
-                        onClick={toggleSection}
-                        title="Cắt mặt bằng (C)"
-                        disabled={!modelLoaded}
-                    >
-                        <Slice className="w-4 h-4" />
-                    </ToolBtn>
-                    <ToolBtn title="Đo khoảng cách (M)" disabled={!modelLoaded}>
-                        <Ruler className="w-4 h-4" />
-                    </ToolBtn>
+                        <ToolBtn active={sectionEnabled} onClick={toggleSection} title="Section" disabled={!modelLoaded} size="sm">
+                            <Slice className="w-5 h-5" />
+                        </ToolBtn>
+                        <ToolBtn title="Measure" disabled={!modelLoaded} size="sm">
+                            <Ruler className="w-5 h-5" />
+                        </ToolBtn>
 
-                    <div className="h-px w-6 bg-slate-700/50 my-1" />
+                        <div className="flex-1" />
 
-                    <ToolBtn
-                        active={showModelTree}
-                        onClick={() => setShowModelTree(!showModelTree)}
-                        title="Cây model (T)"
-                    >
-                        <List className="w-4 h-4" />
-                    </ToolBtn>
-                    <ToolBtn
-                        active={showProperties}
-                        onClick={() => setShowProperties(!showProperties)}
-                        title="Properties (P)"
-                    >
-                        <Info className="w-4 h-4" />
-                    </ToolBtn>
-
-                    <div className="flex-1" />
-
-                    <ToolBtn title="Cài đặt">
-                        <Settings2 className="w-4 h-4" />
-                    </ToolBtn>
-                </div>
+                        <ToolBtn onClick={() => setIsDarkMode(!isDarkMode)} title="Theme" size="sm">
+                            {isDarkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+                        </ToolBtn>
+                    </div>
+                )}
 
                 {/* 3D CANVAS */}
                 <div className="flex-1 relative">
@@ -745,12 +727,66 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
                     )}
 
                     {/* View indicator */}
-                    <div className="absolute bottom-3 left-3 text-[10px] text-slate-500 uppercase tracking-widest font-mono">
+                    <div className="absolute top-4 left-4 text-[11px] text-slate-400 uppercase tracking-widest font-mono bg-slate-800/60 backdrop-blur-sm px-3 py-1.5 rounded-lg">
                         {activeView.toUpperCase()} VIEW
                     </div>
 
-                    {/* Zoom controls */}
-                    <div className="absolute bottom-3 right-28 flex flex-col gap-1">
+                    {/* FLOATING ACTION BAR - iPad Optimized */}
+                    <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-2 p-2 bg-slate-900/80 backdrop-blur-xl rounded-2xl border border-slate-700/50 shadow-2xl">
+                        {/* Navigation Group */}
+                        <div className="flex items-center gap-1.5">
+                            <ToolBtn onClick={fitToView} title="Fit to View" size="md">
+                                <Home className="w-5 h-5" />
+                            </ToolBtn>
+                            <ToolBtn onClick={() => setCameraView('iso')} active={activeView === 'iso'} title="3D View" size="md">
+                                <Box className="w-5 h-5" />
+                            </ToolBtn>
+                        </div>
+
+                        <div className="w-px h-8 bg-slate-700" />
+
+                        {/* Tools Group */}
+                        <div className="flex items-center gap-1.5">
+                            <ToolBtn active={sectionEnabled} onClick={toggleSection} title="Section Cut" disabled={!modelLoaded} size="md">
+                                <Slice className="w-5 h-5" />
+                            </ToolBtn>
+                            <ToolBtn title="Measure" disabled={!modelLoaded} size="md">
+                                <Ruler className="w-5 h-5" />
+                            </ToolBtn>
+                        </div>
+
+                        <div className="w-px h-8 bg-slate-700" />
+
+                        {/* Panels Group */}
+                        <div className="flex items-center gap-1.5">
+                            <ToolBtn active={showModelTree} onClick={() => setShowModelTree(!showModelTree)} title="Model Tree" size="md">
+                                <Layers className="w-5 h-5" />
+                            </ToolBtn>
+                            <ToolBtn active={showProperties} onClick={() => setShowProperties(!showProperties)} title="Properties" size="md">
+                                <Info className="w-5 h-5" />
+                            </ToolBtn>
+                        </div>
+
+                        <div className="w-px h-8 bg-slate-700" />
+
+                        {/* Upload Button - Primary Action */}
+                        <label className={`w-12 h-12 flex items-center justify-center rounded-xl cursor-pointer transition-all ${status === 'loading'
+                            ? 'bg-slate-700/50 text-slate-500 cursor-not-allowed'
+                            : 'bg-gradient-to-br from-blue-500 to-cyan-500 text-white shadow-lg shadow-blue-500/30 hover:shadow-blue-500/50 active:scale-95'
+                            }`}>
+                            <Upload className="w-5 h-5" />
+                            <input
+                                type="file"
+                                accept=".ifc"
+                                className="hidden"
+                                onChange={handleFileUpload}
+                                disabled={status === 'loading'}
+                            />
+                        </label>
+                    </div>
+
+                    {/* Zoom Controls - Right Side */}
+                    <div className="absolute bottom-4 right-4 flex flex-col gap-1.5">
                         <button
                             onClick={() => {
                                 if (viewerRef.current) {
@@ -761,9 +797,9 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
                                     camera.eye = [look[0] + dir[0] * 0.8, look[1] + dir[1] * 0.8, look[2] + dir[2] * 0.8];
                                 }
                             }}
-                            className="p-2 bg-slate-800/80 hover:bg-slate-700 rounded-lg text-slate-400 hover:text-white transition-all border border-slate-700/50"
+                            className="w-11 h-11 flex items-center justify-center bg-slate-800/80 hover:bg-slate-700 rounded-xl text-slate-300 hover:text-white transition-all border border-slate-700/50 backdrop-blur-sm active:scale-95"
                         >
-                            <ZoomIn className="w-4 h-4" />
+                            <Plus className="w-5 h-5" />
                         </button>
                         <button
                             onClick={() => {
@@ -775,9 +811,9 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
                                     camera.eye = [look[0] + dir[0] * 1.2, look[1] + dir[1] * 1.2, look[2] + dir[2] * 1.2];
                                 }
                             }}
-                            className="p-2 bg-slate-800/80 hover:bg-slate-700 rounded-lg text-slate-400 hover:text-white transition-all border border-slate-700/50"
+                            className="w-11 h-11 flex items-center justify-center bg-slate-800/80 hover:bg-slate-700 rounded-xl text-slate-300 hover:text-white transition-all border border-slate-700/50 backdrop-blur-sm active:scale-95"
                         >
-                            <ZoomOut className="w-4 h-4" />
+                            <Minus className="w-5 h-5" />
                         </button>
                     </div>
                 </div>
