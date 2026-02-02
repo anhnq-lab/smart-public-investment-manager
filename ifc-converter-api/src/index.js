@@ -73,16 +73,27 @@ const { convert2xkt } = require('@xeokit/xeokit-convert');
 const WebIFC = require('web-ifc');
 
 // Convert IFC to XKT using @xeokit/xeokit-convert API
-async function runConvertIFCtoXKT(inputPath, outputPath, jobId) {
+async function runConvertIFCtoXKT(inputPath, outputPath, jobId, onProgress) {
     console.log(`[${jobId}] Starting conversion with WebIFC...`);
+
+    if (onProgress) onProgress(20, 'loading_ifc');
 
     await convert2xkt({
         WebIFC,  // Required for IFC conversion per xeokit docs
         source: inputPath,
         output: outputPath,
-        log: (msg) => console.log(`[${jobId}] ${msg}`)
+        log: (msg) => {
+            console.log(`[${jobId}] ${msg}`);
+            // Update progress based on log messages
+            if (msg.includes('Converting')) {
+                if (onProgress) onProgress(40, 'converting');
+            } else if (msg.includes('Writing')) {
+                if (onProgress) onProgress(80, 'writing_xkt');
+            }
+        }
     });
 
+    if (onProgress) onProgress(95, 'finalizing');
     console.log(`[${jobId}] Conversion completed: ${outputPath}`);
 }
 
@@ -97,15 +108,20 @@ app.post('/convert', upload.single('file'), async (req, res) => {
     const outputFileName = `${jobId}.xkt`;
     const outputPath = path.join(OUTPUT_DIR, outputFileName);
 
-    // Store job info
+    // Store job info with file size
+    const inputFileSize = req.file.size;
     jobs.set(jobId, {
         status: 'processing',
         originalName: req.file.originalname,
+        inputFileSize,
         inputPath,
         outputPath,
         startedAt: new Date().toISOString(),
-        progress: 0
+        progress: 0,
+        stage: 'uploading'
     });
+
+    console.log(`[${jobId}] File received: ${req.file.originalname} (${(inputFileSize / 1024 / 1024).toFixed(2)} MB)`);
 
     // Return job ID immediately
     res.json({
@@ -120,9 +136,14 @@ app.post('/convert', upload.single('file'), async (req, res) => {
     try {
         console.log(`[${jobId}] Starting conversion: ${req.file.originalname}`);
 
-        jobs.set(jobId, { ...jobs.get(jobId), progress: 20 });
+        // Progress callback for large files
+        const updateProgress = (progress, stage) => {
+            jobs.set(jobId, { ...jobs.get(jobId), progress, stage });
+        };
 
-        await runConvertIFCtoXKT(inputPath, outputPath, jobId);
+        updateProgress(10, 'parsing');
+
+        await runConvertIFCtoXKT(inputPath, outputPath, jobId, updateProgress);
 
         // Verify output exists
         if (!fs.existsSync(outputPath)) {
@@ -165,13 +186,21 @@ app.get('/status/:jobId', (req, res) => {
         return res.status(404).json({ error: 'Job not found' });
     }
 
+    // Calculate elapsed time
+    const startTime = new Date(job.startedAt).getTime();
+    const elapsed = Math.floor((Date.now() - startTime) / 1000);
+
     res.json({
         jobId,
         status: job.status,
         progress: job.progress,
+        stage: job.stage,
         originalName: job.originalName,
+        inputFileSize: job.inputFileSize,
+        outputFileSize: job.fileSize,
         startedAt: job.startedAt,
         completedAt: job.completedAt,
+        elapsedSeconds: elapsed,
         error: job.error,
         downloadUrl: job.status === 'completed' ? `/download/${jobId}` : null
     });

@@ -231,7 +231,13 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
 
         setFileName(file.name);
         setStatus('loading');
-        setStatusMessage(`Đang upload "${file.name}" (${fileSizeMB.toFixed(1)}MB)...`);
+
+        // Warn for large files
+        if (fileSizeMB > 50) {
+            setStatusMessage(`⚠️ File lớn (${fileSizeMB.toFixed(1)}MB) - có thể mất 2-5 phút...`);
+        } else {
+            setStatusMessage(`Đang upload "${file.name}" (${fileSizeMB.toFixed(1)}MB)...`);
+        }
         setLoadingProgress(0);
 
         try {
@@ -253,10 +259,19 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
             setStatusMessage(`Đang convert "${file.name}" sang XKT...`);
             setLoadingProgress(30);
 
-            // Step 2: Poll for conversion status
+            // Step 2: Poll for conversion status - 10 min timeout for large files
             let xktUrl = '';
             let attempts = 0;
-            const maxAttempts = 60; // 2 minutes max
+            const maxAttempts = 300; // 10 minutes max (2s intervals)
+
+            const stageLabels: Record<string, string> = {
+                'uploading': 'Uploading...',
+                'parsing': 'Đang phân tích IFC...',
+                'loading_ifc': 'Đang load IFC...',
+                'converting': 'Đang convert 3D geometry...',
+                'writing_xkt': 'Đang tạo file XKT...',
+                'finalizing': 'Đang hoàn thành...',
+            };
 
             while (attempts < maxAttempts) {
                 const statusResponse = await fetch(`${IFC_CONVERTER_API}/status/${conversionId}`);
@@ -269,14 +284,23 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
                     throw new Error(statusData.error || 'Conversion failed');
                 }
 
-                // Update progress
-                setLoadingProgress(30 + Math.min(attempts * 1, 50));
+                // Use actual backend progress
+                const backendProgress = statusData.progress || 0;
+                const mappedProgress = 20 + Math.floor(backendProgress * 0.6); // 20-80%
+                setLoadingProgress(mappedProgress);
+
+                // Show stage info
+                const stage = statusData.stage || 'processing';
+                const stageLabel = stageLabels[stage] || 'Đang xử lý...';
+                const elapsed = statusData.elapsedSeconds || 0;
+                setStatusMessage(`${stageLabel} (${elapsed}s)`);
+
                 await new Promise(resolve => setTimeout(resolve, 2000));
                 attempts++;
             }
 
             if (!xktUrl) {
-                throw new Error('Conversion timeout - vui lòng thử lại');
+                throw new Error('Conversion timeout (10 phút) - file quá lớn hoặc server quá tải');
             }
 
             setStatusMessage(`Đang tải mô hình 3D...`);
