@@ -1,590 +1,328 @@
 import React, { useRef, useEffect, useState, useCallback } from 'react';
-import * as THREE from 'three';
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+import { Viewer } from '@xeokit/xeokit-sdk/src/viewer/Viewer';
+import { WebIFCLoaderPlugin } from '@xeokit/xeokit-sdk/src/plugins/WebIFCLoaderPlugin/WebIFCLoaderPlugin';
+import { NavCubePlugin } from '@xeokit/xeokit-sdk/src/plugins/NavCubePlugin/NavCubePlugin';
+import { TreeViewPlugin } from '@xeokit/xeokit-sdk/src/plugins/TreeViewPlugin/TreeViewPlugin';
+import { SectionPlanesPlugin } from '@xeokit/xeokit-sdk/src/plugins/SectionPlanesPlugin/SectionPlanesPlugin';
 import {
     Box, Maximize2, RotateCcw, Loader2, Upload, Eye, EyeOff,
     Layers, X, ChevronRight, ChevronDown, Ruler, ZoomIn, ZoomOut,
     ArrowUp, ArrowRight as ArrowRightIcon, List, Square, RotateCw,
     MousePointer, Grid3X3, Slice, Target, Home, Move, Crosshair,
     Focus, Settings2, Info, Building2, Cuboid, Minus, Plus,
-    PanelLeftClose, PanelRightClose, Maximize, Minimize2, Camera,
-    Download, Share2, MessageSquare, Bookmark, Sun, Moon, Palette
+    PanelLeftClose, PanelRightClose, Sun, Moon, AlertCircle, CheckCircle
 } from 'lucide-react';
 
 interface ProjectBimTabProps {
     projectID: string;
 }
 
-interface ModelObject {
+interface SelectedElement {
     id: string;
     name: string;
     type: string;
-    visible: boolean;
-    children?: ModelObject[];
-    mesh?: THREE.Object3D;
-    color?: number;
+    properties: Record<string, any>;
 }
 
-const IFC_COLORS: { [key: string]: number } = {
-    IfcProject: 0x6366f1,
-    IfcSite: 0x22c55e,
-    IfcBuilding: 0x3b82f6,
-    IfcBuildingStorey: 0x8b5cf6,
-    IfcFooting: 0x6b7280,
-    IfcColumn: 0x78716c,
-    IfcSlab: 0xd1d5db,
-    IfcWall: 0xfef3c7,
-    IfcWindow: 0x22d3ee,
-    IfcDoor: 0x92400e,
-    IfcRoof: 0xef4444,
-    IfcBeam: 0x9ca3af,
-    IfcStair: 0xe5e7eb,
-    IfcRailing: 0xa3a3a3,
-    IfcCurtainWall: 0x67e8f9,
-    IfcPlate: 0xfbbf24,
-    IfcMember: 0x84cc16,
-    IfcSpace: 0xc4b5fd,
-};
+type LoadStatus = 'idle' | 'initializing' | 'loading' | 'processing' | 'success' | 'error';
 
 export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
-    const containerRef = useRef<HTMLDivElement>(null);
-    const sceneRef = useRef<THREE.Scene | null>(null);
-    const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
-    const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
-    const controlsRef = useRef<OrbitControls | null>(null);
-    const clippingPlaneRef = useRef<THREE.Plane | null>(null);
-    const outlineRef = useRef<THREE.LineSegments | null>(null);
-    const buildingRef = useRef<THREE.Group | null>(null);
+    const canvasRef = useRef<HTMLCanvasElement>(null);
+    const navCubeCanvasRef = useRef<HTMLCanvasElement>(null);
+    const treeContainerRef = useRef<HTMLDivElement>(null);
 
-    const [isLoading, setIsLoading] = useState(false);
+    const viewerRef = useRef<Viewer | null>(null);
+    const ifcLoaderRef = useRef<WebIFCLoaderPlugin | null>(null);
+    const sectionPlanesRef = useRef<SectionPlanesPlugin | null>(null);
+
+    const [status, setStatus] = useState<LoadStatus>('initializing');
+    const [statusMessage, setStatusMessage] = useState('Đang khởi tạo viewer...');
+    const [loadingProgress, setLoadingProgress] = useState(0);
     const [modelLoaded, setModelLoaded] = useState(false);
-    const [selectedObject, setSelectedObject] = useState<any>(null);
-    const [showGrid, setShowGrid] = useState(true);
+    const [selectedElement, setSelectedElement] = useState<SelectedElement | null>(null);
     const [showModelTree, setShowModelTree] = useState(true);
     const [showProperties, setShowProperties] = useState(true);
-    const [modelTree, setModelTree] = useState<ModelObject[]>([]);
-    const [expandedNodes, setExpandedNodes] = useState<Set<string>>(new Set(['project', 'site', 'building', 'storey1', 'storey2', 'storey3']));
     const [sectionEnabled, setSectionEnabled] = useState(false);
-    const [sectionHeight, setSectionHeight] = useState(8);
-    const [objectCount, setObjectCount] = useState({ elements: 0, types: 0 });
-    const [activeView, setActiveView] = useState('3d');
-    const [activeTool, setActiveTool] = useState('select');
+    const [objectCount, setObjectCount] = useState(0);
+    const [activeView, setActiveView] = useState('iso');
     const [isDarkMode, setIsDarkMode] = useState(true);
-    const [isFullscreen, setIsFullscreen] = useState(false);
-    const [hoveredObject, setHoveredObject] = useState<string | null>(null);
-    const [fileName, setFileName] = useState<string>('');
-    const [uploadProgress, setUploadProgress] = useState(0);
+    const [fileName, setFileName] = useState('');
+    const [viewerReady, setViewerReady] = useState(false);
 
-    // Initialize Three.js scene
+    // Initialize xeokit viewer
     useEffect(() => {
-        if (!containerRef.current) return;
+        if (!canvasRef.current) return;
 
-        const scene = new THREE.Scene();
-        scene.background = new THREE.Color(isDarkMode ? 0x1e293b : 0xf1f5f9);
-        sceneRef.current = scene;
+        try {
+            setStatus('initializing');
+            setStatusMessage('Đang khởi tạo xeokit viewer...');
 
-        const camera = new THREE.PerspectiveCamera(
-            50,
-            containerRef.current.clientWidth / containerRef.current.clientHeight,
-            0.1,
-            2000
-        );
-        camera.position.set(40, 30, 45);
-        camera.lookAt(0, 8, 0);
-        cameraRef.current = camera;
+            // Create viewer
+            const viewer = new Viewer({
+                canvasId: canvasRef.current.id,
+                transparent: false,
+                saoEnabled: true,
+                pbrEnabled: false,
+            });
 
-        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-        renderer.setSize(containerRef.current.clientWidth, containerRef.current.clientHeight);
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-        renderer.shadowMap.enabled = true;
-        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-        renderer.localClippingEnabled = true;
-        renderer.toneMapping = THREE.ACESFilmicToneMapping;
-        renderer.toneMappingExposure = 1.2;
-        containerRef.current.appendChild(renderer.domElement);
-        rendererRef.current = renderer;
+            // Set initial camera
+            viewer.scene.camera.eye = [50, 35, 50];
+            viewer.scene.camera.look = [0, 5, 0];
+            viewer.scene.camera.up = [0, 1, 0];
 
-        const clippingPlane = new THREE.Plane(new THREE.Vector3(0, -1, 0), 100);
-        clippingPlaneRef.current = clippingPlane;
+            // Background
+            viewer.scene.canvas.canvas.style.background = isDarkMode
+                ? 'linear-gradient(180deg, #1e293b 0%, #0f172a 100%)'
+                : 'linear-gradient(180deg, #f1f5f9 0%, #e2e8f0 100%)';
 
-        const controls = new OrbitControls(camera, renderer.domElement);
-        controls.enableDamping = true;
-        controls.dampingFactor = 0.08;
-        controls.screenSpacePanning = true;
-        controls.minDistance = 5;
-        controls.maxDistance = 300;
-        controls.maxPolarAngle = Math.PI / 2.05;
-        controls.target.set(0, 8, 0);
-        controlsRef.current = controls;
+            viewerRef.current = viewer;
 
-        // Lighting
-        scene.add(new THREE.AmbientLight(0xffffff, 0.5));
-        scene.add(new THREE.HemisphereLight(0x87ceeb, 0x3d5c3d, 0.4));
-
-        const sun = new THREE.DirectionalLight(0xffffff, 1.8);
-        sun.position.set(50, 80, 50);
-        sun.castShadow = true;
-        sun.shadow.mapSize.set(4096, 4096);
-        sun.shadow.camera.near = 0.5;
-        sun.shadow.camera.far = 250;
-        sun.shadow.camera.left = sun.shadow.camera.bottom = -80;
-        sun.shadow.camera.right = sun.shadow.camera.top = 80;
-        sun.shadow.bias = -0.0001;
-        scene.add(sun);
-
-        const fillLight = new THREE.DirectionalLight(0xffffff, 0.3);
-        fillLight.position.set(-30, 20, -40);
-        scene.add(fillLight);
-
-        // Grid
-        const grid = new THREE.GridHelper(150, 75, 0x64748b, 0x475569);
-        grid.name = 'gridHelper';
-        grid.position.y = 0.01;
-        scene.add(grid);
-
-        // Ground plane
-        const groundGeo = new THREE.PlaneGeometry(400, 400);
-        const groundMat = new THREE.MeshStandardMaterial({
-            color: isDarkMode ? 0x374151 : 0xe2e8f0,
-            roughness: 0.95,
-            metalness: 0
-        });
-        const ground = new THREE.Mesh(groundGeo, groundMat);
-        ground.rotation.x = -Math.PI / 2;
-        ground.position.y = 0;
-        ground.receiveShadow = true;
-        ground.name = 'Ground';
-        scene.add(ground);
-
-        // Animation loop
-        const animate = () => {
-            requestAnimationFrame(animate);
-            controls.update();
-            renderer.render(scene, camera);
-        };
-        animate();
-
-        // Resize handler
-        const handleResize = () => {
-            if (!containerRef.current) return;
-            const w = containerRef.current.clientWidth;
-            const h = containerRef.current.clientHeight;
-            if (w > 0 && h > 0) {
-                camera.aspect = w / h;
-                camera.updateProjectionMatrix();
-                renderer.setSize(w, h, false);
+            // Add NavCube
+            if (navCubeCanvasRef.current) {
+                new NavCubePlugin(viewer, {
+                    canvasId: navCubeCanvasRef.current.id,
+                    visible: true,
+                    size: 250,
+                    alignment: 'bottomRight',
+                    bottomMargin: 80,
+                    rightMargin: 10,
+                });
             }
-        };
-        window.addEventListener('resize', handleResize);
-        setTimeout(handleResize, 100);
+
+            // Add WebIFC Loader
+            const ifcLoader = new WebIFCLoaderPlugin(viewer, {
+                wasmPath: '/wasm/',
+            });
+            ifcLoaderRef.current = ifcLoader;
+
+            // Add Section Planes
+            const sectionPlanes = new SectionPlanesPlugin(viewer, {
+                overviewVisible: false,
+            });
+            sectionPlanesRef.current = sectionPlanes;
+
+            // Add TreeView
+            if (treeContainerRef.current) {
+                new TreeViewPlugin(viewer, {
+                    containerElement: treeContainerRef.current,
+                    autoExpandDepth: 2,
+                    hierarchy: 'types',
+                });
+            }
+
+            // Handle element picking
+            viewer.scene.input.on('picked', (hit: any) => {
+                if (hit && hit.entity) {
+                    const entity = hit.entity;
+                    const metaObject = viewer.metaScene.metaObjects[entity.id];
+
+                    setSelectedElement({
+                        id: entity.id,
+                        name: metaObject?.name || entity.id,
+                        type: metaObject?.type || 'Unknown',
+                        properties: metaObject?.propertySets?.[0]?.properties || {},
+                    });
+
+                    // Highlight selected
+                    viewer.scene.setObjectsHighlighted(viewer.scene.highlightedObjectIds, false);
+                    entity.highlighted = true;
+                }
+            });
+
+            viewer.scene.input.on('pickedNothing', () => {
+                setSelectedElement(null);
+                viewer.scene.setObjectsHighlighted(viewer.scene.highlightedObjectIds, false);
+            });
+
+            setViewerReady(true);
+            setStatus('idle');
+            setStatusMessage('');
+
+        } catch (error: any) {
+            console.error('Viewer init error:', error);
+            setStatus('error');
+            setStatusMessage(`Lỗi khởi tạo: ${error.message}`);
+        }
 
         return () => {
-            window.removeEventListener('resize', handleResize);
-            if (containerRef.current?.contains(renderer.domElement)) {
-                containerRef.current.removeChild(renderer.domElement);
+            if (viewerRef.current) {
+                viewerRef.current.destroy();
             }
-            renderer.dispose();
         };
     }, [isDarkMode]);
 
-    // Create demo building (like in BIMcollab)
-    const createDemoBuilding = useCallback(() => {
-        if (!sceneRef.current || !clippingPlaneRef.current) return;
-
-        // Remove existing building
-        if (buildingRef.current) {
-            sceneRef.current.remove(buildingRef.current);
-        }
-
-        const building = new THREE.Group();
-        building.name = 'DemoBuilding';
-        buildingRef.current = building;
-
-        const tree: ModelObject[] = [];
-        let elementCount = 0;
-        const clip = clippingPlaneRef.current;
-
-        const mat = (color: number, opts: any = {}) => new THREE.MeshStandardMaterial({
-            color,
-            clippingPlanes: [clip],
-            clipShadows: true,
-            roughness: opts.roughness || 0.6,
-            metalness: opts.metalness || 0.1,
-            transparent: opts.transparent || false,
-            opacity: opts.opacity || 1,
-            ...opts
-        });
-
-        // Project structure
-        const projectTree: ModelObject = { id: 'project', name: 'Trường Chính trị Trần Phú', type: 'IfcProject', visible: true, children: [] };
-        const siteTree: ModelObject = { id: 'site', name: 'Khu đất xây dựng', type: 'IfcSite', visible: true, children: [] };
-        const buildingTree: ModelObject = { id: 'building', name: 'Tòa nhà chính', type: 'IfcBuilding', visible: true, children: [] };
-
-        // Foundation
-        const foundationGeo = new THREE.BoxGeometry(30, 1.5, 20);
-        const foundation = new THREE.Mesh(foundationGeo, mat(IFC_COLORS.IfcFooting));
-        foundation.position.set(0, 0.75, 0);
-        foundation.receiveShadow = foundation.castShadow = true;
-        foundation.name = 'Móng băng BTCT';
-        foundation.userData = {
-            ifcClass: 'IfcFooting',
-            ifcType: 'STRIP_FOOTING',
-            guid: 'F001-' + Math.random().toString(36).substr(2, 8).toUpperCase(),
-            material: 'Bê tông M350',
-            dimensions: '30m x 20m x 1.5m',
-            volume: '900 m³'
-        };
-        building.add(foundation);
-        elementCount++;
-
-        // Create storeys
-        const storeyHeight = 4;
-        const numStoreys = 4;
-
-        for (let s = 0; s < numStoreys; s++) {
-            const storeyTree: ModelObject = {
-                id: `storey${s + 1}`,
-                name: `Tầng ${s === 0 ? 'Trệt' : s}`,
-                type: 'IfcBuildingStorey',
-                visible: true,
-                children: []
-            };
-
-            const baseY = 1.5 + s * storeyHeight;
-
-            // Columns
-            const colGroup: ModelObject = { id: `cols-${s}`, name: 'Cột', type: 'IfcColumn', visible: true, children: [] };
-            const colGeo = new THREE.BoxGeometry(0.5, storeyHeight - 0.3, 0.5);
-            const colPositions = [
-                [-14, 8], [-7, 8], [0, 8], [7, 8], [14, 8],
-                [-14, 0], [0, 0], [14, 0],
-                [-14, -8], [-7, -8], [0, -8], [7, -8], [14, -8]
-            ];
-
-            colPositions.forEach(([x, z], i) => {
-                const col = new THREE.Mesh(colGeo, mat(IFC_COLORS.IfcColumn));
-                col.position.set(x, baseY + (storeyHeight - 0.3) / 2, z);
-                col.castShadow = true;
-                col.name = `Cột C${s + 1}-${i + 1}`;
-                col.userData = {
-                    ifcClass: 'IfcColumn',
-                    ifcType: 'COLUMN',
-                    guid: `C${s}${i}-` + Math.random().toString(36).substr(2, 8).toUpperCase(),
-                    material: 'BTCT M400',
-                    dimensions: '500mm x 500mm',
-                    storey: s === 0 ? 'Trệt' : `Tầng ${s}`
-                };
-                building.add(col);
-                elementCount++;
-                colGroup.children!.push({ id: `c${s}${i}`, name: col.name, type: 'IfcColumn', visible: true, mesh: col });
-            });
-            storeyTree.children!.push(colGroup);
-
-            // Slab
-            const slabGeo = new THREE.BoxGeometry(29, 0.3, 19);
-            const slab = new THREE.Mesh(slabGeo, mat(IFC_COLORS.IfcSlab));
-            slab.position.set(0, baseY + storeyHeight, 0);
-            slab.receiveShadow = slab.castShadow = true;
-            slab.name = `Sàn ${s === 0 ? 'tầng 1' : s === numStoreys - 1 ? 'mái' : `tầng ${s + 1}`}`;
-            slab.userData = {
-                ifcClass: 'IfcSlab',
-                ifcType: s === numStoreys - 1 ? 'ROOF' : 'FLOOR',
-                guid: `S${s}-` + Math.random().toString(36).substr(2, 8).toUpperCase(),
-                material: 'BTCT M300',
-                thickness: '300mm',
-                area: '551 m²'
-            };
-            building.add(slab);
-            elementCount++;
-            storeyTree.children!.push({ id: `slab${s}`, name: slab.name, type: 'IfcSlab', visible: true, mesh: slab });
-
-            // Walls
-            const wallGroup: ModelObject = { id: `walls-${s}`, name: 'Tường', type: 'IfcWall', visible: true, children: [] };
-            const wallConfigs = [
-                { pos: [0, baseY + storeyHeight / 2, 9.35], size: [28, storeyHeight - 0.3, 0.22], name: 'Tường mặt tiền' },
-                { pos: [0, baseY + storeyHeight / 2, -9.35], size: [28, storeyHeight - 0.3, 0.22], name: 'Tường mặt sau' },
-                { pos: [-14.35, baseY + storeyHeight / 2, 0], size: [0.22, storeyHeight - 0.3, 18], name: 'Tường trái' },
-                { pos: [14.35, baseY + storeyHeight / 2, 0], size: [0.22, storeyHeight - 0.3, 18], name: 'Tường phải' },
-            ];
-
-            wallConfigs.forEach((cfg, i) => {
-                const wallGeo = new THREE.BoxGeometry(cfg.size[0], cfg.size[1], cfg.size[2]);
-                const wall = new THREE.Mesh(wallGeo, mat(IFC_COLORS.IfcWall));
-                wall.position.set(cfg.pos[0], cfg.pos[1], cfg.pos[2]);
-                wall.castShadow = wall.receiveShadow = true;
-                wall.name = `${cfg.name} T${s + 1}`;
-                wall.userData = {
-                    ifcClass: 'IfcWall',
-                    ifcType: 'STANDARD',
-                    guid: `W${s}${i}-` + Math.random().toString(36).substr(2, 8).toUpperCase(),
-                    material: 'Gạch Ceramic 220mm',
-                    thickness: '220mm'
-                };
-                building.add(wall);
-                elementCount++;
-                wallGroup.children!.push({ id: `w${s}${i}`, name: wall.name, type: 'IfcWall', visible: true, mesh: wall });
-            });
-            storeyTree.children!.push(wallGroup);
-
-            // Windows
-            const winGroup: ModelObject = { id: `wins-${s}`, name: 'Cửa sổ', type: 'IfcWindow', visible: true, children: [] };
-            const glassMat = mat(IFC_COLORS.IfcWindow, { transparent: true, opacity: 0.35, roughness: 0.05, metalness: 0.9 });
-
-            [-10, -5, 0, 5, 10].forEach((x, i) => {
-                const winGeo = new THREE.BoxGeometry(2.5, 2, 0.1);
-                const win = new THREE.Mesh(winGeo, glassMat);
-                win.position.set(x, baseY + storeyHeight / 2 + 0.3, 9.5);
-                win.name = `Cửa sổ T${s + 1}-${i + 1}`;
-                win.userData = {
-                    ifcClass: 'IfcWindow',
-                    ifcType: 'WINDOW',
-                    guid: `WIN${s}${i}-` + Math.random().toString(36).substr(2, 8).toUpperCase(),
-                    material: 'Kính Low-E 12mm',
-                    dimensions: '2500mm x 2000mm'
-                };
-                building.add(win);
-                elementCount++;
-                winGroup.children!.push({ id: `win${s}${i}`, name: win.name, type: 'IfcWindow', visible: true, mesh: win });
-            });
-            storeyTree.children!.push(winGroup);
-
-            // Doors (only on ground floor)
-            if (s === 0) {
-                const doorGroup: ModelObject = { id: `doors-${s}`, name: 'Cửa', type: 'IfcDoor', visible: true, children: [] };
-                const doorGeo = new THREE.BoxGeometry(2, 3, 0.15);
-                const door = new THREE.Mesh(doorGeo, mat(IFC_COLORS.IfcDoor));
-                door.position.set(0, baseY + 1.5, 9.5);
-                door.name = 'Cửa chính';
-                door.userData = {
-                    ifcClass: 'IfcDoor',
-                    ifcType: 'DOOR',
-                    guid: 'DOOR-' + Math.random().toString(36).substr(2, 8).toUpperCase(),
-                    material: 'Gỗ công nghiệp',
-                    dimensions: '2000mm x 3000mm'
-                };
-                building.add(door);
-                elementCount++;
-                doorGroup.children!.push({ id: 'door0', name: door.name, type: 'IfcDoor', visible: true, mesh: door });
-                storeyTree.children!.push(doorGroup);
-            }
-
-            buildingTree.children!.push(storeyTree);
-        }
-
-        // Roof structure
-        const roofGeo = new THREE.BoxGeometry(31, 0.6, 21);
-        const roof = new THREE.Mesh(roofGeo, mat(IFC_COLORS.IfcRoof, { roughness: 0.4 }));
-        roof.position.set(0, 1.5 + numStoreys * storeyHeight + 0.3, 0);
-        roof.castShadow = roof.receiveShadow = true;
-        roof.name = 'Mái BTCT chống thấm';
-        roof.userData = {
-            ifcClass: 'IfcRoof',
-            ifcType: 'FLAT_ROOF',
-            guid: 'ROOF-' + Math.random().toString(36).substr(2, 8).toUpperCase(),
-            material: 'BTCT + Chống thấm Sika',
-            slope: '2%'
-        };
-        building.add(roof);
-        elementCount++;
-        buildingTree.children!.push({ id: 'roof', name: roof.name, type: 'IfcRoof', visible: true, mesh: roof });
-
-        // Add foundation to tree
-        buildingTree.children!.unshift({ id: 'foundation', name: foundation.name, type: 'IfcFooting', visible: true, mesh: foundation });
-
-        siteTree.children!.push(buildingTree);
-        projectTree.children!.push(siteTree);
-        tree.push(projectTree);
-
-        sceneRef.current.add(building);
-        setModelTree(tree);
-        setObjectCount({ elements: elementCount, types: Object.keys(IFC_COLORS).length });
-        setModelLoaded(true);
-
-    }, []);
-
     // Handle file upload
-    const handleFileUpload = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleFileUpload = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
-        if (!file) return;
+        if (!file || !ifcLoaderRef.current || !viewerRef.current) {
+            setStatus('error');
+            setStatusMessage('Viewer chưa sẵn sàng. Vui lòng tải lại trang.');
+            return;
+        }
+
+        // Validate file
+        if (!file.name.toLowerCase().endsWith('.ifc')) {
+            setStatus('error');
+            setStatusMessage('Định dạng không hợp lệ. Vui lòng chọn file .IFC');
+            return;
+        }
+
+        const fileSizeMB = file.size / (1024 * 1024);
+        if (fileSizeMB > 200) {
+            setStatus('error');
+            setStatusMessage(`File quá lớn (${fileSizeMB.toFixed(1)}MB). Giới hạn 200MB`);
+            return;
+        }
 
         setFileName(file.name);
-        setIsLoading(true);
-        setUploadProgress(0);
+        setStatus('loading');
+        setStatusMessage(`Đang tải "${file.name}" (${fileSizeMB.toFixed(1)}MB)...`);
+        setLoadingProgress(0);
 
-        // Simulate loading progress
-        const interval = setInterval(() => {
-            setUploadProgress(prev => {
-                if (prev >= 90) {
-                    clearInterval(interval);
-                    return 90;
-                }
-                return prev + Math.random() * 15;
+        try {
+            // Create object URL for the file
+            const fileUrl = URL.createObjectURL(file);
+
+            // Load the IFC model
+            const model = ifcLoaderRef.current.load({
+                id: `model-${Date.now()}`,
+                src: fileUrl,
+                edges: true,
+                excludeTypes: [], // Load all types
             });
-        }, 200);
 
-        // Load demo building after "processing"
-        setTimeout(() => {
-            clearInterval(interval);
-            setUploadProgress(100);
-            createDemoBuilding();
-            setIsLoading(false);
-        }, 2000);
-    }, [createDemoBuilding]);
+            // Track loading progress
+            let progressInterval = setInterval(() => {
+                setLoadingProgress(prev => {
+                    if (prev >= 90) {
+                        clearInterval(progressInterval);
+                        return 90;
+                    }
+                    return prev + Math.random() * 10;
+                });
+            }, 500);
 
-    // Highlight selected object
-    const highlightObject = useCallback((mesh: THREE.Object3D | null) => {
-        if (outlineRef.current && sceneRef.current) {
-            sceneRef.current.remove(outlineRef.current);
-            outlineRef.current = null;
-        }
-        if (mesh && mesh instanceof THREE.Mesh && sceneRef.current) {
-            const line = new THREE.LineSegments(
-                new THREE.EdgesGeometry(mesh.geometry),
-                new THREE.LineBasicMaterial({ color: 0x00fff7, linewidth: 3 })
-            );
-            line.position.copy(mesh.position);
-            line.rotation.copy(mesh.rotation);
-            line.scale.copy(mesh.scale);
-            sceneRef.current.add(line);
-            outlineRef.current = line;
+            model.on('loaded', () => {
+                clearInterval(progressInterval);
+                setLoadingProgress(100);
+                setModelLoaded(true);
+                setStatus('success');
+                setStatusMessage(`✓ Đã tải "${file.name}" thành công!`);
+
+                // Count objects
+                const count = Object.keys(viewerRef.current!.scene.objects).length;
+                setObjectCount(count);
+
+                // Fit camera to model
+                viewerRef.current!.cameraFlight.flyTo({
+                    aabb: model.aabb,
+                    duration: 1,
+                });
+
+                // Hide success message after 3s
+                setTimeout(() => {
+                    setStatus('idle');
+                    setStatusMessage('');
+                }, 3000);
+
+                // Cleanup URL
+                URL.revokeObjectURL(fileUrl);
+            });
+
+            model.on('error', (err: Error) => {
+                clearInterval(progressInterval);
+                console.error('IFC load error:', err);
+                setStatus('error');
+                setStatusMessage(`Lỗi load model: ${err.message || 'File không hợp lệ'}`);
+                URL.revokeObjectURL(fileUrl);
+            });
+
+        } catch (error: any) {
+            console.error('Upload error:', error);
+            setStatus('error');
+            setStatusMessage(`Lỗi: ${error.message}`);
         }
     }, []);
 
-    // Grid toggle
-    useEffect(() => {
-        if (sceneRef.current) {
-            const g = sceneRef.current.getObjectByName('gridHelper');
-            if (g) g.visible = showGrid;
-        }
-    }, [showGrid]);
-
-    // Section plane toggle
-    useEffect(() => {
-        if (clippingPlaneRef.current) {
-            clippingPlaneRef.current.constant = sectionEnabled ? sectionHeight : 100;
-        }
-    }, [sectionEnabled, sectionHeight]);
-
-    // Camera view presets
+    // Camera controls
     const setCameraView = useCallback((view: string) => {
-        if (!cameraRef.current || !controlsRef.current) return;
-        const d = 60;
-        const views: { [k: string]: [number, number, number] } = {
-            top: [0, d + 30, 0.01],
-            front: [0, 12, d],
-            back: [0, 12, -d],
-            right: [d, 12, 0],
-            left: [-d, 12, 0],
-            '3d': [40, 30, 45]
+        if (!viewerRef.current) return;
+
+        const aabb = viewerRef.current.scene.aabb;
+        const center = [
+            (aabb[0] + aabb[3]) / 2,
+            (aabb[1] + aabb[4]) / 2,
+            (aabb[2] + aabb[5]) / 2,
+        ];
+        const size = Math.max(aabb[3] - aabb[0], aabb[4] - aabb[1], aabb[5] - aabb[2]) || 50;
+        const distance = size * 1.5;
+
+        const views: Record<string, { eye: number[], up: number[] }> = {
+            top: { eye: [center[0], center[1] + distance, center[2] + 0.01], up: [0, 0, -1] },
+            front: { eye: [center[0], center[1], center[2] + distance], up: [0, 1, 0] },
+            right: { eye: [center[0] + distance, center[1], center[2]], up: [0, 1, 0] },
+            back: { eye: [center[0], center[1], center[2] - distance], up: [0, 1, 0] },
+            left: { eye: [center[0] - distance, center[1], center[2]], up: [0, 1, 0] },
+            iso: { eye: [center[0] + distance * 0.7, center[1] + distance * 0.5, center[2] + distance * 0.7], up: [0, 1, 0] },
         };
-        const pos = views[view] || views['3d'];
-        cameraRef.current.position.set(...pos);
-        controlsRef.current.target.set(0, 10, 0);
-        controlsRef.current.update();
+
+        const viewConfig = views[view] || views.iso;
+
+        viewerRef.current.cameraFlight.flyTo({
+            eye: viewConfig.eye,
+            look: center,
+            up: viewConfig.up,
+            duration: 0.8,
+        });
+
         setActiveView(view);
     }, []);
 
-    // Mouse click handler
-    useEffect(() => {
-        if (!containerRef.current || !sceneRef.current || !cameraRef.current) return;
+    // Toggle section plane
+    const toggleSection = useCallback(() => {
+        if (!sectionPlanesRef.current || !viewerRef.current) return;
 
-        const raycaster = new THREE.Raycaster();
-        const mouse = new THREE.Vector2();
+        if (sectionEnabled) {
+            sectionPlanesRef.current.clear();
+        } else {
+            const aabb = viewerRef.current.scene.aabb;
+            const centerY = (aabb[1] + aabb[4]) / 2;
 
-        const handleClick = (e: MouseEvent) => {
-            if (!containerRef.current || !sceneRef.current || !cameraRef.current) return;
-            const rect = containerRef.current.getBoundingClientRect();
-            mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
-            mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
-            raycaster.setFromCamera(mouse, cameraRef.current);
-
-            const building = buildingRef.current;
-            if (!building) return;
-
-            const hits = raycaster.intersectObjects(building.children, true);
-            if (hits.length > 0 && hits[0].object.name !== 'Ground') {
-                setSelectedObject({ name: hits[0].object.name, ...hits[0].object.userData });
-                highlightObject(hits[0].object);
-            } else {
-                setSelectedObject(null);
-                highlightObject(null);
-            }
-        };
-
-        containerRef.current.addEventListener('click', handleClick);
-        return () => containerRef.current?.removeEventListener('click', handleClick);
-    }, [modelLoaded, highlightObject]);
-
-    // Tree node toggle
-    const toggleNode = (id: string) => {
-        const newExp = new Set(expandedNodes);
-        newExp.has(id) ? newExp.delete(id) : newExp.add(id);
-        setExpandedNodes(newExp);
-    };
-
-    // Toggle visibility
-    const toggleVisibility = (node: ModelObject) => {
-        if (node.mesh) {
-            node.mesh.visible = !node.mesh.visible;
-            node.visible = node.mesh.visible;
+            sectionPlanesRef.current.createSectionPlane({
+                id: 'horizontalSection',
+                pos: [0, centerY, 0],
+                dir: [0, -1, 0],
+            });
         }
-        if (node.children) {
-            node.children.forEach(child => toggleVisibility(child));
+        setSectionEnabled(!sectionEnabled);
+    }, [sectionEnabled]);
+
+    // Fit to view
+    const fitToView = useCallback(() => {
+        if (!viewerRef.current) return;
+        viewerRef.current.cameraFlight.flyTo({
+            aabb: viewerRef.current.scene.aabb,
+            duration: 0.8,
+        });
+    }, []);
+
+    // Get status color classes
+    const getStatusClasses = () => {
+        switch (status) {
+            case 'loading':
+            case 'processing':
+            case 'initializing':
+                return 'bg-blue-500/20 border-blue-500/30 text-blue-400';
+            case 'success':
+                return 'bg-emerald-500/20 border-emerald-500/30 text-emerald-400';
+            case 'error':
+                return 'bg-red-500/20 border-red-500/30 text-red-400';
+            default:
+                return '';
         }
-        setModelTree([...modelTree]);
     };
 
-    // Render tree node
-    const renderTreeNode = (node: ModelObject, level: number = 0) => {
-        const hasChildren = node.children && node.children.length > 0;
-        const isExpanded = expandedNodes.has(node.id);
-        const isSelected = selectedObject?.name === node.name;
-
-        return (
-            <div key={node.id}>
-                <div
-                    className={`flex items-center gap-1.5 py-1.5 px-2 rounded cursor-pointer text-[11px] transition-all group ${isSelected
-                            ? 'bg-blue-500/20 text-blue-400 border-l-2 border-blue-500'
-                            : 'hover:bg-white/5 text-slate-400 hover:text-white'
-                        }`}
-                    style={{ paddingLeft: 8 + level * 16 }}
-                    onClick={() => {
-                        if (hasChildren) toggleNode(node.id);
-                        if (node.mesh) {
-                            setSelectedObject({ name: node.name, ...node.mesh.userData });
-                            highlightObject(node.mesh as THREE.Mesh);
-                        }
-                    }}
-                >
-                    {hasChildren ? (
-                        isExpanded ? <ChevronDown className="w-3 h-3 shrink-0 text-slate-500" />
-                            : <ChevronRight className="w-3 h-3 shrink-0 text-slate-500" />
-                    ) : <div className="w-3 shrink-0" />}
-
-                    <div
-                        className="w-2.5 h-2.5 rounded-sm shrink-0 border border-white/20"
-                        style={{ backgroundColor: `#${(IFC_COLORS[node.type] || 0x9ca3af).toString(16).padStart(6, '0')}` }}
-                    />
-
-                    <span className="truncate flex-1">{node.name}</span>
-
-                    <button
-                        onClick={(e) => { e.stopPropagation(); toggleVisibility(node); }}
-                        className="opacity-0 group-hover:opacity-100 transition-opacity p-0.5 hover:bg-white/10 rounded"
-                    >
-                        {node.visible ? <Eye className="w-3 h-3" /> : <EyeOff className="w-3 h-3 text-slate-600" />}
-                    </button>
-
-                    {hasChildren && (
-                        <span className="text-[9px] text-slate-600 ml-1">{node.children!.length}</span>
-                    )}
-                </div>
-                {hasChildren && isExpanded && node.children!.map(c => renderTreeNode(c, level + 1))}
-            </div>
-        );
-    };
-
-    // Tool button
+    // Tool button component
     const ToolBtn = ({ active, onClick, title, children, disabled }: {
         active?: boolean;
         onClick?: () => void;
@@ -607,7 +345,7 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
         </button>
     );
 
-    // View button
+    // View button component
     const ViewBtn = ({ view, icon: Icon, label }: { view: string; icon: any; label: string }) => (
         <button
             onClick={() => setCameraView(view)}
@@ -623,7 +361,7 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
     );
 
     return (
-        <div className={`flex flex-col h-full overflow-hidden ${isDarkMode ? 'bg-slate-900' : 'bg-gray-100'}`}
+        <div className={`flex flex-col overflow-hidden rounded-xl border ${isDarkMode ? 'bg-slate-900 border-slate-700/50' : 'bg-gray-100 border-gray-200'}`}
             style={{ height: 'calc(100vh - 200px)', minHeight: '600px' }}>
 
             {/* HEADER TOOLBAR */}
@@ -632,29 +370,33 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
                     {/* Logo/Title */}
                     <div className="flex items-center gap-2 px-2 py-1 rounded-lg bg-gradient-to-r from-blue-500/10 to-cyan-500/10 border border-blue-500/20">
                         <Building2 className="w-4 h-4 text-blue-400" />
-                        <span className="text-xs font-bold text-blue-400 uppercase tracking-wide">BIM Viewer</span>
+                        <span className="text-xs font-bold text-blue-400 uppercase tracking-wide">xeokit BIM</span>
                     </div>
 
                     <div className="h-5 w-px bg-slate-700" />
 
-                    {/* File info */}
-                    {fileName && (
-                        <span className="text-[11px] text-slate-400 max-w-[200px] truncate">
-                            {fileName}
+                    {/* Status indicator */}
+                    <div className="flex items-center gap-1.5">
+                        <div className={`w-2 h-2 rounded-full ${viewerReady ? 'bg-emerald-400' : 'bg-amber-400 animate-pulse'}`} />
+                        <span className="text-[10px] text-slate-500">
+                            {viewerReady ? 'Ready' : 'Loading...'}
                         </span>
-                    )}
+                    </div>
 
                     {modelLoaded && (
-                        <span className="text-[10px] text-slate-500 px-2 py-0.5 bg-slate-700/50 rounded">
-                            {objectCount.elements} phần tử
-                        </span>
+                        <>
+                            <div className="h-5 w-px bg-slate-700" />
+                            <span className="text-[10px] text-slate-500 font-mono">
+                                {objectCount} objects
+                            </span>
+                        </>
                     )}
                 </div>
 
                 <div className="flex items-center gap-2">
                     {/* View buttons */}
                     <div className="flex bg-slate-800/80 rounded-lg p-0.5 border border-slate-700/50">
-                        <ViewBtn view="3d" icon={Box} label="3D" />
+                        <ViewBtn view="iso" icon={Box} label="3D" />
                         <ViewBtn view="top" icon={ArrowUp} label="Trên" />
                         <ViewBtn view="front" icon={Square} label="Trước" />
                         <ViewBtn view="right" icon={ArrowRightIcon} label="Phải" />
@@ -663,10 +405,16 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
                     <div className="h-5 w-px bg-slate-700" />
 
                     {/* Upload button */}
-                    <label className="flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-400 hover:to-cyan-400 text-white text-xs font-semibold rounded-lg cursor-pointer transition-all shadow-lg shadow-blue-500/25">
+                    <label className={`flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-400 hover:to-cyan-400 text-white text-xs font-semibold rounded-lg cursor-pointer transition-all shadow-lg shadow-blue-500/25 ${status === 'loading' ? 'opacity-50 pointer-events-none' : ''}`}>
                         <Upload className="w-3.5 h-3.5" />
-                        <span>Mở IFC</span>
-                        <input type="file" accept=".ifc" className="hidden" onChange={handleFileUpload} />
+                        <span>Upload IFC</span>
+                        <input
+                            type="file"
+                            accept=".ifc"
+                            className="hidden"
+                            onChange={handleFileUpload}
+                            disabled={status === 'loading'}
+                        />
                     </label>
 
                     {/* Theme toggle */}
@@ -678,6 +426,40 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
                     </button>
                 </div>
             </div>
+
+            {/* STATUS BAR */}
+            {status !== 'idle' && statusMessage && (
+                <div className={`px-4 py-2 border-b flex items-center gap-3 ${getStatusClasses()}`}>
+                    {(status === 'loading' || status === 'processing' || status === 'initializing') && (
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                    )}
+                    {status === 'success' && <CheckCircle className="w-4 h-4" />}
+                    {status === 'error' && <AlertCircle className="w-4 h-4" />}
+
+                    <span className="text-sm font-medium flex-1">{statusMessage}</span>
+
+                    {(status === 'loading' || status === 'processing') && (
+                        <div className="flex items-center gap-2 min-w-[120px]">
+                            <div className="flex-1 bg-slate-700/50 rounded-full h-1.5 overflow-hidden">
+                                <div
+                                    className="bg-blue-500 h-full transition-all duration-300"
+                                    style={{ width: `${loadingProgress}%` }}
+                                />
+                            </div>
+                            <span className="text-xs font-mono w-8">{Math.round(loadingProgress)}%</span>
+                        </div>
+                    )}
+
+                    {status === 'error' && (
+                        <button
+                            onClick={() => { setStatus('idle'); setStatusMessage(''); }}
+                            className="text-red-400 hover:text-red-300 text-sm"
+                        >
+                            Đóng
+                        </button>
+                    )}
+                </div>
+            )}
 
             <div className="flex-1 flex overflow-hidden">
                 {/* LEFT SIDEBAR - Model Tree */}
@@ -695,10 +477,15 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
                                 <PanelLeftClose className="w-4 h-4" />
                             </button>
                         </div>
-                        <div className="flex-1 overflow-y-auto p-1.5 scrollbar-thin scrollbar-thumb-slate-700">
-                            {modelTree.length > 0 ? (
-                                modelTree.map(n => renderTreeNode(n))
-                            ) : (
+                        <div
+                            ref={treeContainerRef}
+                            className="flex-1 overflow-y-auto p-1 xeokit-tree-view"
+                            style={{
+                                fontSize: '11px',
+                                color: isDarkMode ? '#94a3b8' : '#475569',
+                            }}
+                        >
+                            {!modelLoaded && (
                                 <div className="flex flex-col items-center justify-center h-full text-slate-500 p-4">
                                     <Cuboid className="w-10 h-10 text-slate-700 mb-3" />
                                     <p className="text-sm font-medium">Chưa có model</p>
@@ -713,63 +500,29 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
 
                 {/* LEFT TOOLBAR */}
                 <div className={`w-12 ${isDarkMode ? 'bg-slate-800/50 border-slate-700/30' : 'bg-gray-50 border-gray-200'} border-r flex flex-col items-center py-2 gap-1 shrink-0`}>
-                    <ToolBtn
-                        active={activeTool === 'select'}
-                        onClick={() => setActiveTool('select')}
-                        title="Chọn (V)"
-                    >
-                        <MousePointer className="w-4 h-4" />
-                    </ToolBtn>
-                    <ToolBtn
-                        active={activeTool === 'pan'}
-                        onClick={() => setActiveTool('pan')}
-                        title="Di chuyển (H)"
-                    >
-                        <Move className="w-4 h-4" />
-                    </ToolBtn>
-                    <ToolBtn
-                        onClick={() => setCameraView('3d')}
-                        title="Về góc nhìn mặc định (Home)"
-                    >
+                    <ToolBtn onClick={fitToView} title="Về góc nhìn mặc định (Home)">
                         <Home className="w-4 h-4" />
                     </ToolBtn>
-
-                    <div className="h-px w-6 bg-slate-700/50 my-1" />
-
-                    <ToolBtn
-                        active={sectionEnabled}
-                        onClick={() => setSectionEnabled(!sectionEnabled)}
-                        title="Cắt mặt bằng (C)"
-                    >
-                        <Slice className="w-4 h-4" />
-                    </ToolBtn>
-                    <ToolBtn title="Đo khoảng cách (M)" disabled={!modelLoaded}>
-                        <Ruler className="w-4 h-4" />
-                    </ToolBtn>
-                    <ToolBtn
-                        onClick={() => {
-                            if (cameraRef.current && controlsRef.current && buildingRef.current) {
-                                const box = new THREE.Box3().setFromObject(buildingRef.current);
-                                const center = box.getCenter(new THREE.Vector3());
-                                controlsRef.current.target.copy(center);
-                                controlsRef.current.update();
-                            }
-                        }}
-                        title="Zoom vừa màn hình (F)"
-                        disabled={!modelLoaded}
-                    >
+                    <ToolBtn onClick={fitToView} title="Zoom vừa màn hình (F)" disabled={!modelLoaded}>
                         <Focus className="w-4 h-4" />
                     </ToolBtn>
 
                     <div className="h-px w-6 bg-slate-700/50 my-1" />
 
                     <ToolBtn
-                        active={showGrid}
-                        onClick={() => setShowGrid(!showGrid)}
-                        title="Lưới (G)"
+                        active={sectionEnabled}
+                        onClick={toggleSection}
+                        title="Cắt mặt bằng (C)"
+                        disabled={!modelLoaded}
                     >
-                        <Grid3X3 className="w-4 h-4" />
+                        <Slice className="w-4 h-4" />
                     </ToolBtn>
+                    <ToolBtn title="Đo khoảng cách (M)" disabled={!modelLoaded}>
+                        <Ruler className="w-4 h-4" />
+                    </ToolBtn>
+
+                    <div className="h-px w-6 bg-slate-700/50 my-1" />
+
                     <ToolBtn
                         active={showModelTree}
                         onClick={() => setShowModelTree(!showModelTree)}
@@ -794,10 +547,27 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
 
                 {/* 3D CANVAS */}
                 <div className="flex-1 relative">
-                    <div ref={containerRef} className="w-full h-full" />
+                    <canvas
+                        ref={canvasRef}
+                        id="xeokit-canvas"
+                        className="w-full h-full"
+                        style={{
+                            background: isDarkMode
+                                ? 'linear-gradient(180deg, #1e293b 0%, #0f172a 100%)'
+                                : 'linear-gradient(180deg, #f1f5f9 0%, #e2e8f0 100%)'
+                        }}
+                    />
+
+                    {/* NavCube canvas */}
+                    <canvas
+                        ref={navCubeCanvasRef}
+                        id="navCubeCanvas"
+                        className="absolute bottom-3 right-3"
+                        style={{ width: '100px', height: '100px' }}
+                    />
 
                     {/* Loading overlay */}
-                    {isLoading && (
+                    {status === 'loading' && (
                         <div className="absolute inset-0 bg-slate-900/95 flex items-center justify-center z-20 backdrop-blur-sm">
                             <div className="flex flex-col items-center gap-4 w-80 bg-slate-800 p-8 rounded-2xl shadow-2xl border border-slate-700">
                                 <div className="relative w-20 h-20">
@@ -805,9 +575,10 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
                                         <circle cx="40" cy="40" r="36" fill="none" stroke="#334155" strokeWidth="6" />
                                         <circle
                                             cx="40" cy="40" r="36" fill="none"
-                                            stroke="url(#gradient)" strokeWidth="6"
+                                            stroke="url(#gradient)"
+                                            strokeWidth="6"
                                             strokeLinecap="round"
-                                            strokeDasharray={`${uploadProgress * 2.26} 226`}
+                                            strokeDasharray={`${loadingProgress * 2.26} 226`}
                                             className="transition-all duration-300"
                                         />
                                         <defs>
@@ -818,58 +589,33 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
                                         </defs>
                                     </svg>
                                     <div className="absolute inset-0 flex items-center justify-center">
-                                        <span className="text-lg font-bold text-white">{Math.round(uploadProgress)}%</span>
+                                        <span className="text-lg font-bold text-white">{Math.round(loadingProgress)}%</span>
                                     </div>
                                 </div>
                                 <div className="text-center">
-                                    <p className="text-white font-semibold mb-1">Đang xử lý model...</p>
+                                    <p className="text-white font-semibold mb-1">Đang xử lý IFC model...</p>
                                     <p className="text-slate-400 text-sm">{fileName}</p>
                                 </div>
                                 <div className="w-full bg-slate-700 rounded-full h-1.5 overflow-hidden">
                                     <div
                                         className="h-full bg-gradient-to-r from-blue-500 to-cyan-400 transition-all duration-300"
-                                        style={{ width: `${uploadProgress}%` }}
+                                        style={{ width: `${loadingProgress}%` }}
                                     />
                                 </div>
                             </div>
                         </div>
                     )}
 
-                    {/* Section control */}
-                    {sectionEnabled && modelLoaded && (
-                        <div className="absolute top-3 left-1/2 -translate-x-1/2 bg-slate-800/95 backdrop-blur rounded-xl border border-slate-700/50 px-4 py-2.5 flex items-center gap-4 z-10 shadow-xl">
-                            <Slice className="w-4 h-4 text-cyan-400" />
-                            <span className="text-xs font-medium text-slate-300">Cắt mặt bằng</span>
-                            <input
-                                type="range"
-                                min="1"
-                                max="20"
-                                step="0.5"
-                                value={sectionHeight}
-                                onChange={(e) => setSectionHeight(parseFloat(e.target.value))}
-                                className="w-32 accent-cyan-500"
-                            />
-                            <span className="text-xs text-cyan-400 font-mono w-12">+{sectionHeight.toFixed(1)}m</span>
-                            <button
-                                onClick={() => setSectionEnabled(false)}
-                                className="text-slate-500 hover:text-white"
-                            >
-                                <X className="w-4 h-4" />
-                            </button>
-                        </div>
-                    )}
-
                     {/* Empty state */}
-                    {!modelLoaded && !isLoading && (
+                    {!modelLoaded && status !== 'loading' && (
                         <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                             <div className="bg-slate-800/90 backdrop-blur-sm p-8 rounded-2xl shadow-2xl border border-slate-700/50 text-center max-w-md">
                                 <div className="w-20 h-20 bg-gradient-to-br from-blue-500/20 to-cyan-500/20 rounded-2xl flex items-center justify-center mx-auto mb-4">
                                     <Building2 className="w-10 h-10 text-blue-400" />
                                 </div>
-                                <h3 className="text-white font-bold text-lg mb-2">BIM Viewer</h3>
+                                <h3 className="text-white font-bold text-lg mb-2">xeokit BIM Viewer</h3>
                                 <p className="text-slate-400 text-sm mb-4">
-                                    Tải lên file .IFC để xem mô hình 3D BIM của dự án.
-                                    Hỗ trợ xem cấu trúc, thuộc tính và đo đạc.
+                                    Tải lên file .IFC để xem mô hình 3D BIM. Sử dụng WebIFC để load trực tiếp trong browser.
                                 </p>
                                 <label className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-400 hover:to-cyan-400 text-white text-sm font-semibold rounded-lg cursor-pointer transition-all shadow-lg shadow-blue-500/25 pointer-events-auto">
                                     <Upload className="w-4 h-4" />
@@ -881,26 +627,30 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
                     )}
 
                     {/* Model loaded badge */}
-                    {modelLoaded && !isLoading && (
+                    {modelLoaded && status !== 'loading' && (
                         <div className="absolute top-3 right-3 flex items-center gap-2">
                             <div className="bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5">
                                 <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                                Model đã tải
+                                Model loaded
                             </div>
                         </div>
                     )}
 
                     {/* View indicator */}
                     <div className="absolute bottom-3 left-3 text-[10px] text-slate-500 uppercase tracking-widest font-mono">
-                        {activeView === '3d' ? 'PERSPECTIVE' : activeView.toUpperCase()} VIEW
+                        {activeView.toUpperCase()} VIEW
                     </div>
 
                     {/* Zoom controls */}
-                    <div className="absolute bottom-3 right-3 flex flex-col gap-1">
+                    <div className="absolute bottom-3 right-28 flex flex-col gap-1">
                         <button
                             onClick={() => {
-                                if (cameraRef.current) {
-                                    cameraRef.current.position.multiplyScalar(0.8);
+                                if (viewerRef.current) {
+                                    const camera = viewerRef.current.scene.camera;
+                                    const eye = camera.eye;
+                                    const look = camera.look;
+                                    const dir = [eye[0] - look[0], eye[1] - look[1], eye[2] - look[2]];
+                                    camera.eye = [look[0] + dir[0] * 0.8, look[1] + dir[1] * 0.8, look[2] + dir[2] * 0.8];
                                 }
                             }}
                             className="p-2 bg-slate-800/80 hover:bg-slate-700 rounded-lg text-slate-400 hover:text-white transition-all border border-slate-700/50"
@@ -909,8 +659,12 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
                         </button>
                         <button
                             onClick={() => {
-                                if (cameraRef.current) {
-                                    cameraRef.current.position.multiplyScalar(1.2);
+                                if (viewerRef.current) {
+                                    const camera = viewerRef.current.scene.camera;
+                                    const eye = camera.eye;
+                                    const look = camera.look;
+                                    const dir = [eye[0] - look[0], eye[1] - look[1], eye[2] - look[2]];
+                                    camera.eye = [look[0] + dir[0] * 1.2, look[1] + dir[1] * 1.2, look[2] + dir[2] * 1.2];
                                 }
                             }}
                             className="p-2 bg-slate-800/80 hover:bg-slate-700 rounded-lg text-slate-400 hover:text-white transition-all border border-slate-700/50"
@@ -936,83 +690,40 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
                             </button>
                         </div>
                         <div className="flex-1 overflow-y-auto">
-                            {selectedObject ? (
+                            {selectedElement ? (
                                 <div className="divide-y divide-slate-700/30">
                                     {/* Element Header */}
                                     <div className="p-3 bg-gradient-to-r from-blue-500/10 to-transparent">
-                                        <div className="flex items-center gap-2 mb-1">
-                                            <div
-                                                className="w-3 h-3 rounded-sm"
-                                                style={{ backgroundColor: `#${(IFC_COLORS[selectedObject.ifcClass] || 0x9ca3af).toString(16).padStart(6, '0')}` }}
-                                            />
-                                            <span className="text-[10px] font-bold text-blue-400 uppercase">{selectedObject.ifcClass}</span>
-                                        </div>
-                                        <p className="font-bold text-white text-sm">{selectedObject.name}</p>
+                                        <p className="text-[10px] font-bold text-blue-400 uppercase mb-1">{selectedElement.type}</p>
+                                        <p className="font-bold text-white text-sm">{selectedElement.name}</p>
                                     </div>
 
                                     {/* Identity */}
                                     <div className="p-3">
                                         <p className="text-[10px] font-bold text-slate-500 uppercase mb-2 tracking-wide">Định danh</p>
                                         <div className="space-y-2">
-                                            {selectedObject.guid && (
-                                                <div className="flex justify-between items-start">
-                                                    <span className="text-xs text-slate-500">GUID</span>
-                                                    <span className="text-xs text-slate-300 font-mono bg-slate-700/50 px-1.5 py-0.5 rounded">{selectedObject.guid}</span>
-                                                </div>
-                                            )}
-                                            {selectedObject.ifcType && (
-                                                <div className="flex justify-between">
-                                                    <span className="text-xs text-slate-500">IFC Type</span>
-                                                    <span className="text-xs text-cyan-400">{selectedObject.ifcType}</span>
-                                                </div>
-                                            )}
-                                            {selectedObject.storey && (
-                                                <div className="flex justify-between">
-                                                    <span className="text-xs text-slate-500">Tầng</span>
-                                                    <span className="text-xs text-slate-300">{selectedObject.storey}</span>
-                                                </div>
-                                            )}
+                                            <div className="flex justify-between items-start">
+                                                <span className="text-xs text-slate-500">ID</span>
+                                                <span className="text-xs text-slate-300 font-mono bg-slate-700/50 px-1.5 py-0.5 rounded truncate max-w-[150px]">{selectedElement.id}</span>
+                                            </div>
+                                            <div className="flex justify-between">
+                                                <span className="text-xs text-slate-500">IFC Type</span>
+                                                <span className="text-xs text-cyan-400">{selectedElement.type}</span>
+                                            </div>
                                         </div>
                                     </div>
 
-                                    {/* Dimensions */}
-                                    {selectedObject.dimensions && (
+                                    {/* Properties */}
+                                    {Object.keys(selectedElement.properties).length > 0 && (
                                         <div className="p-3">
-                                            <p className="text-[10px] font-bold text-slate-500 uppercase mb-2 tracking-wide">Kích thước</p>
+                                            <p className="text-[10px] font-bold text-slate-500 uppercase mb-2 tracking-wide">Properties</p>
                                             <div className="space-y-2">
-                                                <div className="flex justify-between">
-                                                    <span className="text-xs text-slate-500">Dimensions</span>
-                                                    <span className="text-xs text-slate-300">{selectedObject.dimensions}</span>
-                                                </div>
-                                                {selectedObject.thickness && (
-                                                    <div className="flex justify-between">
-                                                        <span className="text-xs text-slate-500">Độ dày</span>
-                                                        <span className="text-xs text-slate-300">{selectedObject.thickness}</span>
+                                                {Object.entries(selectedElement.properties).slice(0, 10).map(([key, value]) => (
+                                                    <div key={key} className="flex justify-between">
+                                                        <span className="text-xs text-slate-500 truncate max-w-[100px]">{key}</span>
+                                                        <span className="text-xs text-slate-300 truncate max-w-[120px]">{String(value)}</span>
                                                     </div>
-                                                )}
-                                                {selectedObject.area && (
-                                                    <div className="flex justify-between">
-                                                        <span className="text-xs text-slate-500">Diện tích</span>
-                                                        <span className="text-xs text-slate-300">{selectedObject.area}</span>
-                                                    </div>
-                                                )}
-                                                {selectedObject.volume && (
-                                                    <div className="flex justify-between">
-                                                        <span className="text-xs text-slate-500">Thể tích</span>
-                                                        <span className="text-xs text-slate-300">{selectedObject.volume}</span>
-                                                    </div>
-                                                )}
-                                            </div>
-                                        </div>
-                                    )}
-
-                                    {/* Materials */}
-                                    {selectedObject.material && (
-                                        <div className="p-3">
-                                            <p className="text-[10px] font-bold text-slate-500 uppercase mb-2 tracking-wide">Vật liệu</p>
-                                            <div className="flex justify-between">
-                                                <span className="text-xs text-slate-500">Material</span>
-                                                <span className="text-xs text-slate-300">{selectedObject.material}</span>
+                                                ))}
                                             </div>
                                         </div>
                                     )}
@@ -1034,9 +745,9 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
             {/* FOOTER STATUS BAR */}
             <div className={`h-8 ${isDarkMode ? 'bg-slate-800/90 border-slate-700/50' : 'bg-white border-gray-200'} border-t flex items-center justify-between px-3 text-[10px] text-slate-500 shrink-0`}>
                 <div className="flex items-center gap-4">
-                    <span>Viewer: Three.js + IFC.js</span>
+                    <span>Viewer: <span className="text-cyan-400">xeokit SDK + WebIFC</span></span>
                     <span>•</span>
-                    <span>{modelLoaded ? `${objectCount.elements} elements` : 'No model'}</span>
+                    <span>{modelLoaded ? `${fileName} | ${objectCount} elements` : 'No model'}</span>
                 </div>
                 <div className="flex items-center gap-4">
                     <span>LMB: Rotate</span>
