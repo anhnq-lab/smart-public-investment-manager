@@ -4,6 +4,7 @@ import { WebIFCLoaderPlugin } from '@xeokit/xeokit-sdk/src/plugins/WebIFCLoaderP
 import { NavCubePlugin } from '@xeokit/xeokit-sdk/src/plugins/NavCubePlugin/NavCubePlugin';
 import { TreeViewPlugin } from '@xeokit/xeokit-sdk/src/plugins/TreeViewPlugin/TreeViewPlugin';
 import { SectionPlanesPlugin } from '@xeokit/xeokit-sdk/src/plugins/SectionPlanesPlugin/SectionPlanesPlugin';
+import * as WebIFC from 'web-ifc';
 import {
     Box, Maximize2, RotateCcw, Loader2, Upload, Eye, EyeOff,
     Layers, X, ChevronRight, ChevronDown, Ruler, ZoomIn, ZoomOut,
@@ -128,8 +129,9 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
                 });
             }
 
-            // Add WebIFC Loader with correct WASM path
+            // Add WebIFC Loader with WebIFC module
             const ifcLoader = new WebIFCLoaderPlugin(viewer, {
+                WebIFC: WebIFC,
                 wasmPath: 'https://cdn.jsdelivr.net/npm/web-ifc@0.0.66/',
             });
             ifcLoaderRef.current = ifcLoader;
