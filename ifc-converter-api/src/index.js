@@ -4,9 +4,7 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 const { v4: uuidv4 } = require('uuid');
-// Import xeokit-convert - use main export
-const xeokitConvert = require('@xeokit/xeokit-convert');
-const convert2xkt = xeokitConvert.convert2xkt || xeokitConvert.default?.convert2xkt || xeokitConvert;
+const { convert2xkt } = require('@xeokit/xeokit-convert/convert2xkt.js');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
