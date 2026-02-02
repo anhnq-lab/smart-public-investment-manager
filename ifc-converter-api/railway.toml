@@ -1,0 +1,7 @@
+[build]
+  # Command to build the project
+  command = "npm install"
+
+[start]
+  # Command to start the server
+  command = "npm start"
