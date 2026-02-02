@@ -93,105 +93,125 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
             return () => clearTimeout(timer);
         }
 
-        try {
-            setStatus('initializing');
-            setStatusMessage('Đang khởi tạo xeokit viewer...');
+        let viewer: any = null;
+        let cancelled = false;
 
-            // Create viewer with canvas element directly
-            const viewer = new Viewer({
-                canvasElement: canvas,
-                transparent: false,
-                saoEnabled: true,
-                pbrEnabled: false,
-            });
+        const initViewer = async () => {
+            try {
+                setStatus('initializing');
+                setStatusMessage('Đang khởi tạo xeokit viewer...');
 
-            // Set initial camera
-            viewer.scene.camera.eye = [50, 35, 50];
-            viewer.scene.camera.look = [0, 5, 0];
-            viewer.scene.camera.up = [0, 1, 0];
-
-            // Background
-            canvas.style.background = isDarkMode
-                ? 'linear-gradient(180deg, #1e293b 0%, #0f172a 100%)'
-                : 'linear-gradient(180deg, #f1f5f9 0%, #e2e8f0 100%)';
-
-            viewerRef.current = viewer;
-
-            // Add NavCube
-            if (navCubeCanvasRef.current) {
-                new NavCubePlugin(viewer, {
-                    canvasElement: navCubeCanvasRef.current,
-                    visible: true,
-                    size: 250,
-                    alignment: 'bottomRight',
-                    bottomMargin: 80,
-                    rightMargin: 10,
+                // Create viewer with canvas element directly
+                viewer = new Viewer({
+                    canvasElement: canvas,
+                    transparent: false,
+                    saoEnabled: true,
+                    pbrEnabled: false,
                 });
-            }
 
-            // Add WebIFC Loader with WebIFC module
-            const ifcLoader = new WebIFCLoaderPlugin(viewer, {
-                WebIFC: WebIFC,
-                wasmPath: 'https://cdn.jsdelivr.net/npm/web-ifc@0.0.66/',
-            });
-            ifcLoaderRef.current = ifcLoader;
+                // Set initial camera
+                viewer.scene.camera.eye = [50, 35, 50];
+                viewer.scene.camera.look = [0, 5, 0];
+                viewer.scene.camera.up = [0, 1, 0];
 
-            // Add Section Planes
-            const sectionPlanes = new SectionPlanesPlugin(viewer, {
-                overviewVisible: false,
-            });
-            sectionPlanesRef.current = sectionPlanes;
+                // Background
+                canvas.style.background = isDarkMode
+                    ? 'linear-gradient(180deg, #1e293b 0%, #0f172a 100%)'
+                    : 'linear-gradient(180deg, #f1f5f9 0%, #e2e8f0 100%)';
 
-            // Add TreeView
-            if (treeContainerRef.current) {
-                new TreeViewPlugin(viewer, {
-                    containerElement: treeContainerRef.current,
-                    autoExpandDepth: 2,
-                    hierarchy: 'types',
-                });
-            }
+                viewerRef.current = viewer;
 
-            // Handle element picking
-            viewer.scene.input.on('picked', (hit: any) => {
-                if (hit && hit.entity) {
-                    const entity = hit.entity;
-                    const metaObject = viewer.metaScene.metaObjects[entity.id];
-
-                    setSelectedElement({
-                        id: entity.id,
-                        name: metaObject?.name || entity.id,
-                        type: metaObject?.type || 'Unknown',
-                        properties: metaObject?.propertySets?.[0]?.properties || {},
+                // Add NavCube
+                if (navCubeCanvasRef.current) {
+                    new NavCubePlugin(viewer, {
+                        canvasElement: navCubeCanvasRef.current,
+                        visible: true,
+                        size: 250,
+                        alignment: 'bottomRight',
+                        bottomMargin: 80,
+                        rightMargin: 10,
                     });
-
-                    // Highlight selected
-                    viewer.scene.setObjectsHighlighted(viewer.scene.highlightedObjectIds, false);
-                    entity.highlighted = true;
                 }
-            });
 
-            viewer.scene.input.on('pickedNothing', () => {
-                setSelectedElement(null);
-                viewer.scene.setObjectsHighlighted(viewer.scene.highlightedObjectIds, false);
-            });
+                // Initialize IfcAPI (required by WebIFCLoaderPlugin)
+                setStatusMessage('Đang tải WebIFC module...');
+                const ifcAPI = new WebIFC.IfcAPI();
+                ifcAPI.SetWasmPath('https://cdn.jsdelivr.net/npm/web-ifc@0.0.66/');
 
-            setViewerReady(true);
-            setStatus('idle');
-            setStatusMessage('');
+                await ifcAPI.Init();
 
-            console.log('xeokit viewer initialized successfully');
+                if (cancelled) return;
 
-        } catch (error: any) {
-            console.error('Viewer init error:', error);
-            setStatus('error');
-            const errorMsg = error?.message || error?.toString?.() || 'Unknown initialization error';
-            setStatusMessage(`Lỗi khởi tạo: ${errorMsg}`);
-        }
+                // Add WebIFC Loader with initialized IfcAPI
+                const ifcLoader = new WebIFCLoaderPlugin(viewer, {
+                    WebIFC: WebIFC,
+                    IfcAPI: ifcAPI,
+                });
+                ifcLoaderRef.current = ifcLoader;
+
+                // Add Section Planes
+                const sectionPlanes = new SectionPlanesPlugin(viewer, {
+                    overviewVisible: false,
+                });
+                sectionPlanesRef.current = sectionPlanes;
+
+                // Add TreeView
+                if (treeContainerRef.current) {
+                    new TreeViewPlugin(viewer, {
+                        containerElement: treeContainerRef.current,
+                        autoExpandDepth: 2,
+                        hierarchy: 'types',
+                    });
+                }
+
+                // Handle element picking
+                viewer.scene.input.on('picked', (hit: any) => {
+                    if (hit && hit.entity) {
+                        const entity = hit.entity;
+                        const metaObject = viewer.metaScene.metaObjects[entity.id];
+
+                        setSelectedElement({
+                            id: entity.id,
+                            name: metaObject?.name || entity.id,
+                            type: metaObject?.type || 'Unknown',
+                            properties: metaObject?.propertySets?.[0]?.properties || {},
+                        });
+
+                        // Highlight selected
+                        viewer.scene.setObjectsHighlighted(viewer.scene.highlightedObjectIds, false);
+                        entity.highlighted = true;
+                    }
+                });
+
+                viewer.scene.input.on('pickedNothing', () => {
+                    setSelectedElement(null);
+                    viewer.scene.setObjectsHighlighted(viewer.scene.highlightedObjectIds, false);
+                });
+
+                if (!cancelled) {
+                    setViewerReady(true);
+                    setStatus('idle');
+                    setStatusMessage('');
+                    console.log('xeokit viewer initialized successfully');
+                }
+
+            } catch (error: any) {
+                if (!cancelled) {
+                    console.error('Viewer init error:', error);
+                    setStatus('error');
+                    const errorMsg = error?.message || error?.toString?.() || 'Unknown initialization error';
+                    setStatusMessage(`Lỗi khởi tạo: ${errorMsg}`);
+                }
+            }
+        };
+
+        initViewer();
 
         return () => {
-            if (viewerRef.current) {
+            cancelled = true;
+            if (viewer) {
                 try {
-                    viewerRef.current.destroy();
+                    viewer.destroy();
                 } catch (e) {
                     console.warn('Error destroying viewer:', e);
                 }
