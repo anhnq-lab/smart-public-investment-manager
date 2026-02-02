@@ -559,12 +559,30 @@ export interface Task {
     LegalBasis?: string; // Căn cứ pháp lý (e.g. "Điều 24 Luật ĐTC")
     OutputDocument?: string; // Kết quả/Sản phẩm (e.g. "Quyết định phê duyệt")
     DurationDays?: number; // Thời gian thực hiện (ngày)
-    PredecessorTaskID?: string; // Công việc tiền quyết
+    PredecessorTaskID?: string; // Công việc tiền quyết (legacy - single)
     ApproverID?: string; // Người duyệt
     EstimatedCost?: number; // Chi phí dự kiến
     ActualStartDate?: string;
     ActualEndDate?: string;
     SubTasks?: SubTask[];
+
+    // Enhanced Dependencies (New)
+    Dependencies?: TaskDependency[];
+
+    // Progress Tracking (New)
+    ProgressPercent?: number; // 0-100
+    PlannedStartDate?: string; // Baseline start
+    PlannedEndDate?: string; // Baseline end
+
+    // Resource Allocation (New)
+    Assignees?: TaskAssignment[];
+
+    // Critical Path (New)
+    IsCritical?: boolean;
+    Slack?: number; // Days of slack/float
+
+    // Kanban (New)
+    BoardColumn?: string;
 
     // Module 1: National Data Gateway
     SyncStatus?: {
@@ -573,6 +591,22 @@ export interface Task {
         NationalProjectCode?: string; // Mã dự án quốc gia
         SyncError?: string;
     };
+}
+
+// Task Dependency Types
+export type DependencyType = 'FS' | 'SS' | 'FF' | 'SF';
+
+export interface TaskDependency {
+    TaskID: string; // The task this depends on
+    Type: DependencyType;
+    LagDays?: number; // Positive = delay, Negative = overlap
+}
+
+// Resource Assignment
+export interface TaskAssignment {
+    EmployeeID: string;
+    AllocationPercent: number; // 0-100
+    Role?: string; // e.g. "Lead", "Support"
 }
 
 
