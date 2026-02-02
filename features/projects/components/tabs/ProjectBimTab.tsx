@@ -76,15 +76,29 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
 
     // Initialize xeokit viewer
     useEffect(() => {
-        if (!canvasRef.current) return;
+        if (!canvasRef.current) {
+            console.warn('Canvas ref not ready');
+            return;
+        }
+
+        // Ensure canvas has valid dimensions
+        const canvas = canvasRef.current;
+        if (!canvas.offsetWidth || !canvas.offsetHeight) {
+            console.warn('Canvas has no dimensions yet, retrying...');
+            const timer = setTimeout(() => {
+                // Force re-render
+                setViewerReady(false);
+            }, 100);
+            return () => clearTimeout(timer);
+        }
 
         try {
             setStatus('initializing');
             setStatusMessage('Đang khởi tạo xeokit viewer...');
 
-            // Create viewer
+            // Create viewer with canvas element directly
             const viewer = new Viewer({
-                canvasId: canvasRef.current.id,
+                canvasElement: canvas,
                 transparent: false,
                 saoEnabled: true,
                 pbrEnabled: false,
@@ -96,7 +110,7 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
             viewer.scene.camera.up = [0, 1, 0];
 
             // Background
-            viewer.scene.canvas.canvas.style.background = isDarkMode
+            canvas.style.background = isDarkMode
                 ? 'linear-gradient(180deg, #1e293b 0%, #0f172a 100%)'
                 : 'linear-gradient(180deg, #f1f5f9 0%, #e2e8f0 100%)';
 
@@ -105,7 +119,7 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
             // Add NavCube
             if (navCubeCanvasRef.current) {
                 new NavCubePlugin(viewer, {
-                    canvasId: navCubeCanvasRef.current.id,
+                    canvasElement: navCubeCanvasRef.current,
                     visible: true,
                     size: 250,
                     alignment: 'bottomRight',
@@ -114,9 +128,9 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
                 });
             }
 
-            // Add WebIFC Loader
+            // Add WebIFC Loader with correct WASM path
             const ifcLoader = new WebIFCLoaderPlugin(viewer, {
-                wasmPath: '/wasm/',
+                wasmPath: 'https://cdn.jsdelivr.net/npm/web-ifc@0.0.66/',
             });
             ifcLoaderRef.current = ifcLoader;
 
@@ -163,18 +177,25 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
             setStatus('idle');
             setStatusMessage('');
 
+            console.log('xeokit viewer initialized successfully');
+
         } catch (error: any) {
             console.error('Viewer init error:', error);
             setStatus('error');
-            setStatusMessage(`Lỗi khởi tạo: ${error.message}`);
+            const errorMsg = error?.message || error?.toString?.() || 'Unknown initialization error';
+            setStatusMessage(`Lỗi khởi tạo: ${errorMsg}`);
         }
 
         return () => {
             if (viewerRef.current) {
-                viewerRef.current.destroy();
+                try {
+                    viewerRef.current.destroy();
+                } catch (e) {
+                    console.warn('Error destroying viewer:', e);
+                }
             }
         };
-    }, [isDarkMode]);
+    }, [isDarkMode, viewerReady]);
 
     // Handle file upload
     const handleFileUpload = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
