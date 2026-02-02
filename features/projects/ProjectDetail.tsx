@@ -116,7 +116,7 @@ const ProjectDetail: React.FC = () => {
                 {/* 2. Tab Navigation */}
                 <div className="border-b border-gray-200 flex gap-8 mt-6 overflow-x-auto">
                     {[
-                        { id: 'info', label: 'THÔNG TIN', icon: Info },
+                        { id: 'info', label: 'TỔNG QUAN', icon: Info },
                         { id: 'plan', label: 'KẾ HOẠCH', icon: CalendarCheck },
                         { id: 'packages', label: 'GÓI THẦU', icon: Briefcase },
                         { id: 'capital', label: 'VỐN & GIẢI NGÂN', icon: Landmark },

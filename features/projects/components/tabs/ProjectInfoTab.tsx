@@ -10,6 +10,10 @@ import { DualProgressCard } from '../DualProgressCard';
 import { KeyMetricsHeader } from '../KeyMetricsHeader';
 import { ProjectTeamSection } from '../ProjectTeamSection';
 import { ContractorsListSection } from '../ContractorsListSection';
+import { RiskIndicators } from '../RiskIndicators';
+import { BudgetVarianceCard } from '../BudgetVarianceCard';
+import { KeyDatesWidget, KeyDate } from '../KeyDatesWidget';
+import { QuickActionsPanel } from '../QuickActionsPanel';
 
 interface ProjectInfoTabProps {
     project: Project & {
@@ -19,6 +23,8 @@ interface ProjectInfoTabProps {
         RequiresBIM?: boolean;
         BIMStatus?: string;
         StageHistory?: StageHistoryEntry[];
+        PlannedDisbursement?: number;
+        ContractEndDate?: string;
     };
     projectMembers: Employee[];
     projectPackages: BiddingPackage[];
@@ -30,6 +36,7 @@ interface ProjectInfoTabProps {
     onViewPackage?: (packageId: string) => void;
     onStageChange?: (newStage: ProjectStage, entry: StageHistoryEntry) => void;
     onHistoryUpdate?: (history: StageHistoryEntry[]) => void;
+    onSync?: () => void;
     canEditLifecycle?: boolean;
 }
 
@@ -45,17 +52,55 @@ export const ProjectInfoTab: React.FC<ProjectInfoTabProps> = ({
     onViewPackage,
     onStageChange,
     onHistoryUpdate,
+    onSync,
     canEditLifecycle = true
 }) => {
     const [showSyncDetails, setShowSyncDetails] = useState(false);
 
     // Calculate disbursed amount from financial progress
     const disbursedAmount = (project.FinancialProgress ?? 0) * project.TotalInvestment / 100;
+    const disbursedPercent = project.TotalInvestment > 0
+        ? (disbursedAmount / project.TotalInvestment) * 100
+        : 0;
 
     // Determine sync status
     const isSynced = project.SyncStatus?.IsSynced || syncResult?.success;
     const nationalCode = syncResult?.nationalCode || project.SyncStatus?.NationalProjectCode;
     const lastSyncTime = project.SyncStatus?.LastSyncTime;
+
+    // Mock key dates for demo
+    const mockKeyDates: KeyDate[] = [
+        {
+            id: '1',
+            title: 'Hạn nộp BC giám sát tháng 2',
+            date: '2026-02-15',
+            type: 'report',
+            status: 'due-soon',
+            description: 'Báo cáo giám sát định kỳ theo NĐ 175'
+        },
+        {
+            id: '2',
+            title: 'Nghiệm thu giai đoạn 1',
+            date: '2026-02-28',
+            type: 'milestone',
+            status: 'upcoming',
+            description: 'Nghiệm thu hoàn thành móng công trình'
+        },
+        {
+            id: '3',
+            title: 'Hết hạn BHXL gói thầu XL-01',
+            date: '2026-03-30',
+            type: 'deadline',
+            status: 'upcoming'
+        },
+        {
+            id: '4',
+            title: 'Họp đánh giá tiến độ Q1',
+            date: '2026-04-05',
+            type: 'meeting',
+            status: 'upcoming'
+        }
+    ];
 
     return (
         <div className="animate-in slide-in-from-bottom-2 duration-500 space-y-6 py-4">
@@ -67,6 +112,15 @@ export const ProjectInfoTab: React.FC<ProjectInfoTabProps> = ({
                 editable={canEditLifecycle}
                 onStageChange={onStageChange}
                 onHistoryUpdate={onHistoryUpdate}
+            />
+
+            {/* RISK INDICATORS - Full Width Alert Section */}
+            <RiskIndicators
+                physicalProgress={project.PhysicalProgress ?? 0}
+                financialProgress={project.FinancialProgress ?? 0}
+                disbursedPercent={disbursedPercent}
+                contractEndDate={project.ContractEndDate}
+                missingDocs={[]} // Could derive from project data
             />
 
             {/* KEY METRICS HEADER - Full Width */}
@@ -210,10 +264,18 @@ export const ProjectInfoTab: React.FC<ProjectInfoTabProps> = ({
                 )}
             </div>
 
-            {/* 2-Column Layout */}
+            {/* 3-Column Layout for Main Content */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {/* LEFT COLUMN - 2/3 width */}
                 <div className="lg:col-span-2 space-y-6">
+                    {/* Budget Variance Card - NEW */}
+                    <BudgetVarianceCard
+                        totalInvestment={project.TotalInvestment}
+                        disbursedAmount={disbursedAmount}
+                        plannedDisbursement={project.PlannedDisbursement || disbursedAmount * 1.05}
+                        previousMonthDisbursed={disbursedAmount * 0.92}
+                    />
+
                     {/* General Info Section */}
                     <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
                         <div className="px-5 py-3 bg-gray-50 border-b border-gray-200 flex items-center justify-between">
@@ -252,6 +314,23 @@ export const ProjectInfoTab: React.FC<ProjectInfoTabProps> = ({
                     <DualProgressCard
                         physicalProgress={project.PhysicalProgress ?? 0}
                         financialProgress={project.FinancialProgress ?? 0}
+                    />
+
+                    {/* Key Dates Widget - NEW */}
+                    <KeyDatesWidget
+                        dates={mockKeyDates}
+                        maxItems={4}
+                        onViewAll={() => console.log('View all dates')}
+                    />
+
+                    {/* Quick Actions Panel - NEW */}
+                    <QuickActionsPanel
+                        onGenerateMonthlyReport={() => onGenerateReport('Monitoring')}
+                        onSendReminder={() => console.log('Send reminder')}
+                        onExportExcel={() => console.log('Export Excel')}
+                        onScheduleMeeting={() => console.log('Schedule meeting')}
+                        onSync={onSync}
+                        isSyncing={isSyncing}
                     />
 
                     {/* Contractors List */}
