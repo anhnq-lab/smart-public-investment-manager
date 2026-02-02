@@ -67,19 +67,22 @@ app.get('/health', (req, res) => {
 const jobs = new Map();
 
 // Import xeokit-convert for IFC to XKT conversion
-const { convert2xkt } = require('@xeokit/xeokit-convert/dist/convert2xkt.cjs.js');
+const { convert2xkt } = require('@xeokit/xeokit-convert');
+// WebIFC is REQUIRED for IFC file conversion per xeokit docs
+const WebIFC = require('web-ifc/web-ifc-api-node.js');
 
 // Convert IFC to XKT using @xeokit/xeokit-convert API
-async function runConvertIFCtoXKT(inputPath, outputPath) {
-    const sourceData = fs.readFileSync(inputPath);
+async function runConvertIFCtoXKT(inputPath, outputPath, jobId) {
+    console.log(`[${jobId}] Starting conversion with WebIFC...`);
 
-    const outputXKTData = await convert2xkt({
-        sourceData: sourceData,
-        outputXKTModel: true
+    await convert2xkt({
+        WebIFC,  // Required for IFC conversion per xeokit docs
+        source: inputPath,
+        output: outputPath,
+        log: (msg) => console.log(`[${jobId}] ${msg}`)
     });
 
-    fs.writeFileSync(outputPath, Buffer.from(outputXKTData));
-    console.log(`Converted: ${inputPath} -> ${outputPath}`);
+    console.log(`[${jobId}] Conversion completed: ${outputPath}`);
 }
 
 // Convert IFC to XKT
@@ -118,7 +121,7 @@ app.post('/convert', upload.single('file'), async (req, res) => {
 
         jobs.set(jobId, { ...jobs.get(jobId), progress: 20 });
 
-        await runConvertIFCtoXKT(inputPath, outputPath);
+        await runConvertIFCtoXKT(inputPath, outputPath, jobId);
 
         // Verify output exists
         if (!fs.existsSync(outputPath)) {
