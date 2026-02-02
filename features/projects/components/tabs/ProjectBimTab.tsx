@@ -297,11 +297,19 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
                 URL.revokeObjectURL(fileUrl);
             });
 
-            model.on('error', (err: Error) => {
+            model.on('error', (err: any) => {
                 clearInterval(progressInterval);
-                console.error('IFC load error:', err);
+                console.error('IFC load error details:', {
+                    error: err,
+                    message: err?.message,
+                    name: err?.name,
+                    stack: err?.stack,
+                    type: typeof err
+                });
                 setStatus('error');
-                setStatusMessage(`Lỗi load model: ${err.message || 'File không hợp lệ'}`);
+                const errorMsg = err?.message || err?.toString?.() ||
+                    (typeof err === 'string' ? err : 'Lỗi không xác định khi parse IFC');
+                setStatusMessage(`Lỗi load model: ${errorMsg}`);
                 URL.revokeObjectURL(fileUrl);
             });
 
