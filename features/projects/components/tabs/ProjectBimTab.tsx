@@ -142,12 +142,13 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
                 });
                 sectionPlanesRef.current = sectionPlanes;
 
-                // Add TreeView
+                // Add TreeView with containment hierarchy (Building > Storey > Space)
                 if (treeContainerRef.current) {
                     new TreeViewPlugin(viewer, {
                         containerElement: treeContainerRef.current,
-                        autoExpandDepth: 2,
-                        hierarchy: 'types',
+                        autoExpandDepth: 1,  // Only expand first level by default
+                        hierarchy: 'containment',  // Group by building structure
+                        pruneEmptyNodes: true,  // Hide empty nodes
                     });
                 }
 
