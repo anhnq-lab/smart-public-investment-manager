@@ -1,10 +1,9 @@
 import React, { useRef, useEffect, useState, useCallback } from 'react';
 import { Viewer } from '@xeokit/xeokit-sdk/src/viewer/Viewer';
-import { WebIFCLoaderPlugin } from '@xeokit/xeokit-sdk/src/plugins/WebIFCLoaderPlugin/WebIFCLoaderPlugin';
+import { XKTLoaderPlugin } from '@xeokit/xeokit-sdk/src/plugins/XKTLoaderPlugin/XKTLoaderPlugin';
 import { NavCubePlugin } from '@xeokit/xeokit-sdk/src/plugins/NavCubePlugin/NavCubePlugin';
 import { TreeViewPlugin } from '@xeokit/xeokit-sdk/src/plugins/TreeViewPlugin/TreeViewPlugin';
 import { SectionPlanesPlugin } from '@xeokit/xeokit-sdk/src/plugins/SectionPlanesPlugin/SectionPlanesPlugin';
-import * as WebIFC from 'web-ifc';
 import {
     Box, Maximize2, RotateCcw, Loader2, Upload, Eye, EyeOff,
     Layers, X, ChevronRight, ChevronDown, Ruler, ZoomIn, ZoomOut,
@@ -37,7 +36,7 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
     const treeContainerRef = useRef<HTMLDivElement>(null);
 
     const viewerRef = useRef<Viewer | null>(null);
-    const ifcLoaderRef = useRef<WebIFCLoaderPlugin | null>(null);
+    const xktLoaderRef = useRef<XKTLoaderPlugin | null>(null);
     const sectionPlanesRef = useRef<SectionPlanesPlugin | null>(null);
 
     const [status, setStatus] = useState<LoadStatus>('initializing');
@@ -133,21 +132,9 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
                     });
                 }
 
-                // Initialize IfcAPI (required by WebIFCLoaderPlugin)
-                setStatusMessage('Đang tải WebIFC module...');
-                const ifcAPI = new WebIFC.IfcAPI();
-                ifcAPI.SetWasmPath('https://cdn.jsdelivr.net/npm/web-ifc@0.0.75/');
-
-                await ifcAPI.Init();
-
-                if (cancelled) return;
-
-                // Add WebIFC Loader with initialized IfcAPI
-                const ifcLoader = new WebIFCLoaderPlugin(viewer, {
-                    WebIFC: WebIFC,
-                    IfcAPI: ifcAPI,
-                });
-                ifcLoaderRef.current = ifcLoader;
+                // Add XKT Loader (for loading XKT files converted from IFC by backend)
+                const xktLoader = new XKTLoaderPlugin(viewer);
+                xktLoaderRef.current = xktLoader;
 
                 // Add Section Planes
                 const sectionPlanes = new SectionPlanesPlugin(viewer, {
@@ -222,7 +209,7 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
     // Handle file upload
     const handleFileUpload = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
-        if (!file || !ifcLoaderRef.current || !viewerRef.current) {
+        if (!file || !xktLoaderRef.current || !viewerRef.current) {
             setStatus('error');
             setStatusMessage('Viewer chưa sẵn sàng. Vui lòng tải lại trang.');
             return;
@@ -244,34 +231,65 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
 
         setFileName(file.name);
         setStatus('loading');
-        setStatusMessage(`Đang tải "${file.name}" (${fileSizeMB.toFixed(1)}MB)...`);
+        setStatusMessage(`Đang upload "${file.name}" (${fileSizeMB.toFixed(1)}MB)...`);
         setLoadingProgress(0);
 
         try {
-            // Create object URL for the file
-            const fileUrl = URL.createObjectURL(file);
+            // Step 1: Upload IFC to backend for conversion
+            const formData = new FormData();
+            formData.append('ifc', file);
 
-            // Load the IFC model
-            const model = ifcLoaderRef.current.load({
-                id: `model-${Date.now()}`,
-                src: fileUrl,
-                edges: true,
-                excludeTypes: [], // Load all types
+            setLoadingProgress(10);
+            const uploadResponse = await fetch(`${IFC_CONVERTER_API}/convert`, {
+                method: 'POST',
+                body: formData,
             });
 
-            // Track loading progress
-            let progressInterval = setInterval(() => {
-                setLoadingProgress(prev => {
-                    if (prev >= 90) {
-                        clearInterval(progressInterval);
-                        return 90;
-                    }
-                    return prev + Math.random() * 10;
-                });
-            }, 500);
+            if (!uploadResponse.ok) {
+                throw new Error(`Upload failed: ${uploadResponse.statusText}`);
+            }
+
+            const { id: conversionId } = await uploadResponse.json();
+            setStatusMessage(`Đang convert "${file.name}" sang XKT...`);
+            setLoadingProgress(30);
+
+            // Step 2: Poll for conversion status
+            let xktUrl = '';
+            let attempts = 0;
+            const maxAttempts = 60; // 2 minutes max
+
+            while (attempts < maxAttempts) {
+                const statusResponse = await fetch(`${IFC_CONVERTER_API}/status/${conversionId}`);
+                const statusData = await statusResponse.json();
+
+                if (statusData.status === 'completed') {
+                    xktUrl = `${IFC_CONVERTER_API}/download/${conversionId}`;
+                    break;
+                } else if (statusData.status === 'error') {
+                    throw new Error(statusData.error || 'Conversion failed');
+                }
+
+                // Update progress
+                setLoadingProgress(30 + Math.min(attempts * 1, 50));
+                await new Promise(resolve => setTimeout(resolve, 2000));
+                attempts++;
+            }
+
+            if (!xktUrl) {
+                throw new Error('Conversion timeout - vui lòng thử lại');
+            }
+
+            setStatusMessage(`Đang tải mô hình 3D...`);
+            setLoadingProgress(85);
+
+            // Step 3: Load XKT model
+            const model = xktLoaderRef.current.load({
+                id: `model-${Date.now()}`,
+                src: xktUrl,
+                edges: true,
+            });
 
             model.on('loaded', () => {
-                clearInterval(progressInterval);
                 setLoadingProgress(100);
                 setModelLoaded(true);
                 setStatus('success');
@@ -292,29 +310,17 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
                     setStatus('idle');
                     setStatusMessage('');
                 }, 3000);
-
-                // Cleanup URL
-                URL.revokeObjectURL(fileUrl);
             });
 
             model.on('error', (err: any) => {
-                clearInterval(progressInterval);
-                console.error('IFC load error details:', {
-                    error: err,
-                    message: err?.message,
-                    name: err?.name,
-                    stack: err?.stack,
-                    type: typeof err
-                });
+                console.error('XKT load error:', err);
                 setStatus('error');
-                const errorMsg = err?.message || err?.toString?.() ||
-                    (typeof err === 'string' ? err : 'Lỗi không xác định khi parse IFC');
+                const errorMsg = err?.message || 'Lỗi không xác định khi load XKT';
                 setStatusMessage(`Lỗi load model: ${errorMsg}`);
-                URL.revokeObjectURL(fileUrl);
             });
 
         } catch (error: any) {
-            console.error('Upload error:', error);
+            console.error('Upload/conversion error:', error);
             setStatus('error');
             setStatusMessage(`Lỗi: ${error.message}`);
         }
