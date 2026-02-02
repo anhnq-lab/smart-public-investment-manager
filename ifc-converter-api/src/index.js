@@ -4,7 +4,6 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 const { v4: uuidv4 } = require('uuid');
-const { spawn } = require('child_process');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -67,48 +66,20 @@ app.get('/health', (req, res) => {
 // Store conversion jobs
 const jobs = new Map();
 
-// Convert IFC to XKT using CLI
-function runConvert2xkt(inputPath, outputPath) {
-    return new Promise((resolve, reject) => {
-        // Use npx to run convert2xkt CLI
-        const args = [
-            'convert2xkt',
-            '-s', inputPath,
-            '-o', outputPath
-        ];
+// Import xeokit-convert for IFC to XKT conversion
+const { convert2xkt } = require('@xeokit/xeokit-convert/dist/convert2xkt.cjs.js');
 
-        console.log(`Running: npx ${args.join(' ')}`);
+// Convert IFC to XKT using @xeokit/xeokit-convert API
+async function runConvertIFCtoXKT(inputPath, outputPath) {
+    const sourceData = fs.readFileSync(inputPath);
 
-        const process = spawn('npx', args, {
-            cwd: path.join(__dirname, '..'),
-            shell: true
-        });
-
-        let stdout = '';
-        let stderr = '';
-
-        process.stdout.on('data', (data) => {
-            stdout += data.toString();
-            console.log(`[stdout] ${data}`);
-        });
-
-        process.stderr.on('data', (data) => {
-            stderr += data.toString();
-            console.log(`[stderr] ${data}`);
-        });
-
-        process.on('close', (code) => {
-            if (code === 0) {
-                resolve({ stdout, stderr });
-            } else {
-                reject(new Error(`Process exited with code ${code}: ${stderr}`));
-            }
-        });
-
-        process.on('error', (err) => {
-            reject(err);
-        });
+    const outputXKTData = await convert2xkt({
+        sourceData: sourceData,
+        outputXKTModel: true
     });
+
+    fs.writeFileSync(outputPath, Buffer.from(outputXKTData));
+    console.log(`Converted: ${inputPath} -> ${outputPath}`);
 }
 
 // Convert IFC to XKT
@@ -147,7 +118,7 @@ app.post('/convert', upload.single('file'), async (req, res) => {
 
         jobs.set(jobId, { ...jobs.get(jobId), progress: 20 });
 
-        await runConvert2xkt(inputPath, outputPath);
+        await runConvertIFCtoXKT(inputPath, outputPath);
 
         // Verify output exists
         if (!fs.existsSync(outputPath)) {
