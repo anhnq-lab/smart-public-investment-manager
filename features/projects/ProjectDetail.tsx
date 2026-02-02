@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ProjectService } from '@/services/ProjectService';
 import { NationalGatewayService, SyncResult } from '@/services/NationalGatewayService';
-import { Project, Employee } from '@/types';
+import { Project, Employee, ProjectStage } from '@/types';
 import { useTasks, useUpdateTask } from '@/hooks/useTasks';
 import { useBiddingPackages } from '@/hooks/useBiddingPackages';
 import { mockEmployees } from '@/mockData';
@@ -12,7 +12,8 @@ import { ProjectPlanTab } from './components/tabs/ProjectPlanTab';
 import { ProjectBimTab } from './components/tabs/ProjectBimTab';
 import { ProjectPackagesTab } from './components/tabs/ProjectPackagesTab';
 import { ProjectCapitalTab } from './components/tabs/ProjectCapitalTab';
-import { Info, CalendarCheck, Briefcase, Mail, FolderOpen, Layers, Landmark } from 'lucide-react';
+import { ProjectDocumentsTab } from './components/tabs/ProjectDocumentsTab';
+import { Info, CalendarCheck, Briefcase, FolderOpen, Layers, Landmark } from 'lucide-react';
 
 const ProjectDetail: React.FC = () => {
     const { id } = useParams<{ id: string }>();
@@ -20,7 +21,7 @@ const ProjectDetail: React.FC = () => {
     // State
     const [project, setProject] = useState<Project | null>(null);
     const [loading, setLoading] = useState(true);
-    const [activeTab, setActiveTab] = useState<'info' | 'overview' | 'packages' | 'legal' | 'plan' | 'cde' | 'bim' | 'capital'>('info');
+    const [activeTab, setActiveTab] = useState<'info' | 'plan' | 'packages' | 'capital' | 'documents' | 'bim'>('info');
 
     // Module 1: National Gateway State
     const [isSyncing, setIsSyncing] = useState(false);
@@ -119,8 +120,7 @@ const ProjectDetail: React.FC = () => {
                         { id: 'plan', label: 'KẾ HOẠCH', icon: CalendarCheck },
                         { id: 'packages', label: 'GÓI THẦU', icon: Briefcase },
                         { id: 'capital', label: 'VỐN & GIẢI NGÂN', icon: Landmark },
-                        { id: 'legal', label: 'VĂN BẢN', icon: Mail },
-                        { id: 'cde', label: 'HỒ SƠ CDE', icon: FolderOpen },
+                        { id: 'documents', label: 'HỒ SƠ', icon: FolderOpen },
                         { id: 'bim', label: 'MÔ HÌNH BIM', icon: Layers },
                     ].map(t => (
                         <button
@@ -167,15 +167,14 @@ const ProjectDetail: React.FC = () => {
                     {activeTab === 'capital' && (
                         <ProjectCapitalTab projectID={project.ProjectID} />
                     )}
+                    {activeTab === 'documents' && (
+                        <ProjectDocumentsTab
+                            projectID={project.ProjectID}
+                            projectStage={project.Stage || ProjectStage.Execution}
+                        />
+                    )}
                     {activeTab === 'bim' && (
                         <ProjectBimTab projectID={project.ProjectID} />
-                    )}
-                    {activeTab !== 'info' && activeTab !== 'plan' && activeTab !== 'bim' && activeTab !== 'packages' && activeTab !== 'capital' && (
-                        <div className="bg-white p-10 rounded-2xl border border-dashed border-gray-200 text-center text-gray-400">
-                            <div className="mb-2"><Layers className="w-10 h-10 mx-auto text-gray-200" /></div>
-                            <h3 className="font-bold text-gray-600">Tính năng đang cập nhật</h3>
-                            <p className="text-sm">Tab {activeTab.toUpperCase()} sẽ được hoàn thiện trong các bước tiếp theo.</p>
-                        </div>
                     )}
                 </div>
             </div>
