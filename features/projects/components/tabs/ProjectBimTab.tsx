@@ -574,33 +574,45 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
             <div className="flex-1 flex overflow-hidden">
                 {/* LEFT SIDEBAR - Model Tree (Responsive) */}
                 {showModelTree && (
-                    <div className={`${isMobile ? 'absolute left-0 top-0 bottom-0 z-20 w-64' : isTablet ? 'absolute left-0 top-0 bottom-0 z-20 w-56' : 'w-64'} ${isDarkMode ? 'bg-slate-800/95 border-slate-700/30' : 'bg-white/95 border-gray-200'} ${isMobile || isTablet ? 'backdrop-blur-sm shadow-2xl' : ''} border-r flex flex-col shrink-0`}>
-                        <div className="p-2.5 border-b border-slate-700/30 flex items-center justify-between">
+                    <div className={`${isMobile || isTablet ? 'absolute left-0 top-0 bottom-0 z-30 w-72' : 'w-72'} ${isDarkMode ? 'bg-slate-900/98 border-slate-700/50' : 'bg-white/98 border-gray-200'} ${isMobile || isTablet ? 'backdrop-blur-xl shadow-2xl' : ''} border-r flex flex-col shrink-0`}>
+                        {/* Header with close button */}
+                        <div className="p-3 border-b border-slate-700/30 flex items-center justify-between bg-gradient-to-r from-blue-500/10 to-transparent">
                             <div className="flex items-center gap-2">
-                                <Layers className="w-4 h-4 text-blue-400" />
-                                <span className="text-xs font-bold text-slate-300 uppercase tracking-wide">Model Tree</span>
+                                <div className="w-8 h-8 rounded-lg bg-blue-500/20 flex items-center justify-center">
+                                    <Layers className="w-4 h-4 text-blue-400" />
+                                </div>
+                                <div>
+                                    <span className="text-sm font-bold text-white">Model Tree</span>
+                                    {modelLoaded && (
+                                        <p className="text-[10px] text-slate-500">{objectCount} objects</p>
+                                    )}
+                                </div>
                             </div>
                             <button
                                 onClick={() => setShowModelTree(false)}
-                                className="text-slate-500 hover:text-white p-1 rounded hover:bg-white/10"
+                                className="w-8 h-8 flex items-center justify-center text-slate-500 hover:text-white rounded-lg hover:bg-white/10 transition-all"
                             >
-                                <PanelLeftClose className="w-4 h-4" />
+                                <X className="w-5 h-5" />
                             </button>
                         </div>
+
+                        {/* Tree content */}
                         <div
                             ref={treeContainerRef}
-                            className="flex-1 overflow-y-auto p-1 xeokit-tree-view"
+                            className="flex-1 overflow-y-auto p-2 xeokit-tree-view"
                             style={{
-                                fontSize: '11px',
+                                fontSize: '12px',
                                 color: isDarkMode ? '#94a3b8' : '#475569',
                             }}
                         >
                             {!modelLoaded && (
-                                <div className="flex flex-col items-center justify-center h-full text-slate-500 p-4">
-                                    <Cuboid className="w-10 h-10 text-slate-700 mb-3" />
-                                    <p className="text-sm font-medium">Chưa có model</p>
-                                    <p className="text-[10px] text-slate-600 mt-1 text-center">
-                                        Upload file IFC để xem cấu trúc
+                                <div className="flex flex-col items-center justify-center h-full text-slate-500 p-6">
+                                    <div className="w-16 h-16 rounded-2xl bg-slate-800/50 flex items-center justify-center mb-4">
+                                        <Cuboid className="w-8 h-8 text-slate-600" />
+                                    </div>
+                                    <p className="text-sm font-medium text-slate-400">No model loaded</p>
+                                    <p className="text-[11px] text-slate-600 mt-1 text-center">
+                                        Upload an IFC file to view structure
                                     </p>
                                 </div>
                             )}
@@ -818,95 +830,169 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
                     </div>
                 </div>
 
-                {/* RIGHT SIDEBAR - Properties (Responsive) */}
+                {/* RIGHT SIDEBAR / BOTTOM SHEET - Properties (iPad: Bottom Sheet) */}
                 {showProperties && (
-                    <div className={`${isMobile ? 'absolute right-0 top-0 bottom-0 z-20 w-64' : isTablet ? 'absolute right-0 top-0 bottom-0 z-20 w-60' : 'w-72'} ${isDarkMode ? 'bg-slate-800/95 border-slate-700/30' : 'bg-white/95 border-gray-200'} ${isMobile || isTablet ? 'backdrop-blur-sm shadow-2xl' : ''} border-l flex flex-col shrink-0`}>
-                        <div className="p-2.5 border-b border-slate-700/30 flex items-center justify-between">
-                            <div className="flex items-center gap-2">
-                                <Info className="w-4 h-4 text-blue-400" />
-                                <span className="text-xs font-bold text-slate-300 uppercase tracking-wide">Properties</span>
-                            </div>
-                            <button
-                                onClick={() => setShowProperties(false)}
-                                className="text-slate-500 hover:text-white p-1 rounded hover:bg-white/10"
-                            >
-                                <PanelRightClose className="w-4 h-4" />
-                            </button>
-                        </div>
-                        <div className="flex-1 overflow-y-auto">
-                            {selectedElement ? (
-                                <div className="divide-y divide-slate-700/30">
-                                    {/* Element Header */}
-                                    <div className="p-3 bg-gradient-to-r from-blue-500/10 to-transparent">
-                                        <p className="text-[10px] font-bold text-blue-400 uppercase mb-1">{selectedElement.type}</p>
-                                        <p className="font-bold text-white text-sm">{selectedElement.name}</p>
-                                    </div>
-
-                                    {/* Identity */}
-                                    <div className="p-3">
-                                        <p className="text-[10px] font-bold text-slate-500 uppercase mb-2 tracking-wide">Định danh</p>
-                                        <div className="space-y-2">
-                                            <div className="flex justify-between items-start">
-                                                <span className="text-xs text-slate-500">ID</span>
-                                                <span className="text-xs text-slate-300 font-mono bg-slate-700/50 px-1.5 py-0.5 rounded truncate max-w-[150px]">{selectedElement.id}</span>
-                                            </div>
-                                            <div className="flex justify-between">
-                                                <span className="text-xs text-slate-500">IFC Type</span>
-                                                <span className="text-xs text-cyan-400">{selectedElement.type}</span>
-                                            </div>
+                    <>
+                        {/* Desktop: Right Sidebar */}
+                        {!isMobile && !isTablet && (
+                            <div className={`w-80 ${isDarkMode ? 'bg-slate-900/98 border-slate-700/50' : 'bg-white/98 border-gray-200'} border-l flex flex-col shrink-0`}>
+                                <div className="p-3 border-b border-slate-700/30 flex items-center justify-between bg-gradient-to-r from-cyan-500/10 to-transparent">
+                                    <div className="flex items-center gap-2">
+                                        <div className="w-8 h-8 rounded-lg bg-cyan-500/20 flex items-center justify-center">
+                                            <Info className="w-4 h-4 text-cyan-400" />
                                         </div>
+                                        <span className="text-sm font-bold text-white">Properties</span>
                                     </div>
-
-                                    {/* Properties */}
-                                    {Object.keys(selectedElement.properties).length > 0 && (
-                                        <div className="p-3">
-                                            <p className="text-[10px] font-bold text-slate-500 uppercase mb-2 tracking-wide">Properties</p>
-                                            <div className="space-y-2">
-                                                {Object.entries(selectedElement.properties).slice(0, 10).map(([key, value]) => (
-                                                    <div key={key} className="flex justify-between">
-                                                        <span className="text-xs text-slate-500 truncate max-w-[100px]">{key}</span>
-                                                        <span className="text-xs text-slate-300 truncate max-w-[120px]">{String(value)}</span>
-                                                    </div>
-                                                ))}
+                                    <button
+                                        onClick={() => setShowProperties(false)}
+                                        className="w-8 h-8 flex items-center justify-center text-slate-500 hover:text-white rounded-lg hover:bg-white/10 transition-all"
+                                    >
+                                        <X className="w-5 h-5" />
+                                    </button>
+                                </div>
+                                <div className="flex-1 overflow-y-auto">
+                                    {selectedElement ? (
+                                        <div className="divide-y divide-slate-700/30">
+                                            <div className="p-3 bg-gradient-to-r from-blue-500/10 to-transparent">
+                                                <p className="text-[10px] font-bold text-blue-400 uppercase mb-1">{selectedElement.type}</p>
+                                                <p className="font-bold text-white text-sm">{selectedElement.name}</p>
                                             </div>
+                                            <div className="p-3">
+                                                <p className="text-[10px] font-bold text-slate-500 uppercase mb-2 tracking-wide">Identity</p>
+                                                <div className="space-y-2">
+                                                    <div className="flex justify-between items-start">
+                                                        <span className="text-xs text-slate-500">ID</span>
+                                                        <span className="text-xs text-slate-300 font-mono bg-slate-700/50 px-1.5 py-0.5 rounded truncate max-w-[150px]">{selectedElement.id}</span>
+                                                    </div>
+                                                    <div className="flex justify-between">
+                                                        <span className="text-xs text-slate-500">IFC Type</span>
+                                                        <span className="text-xs text-cyan-400">{selectedElement.type}</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            {Object.keys(selectedElement.properties).length > 0 && (
+                                                <div className="p-3">
+                                                    <p className="text-[10px] font-bold text-slate-500 uppercase mb-2 tracking-wide">Properties</p>
+                                                    <div className="space-y-2">
+                                                        {Object.entries(selectedElement.properties).slice(0, 10).map(([key, value]) => (
+                                                            <div key={key} className="flex justify-between">
+                                                                <span className="text-xs text-slate-500 truncate max-w-[100px]">{key}</span>
+                                                                <span className="text-xs text-slate-300 truncate max-w-[120px]">{String(value)}</span>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </div>
+                                    ) : (
+                                        <div className="h-full flex flex-col items-center justify-center text-slate-500 p-6">
+                                            <div className="w-16 h-16 rounded-2xl bg-slate-800/50 flex items-center justify-center mb-4">
+                                                <Target className="w-8 h-8 text-slate-600" />
+                                            </div>
+                                            <p className="text-sm font-medium text-slate-400">Select an element</p>
+                                            <p className="text-[11px] text-slate-600 text-center">
+                                                Click on a model element to view properties
+                                            </p>
                                         </div>
                                     )}
                                 </div>
-                            ) : (
-                                <div className="h-full flex flex-col items-center justify-center text-slate-500 p-6">
-                                    <Target className="w-12 h-12 text-slate-700 mb-3" />
-                                    <p className="text-sm font-medium mb-1">Chọn phần tử</p>
-                                    <p className="text-[11px] text-slate-600 text-center">
-                                        Click vào một phần tử trong model để xem thuộc tính
-                                    </p>
+                            </div>
+                        )}
+
+                        {/* iPad/Mobile: Bottom Sheet */}
+                        {(isMobile || isTablet) && (
+                            <div className="absolute bottom-0 left-0 right-0 z-30 bg-slate-900/98 backdrop-blur-xl rounded-t-3xl border-t border-slate-700/50 shadow-2xl max-h-[60%] flex flex-col">
+                                {/* Drag Handle */}
+                                <div className="flex justify-center py-3">
+                                    <div className="w-12 h-1.5 rounded-full bg-slate-600" />
                                 </div>
-                            )}
-                        </div>
-                    </div>
+
+                                {/* Header */}
+                                <div className="px-4 pb-3 flex items-center justify-between border-b border-slate-700/30">
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-10 h-10 rounded-xl bg-cyan-500/20 flex items-center justify-center">
+                                            <Info className="w-5 h-5 text-cyan-400" />
+                                        </div>
+                                        <div>
+                                            <span className="text-base font-bold text-white">Properties</span>
+                                            {selectedElement && (
+                                                <p className="text-xs text-slate-500">{selectedElement.type}</p>
+                                            )}
+                                        </div>
+                                    </div>
+                                    <button
+                                        onClick={() => setShowProperties(false)}
+                                        className="w-10 h-10 flex items-center justify-center text-slate-500 hover:text-white rounded-xl hover:bg-white/10 transition-all"
+                                    >
+                                        <X className="w-6 h-6" />
+                                    </button>
+                                </div>
+
+                                {/* Content */}
+                                <div className="flex-1 overflow-y-auto p-4">
+                                    {selectedElement ? (
+                                        <div className="space-y-4">
+                                            <div className="bg-blue-500/10 rounded-xl p-4">
+                                                <p className="text-xs font-bold text-blue-400 uppercase mb-1">{selectedElement.type}</p>
+                                                <p className="font-bold text-white text-lg">{selectedElement.name}</p>
+                                            </div>
+                                            <div className="grid grid-cols-2 gap-3">
+                                                <div className="bg-slate-800/50 rounded-xl p-3">
+                                                    <p className="text-[10px] text-slate-500 uppercase mb-1">ID</p>
+                                                    <p className="text-xs text-slate-300 font-mono truncate">{selectedElement.id}</p>
+                                                </div>
+                                                <div className="bg-slate-800/50 rounded-xl p-3">
+                                                    <p className="text-[10px] text-slate-500 uppercase mb-1">IFC Type</p>
+                                                    <p className="text-xs text-cyan-400">{selectedElement.type}</p>
+                                                </div>
+                                            </div>
+                                            {Object.keys(selectedElement.properties).length > 0 && (
+                                                <div className="bg-slate-800/30 rounded-xl p-3">
+                                                    <p className="text-xs font-bold text-slate-500 uppercase mb-3">Properties</p>
+                                                    <div className="space-y-2">
+                                                        {Object.entries(selectedElement.properties).slice(0, 8).map(([key, value]) => (
+                                                            <div key={key} className="flex justify-between py-1">
+                                                                <span className="text-sm text-slate-500">{key}</span>
+                                                                <span className="text-sm text-slate-300">{String(value)}</span>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </div>
+                                    ) : (
+                                        <div className="flex flex-col items-center justify-center py-8 text-slate-500">
+                                            <div className="w-16 h-16 rounded-2xl bg-slate-800/50 flex items-center justify-center mb-4">
+                                                <Target className="w-8 h-8 text-slate-600" />
+                                            </div>
+                                            <p className="text-base font-medium text-slate-400">Select an element</p>
+                                            <p className="text-sm text-slate-600 mt-1">Tap on a model element</p>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        )}
+                    </>
                 )}
             </div>
 
-            {/* FOOTER STATUS BAR - Responsive */}
-            <div className={`${isMobile ? 'h-10' : 'h-8'} ${isDarkMode ? 'bg-slate-800/90 border-slate-700/50' : 'bg-white border-gray-200'} border-t flex items-center justify-between ${isMobile ? 'px-2' : 'px-3'} text-[10px] text-slate-500 shrink-0`}>
-                <div className="flex items-center gap-2 md:gap-4">
-                    <span className="hidden md:inline">Viewer: <span className="text-cyan-400">xeokit SDK</span></span>
-                    <span className="hidden md:inline">•</span>
-                    <span className="truncate max-w-[150px] md:max-w-none">{modelLoaded ? `${fileName} | ${objectCount} elements` : 'No model'}</span>
+            {/* FOOTER STATUS BAR - Desktop only (iPad hides for max 3D space) */}
+            {!isMobile && !isTablet && (
+                <div className={`h-8 ${isDarkMode ? 'bg-slate-800/90 border-slate-700/50' : 'bg-white border-gray-200'} border-t flex items-center justify-between px-4 text-[11px] text-slate-500 shrink-0`}>
+                    <div className="flex items-center gap-4">
+                        <span>Viewer: <span className="text-cyan-400 font-medium">xeokit SDK</span></span>
+                        <span className="text-slate-700">•</span>
+                        <span>{modelLoaded ? `${fileName} | ${objectCount} elements` : 'No model loaded'}</span>
+                    </div>
+                    <div className="flex items-center gap-3 text-slate-600">
+                        <span>LMB: Rotate</span>
+                        <span>•</span>
+                        <span>RMB: Pan</span>
+                        <span>•</span>
+                        <span>Scroll: Zoom</span>
+                    </div>
                 </div>
-                <div className="flex items-center gap-2 md:gap-4">
-                    {isMobile || isTablet ? (
-                        <span className="text-[9px]">Touch: Rotate • 2-finger: Pan/Zoom</span>
-                    ) : (
-                        <>
-                            <span>LMB: Rotate</span>
-                            <span>•</span>
-                            <span>RMB: Pan</span>
-                            <span>•</span>
-                            <span>Scroll: Zoom</span>
-                        </>
-                    )}
-                </div>
-            </div>
+            )}
         </div>
     );
 };
