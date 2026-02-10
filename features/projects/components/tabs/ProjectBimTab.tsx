@@ -2,6 +2,8 @@ import React, { useRef, useEffect, useState, useCallback } from 'react';
 import * as OBC from '@thatopen/components';
 import * as OBCF from '@thatopen/components-front';
 import * as THREE from 'three';
+// @ts-ignore - Vite ?url import for fragments worker
+import fragmentsWorkerUrl from '@thatopen/fragments/dist/Worker/worker.mjs?url';
 import {
     Upload, Loader2, Box, ArrowUp, Square,
     ArrowRight as ArrowRightIcon, Building2, PanelLeft,
@@ -140,11 +142,7 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
 
                 // Initialize FragmentsManager with worker (required in v3.3)
                 const fragments = components.get(OBC.FragmentsManager);
-                const workerUrl = new URL(
-                    '@thatopen/fragments/dist/Worker/worker.mjs',
-                    import.meta.url
-                ).href;
-                fragments.init(workerUrl);
+                fragments.init(fragmentsWorkerUrl);
 
                 // Setup IFC loader
                 const ifcLoader = components.get(OBC.IfcLoader);
