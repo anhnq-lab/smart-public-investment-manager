@@ -138,22 +138,44 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
                 const grids = components.get(OBC.Grids);
                 grids.create(world);
 
-                // Initialize FragmentsManager with worker (optional - for pre-converted fragments)
+                // Initialize FragmentsManager with worker (official v3.3 pattern)
+                // Must fetch → Blob → ObjectURL (direct URL does NOT work)
                 const fragments = components.get(OBC.FragmentsManager);
-                try {
-                    fragments.init('https://thatopen.github.io/engine_fragment/resources/worker.mjs');
-                } catch (e) {
-                    console.warn('FragmentsManager worker init failed (non-critical):', e);
-                }
+                const workerGithubUrl = 'https://thatopen.github.io/engine_fragment/resources/worker.mjs';
+                const fetchedWorker = await fetch(workerGithubUrl);
+                const workerBlob = await fetchedWorker.blob();
+                const workerFile = new File([workerBlob], 'worker.mjs', { type: 'text/javascript' });
+                const workerUrl = URL.createObjectURL(workerFile);
+                fragments.init(workerUrl);
 
-                // Setup IFC loader - IMPORTANT: set WASM path BEFORE calling setup()
+                // Camera update for fragments
+                world.camera.controls.addEventListener('update', () => fragments.core.update());
+
+                // Auto-add loaded models to scene
+                fragments.list.onItemSet.add(({ value: model }: any) => {
+                    model.useCamera(world.camera.three);
+                    world.scene.three.add(model.object);
+                    fragments.core.update(true);
+                });
+
+                // Remove z-fighting on materials
+                fragments.core.models.materials.list.onItemSet.add(({ value: material }: any) => {
+                    if (!('isLodMaterial' in material && material.isLodMaterial)) {
+                        material.polygonOffset = true;
+                        material.polygonOffsetUnits = 1;
+                        material.polygonOffsetFactor = Math.random();
+                    }
+                });
+
+                // Setup IFC loader with WASM config (pass directly to setup)
                 const ifcLoader = components.get(OBC.IfcLoader);
-                ifcLoader.settings.wasm = {
-                    path: 'https://unpkg.com/web-ifc@0.0.75/',
-                    absolute: true,
-                };
-                ifcLoader.settings.webIfc.COORDINATE_TO_ORIGIN = true;
-                await ifcLoader.setup();
+                await ifcLoader.setup({
+                    autoSetWasm: false,
+                    wasm: {
+                        path: 'https://unpkg.com/web-ifc@0.0.74/',
+                        absolute: true,
+                    },
+                });
 
                 // Setup Highlighter
                 const highlighter = components.get(OBCF.Highlighter);

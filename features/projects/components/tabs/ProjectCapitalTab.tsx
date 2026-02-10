@@ -211,7 +211,7 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
                 <div className="lg:col-span-2 bg-white p-5 rounded-xl border border-gray-200 shadow-sm">
                     <h3 className="text-sm font-bold text-gray-800 mb-4 flex items-center gap-2">
                         <TrendingUp className="w-4 h-4 text-blue-600" />
-                        Giải ngân theo tháng (NĐ 99/2021)
+                        Giải ngân theo tháng (NĐ 99/2021/NĐ-CP)
                     </h3>
                     <div className="h-64 w-full">
                         <ResponsiveContainer width="100%" height="100%">
@@ -298,7 +298,7 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
                 <div className="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
                     <h3 className="text-sm font-bold text-gray-800 uppercase tracking-wider flex items-center gap-2">
                         <Calendar className="w-4 h-4 text-blue-600" />
-                        Kế hoạch vốn (Luật ĐTC 2019)
+                        Kế hoạch vốn (Luật ĐTC 2024 - 58/2024/QH15)
                     </h3>
                 </div>
                 <div className="overflow-x-auto">
