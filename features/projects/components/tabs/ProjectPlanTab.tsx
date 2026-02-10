@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { Task, TaskStatus, Employee } from '@/types';
+import { Task, TaskStatus, Employee, ProjectGroup } from '@/types';
 import {
     Layers, CheckCircle2, Circle, Clock, ChevronDown, ChevronRight,
     FileText, AlertCircle, Plus, Calendar, User, Flag
@@ -20,60 +20,139 @@ interface ProjectPlanTabProps {
     onSaveTask?: (task: Task) => void;
     employees?: Employee[];
     currentUserId?: string;
+    groupCode?: ProjectGroup;
+    isODA?: boolean;
 }
 
-// Decree 175 Standard Phases
-const DECREE_175_PHASES = [
-    {
-        id: 'PHASE_1',
-        title: 'I. GIAI ĐOẠN CHUẨN BỊ DỰ ÁN',
-        description: 'Lập, thẩm định, phê duyệt chủ trương và dự án đầu tư',
-        items: [
-            { id: '1.1', title: 'Lập đề xuất chương trình, dự án (ODA)', code: 'PREP_ODA' },
-            { id: '1.2', title: 'Lập, thẩm định Báo cáo NCTKT / Đề xuất chủ trương đầu tư', code: 'PREP_POLICY' },
-            { id: '1.3', title: 'Khảo sát xây dựng phục vụ lập dự án', code: 'PREP_SURVEY' },
-            { id: '1.4', title: 'Lập, thẩm định, phê duyệt Quy hoạch xây dựng', code: 'PREP_PLANNING' },
-            { id: '1.5', title: 'Lập, thẩm định Báo cáo NCKT / Báo cáo KT-KT', code: 'PREP_FEASIBILITY' },
-            { id: '1.6', title: 'Quyết định đầu tư xây dựng', code: 'PREP_DECISION' }
-        ]
-    },
-    {
-        id: 'PHASE_2',
-        title: 'II. GIAI ĐOẠN THỰC HIỆN DỰ ÁN',
-        description: 'Triển khai chi tiết, thi công và giám sát',
-        items: [
-            { id: '2.1', title: 'Chuẩn bị mặt bằng xây dựng, rà phá bom mìn', code: 'IMPL_SITE' },
-            { id: '2.2', title: 'Khảo sát xây dựng phục vụ thiết kế', code: 'IMPL_SURVEY' },
-            { id: '2.3', title: 'Lập, thẩm định, phê duyệt Thiết kế & Dự toán', code: 'IMPL_DESIGN' },
-            { id: '2.4', title: 'Cấp Giấy phép xây dựng', code: 'IMPL_PERMIT' },
-            { id: '2.5', title: 'Lựa chọn nhà thầu và ký kết hợp đồng', code: 'IMPL_BIDDING' },
-            { id: '2.6', title: 'Thi công xây dựng công trình', code: 'IMPL_CONSTRUCTION' },
-            { id: '2.7', title: 'Giám sát thi công xây dựng', code: 'IMPL_SUPERVISION' },
-            { id: '2.8', title: 'Tạm ứng, thanh toán khối lượng hoàn thành', code: 'IMPL_PAYMENT' },
-            { id: '2.9', title: 'Nghiệm thu hoàn thành công trình', code: 'IMPL_ACCEPTANCE' }
-        ]
-    },
-    {
-        id: 'PHASE_3',
-        title: 'III. GIAI ĐOẠN KẾT THÚC XÂY DỰNG',
-        description: 'Bàn giao, quyết toán và bảo hành',
-        items: [
-            { id: '3.1', title: 'Quyết toán hợp đồng xây dựng', code: 'CLOSE_CONTRACT_SETTLEMENT' },
-            { id: '3.2', title: 'Quyết toán vốn đầu tư dự án hoàn thành', code: 'CLOSE_CAPITAL_SETTLEMENT' },
-            { id: '3.3', title: 'Bàn giao công trình đưa vào sử dụng', code: 'CLOSE_HANDOVER' },
-            { id: '3.4', title: 'Bảo hành công trình xây dựng', code: 'CLOSE_WARRANTY' },
-            { id: '3.5', title: 'Bàn giao hồ sơ lưu trữ', code: 'CLOSE_ARCHIVE' }
-        ]
+/**
+ * Sinh kế hoạch thực hiện dự án theo nhóm (NĐ 175/2024 & Luật ĐTC 2019)
+ * - Nhóm A/QN: BC NCTKT → BC NCKT → 3 bước TK
+ * - Nhóm B: Đề xuất chủ trương ĐT → BC NCKT → 2 bước TK  
+ * - Nhóm C: Đề xuất chủ trương ĐT → BC KT-KT → 1 bước TK
+ */
+const getProjectPhases = (groupCode: ProjectGroup = ProjectGroup.C, isODA: boolean = false) => {
+    // --- PHASE 1: Chuẩn bị dự án ---
+    const phase1Items: { id: string; title: string; code: string }[] = [];
+    let stepNum = 1;
+
+    // 1.1 ODA - chỉ khi dự án sử dụng vốn ODA
+    if (isODA) {
+        phase1Items.push({ id: `1.${stepNum}`, title: 'Lập đề xuất chương trình, dự án (ODA)', code: 'PREP_ODA' });
+        stepNum++;
     }
-];
+
+    // 1.2 Chủ trương đầu tư
+    if (groupCode === ProjectGroup.A || groupCode === ProjectGroup.QN) {
+        // Nhóm A/QN: Lập Báo cáo nghiên cứu tiền khả thi
+        phase1Items.push({ id: `1.${stepNum}`, title: 'Lập, thẩm định Báo cáo nghiên cứu tiền khả thi (NCTKT)', code: 'PREP_PREFEASIBILITY' });
+        stepNum++;
+        phase1Items.push({ id: `1.${stepNum}`, title: 'Quyết định chủ trương đầu tư', code: 'PREP_POLICY' });
+    } else {
+        // Nhóm B/C: Báo cáo đề xuất chủ trương đầu tư
+        phase1Items.push({ id: `1.${stepNum}`, title: 'Lập Báo cáo đề xuất chủ trương đầu tư', code: 'PREP_POLICY' });
+    }
+    stepNum++;
+
+    // Khảo sát XD
+    phase1Items.push({ id: `1.${stepNum}`, title: 'Khảo sát xây dựng phục vụ lập dự án', code: 'PREP_SURVEY' });
+    stepNum++;
+
+    // Quy hoạch XD
+    phase1Items.push({ id: `1.${stepNum}`, title: 'Lập, thẩm định, phê duyệt Quy hoạch xây dựng', code: 'PREP_PLANNING' });
+    stepNum++;
+
+    // BC NCKT hoặc BC KT-KT
+    if (groupCode === ProjectGroup.C) {
+        phase1Items.push({ id: `1.${stepNum}`, title: 'Lập, thẩm định Báo cáo kinh tế - kỹ thuật (BCKTKT)', code: 'PREP_FEASIBILITY' });
+    } else {
+        phase1Items.push({ id: `1.${stepNum}`, title: 'Lập, thẩm định Báo cáo nghiên cứu khả thi (BCNCKT)', code: 'PREP_FEASIBILITY' });
+    }
+    stepNum++;
+
+    // QĐ đầu tư
+    phase1Items.push({ id: `1.${stepNum}`, title: 'Quyết định phê duyệt dự án đầu tư xây dựng', code: 'PREP_DECISION' });
+
+    // --- PHASE 2: Thực hiện dự án ---
+    const phase2Items: { id: string; title: string; code: string }[] = [
+        { id: '2.1', title: 'Chuẩn bị mặt bằng xây dựng, rà phá bom mìn', code: 'IMPL_SITE' },
+        { id: '2.2', title: 'Khảo sát xây dựng phục vụ thiết kế', code: 'IMPL_SURVEY' },
+    ];
+
+    // Thiết kế theo nhóm
+    if (groupCode === ProjectGroup.C) {
+        // Nhóm C: thiết kế bản vẽ thi công (1 bước, nằm trong BCKTKT)
+        phase2Items.push({ id: '2.3', title: 'Thiết kế bản vẽ thi công & Dự toán', code: 'IMPL_DESIGN' });
+    } else {
+        // Nhóm A/B: thiết kế triển khai sau TKCS
+        phase2Items.push({ id: '2.3', title: 'Lập, thẩm định, phê duyệt Thiết kế xây dựng & Dự toán', code: 'IMPL_DESIGN' });
+    }
+
+    phase2Items.push(
+        { id: '2.4', title: 'Cấp Giấy phép xây dựng', code: 'IMPL_PERMIT' },
+        { id: '2.5', title: 'Lựa chọn nhà thầu và ký kết hợp đồng', code: 'IMPL_BIDDING' },
+        { id: '2.6', title: 'Thi công xây dựng công trình', code: 'IMPL_CONSTRUCTION' },
+        { id: '2.7', title: 'Giám sát thi công xây dựng', code: 'IMPL_SUPERVISION' },
+        { id: '2.8', title: 'Tạm ứng, thanh toán khối lượng hoàn thành', code: 'IMPL_PAYMENT' },
+        { id: '2.9', title: 'Nghiệm thu hoàn thành công trình', code: 'IMPL_ACCEPTANCE' }
+    );
+
+    // --- PHASE 3: Kết thúc xây dựng (giống nhau cho mọi nhóm) ---
+    const phase3Items = [
+        { id: '3.1', title: 'Quyết toán hợp đồng xây dựng', code: 'CLOSE_CONTRACT_SETTLEMENT' },
+        { id: '3.2', title: 'Quyết toán vốn đầu tư dự án hoàn thành', code: 'CLOSE_CAPITAL_SETTLEMENT' },
+        { id: '3.3', title: 'Bàn giao công trình đưa vào sử dụng', code: 'CLOSE_HANDOVER' },
+        { id: '3.4', title: 'Bảo hành công trình xây dựng', code: 'CLOSE_WARRANTY' },
+        { id: '3.5', title: 'Bàn giao hồ sơ lưu trữ', code: 'CLOSE_ARCHIVE' }
+    ];
+
+    return [
+        {
+            id: 'PHASE_1',
+            title: 'I. GIAI ĐOẠN CHUẨN BỊ DỰ ÁN',
+            description: groupCode === ProjectGroup.C
+                ? 'Lập đề xuất chủ trương, thẩm định BC KT-KT'
+                : groupCode === ProjectGroup.A || groupCode === ProjectGroup.QN
+                    ? 'Lập BC NCTKT, thẩm định, phê duyệt chủ trương và BC NCKT'
+                    : 'Lập đề xuất chủ trương, thẩm định BC NCKT',
+            items: phase1Items
+        },
+        {
+            id: 'PHASE_2',
+            title: 'II. GIAI ĐOẠN THỰC HIỆN DỰ ÁN',
+            description: 'Triển khai chi tiết, thi công và giám sát',
+            items: phase2Items
+        },
+        {
+            id: 'PHASE_3',
+            title: 'III. GIAI ĐOẠN KẾT THÚC XÂY DỰNG',
+            description: 'Bàn giao, quyết toán và bảo hành',
+            items: phase3Items
+        }
+    ];
+};
+
+/** Label nhóm dự án */
+const getGroupLabel = (g?: ProjectGroup) => {
+    switch (g) {
+        case ProjectGroup.QN: return 'Quan trọng QG';
+        case ProjectGroup.A: return 'Nhóm A';
+        case ProjectGroup.B: return 'Nhóm B';
+        case ProjectGroup.C: return 'Nhóm C';
+        default: return 'Nhóm C';
+    }
+};
 
 export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({
     tasks: initialTasks,
     projectID,
     onSaveTask,
     employees = [],
-    currentUserId
+    currentUserId,
+    groupCode = ProjectGroup.C,
+    isODA = false
 }) => {
+    // Dynamic phases based on project group
+    const DECREE_175_PHASES = useMemo(() => getProjectPhases(groupCode, isODA), [groupCode, isODA]);
     // 1. Local Tasks State (Optimistic UI)
     const [tasks, setTasks] = useState<Task[]>(initialTasks);
 
@@ -353,6 +432,14 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({
                         Căn cứ theo Điều 4, Nghị định 175/NĐ-CP về trình tự đầu tư xây dựng.
                     </p>
                 </div>
+                <span className={`px-3 py-1 text-xs font-bold rounded-full ${groupCode === ProjectGroup.A || groupCode === ProjectGroup.QN
+                        ? 'bg-red-100 text-red-700 border border-red-200'
+                        : groupCode === ProjectGroup.B
+                            ? 'bg-amber-100 text-amber-700 border border-amber-200'
+                            : 'bg-green-100 text-green-700 border border-green-200'
+                    }`}>
+                    {getGroupLabel(groupCode)}
+                </span>
             </div>
 
             {/* Phase Cards with Expandable Items */}

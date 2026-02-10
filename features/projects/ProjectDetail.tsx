@@ -173,6 +173,8 @@ const ProjectDetail: React.FC = () => {
                             tasks={tasks}
                             projectID={project.ProjectID}
                             onSaveTask={(t) => saveTask(t)}
+                            groupCode={project.GroupCode}
+                            isODA={project.IsODA}
                         />
                     )}
                     {activeTab === 'packages' && (
