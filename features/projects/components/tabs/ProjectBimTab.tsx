@@ -172,7 +172,7 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
                 await ifcLoader.setup({
                     autoSetWasm: false,
                     wasm: {
-                        path: 'https://unpkg.com/web-ifc@0.0.74/',
+                        path: '/wasm/',
                         absolute: true,
                     },
                 });
