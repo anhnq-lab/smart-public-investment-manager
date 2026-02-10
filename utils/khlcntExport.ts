@@ -1,43 +1,39 @@
-/**
- * KHLCNT Export Utility
- * Xuất Quyết định phê duyệt Kế hoạch lựa chọn nhà thầu
- * 
- * Approach: HTML → window.print() → PDF
- * Lý do: jspdf không hỗ trợ Unicode/Vietnamese natively, 
- * cần embed font base64 rất nặng. Dùng print() tận dụng 
- * font system sẵn có.
- */
-
+import {
+    Document, Packer, Paragraph, TextRun, Table, TableRow, TableCell,
+    WidthType, AlignmentType, BorderStyle, HeadingLevel,
+    convertMillimetersToTwip, PageOrientation, SectionType,
+    VerticalAlign, TableLayoutType
+} from 'docx';
+import { saveAs } from 'file-saver';
 import { BiddingPackage } from '../types';
-import { formatCurrency } from './format';
 
-// ═══════════════════════════════════════════════════════════════
-// TYPES
-// ═══════════════════════════════════════════════════════════════
+// ========================================
+// KHLCNT EXPORT — Xuất QĐ phê duyệt KHLCNT ra file DOCX
+// ========================================
 
 export interface KHLCNTExportData {
     // Thông tin QĐ
-    decisionNumber: string;      // Số QĐ: VD "123/QĐ-UBND"
-    decisionDate: string;        // Ngày ký QĐ
-    signerName: string;          // Họ tên người ký
-    signerTitle: string;         // Chức vụ người ký
+    decisionNumber: string;
+    decisionDate: string;
+    signerName: string;
+    signerTitle: string;
 
     // Thông tin dự án
     projectName: string;
-    investmentDecision: string;  // Số QĐ đầu tư
-    totalInvestment: number;     // TMĐT
-    fundingSource: string;       // Nguồn vốn
-    investorName: string;        // Tên CĐT
+    investmentDecision: string;
+    totalInvestment: number;
+    fundingSource: string;
+    investorName: string;
 
     // Cơ quan ban hành
-    issuingAuthority: string;    // VD: "UBND TỈNH HẢI DƯƠNG"
-    issuingDepartment: string;   // VD: "CHỦ TỊCH"
+    issuingAuthority: string;
+    issuingDepartment: string;
 
-    // Danh sách gói thầu
+    // Danh sách gói thầu (đã chọn)
     packages: BiddingPackage[];
 }
 
-// Label mapping
+// Vietnamese label mappings
 const FIELD_LABELS: Record<string, string> = {
     Construction: 'Xây lắp',
     Consultancy: 'Tư vấn',
@@ -57,20 +53,20 @@ const METHOD_LABELS: Record<string, string> = {
 };
 
 const PROCEDURE_LABELS: Record<string, string> = {
-    OneStageOneEnvelope: '1 giai đoạn 1 túi hồ sơ',
-    OneStageTwoEnvelope: '1 giai đoạn 2 túi hồ sơ',
-    TwoStageOneEnvelope: '2 giai đoạn 1 túi hồ sơ',
-    TwoStageTwoEnvelope: '2 giai đoạn 2 túi hồ sơ',
+    OneStageOneEnvelope: 'Một giai đoạn, một túi hồ sơ',
+    OneStageTwoEnvelope: 'Một giai đoạn, hai túi hồ sơ',
+    TwoStageOneEnvelope: 'Hai giai đoạn, một túi hồ sơ',
+    TwoStageTwoEnvelope: 'Hai giai đoạn, hai túi hồ sơ',
     Reduced: 'Rút gọn',
     Normal: 'Thông thường',
 };
 
 const CONTRACT_LABELS: Record<string, string> = {
-    LumpSum: 'Trọn gói',
+    LumpSum: 'Hợp đồng trọn gói',
     UnitPrice: 'Đơn giá cố định',
     AdjustableUnitPrice: 'Đơn giá điều chỉnh',
     TimeBased: 'Theo thời gian',
-    Percentage: 'Theo tỷ lệ %',
+    Percentage: 'Theo tỷ lệ phần trăm',
     Mixed: 'Hỗn hợp',
 };
 
@@ -79,390 +75,414 @@ const BID_TYPE_LABELS: Record<string, string> = {
     Offline: 'Trực tiếp',
 };
 
-// ═══════════════════════════════════════════════════════════════
-// HELPERS
-// ═══════════════════════════════════════════════════════════════
-
-function formatDate(dateStr: string): string {
-    if (!dateStr) return '...../...../........';
-    const d = new Date(dateStr);
-    const day = String(d.getDate()).padStart(2, '0');
-    const month = String(d.getMonth() + 1).padStart(2, '0');
-    const year = d.getFullYear();
-    return `ngày ${day} tháng ${month} năm ${year}`;
+function formatCurrency(amount: number): string {
+    return amount.toLocaleString('vi-VN');
 }
 
-function formatDateShort(dateStr: string): string {
-    if (!dateStr) return '';
+function formatDateVN(dateStr: string): string {
+    if (!dateStr) return '...../...../20.....';
     const d = new Date(dateStr);
-    const day = String(d.getDate()).padStart(2, '0');
-    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = d.getDate().toString().padStart(2, '0');
+    const month = (d.getMonth() + 1).toString().padStart(2, '0');
     const year = d.getFullYear();
     return `${day}/${month}/${year}`;
 }
 
-// ═══════════════════════════════════════════════════════════════
-// MAIN: Generate HTML for QĐ phê duyệt KHLCNT
-// ═══════════════════════════════════════════════════════════════
+// ========================================
+// HELPERS: Create styled cells/paragraphs
+// ========================================
 
-function generateKHLCNTHtml(data: KHLCNTExportData): string {
+const THIN_BORDER = {
+    top: { style: BorderStyle.SINGLE, size: 1, color: '000000' },
+    bottom: { style: BorderStyle.SINGLE, size: 1, color: '000000' },
+    left: { style: BorderStyle.SINGLE, size: 1, color: '000000' },
+    right: { style: BorderStyle.SINGLE, size: 1, color: '000000' },
+} as const;
+
+function headerCell(text: string, width?: number, rowSpan?: number, columnSpan?: number): TableCell {
+    return new TableCell({
+        children: [new Paragraph({
+            children: [new TextRun({ text, bold: true, size: 18, font: 'Times New Roman' })],
+            alignment: AlignmentType.CENTER,
+            spacing: { before: 40, after: 40 },
+        })],
+        borders: THIN_BORDER,
+        verticalAlign: VerticalAlign.CENTER,
+        width: width ? { size: width, type: WidthType.DXA } : undefined,
+        rowSpan,
+        columnSpan,
+        shading: { fill: 'E8E8E8' },
+    });
+}
+
+function dataCell(text: string, alignment: typeof AlignmentType[keyof typeof AlignmentType] = AlignmentType.LEFT, bold = false): TableCell {
+    return new TableCell({
+        children: [new Paragraph({
+            children: [new TextRun({ text, size: 18, font: 'Times New Roman', bold })],
+            alignment,
+            spacing: { before: 20, after: 20 },
+        })],
+        borders: THIN_BORDER,
+        verticalAlign: VerticalAlign.TOP,
+    });
+}
+
+// ========================================
+// DECISION PAGE (Trang quyết định)
+// ========================================
+
+function buildDecisionSection(data: KHLCNTExportData): Paragraph[] {
+    const paragraphs: Paragraph[] = [];
+
+    // Header: Cơ quan ban hành
+    paragraphs.push(new Paragraph({
+        children: [new TextRun({ text: data.issuingAuthority.toUpperCase(), bold: true, size: 26, font: 'Times New Roman' })],
+        alignment: AlignmentType.CENTER,
+        spacing: { after: 40 },
+    }));
+
+    // Dấu gạch ngang
+    paragraphs.push(new Paragraph({
+        children: [new TextRun({ text: '_______________', size: 22, font: 'Times New Roman' })],
+        alignment: AlignmentType.CENTER,
+        spacing: { after: 200 },
+    }));
+
+    // Số QĐ
+    paragraphs.push(new Paragraph({
+        children: [new TextRun({ text: `Số: ${data.decisionNumber || '...../QĐ-UBND'}`, size: 24, font: 'Times New Roman' })],
+        alignment: AlignmentType.CENTER,
+        spacing: { after: 200 },
+    }));
+
+    // CỘNG HOÀ... header
+    paragraphs.push(new Paragraph({
+        children: [new TextRun({ text: 'CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM', bold: true, size: 26, font: 'Times New Roman' })],
+        alignment: AlignmentType.CENTER,
+    }));
+    paragraphs.push(new Paragraph({
+        children: [new TextRun({ text: 'Độc lập - Tự do - Hạnh phúc', bold: true, size: 24, font: 'Times New Roman' })],
+        alignment: AlignmentType.CENTER,
+    }));
+    paragraphs.push(new Paragraph({
+        children: [new TextRun({ text: '_______________', size: 22, font: 'Times New Roman' })],
+        alignment: AlignmentType.CENTER,
+        spacing: { after: 200 },
+    }));
+
+    // Địa danh, ngày tháng
+    paragraphs.push(new Paragraph({
+        children: [new TextRun({
+            text: `Hải Dương, ngày ${formatDateVN(data.decisionDate)}`,
+            italics: true, size: 24, font: 'Times New Roman'
+        })],
+        alignment: AlignmentType.CENTER,
+        spacing: { after: 300 },
+    }));
+
+    // Tiêu đề QĐ
+    paragraphs.push(new Paragraph({
+        children: [new TextRun({ text: 'QUYẾT ĐỊNH', bold: true, size: 28, font: 'Times New Roman' })],
+        alignment: AlignmentType.CENTER,
+    }));
+    paragraphs.push(new Paragraph({
+        children: [new TextRun({
+            text: 'Về việc phê duyệt Kế hoạch lựa chọn nhà thầu',
+            bold: true, size: 24, font: 'Times New Roman'
+        })],
+        alignment: AlignmentType.CENTER,
+    }));
+    paragraphs.push(new Paragraph({
+        children: [new TextRun({
+            text: `Dự án: ${data.projectName}`,
+            bold: true, size: 24, font: 'Times New Roman'
+        })],
+        alignment: AlignmentType.CENTER,
+        spacing: { after: 300 },
+    }));
+
+    // Chức danh
+    paragraphs.push(new Paragraph({
+        children: [new TextRun({
+            text: data.issuingDepartment.toUpperCase(),
+            bold: true, size: 24, font: 'Times New Roman'
+        })],
+        alignment: AlignmentType.CENTER,
+        spacing: { after: 200 },
+    }));
+
+    // Căn cứ pháp lý
+    const legalBases = [
+        'Căn cứ Luật Đấu thầu số 22/2023/QH15 ngày 23 tháng 6 năm 2023;',
+        'Căn cứ Nghị định số 24/2024/NĐ-CP ngày 27 tháng 02 năm 2024 quy định chi tiết một số điều và biện pháp thi hành Luật Đấu thầu về lựa chọn nhà thầu;',
+        'Căn cứ Nghị định số 214/2025/NĐ-CP sửa đổi, bổ sung Nghị định 24/2024/NĐ-CP;',
+        'Căn cứ Luật Đầu tư công số 58/2024/QH15 ngày 27 tháng 11 năm 2024;',
+        `Căn cứ Quyết định số ${data.investmentDecision || '...../QĐ-UBND'} về việc phê duyệt dự án đầu tư xây dựng;`,
+        `Xét đề nghị của ${data.investorName || '.....................'} tại Tờ trình số .....;`,
+    ];
+
+    legalBases.forEach(text => {
+        paragraphs.push(new Paragraph({
+            children: [new TextRun({ text, italics: true, size: 24, font: 'Times New Roman' })],
+            indent: { firstLine: convertMillimetersToTwip(12) },
+            spacing: { after: 60 },
+        }));
+    });
+
+    paragraphs.push(new Paragraph({ spacing: { after: 100 }, children: [] }));
+
+    // QUYẾT ĐỊNH:
+    paragraphs.push(new Paragraph({
+        children: [new TextRun({ text: 'QUYẾT ĐỊNH:', bold: true, size: 24, font: 'Times New Roman' })],
+        alignment: AlignmentType.CENTER,
+        spacing: { after: 200 },
+    }));
+
+    // Điều 1
+    const totalPrice = data.packages.reduce((sum, pkg) => sum + (pkg.Price || 0), 0);
+    paragraphs.push(new Paragraph({
+        children: [new TextRun({
+            text: `Điều 1. Phê duyệt Kế hoạch lựa chọn nhà thầu dự án "${data.projectName}" với ${data.packages.length} gói thầu, tổng giá trị ${formatCurrency(totalPrice)} đồng (Chi tiết tại Phụ lục kèm theo).`,
+            size: 24, font: 'Times New Roman',
+        })],
+        indent: { firstLine: convertMillimetersToTwip(12) },
+        spacing: { after: 120 },
+    }));
+
+    // Điều 2
+    paragraphs.push(new Paragraph({
+        children: [new TextRun({
+            text: `Điều 2. Giao ${data.investorName || '.....................'} tổ chức lựa chọn nhà thầu theo kế hoạch được duyệt, đảm bảo tuân thủ quy định của Luật Đấu thầu và các văn bản hướng dẫn thi hành.`,
+            size: 24, font: 'Times New Roman',
+        })],
+        indent: { firstLine: convertMillimetersToTwip(12) },
+        spacing: { after: 120 },
+    }));
+
+    // Điều 3
+    paragraphs.push(new Paragraph({
+        children: [new TextRun({
+            text: 'Điều 3. Chánh Văn phòng UBND tỉnh, Giám đốc các Sở: Kế hoạch và Đầu tư, Tài chính, Xây dựng; Giám đốc Kho bạc Nhà nước tỉnh và Thủ trưởng các cơ quan, đơn vị liên quan căn cứ Quyết định thi hành./.',
+            size: 24, font: 'Times New Roman',
+        })],
+        indent: { firstLine: convertMillimetersToTwip(12) },
+        spacing: { after: 300 },
+    }));
+
+    // Nơi nhận & Ký tên
+    paragraphs.push(new Paragraph({
+        children: [
+            new TextRun({ text: 'Nơi nhận:', bold: true, italics: true, size: 20, font: 'Times New Roman' }),
+        ],
+        spacing: { after: 40 },
+    }));
+
+    const recipients = ['- Như Điều 3;', '- Lưu: VT, KT&HT.'];
+    recipients.forEach(r => {
+        paragraphs.push(new Paragraph({
+            children: [new TextRun({ text: r, size: 20, font: 'Times New Roman' })],
+            spacing: { after: 20 },
+        }));
+    });
+
+    paragraphs.push(new Paragraph({ spacing: { after: 100 }, children: [] }));
+
+    // Signature block (aligned right)
+    paragraphs.push(new Paragraph({
+        children: [new TextRun({ text: data.signerTitle || 'CHỦ TỊCH', bold: true, size: 24, font: 'Times New Roman' })],
+        alignment: AlignmentType.RIGHT,
+        spacing: { after: 600 },
+    }));
+
+    paragraphs.push(new Paragraph({
+        children: [new TextRun({ text: data.signerName || '.....................', bold: true, size: 24, font: 'Times New Roman' })],
+        alignment: AlignmentType.RIGHT,
+    }));
+
+    return paragraphs;
+}
+
+// ========================================
+// APPENDIX TABLE (Phụ lục KHLCNT)
+// ========================================
+
+function buildAppendixSection(data: KHLCNTExportData): (Paragraph | Table)[] {
+    const elements: (Paragraph | Table)[] = [];
+
+    // PHỤ LỤC title
+    elements.push(new Paragraph({
+        children: [new TextRun({ text: 'PHỤ LỤC', bold: true, size: 26, font: 'Times New Roman' })],
+        alignment: AlignmentType.CENTER,
+    }));
+    elements.push(new Paragraph({
+        children: [new TextRun({ text: 'KẾ HOẠCH LỰA CHỌN NHÀ THẦU', bold: true, size: 24, font: 'Times New Roman' })],
+        alignment: AlignmentType.CENTER,
+    }));
+    elements.push(new Paragraph({
+        children: [new TextRun({
+            text: `(Kèm theo Quyết định số ${data.decisionNumber || '...../QĐ-UBND'} ngày ${formatDateVN(data.decisionDate)})`,
+            italics: true, size: 22, font: 'Times New Roman',
+        })],
+        alignment: AlignmentType.CENTER,
+        spacing: { after: 200 },
+    }));
+
+    // Project info
+    elements.push(new Paragraph({
+        children: [
+            new TextRun({ text: 'Tên dự án: ', bold: true, size: 22, font: 'Times New Roman' }),
+            new TextRun({ text: data.projectName, size: 22, font: 'Times New Roman' }),
+        ],
+        spacing: { after: 60 },
+    }));
+    elements.push(new Paragraph({
+        children: [
+            new TextRun({ text: 'Chủ đầu tư: ', bold: true, size: 22, font: 'Times New Roman' }),
+            new TextRun({ text: data.investorName || '.....................', size: 22, font: 'Times New Roman' }),
+        ],
+        spacing: { after: 200 },
+    }));
+
+    // Table headers (2-row header)
+    const headerRow1 = new TableRow({
+        children: [
+            headerCell('TT', 500, 2),
+            headerCell('Tên gói thầu', 2500, 2),
+            headerCell('Giá gói thầu\n(VNĐ)', 1600, 2),
+            headerCell('Nguồn vốn', 1400, 2),
+            headerCell('Lĩnh vực', 900, 2),
+            headerCell('Hình thức\nLCNT', 1200, 2),
+            headerCell('Phương thức\nLCNT', 1200, 2),
+            headerCell('Hình thức\nđấu thầu', 900, 2),
+            headerCell('Loại HĐ', 1200, 2),
+            headerCell('Thời gian\nTH HĐ', 900, 2),
+            headerCell('Thời gian tổ chức LCNT', 1600, undefined, 2),
+            headerCell('Tùy chọn', 700, 2),
+        ],
+        tableHeader: true,
+    });
+
+    const headerRow2 = new TableRow({
+        children: [
+            headerCell('Thời gian', 800),
+            headerCell('Bắt đầu', 800),
+        ],
+        tableHeader: true,
+    });
+
+    // Data rows
     const totalPrice = data.packages.reduce((sum, pkg) => sum + (pkg.Price || 0), 0);
 
-    // Build table rows
-    const tableRows = data.packages.map((pkg, idx) => `
-        <tr>
-            <td class="center">${idx + 1}</td>
-            <td>${pkg.PackageName || ''}</td>
-            <td class="right">${pkg.Price ? formatCurrency(pkg.Price) : ''}</td>
-            <td>${pkg.FundingSource || data.fundingSource || ''}</td>
-            <td>${FIELD_LABELS[pkg.Field] || pkg.Field || ''}</td>
-            <td>${METHOD_LABELS[pkg.SelectionMethod] || pkg.SelectionMethod || ''}</td>
-            <td>${PROCEDURE_LABELS[pkg.SelectionProcedure] || pkg.SelectionProcedure || ''}</td>
-            <td>${BID_TYPE_LABELS[pkg.BidType] || pkg.BidType || ''}</td>
-            <td>${CONTRACT_LABELS[pkg.ContractType] || pkg.ContractType || ''}</td>
-            <td>${pkg.Duration || ''}</td>
-            <td>${pkg.SelectionDuration || ''}</td>
-            <td>${pkg.SelectionStartDate || ''}</td>
-            <td>${pkg.HasOption ? 'Có' : 'Không'}</td>
-        </tr>
-    `).join('');
+    const dataRows = data.packages.map((pkg, idx) => new TableRow({
+        children: [
+            dataCell(`${idx + 1}`, AlignmentType.CENTER),
+            dataCell(pkg.PackageName || ''),
+            dataCell(pkg.Price ? formatCurrency(pkg.Price) : '', AlignmentType.RIGHT),
+            dataCell(pkg.FundingSource || data.fundingSource || ''),
+            dataCell(FIELD_LABELS[pkg.Field || ''] || pkg.Field || ''),
+            dataCell(METHOD_LABELS[pkg.SelectionMethod] || pkg.SelectionMethod || ''),
+            dataCell(PROCEDURE_LABELS[pkg.SelectionProcedure || ''] || pkg.SelectionProcedure || ''),
+            dataCell(BID_TYPE_LABELS[pkg.BidType] || pkg.BidType || ''),
+            dataCell(CONTRACT_LABELS[pkg.ContractType] || pkg.ContractType || ''),
+            dataCell(pkg.Duration || '', AlignmentType.CENTER),
+            dataCell(pkg.SelectionDuration || '', AlignmentType.CENTER),
+            dataCell(pkg.SelectionStartDate || '', AlignmentType.CENTER),
+            dataCell(pkg.HasOption ? 'Có' : 'Không', AlignmentType.CENTER),
+        ],
+    }));
 
-    return `<!DOCTYPE html>
-<html lang="vi">
-<head>
-<meta charset="UTF-8">
-<title>QĐ phê duyệt KHLCNT - ${data.projectName}</title>
-<style>
-    @page {
-        size: A4 landscape;
-        margin: 15mm 10mm;
-    }
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body {
-        font-family: 'Times New Roman', 'Noto Serif', serif;
-        font-size: 13pt;
-        line-height: 1.5;
-        color: #000;
-        background: #fff;
-    }
+    // Total row
+    const totalRow = new TableRow({
+        children: [
+            new TableCell({
+                children: [new Paragraph({
+                    children: [new TextRun({ text: 'Tổng cộng', bold: true, size: 18, font: 'Times New Roman' })],
+                    alignment: AlignmentType.CENTER,
+                    spacing: { before: 40, after: 40 },
+                })],
+                borders: THIN_BORDER,
+                columnSpan: 2,
+            }),
+            new TableCell({
+                children: [new Paragraph({
+                    children: [new TextRun({ text: formatCurrency(totalPrice), bold: true, size: 18, font: 'Times New Roman' })],
+                    alignment: AlignmentType.RIGHT,
+                    spacing: { before: 40, after: 40 },
+                })],
+                borders: THIN_BORDER,
+            }),
+            new TableCell({
+                children: [new Paragraph({ children: [] })],
+                borders: THIN_BORDER,
+                columnSpan: 10,
+            }),
+        ],
+    });
 
-    /* === QUYẾT ĐỊNH === */
-    .decision-page {
-        page-break-after: always;
-        max-width: 210mm;
-        margin: 0 auto;
-        padding: 10mm 15mm;
-    }
+    const table = new Table({
+        rows: [headerRow1, headerRow2, ...dataRows, totalRow],
+        width: { size: 100, type: WidthType.PERCENTAGE },
+        layout: TableLayoutType.FIXED,
+    });
 
-    .header-row {
-        display: flex;
-        justify-content: space-between;
-        margin-bottom: 20pt;
-    }
-    .header-left {
-        text-align: center;
-        width: 45%;
-    }
-    .header-right {
-        text-align: center;
-        width: 45%;
-    }
-    .header-org {
-        font-weight: bold;
-        font-size: 13pt;
-        text-transform: uppercase;
-    }
-    .header-line {
-        width: 40%;
-        margin: 4pt auto;
-        border-bottom: 1.5pt solid #000;
-    }
-    .header-number {
-        font-size: 13pt;
-        margin-top: 4pt;
-    }
-    .header-place-date {
-        font-style: italic;
-        font-size: 13pt;
-    }
+    elements.push(table);
 
-    .title {
-        text-align: center;
-        font-weight: bold;
-        font-size: 14pt;
-        text-transform: uppercase;
-        margin: 16pt 0 4pt;
-    }
-    .subtitle {
-        text-align: center;
-        font-weight: bold;
-        font-size: 13pt;
-        margin-bottom: 16pt;
-    }
-
-    .legal-basis {
-        padding-left: 40pt;
-        margin-bottom: 6pt;
-    }
-    .legal-basis em {
-        font-style: italic;
-    }
-
-    .article {
-        font-weight: bold;
-        margin: 12pt 0 6pt;
-    }
-    .article-content {
-        padding-left: 20pt;
-        margin-bottom: 6pt;
-    }
-
-    .signature-block {
-        display: flex;
-        justify-content: space-between;
-        margin-top: 30pt;
-    }
-    .sig-left {
-        width: 40%;
-        font-size: 11pt;
-    }
-    .sig-left b { display: block; margin-bottom: 4pt; }
-    .sig-left .dest { margin-bottom: 2pt; }
-    .sig-right {
-        text-align: center;
-        width: 40%;
-    }
-    .sig-title {
-        font-weight: bold;
-        text-transform: uppercase;
-        font-size: 13pt;
-    }
-    .sig-space {
-        height: 60pt;
-    }
-    .sig-name {
-        font-weight: bold;
-        font-size: 13pt;
-    }
-
-    /* === PHỤ LỤC === */
-    .appendix-page {
-        padding: 8mm 5mm;
-    }
-
-    .appendix-title {
-        text-align: center;
-        font-weight: bold;
-        font-size: 13pt;
-        text-transform: uppercase;
-        margin-bottom: 4pt;
-    }
-    .appendix-subtitle {
-        text-align: center;
-        font-style: italic;
-        font-size: 12pt;
-        margin-bottom: 12pt;
-    }
-
-    table.khlcnt {
-        width: 100%;
-        border-collapse: collapse;
-        font-size: 10pt;
-    }
-    table.khlcnt th, table.khlcnt td {
-        border: 0.5pt solid #000;
-        padding: 4pt 3pt;
-        vertical-align: top;
-    }
-    table.khlcnt th {
-        background: #f0f0f0;
-        font-weight: bold;
-        text-align: center;
-        font-size: 9pt;
-    }
-    table.khlcnt td.center { text-align: center; }
-    table.khlcnt td.right { text-align: right; }
-    table.khlcnt tr.total-row {
-        font-weight: bold;
-        background: #fafafa;
-    }
-
-    @media print {
-        body { -webkit-print-color-adjust: exact; }
-        .no-print { display: none; }
-    }
-</style>
-</head>
-<body>
-
-<!-- ═══════════════ TRANG 1: QUYẾT ĐỊNH ═══════════════ -->
-<div class="decision-page">
-    <div class="header-row">
-        <div class="header-left">
-            <div class="header-org">${data.issuingAuthority}</div>
-            <div class="header-line"></div>
-            <div class="header-number">Số: ${data.decisionNumber}</div>
-        </div>
-        <div class="header-right">
-            <div style="font-weight:bold; font-size:13pt;">CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</div>
-            <div style="font-weight:bold; font-size:13pt;">Độc lập - Tự do - Hạnh phúc</div>
-            <div class="header-line"></div>
-            <div class="header-place-date">
-                Hải Dương, ${formatDate(data.decisionDate)}
-            </div>
-        </div>
-    </div>
-
-    <div class="title">QUYẾT ĐỊNH</div>
-    <div class="subtitle">
-        Về việc phê duyệt kế hoạch lựa chọn nhà thầu<br/>
-        Dự án: ${data.projectName}
-    </div>
-
-    <div style="text-align:center; font-weight:bold; margin-bottom:12pt; text-transform:uppercase;">
-        ${data.issuingDepartment}
-    </div>
-
-    <!-- Căn cứ pháp lý -->
-    <div class="legal-basis"><em>Căn cứ Luật Đấu thầu số 22/2023/QH15 ngày 23/6/2023;</em></div>
-    <div class="legal-basis"><em>Căn cứ Nghị định số 24/2024/NĐ-CP ngày 27/02/2024 quy định chi tiết một số điều và biện pháp thi hành Luật Đấu thầu;</em></div>
-    <div class="legal-basis"><em>Căn cứ Nghị định số 214/2025/NĐ-CP sửa đổi, bổ sung NĐ 24/2024/NĐ-CP;</em></div>
-    <div class="legal-basis"><em>Căn cứ Luật Đầu tư công số 58/2024/QH15;</em></div>
-    <div class="legal-basis"><em>Căn cứ Quyết định đầu tư số ${data.investmentDecision};</em></div>
-    <div class="legal-basis"><em>Xét đề nghị của ${data.investorName},</em></div>
-
-    <!-- Điều 1 -->
-    <div class="article">Điều 1.</div>
-    <div class="article-content">
-        Phê duyệt kế hoạch lựa chọn nhà thầu Dự án: <b>${data.projectName}</b> với các nội dung chủ yếu sau:
-    </div>
-    <div class="article-content">
-        1. Tên dự án: ${data.projectName}
-    </div>
-    <div class="article-content">
-        2. Tổng mức đầu tư: ${formatCurrency(data.totalInvestment)}
-    </div>
-    <div class="article-content">
-        3. Nguồn vốn: ${data.fundingSource}
-    </div>
-    <div class="article-content">
-        4. Chủ đầu tư: ${data.investorName}
-    </div>
-    <div class="article-content">
-        5. Nội dung kế hoạch lựa chọn nhà thầu: Theo Phụ lục đính kèm.
-    </div>
-
-    <!-- Điều 2 -->
-    <div class="article">Điều 2.</div>
-    <div class="article-content">
-        Giao ${data.investorName} tổ chức thực hiện lựa chọn nhà thầu theo đúng quy định của pháp luật về đấu thầu hiện hành.
-    </div>
-
-    <!-- Điều 3 -->
-    <div class="article">Điều 3.</div>
-    <div class="article-content">
-        Quyết định này có hiệu lực kể từ ngày ký. Thủ trưởng các cơ quan, đơn vị có liên quan chịu trách nhiệm thi hành Quyết định này./.
-    </div>
-
-    <!-- Chữ ký -->
-    <div class="signature-block">
-        <div class="sig-left">
-            <b>Nơi nhận:</b>
-            <div class="dest">- Như Điều 3;</div>
-            <div class="dest">- Sở KH&ĐT;</div>
-            <div class="dest">- Kho bạc NN;</div>
-            <div class="dest">- Lưu: VT.</div>
-        </div>
-        <div class="sig-right">
-            <div class="sig-title">${data.issuingDepartment}</div>
-            <div class="sig-space"></div>
-            <div class="sig-name">${data.signerName}</div>
-        </div>
-    </div>
-</div>
-
-<!-- ═══════════════ TRANG 2: PHỤ LỤC ═══════════════ -->
-<div class="appendix-page">
-    <div class="appendix-title">PHỤ LỤC</div>
-    <div class="appendix-title" style="font-size:12pt; margin-bottom:2pt;">
-        KẾ HOẠCH LỰA CHỌN NHÀ THẦU
-    </div>
-    <div class="appendix-subtitle">
-        (Kèm theo Quyết định số ${data.decisionNumber} ngày ${formatDateShort(data.decisionDate)})
-    </div>
-    <div style="margin-bottom:8pt; font-size:11pt;">
-        <b>Tên dự án:</b> ${data.projectName}<br/>
-        <b>Chủ đầu tư:</b> ${data.investorName}
-    </div>
-
-    <table class="khlcnt">
-        <thead>
-            <tr>
-                <th rowspan="2" style="width:3%">TT</th>
-                <th rowspan="2" style="width:15%">Tên gói thầu</th>
-                <th rowspan="2" style="width:8%">Giá gói thầu (VNĐ)</th>
-                <th rowspan="2" style="width:7%">Nguồn vốn</th>
-                <th rowspan="2" style="width:6%">Lĩnh vực</th>
-                <th rowspan="2" style="width:9%">Hình thức LCNT</th>
-                <th rowspan="2" style="width:9%">Phương thức LCNT</th>
-                <th rowspan="2" style="width:6%">Hình thức đấu thầu</th>
-                <th rowspan="2" style="width:7%">Loại HĐ</th>
-                <th rowspan="2" style="width:6%">Thời gian TH HĐ</th>
-                <th colspan="2" style="width:12%">Thời gian tổ chức LCNT</th>
-                <th rowspan="2" style="width:5%">Tùy chọn</th>
-            </tr>
-            <tr>
-                <th>Thời gian</th>
-                <th>Bắt đầu</th>
-            </tr>
-        </thead>
-        <tbody>
-            ${tableRows}
-            <tr class="total-row">
-                <td class="center" colspan="2"><b>Tổng cộng</b></td>
-                <td class="right"><b>${formatCurrency(totalPrice)}</b></td>
-                <td colspan="10"></td>
-            </tr>
-        </tbody>
-    </table>
-</div>
-
-</body>
-</html>`;
+    return elements;
 }
 
-// ═══════════════════════════════════════════════════════════════
-// EXPORT FUNCTION
-// ═══════════════════════════════════════════════════════════════
+// ========================================
+// MAIN EXPORT FUNCTION
+// ========================================
 
-export function exportKHLCNT(data: KHLCNTExportData): void {
-    const html = generateKHLCNTHtml(data);
+export async function exportKHLCNT(data: KHLCNTExportData): Promise<void> {
+    const decisionParagraphs = buildDecisionSection(data);
+    const appendixElements = buildAppendixSection(data);
 
-    // Open new window and print
-    const printWindow = window.open('', '_blank');
-    if (!printWindow) {
-        alert('Trình duyệt chặn popup. Vui lòng cho phép popup để xuất PDF.');
-        return;
-    }
+    const doc = new Document({
+        sections: [
+            {
+                // Page 1: Quyết Định (Portrait A4)
+                properties: {
+                    type: SectionType.NEXT_PAGE,
+                    page: {
+                        size: {
+                            width: convertMillimetersToTwip(210),
+                            height: convertMillimetersToTwip(297),
+                        },
+                        margin: {
+                            top: convertMillimetersToTwip(20),
+                            bottom: convertMillimetersToTwip(20),
+                            left: convertMillimetersToTwip(30),
+                            right: convertMillimetersToTwip(20),
+                        },
+                    },
+                },
+                children: decisionParagraphs,
+            },
+            {
+                // Page 2: Phụ lục (Landscape A4 for wide table)
+                properties: {
+                    type: SectionType.NEXT_PAGE,
+                    page: {
+                        size: {
+                            width: convertMillimetersToTwip(297),
+                            height: convertMillimetersToTwip(210),
+                            orientation: PageOrientation.LANDSCAPE,
+                        },
+                        margin: {
+                            top: convertMillimetersToTwip(15),
+                            bottom: convertMillimetersToTwip(15),
+                            left: convertMillimetersToTwip(15),
+                            right: convertMillimetersToTwip(10),
+                        },
+                    },
+                },
+                children: appendixElements,
+            },
+        ],
+    });
 
-    printWindow.document.write(html);
-    printWindow.document.close();
-
-    // Wait for content to render, then trigger print
-    printWindow.onload = () => {
-        setTimeout(() => {
-            printWindow.print();
-        }, 500);
-    };
-
-    // Fallback if onload doesn't fire (some browsers)
-    setTimeout(() => {
-        try {
-            printWindow.print();
-        } catch {
-            // Already printed via onload
-        }
-    }, 1500);
+    const blob = await Packer.toBlob(doc);
+    const fileName = `QD_KHLCNT_${data.projectName.replace(/[^a-zA-Z0-9\u00C0-\u1EF9]/g, '_').substring(0, 50)}.docx`;
+    saveAs(blob, fileName);
 }
-
-export default exportKHLCNT;

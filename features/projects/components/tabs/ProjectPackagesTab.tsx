@@ -10,7 +10,7 @@ import { KHLCNTExportModal } from '../KHLCNTExportModal';
 import {
     Briefcase, CheckCircle2, FileText, Search, Plus,
     MoreVertical, Eye, Edit, Trash2, ExternalLink,
-    Copy, X, AlertTriangle, Loader2, Clock, Circle, Printer
+    Copy, X, AlertTriangle, Loader2, Clock, Circle, Download
 } from 'lucide-react';
 
 // ========================================
@@ -42,6 +42,9 @@ export const ProjectPackagesTab: React.FC<ProjectPackagesTabProps> = ({ projectI
     // Dropdown state
     const [openDropdownId, setOpenDropdownId] = useState<string | null>(null);
     const [isExportModalOpen, setIsExportModalOpen] = useState(false);
+
+    // Checkbox selection for KHLCNT export
+    const [selectedPackageIds, setSelectedPackageIds] = useState<Set<string>>(new Set());
 
     // Delete mutation
     const deleteMutation = useMutation({
@@ -267,11 +270,11 @@ export const ProjectPackagesTab: React.FC<ProjectPackagesTabProps> = ({ projectI
                 <div className="flex gap-2">
                     <button
                         onClick={() => setIsExportModalOpen(true)}
-                        disabled={!packages || packages.length === 0}
+                        disabled={selectedPackageIds.size === 0}
                         className="flex items-center gap-2 px-4 py-2 bg-white border border-blue-300 text-blue-700 rounded-lg hover:bg-blue-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm font-medium"
                     >
-                        <Printer size={16} />
-                        <span>Xuất QĐ KHLCNT</span>
+                        <Download size={16} />
+                        <span>Xuất QĐ KHLCNT {selectedPackageIds.size > 0 && `(${selectedPackageIds.size})`}</span>
                     </button>
                     <button
                         onClick={() => setIsCreateModalOpen(true)}
@@ -290,6 +293,20 @@ export const ProjectPackagesTab: React.FC<ProjectPackagesTabProps> = ({ projectI
                         {/* Header - 2 rows like official KHLCNT */}
                         <thead>
                             <tr className="bg-slate-100 border-b border-slate-300">
+                                <th rowSpan={2} className="border border-slate-300 px-2 py-2 text-center w-10">
+                                    <input
+                                        type="checkbox"
+                                        className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
+                                        checked={filteredPackages ? filteredPackages.length > 0 && filteredPackages.every(p => selectedPackageIds.has(p.PackageID)) : false}
+                                        onChange={(e) => {
+                                            if (e.target.checked && filteredPackages) {
+                                                setSelectedPackageIds(new Set(filteredPackages.map(p => p.PackageID)));
+                                            } else {
+                                                setSelectedPackageIds(new Set());
+                                            }
+                                        }}
+                                    />
+                                </th>
                                 <th rowSpan={2} className="border border-slate-300 px-2 py-2 text-center font-bold text-slate-700 w-10">TT</th>
                                 <th rowSpan={2} className="border border-slate-300 px-2 py-2 text-center font-bold text-slate-700 min-w-[80px]">Tên chủ<br />đầu tư</th>
                                 <th colSpan={2} className="border border-slate-300 px-2 py-2 text-center font-bold text-slate-700">Tên gói thầu</th>
@@ -317,6 +334,23 @@ export const ProjectPackagesTab: React.FC<ProjectPackagesTabProps> = ({ projectI
                                     className="hover:bg-blue-50 transition-colors cursor-pointer"
                                     onClick={() => handleView(pkg)}
                                 >
+                                    {/* Checkbox */}
+                                    <td className="border border-slate-200 px-2 py-3 text-center" onClick={(e) => e.stopPropagation()}>
+                                        <input
+                                            type="checkbox"
+                                            className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
+                                            checked={selectedPackageIds.has(pkg.PackageID)}
+                                            onChange={(e) => {
+                                                const newSet = new Set(selectedPackageIds);
+                                                if (e.target.checked) {
+                                                    newSet.add(pkg.PackageID);
+                                                } else {
+                                                    newSet.delete(pkg.PackageID);
+                                                }
+                                                setSelectedPackageIds(newSet);
+                                            }}
+                                        />
+                                    </td>
                                     {/* TT */}
                                     <td className="border border-slate-200 px-2 py-3 text-center text-slate-600 font-medium">
                                         {index + 1}
@@ -480,7 +514,7 @@ export const ProjectPackagesTab: React.FC<ProjectPackagesTabProps> = ({ projectI
                             ))}
                             {filteredPackages?.length === 0 && (
                                 <tr>
-                                    <td colSpan={15} className="border border-slate-200 px-6 py-12 text-center text-gray-500">
+                                    <td colSpan={16} className="border border-slate-200 px-6 py-12 text-center text-gray-500">
                                         <div className="flex flex-col items-center gap-2">
                                             <FileText className="w-10 h-10 text-gray-300" />
                                             <span>Không tìm thấy gói thầu nào</span>
@@ -493,7 +527,7 @@ export const ProjectPackagesTab: React.FC<ProjectPackagesTabProps> = ({ projectI
                         {filteredPackages && filteredPackages.length > 0 && (
                             <tfoot>
                                 <tr className="bg-slate-100 font-bold">
-                                    <td colSpan={4} className="border border-slate-300 px-3 py-3 text-center text-slate-800">
+                                    <td colSpan={5} className="border border-slate-300 px-3 py-3 text-center text-slate-800">
                                         Tổng cộng giá gói thầu: {formatCurrency(filteredPackages.reduce((sum, pkg) => sum + pkg.Price, 0))} đồng
                                     </td>
                                     <td colSpan={11} className="border border-slate-300"></td>
@@ -581,7 +615,7 @@ export const ProjectPackagesTab: React.FC<ProjectPackagesTabProps> = ({ projectI
             <KHLCNTExportModal
                 isOpen={isExportModalOpen}
                 onClose={() => setIsExportModalOpen(false)}
-                packages={packages || []}
+                packages={(packages || []).filter(p => selectedPackageIds.has(p.PackageID))}
                 projectId={projectID}
             />
         </div>

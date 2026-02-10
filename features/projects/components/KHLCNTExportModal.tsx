@@ -68,7 +68,7 @@ export const KHLCNTExportModal: React.FC<KHLCNTExportModalProps> = ({
         Mixed: 'Hỗn hợp',
     };
 
-    const handleExport = () => {
+    const handleExport = async () => {
         const exportData: KHLCNTExportData = {
             decisionNumber: formData.decisionNumber || '...../QĐ-UBND',
             decisionDate: formData.decisionDate,
@@ -83,7 +83,8 @@ export const KHLCNTExportModal: React.FC<KHLCNTExportModalProps> = ({
             issuingDepartment: formData.issuingDepartment,
             packages,
         };
-        exportKHLCNT(exportData);
+        await exportKHLCNT(exportData);
+        onClose();
     };
 
     if (!isOpen) return null;
@@ -333,8 +334,8 @@ export const KHLCNTExportModal: React.FC<KHLCNTExportModalProps> = ({
                             disabled={!formData.projectName}
                             className="flex items-center gap-2 px-5 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium shadow-sm text-sm"
                         >
-                            <Printer className="w-4 h-4" />
-                            Xuất & In PDF
+                            <Download className="w-4 h-4" />
+                            Xuất file DOCX
                         </button>
                     </div>
                 </div>
