@@ -138,9 +138,10 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
                 const grids = components.get(OBC.Grids);
                 grids.create(world);
 
-                // Initialize FragmentsManager with worker (required in v3.3)
+                // Initialize FragmentsManager with official CDN worker
+                // (Vite can't bundle WASM inside Web Workers from node_modules)
                 const fragments = components.get(OBC.FragmentsManager);
-                fragments.init('./worker.mjs');
+                fragments.init('https://thatopen.github.io/engine_fragment/resources/worker.mjs');
 
                 // Setup IFC loader
                 const ifcLoader = components.get(OBC.IfcLoader);
