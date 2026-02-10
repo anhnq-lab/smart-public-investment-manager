@@ -58,10 +58,9 @@ export const DashboardService = {
     getProjectStatusDistribution: async (): Promise<DashboardProjectStatus[]> => {
         await delay(300);
         return [
-            { name: 'Đang chuẩn bị', value: mockProjects.filter(p => p.Status === ProjectStatus.Preparation).length, color: '#F59E0B' },
-            { name: 'Đang thực hiện', value: mockProjects.filter(p => p.Status === ProjectStatus.Execution).length, color: '#3B82F6' },
-            { name: 'Hoàn thành', value: mockProjects.filter(p => p.Status === ProjectStatus.Finished).length, color: '#10B981' },
-            { name: 'Vận hành', value: mockProjects.filter(p => p.Status === ProjectStatus.Operation).length, color: '#EF4444' },
+            { name: 'Chuẩn bị dự án', value: mockProjects.filter(p => p.Status === ProjectStatus.Preparation).length, color: '#F59E0B' },
+            { name: 'Thực hiện dự án', value: mockProjects.filter(p => p.Status === ProjectStatus.Execution).length, color: '#3B82F6' },
+            { name: 'Kết thúc xây dựng', value: mockProjects.filter(p => p.Status === ProjectStatus.Completion).length, color: '#10B981' },
         ];
     },
 

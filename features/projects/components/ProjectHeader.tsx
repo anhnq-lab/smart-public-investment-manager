@@ -23,8 +23,8 @@ export const ProjectHeader: React.FC<ProjectHeaderProps> = ({ project, onSync, i
                 <div>
                     <div className="flex items-center gap-3">
                         <h1 className="text-2xl font-extrabold text-gray-800 tracking-tight">{project.ProjectName}</h1>
-                        <span className={`px-2.5 py-0.5 rounded-lg text-[10px] font-black uppercase tracking-wider ${project.Status === ProjectStatus.Finished ? 'bg-emerald-100 text-emerald-700' : 'bg-blue-100 text-blue-700'}`}>
-                            {project.Status === ProjectStatus.Finished ? 'ĐÃ KẾT THÚC' : 'ĐANG TRIỂN KHAI'}
+                        <span className={`px-2.5 py-0.5 rounded-lg text-[10px] font-black uppercase tracking-wider ${project.Status === ProjectStatus.Completion ? 'bg-emerald-100 text-emerald-700' : 'bg-blue-100 text-blue-700'}`}>
+                            {project.Status === ProjectStatus.Completion ? 'ĐÃ KẾT THÚC' : 'ĐANG TRIỂN KHAI'}
                         </span>
                     </div>
                     {/* Sync Button */}

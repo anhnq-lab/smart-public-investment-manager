@@ -169,8 +169,7 @@ export class ProjectService {
             const byStatus = {
                 [ProjectStatus.Preparation]: 0,
                 [ProjectStatus.Execution]: 0,
-                [ProjectStatus.Finished]: 0,
-                [ProjectStatus.Operation]: 0,
+                [ProjectStatus.Completion]: 0,
             };
 
             const byGroup = {

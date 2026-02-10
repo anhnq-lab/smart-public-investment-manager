@@ -187,7 +187,7 @@ const PersonalDashboard: React.FC = () => {
                                     className="p-4 hover:bg-gray-50 cursor-pointer transition-colors flex items-center gap-4"
                                 >
                                     <div className={`w-2 h-12 rounded-full ${project.Status === ProjectStatus.Execution ? 'bg-blue-500' :
-                                        project.Status === ProjectStatus.Finished ? 'bg-emerald-500' : 'bg-gray-300'
+                                        project.Status === ProjectStatus.Completion ? 'bg-emerald-500' : 'bg-gray-300'
                                         }`}></div>
                                     <div className="flex-1 min-w-0">
                                         <p className="font-semibold text-gray-800 truncate">{project.ProjectName}</p>
@@ -208,10 +208,10 @@ const PersonalDashboard: React.FC = () => {
                                             <span className="text-xs font-bold text-gray-600">{project.Progress || 0}%</span>
                                         </div>
                                         <span className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded ${project.Status === ProjectStatus.Execution ? 'bg-blue-100 text-blue-700' :
-                                            project.Status === ProjectStatus.Finished ? 'bg-emerald-100 text-emerald-700' : 'bg-gray-100 text-gray-600'
+                                            project.Status === ProjectStatus.Completion ? 'bg-emerald-100 text-emerald-700' : 'bg-gray-100 text-gray-600'
                                             }`}>
-                                            {project.Status === ProjectStatus.Execution ? 'Đang thực hiện' :
-                                                project.Status === ProjectStatus.Finished ? 'Hoàn thành' : 'Chuẩn bị'}
+                                            {project.Status === ProjectStatus.Execution ? 'Thực hiện DA' :
+                                                project.Status === ProjectStatus.Completion ? 'Kết thúc XD' : 'Chuẩn bị DA'}
                                         </span>
                                     </div>
                                     <ChevronRight className="w-4 h-4 text-gray-300" />
@@ -285,8 +285,8 @@ const PersonalDashboard: React.FC = () => {
                                 className="p-4 hover:bg-gray-50 cursor-pointer transition-colors flex items-center gap-3"
                             >
                                 <div className={`w-2 h-2 rounded-full ${task.Priority === TaskPriority.Urgent ? 'bg-red-500' :
-                                        task.Priority === TaskPriority.High ? 'bg-orange-500' :
-                                            task.Priority === TaskPriority.Medium ? 'bg-yellow-500' : 'bg-green-500'
+                                    task.Priority === TaskPriority.High ? 'bg-orange-500' :
+                                        task.Priority === TaskPriority.Medium ? 'bg-yellow-500' : 'bg-green-500'
                                     }`}></div>
                                 <div className="flex-1 min-w-0">
                                     <p className="font-medium text-gray-800 text-sm truncate">{task.Title}</p>

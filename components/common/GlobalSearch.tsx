@@ -73,7 +73,7 @@ export const GlobalSearch: React.FC<GlobalSearchProps> = ({ isOpen, onClose, ini
                     url: `/projects/${p.ProjectID}`,
                     icon: Building2,
                     meta: p.Status === ProjectStatus.Execution ? 'Đang triển khai' :
-                        p.Status === ProjectStatus.Finished ? 'Đã hoàn thành' : 'Chuẩn bị'
+                        p.Status === ProjectStatus.Completion ? 'Kết thúc XD' : 'Chuẩn bị DA'
                 });
             });
 

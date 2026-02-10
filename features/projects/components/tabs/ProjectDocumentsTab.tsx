@@ -27,34 +27,22 @@ interface ProjectDocumentsTabProps {
 // Legal document types by project stage
 const LEGAL_DOC_CATEGORIES = [
     {
-        stage: ProjectStage.InvestmentPolicy,
-        label: 'Chủ trương đầu tư',
-        color: 'blue',
-        docs: ['QĐ Phê duyệt chủ trương', 'Tờ trình', 'Báo cáo tiền khả thi']
-    },
-    {
         stage: ProjectStage.Preparation,
-        label: 'Chuẩn bị đầu tư',
+        label: 'Chuẩn bị dự án',
         color: 'amber',
-        docs: ['Báo cáo NCKT (F/S)', 'QĐ Phê duyệt dự án', 'Thiết kế cơ sở', 'ĐTM']
+        docs: ['QĐ Phê duyệt chủ trương', 'Tờ trình', 'Báo cáo tiền khả thi', 'Báo cáo NCKT (F/S)', 'QĐ Phê duyệt dự án', 'Thiết kế cơ sở', 'ĐTM']
     },
     {
         stage: ProjectStage.Execution,
-        label: 'Thực hiện đầu tư',
+        label: 'Thực hiện dự án',
         color: 'emerald',
         docs: ['TKKT', 'Thiết kế BVTC', 'Dự toán', 'KHLCNT', 'Hợp đồng']
     },
     {
         stage: ProjectStage.Completion,
-        label: 'Kết thúc đầu tư',
+        label: 'Kết thúc xây dựng',
         color: 'purple',
-        docs: ['BB Nghiệm thu', 'Hồ sơ hoàn công', 'QĐ Quyết toán']
-    },
-    {
-        stage: ProjectStage.Operation,
-        label: 'Vận hành',
-        color: 'violet',
-        docs: ['Biên bản bàn giao', 'Sổ tay vận hành']
+        docs: ['BB Nghiệm thu', 'Hồ sơ hoàn công', 'QĐ Quyết toán', 'Biên bản bàn giao', 'Sổ tay vận hành']
     }
 ];
 
@@ -266,7 +254,7 @@ export const ProjectDocumentsTab: React.FC<ProjectDocumentsTabProps> = ({
                                 {isExpanded && (
                                     <div className="px-5 py-4 border-t border-gray-100 space-y-3">
                                         {/* Investment Policy - if available */}
-                                        {category.stage === ProjectStage.InvestmentPolicy && investmentPolicy && (
+                                        {category.stage === ProjectStage.Preparation && investmentPolicy && (
                                             <div className="bg-blue-50 rounded-lg p-4 border border-blue-100">
                                                 <div className="flex items-start gap-3">
                                                     <div className="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center shrink-0">

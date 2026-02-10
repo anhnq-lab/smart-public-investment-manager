@@ -17,23 +17,20 @@ export enum InvestmentType {
 }
 
 export enum ProjectStatus {
-    Preparation = 1, // Chuẩn bị
-    Execution = 2,   // Thực hiện
-    Finished = 3,    // Kết thúc
-    Operation = 4    // Vận hành
+    Preparation = 1, // GĐ Chuẩn bị dự án
+    Execution = 2,   // GĐ Thực hiện dự án
+    Completion = 3   // GĐ Kết thúc xây dựng, đưa CT vào khai thác sử dụng
 }
 
 // ═══════════════════════════════════════════════════════════════
 // PHÂN LOẠI DỰ ÁN - Luật Đầu tư công 58/2024/QH15
 // ═══════════════════════════════════════════════════════════════
 
-/** Giai đoạn dự án theo NĐ 175/2024 */
+/** Giai đoạn dự án theo NĐ 175/2024 (3 giai đoạn) */
 export enum ProjectStage {
-    InvestmentPolicy = 'InvestmentPolicy',   // Chủ trương đầu tư
-    Preparation = 'Preparation',             // Chuẩn bị đầu tư
-    Execution = 'Execution',                 // Thực hiện đầu tư
-    Completion = 'Completion',               // Kết thúc đầu tư
-    Operation = 'Operation'                  // Vận hành
+    Preparation = 'Preparation',   // GĐ Chuẩn bị dự án
+    Execution = 'Execution',       // GĐ Thực hiện dự án
+    Completion = 'Completion'      // GĐ Kết thúc xây dựng
 }
 
 /** Lĩnh vực đầu tư */

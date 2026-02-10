@@ -12,10 +12,9 @@ interface ProjectCardProps {
 
 const getStatusLabel = (status: ProjectStatus) => {
     switch (status) {
-        case ProjectStatus.Preparation: return 'Chuẩn bị ĐT';
-        case ProjectStatus.Execution: return 'Thực hiện ĐT';
-        case ProjectStatus.Finished: return 'Hoàn thành';
-        case ProjectStatus.Operation: return 'Vận hành';
+        case ProjectStatus.Preparation: return 'Chuẩn bị DA';
+        case ProjectStatus.Execution: return 'Thực hiện DA';
+        case ProjectStatus.Completion: return 'Kết thúc XD';
         default: return 'N/A';
     }
 };
@@ -24,8 +23,7 @@ const getStatusColor = (status: ProjectStatus) => {
     switch (status) {
         case ProjectStatus.Preparation: return 'bg-gradient-to-r from-amber-400 to-orange-500';
         case ProjectStatus.Execution: return 'bg-gradient-to-r from-blue-500 to-blue-600';
-        case ProjectStatus.Finished: return 'bg-gradient-to-r from-emerald-500 to-emerald-600';
-        case ProjectStatus.Operation: return 'bg-gradient-to-r from-violet-500 to-purple-600';
+        case ProjectStatus.Completion: return 'bg-gradient-to-r from-emerald-500 to-emerald-600';
         default: return 'bg-gray-400';
     }
 };

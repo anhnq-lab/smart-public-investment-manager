@@ -60,7 +60,7 @@ export const ProjectStats: React.FC<ProjectStatsProps> = ({ projects }) => {
                     <AlertCircle className="w-6 h-6" />
                 </div>
                 <div>
-                    <p className="text-xs font-bold text-gray-500 uppercase tracking-wide">Chuẩn bị đầu tư</p>
+                    <p className="text-xs font-bold text-gray-500 uppercase tracking-wide">Chuẩn bị dự án</p>
                     <div className="flex items-baseline gap-2">
                         <h3 className="text-2xl font-black text-gray-800">{preparingProjects}</h3>
                         <span className="text-xs text-gray-400">dự án</span>

@@ -238,7 +238,7 @@ const Dashboard: React.FC = () => {
                         {/* Pie Chart: Project Status */}
                         <div className="bg-white p-5 rounded-3xl shadow-sm border border-gray-100 flex flex-col h-48">
                             <h3 className="text-xs font-black text-gray-800 uppercase tracking-widest mb-2 flex items-center gap-2 shrink-0">
-                                <Activity className="w-4 h-4 text-blue-500" /> Trạng thái dự án
+                                <Activity className="w-4 h-4 text-blue-500" /> Giai đoạn dự án
                             </h3>
                             {loadingStatus ? (
                                 <div className="h-full w-full bg-gray-50 rounded-xl animate-pulse"></div>

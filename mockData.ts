@@ -86,24 +86,24 @@ const haTinhProjects = [
     { id: "DA004", name: "Dự án Mở rộng khuôn viên Trung tâm Điều dưỡng Người có công và Bảo trợ xã hội tỉnh", total: 19675000000, status: ProjectStatus.Execution },
     { id: "DA7544621", name: "Dự án BIIG2 (Hạ tầng cơ bản cho phát triển toàn diện)", total: 216000000000, status: ProjectStatus.Execution },
     { id: "DA7501924", name: "Dự án vốn vay quỹ Ả rập xê út (Dự án Ả rập)", total: 667800000000, status: ProjectStatus.Execution },
-    { id: "DA007", name: "Dự án Đầu tư xây mới, nâng cấp, cải tạo 19 Trạm y tế tuyến xã, tỉnh Hà Tĩnh", total: 72000000000, status: ProjectStatus.Finished },
+    { id: "DA007", name: "Dự án Đầu tư xây mới, nâng cấp, cải tạo 19 Trạm y tế tuyến xã, tỉnh Hà Tĩnh", total: 72000000000, status: ProjectStatus.Completion },
     { id: "DA7535585", name: "Trung tâm y tế huyện Kỳ Anh", total: 311681222000, status: ProjectStatus.Execution },
     { id: "DA009", name: "Dự án Đầu tư nâng cấp trang thiết bị y tế BVĐK, TTYT tuyến huyện", total: 193000000000, status: ProjectStatus.Execution },
     { id: "DA773293501", name: "Khu nhà khám bệnh và HCTH - BVĐK huyện Nghi Xuân", total: 45243728276, status: ProjectStatus.Execution },
-    { id: "DA773293502", name: "Khu nhà Khoa Sản, Nhi, Ngoại - BVĐK huyện Thạch Hà", total: 36993188000, status: ProjectStatus.Finished },
+    { id: "DA773293502", name: "Khu nhà Khoa Sản, Nhi, Ngoại - BVĐK huyện Thạch Hà", total: 36993188000, status: ProjectStatus.Completion },
     { id: "DA7946313", name: "Nhà ký túc xá học sinh, trường THPT chuyên Hà Tĩnh", total: 21000000000, status: ProjectStatus.Execution },
     { id: "DA013", name: "Trường nghề chất lượng cao, Trường CĐ kỹ thuật Việt Đức", total: 120000000000, status: ProjectStatus.Preparation },
     { id: "DA014", name: "Dự án Bệnh viện Y học cổ truyền Giai đoạn 2", total: 60000000000, status: ProjectStatus.Execution },
-    { id: "DA7632186", name: "Tu bổ, tôn tạo Khu di tích Quốc gia đặc biệt Đại thi hào Nguyễn Du (GĐ 1)", total: 170959678000, status: ProjectStatus.Finished },
+    { id: "DA7632186", name: "Tu bổ, tôn tạo Khu di tích Quốc gia đặc biệt Đại thi hào Nguyễn Du (GĐ 1)", total: 170959678000, status: ProjectStatus.Completion },
     { id: "DA7872498", name: "Dự án Hồ sinh thái Ngã 3 Đồng Lộc (GĐ 2)", total: 43980789000, status: ProjectStatus.Execution },
-    { id: "DA7796352", name: "Cải tạo, nâng cấp, tăng cường cơ sở vật chất trụ sở Tỉnh ủy", total: 104269674307, status: ProjectStatus.Finished },
+    { id: "DA7796352", name: "Cải tạo, nâng cấp, tăng cường cơ sở vật chất trụ sở Tỉnh ủy", total: 104269674307, status: ProjectStatus.Completion },
     { id: "DA018", name: "Sàn giao dịch việc làm tại thành phố Hà Tĩnh", total: 31812000000, status: ProjectStatus.Preparation },
     { id: "DA7987973", name: "Nhà học 5 tầng Trường Trung cấp nghề Hà Tĩnh", total: 37460000000, status: ProjectStatus.Execution },
     { id: "DA7333066", name: "Quản lý nguồn nước tổng hợp và phát triển đô thị BĐKH", total: 180000000000, status: ProjectStatus.Execution },
     { id: "DA7767755", name: "Trồng mới, phục hồi và bảo tồn rừng ngập mặn ven biển", total: 30778000000, status: ProjectStatus.Execution },
     { id: "DA022", name: "Đầu tư xây dựng, cải tạo trạm y tế xã (Vốn ADB)", total: 88000000000, status: ProjectStatus.Execution },
     { id: "DA023", name: "Cải tạo nhà KTX sinh viên Lào - ĐH Hà Tĩnh", total: 9400000000, status: ProjectStatus.Execution },
-    { id: "DA7763646", name: "Trụ sở làm việc Trạm kiểm dịch động vật nội địa", total: 15000000000, status: ProjectStatus.Finished },
+    { id: "DA7763646", name: "Trụ sở làm việc Trạm kiểm dịch động vật nội địa", total: 15000000000, status: ProjectStatus.Completion },
     { id: "DA024", name: "Nâng cấp trụ sở làm việc Sở Y tế", total: 25000000000, status: ProjectStatus.Execution },
     {
         id: "PR2500044101",
@@ -158,9 +158,9 @@ export const mockProjects: Project[] = haTinhProjects.map((p, i) => {
     let progress = 0;
     let paymentProgress = 0;
 
-    if (p.status === ProjectStatus.Finished) {
+    if (p.status === ProjectStatus.Completion) {
         progress = 100;
-        paymentProgress = 98; // High disbursement for finished
+        paymentProgress = 98; // High disbursement for completed
     } else if (p.status === ProjectStatus.Execution) {
         progress = 15 + Math.floor(Math.random() * 70);
         paymentProgress = Math.max(0, progress - 15 - Math.floor(Math.random() * 10));
@@ -247,8 +247,7 @@ export const mockProjects: Project[] = haTinhProjects.map((p, i) => {
         // Phase 2 Enhancement: Lifecycle & Compliance
         Stage: p.status === ProjectStatus.Preparation ? ProjectStage.Preparation :
             p.status === ProjectStatus.Execution ? ProjectStage.Execution :
-                p.status === ProjectStatus.Finished ? ProjectStage.Completion :
-                    ProjectStage.Operation,
+                ProjectStage.Completion,
 
         Sector: p.name.includes('Y tế') || p.name.includes('Bệnh viện') || p.name.includes('Trạm') ? ProjectSector.Health :
             p.name.includes('Trường') || p.name.includes('Giáo dục') ? ProjectSector.Education :
@@ -1552,7 +1551,7 @@ mockProjects.forEach((project, index) => {
                 Value: sc.val,
                 AdvanceRate: 15,
                 Warranty: 12,
-                Status: project.Status === ProjectStatus.Finished ? ContractStatus.Liquidated : ContractStatus.Executing
+                Status: project.Status === ProjectStatus.Completion ? ContractStatus.Liquidated : ContractStatus.Executing
             };
             mockContracts.push(contract);
 
@@ -1574,7 +1573,7 @@ mockProjects.forEach((project, index) => {
         // SKIP FOR ODA Health Stations (PR2400031160) to avoid auto-generation
         let pkgStatus = PackageStatus.Planning;
         if (project.Status === ProjectStatus.Execution) pkgStatus = PackageStatus.Awarded;
-        else if (project.Status === ProjectStatus.Finished) pkgStatus = PackageStatus.Awarded;
+        else if (project.Status === ProjectStatus.Completion) pkgStatus = PackageStatus.Awarded;
         else if (project.Status === ProjectStatus.Preparation) pkgStatus = PackageStatus.Planning;
 
         const pkgId = `PKG-${project.ProjectID}-XL01`;
@@ -1606,7 +1605,7 @@ mockProjects.forEach((project, index) => {
                 Value: xlPkg.WinningPrice!,
                 AdvanceRate: 20,
                 Warranty: 24,
-                Status: project.Status === ProjectStatus.Finished ? ContractStatus.Liquidated : ContractStatus.Executing
+                Status: project.Status === ProjectStatus.Completion ? ContractStatus.Liquidated : ContractStatus.Executing
             };
             mockContracts.push(contract);
 

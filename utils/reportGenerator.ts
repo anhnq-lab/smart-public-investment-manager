@@ -33,9 +33,8 @@ export const generateMonitoringReport = (): ReportData => {
         project.GroupCode,
         formatVND(project.TotalInvestment),
         project.Progress || 0,
-        project.Status === ProjectStatus.Preparation ? 'Chuẩn bị' :
-            project.Status === ProjectStatus.Execution ? 'Đang thực hiện' :
-                project.Status === ProjectStatus.Finished ? 'Hoàn thành' : 'Vận hành',
+        project.Status === ProjectStatus.Preparation ? 'Chuẩn bị dự án' :
+            project.Status === ProjectStatus.Execution ? 'Thực hiện dự án' : 'Kết thúc xây dựng',
         `"${project.InvestorName || 'Chưa cập nhật'}"`
     ]);
 

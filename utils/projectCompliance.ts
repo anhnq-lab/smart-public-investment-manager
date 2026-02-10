@@ -154,11 +154,9 @@ export function getDesignPhases(constructionGrade: string): 1 | 2 | 3 {
 /** Tên giai đoạn tiếng Việt */
 export function getStageLabel(stage: ProjectStage): string {
     const labels: Record<ProjectStage, string> = {
-        [ProjectStage.InvestmentPolicy]: 'Chủ trương đầu tư',
-        [ProjectStage.Preparation]: 'Chuẩn bị đầu tư',
-        [ProjectStage.Execution]: 'Thực hiện đầu tư',
-        [ProjectStage.Completion]: 'Kết thúc đầu tư',
-        [ProjectStage.Operation]: 'Vận hành'
+        [ProjectStage.Preparation]: 'Chuẩn bị dự án',
+        [ProjectStage.Execution]: 'Thực hiện dự án',
+        [ProjectStage.Completion]: 'Kết thúc xây dựng'
     };
     return labels[stage];
 }
@@ -207,11 +205,9 @@ export function getGroupGradient(group: ProjectGroup): string {
 /** Stage index cho stepper component */
 export function getStageIndex(stage: ProjectStage): number {
     const stages = [
-        ProjectStage.InvestmentPolicy,
         ProjectStage.Preparation,
         ProjectStage.Execution,
-        ProjectStage.Completion,
-        ProjectStage.Operation
+        ProjectStage.Completion
     ];
     return stages.indexOf(stage);
 }

@@ -37,8 +37,7 @@ export const ComplianceChecklist: React.FC<ComplianceChecklistProps> = ({ projec
             id: 'feasibility',
             label: 'Báo cáo NCKT',
             description: project.FeasibilityStudy?.ApprovalNumber || undefined,
-            status: project.FeasibilityStudy?.ApprovalNumber ? 'passed' :
-                project.Stage === ProjectStage.InvestmentPolicy ? 'na' : 'pending',
+            status: project.FeasibilityStudy?.ApprovalNumber ? 'passed' : 'pending',
             icon: <FileText className="w-4 h-4" />
         },
         {

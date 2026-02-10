@@ -24,42 +24,28 @@ interface LifecycleStepperProps {
     onHistoryUpdate?: (history: StageHistoryEntry[]) => void;
 }
 
-// 5 giai đoạn theo NĐ 175/2024
+// 3 giai đoạn theo NĐ 175/2024
 const STAGES = [
     {
-        key: ProjectStage.InvestmentPolicy,
-        label: 'Chủ trương ĐT',
-        icon: Briefcase,
-        description: 'Phê duyệt chủ trương đầu tư',
-        requiredDocs: ['QĐ phê duyệt chủ trương', 'Tờ trình']
-    },
-    {
         key: ProjectStage.Preparation,
-        label: 'Chuẩn bị ĐT',
+        label: 'Chuẩn bị DA',
         icon: Settings,
-        description: 'Lập BCNCKT, phê duyệt dự án',
-        requiredDocs: ['Báo cáo NCKT', 'QĐ phê duyệt dự án']
+        description: 'Lập chủ trương, BCNCKT, phê duyệt dự án',
+        requiredDocs: ['QĐ phê duyệt chủ trương', 'Báo cáo NCKT', 'QĐ phê duyệt dự án']
     },
     {
         key: ProjectStage.Execution,
-        label: 'Thực hiện',
+        label: 'Thực hiện DA',
         icon: PlayCircle,
-        description: 'Thiết kế, đấu thầu, thi công',
+        description: 'Thiết kế, đấu thầu, thi công, giám sát',
         requiredDocs: ['QĐ phê duyệt TKKT', 'Hợp đồng thi công']
     },
     {
         key: ProjectStage.Completion,
-        label: 'Kết thúc',
+        label: 'Kết thúc XD',
         icon: Flag,
-        description: 'Nghiệm thu, quyết toán',
-        requiredDocs: ['BB nghiệm thu', 'QĐ quyết toán']
-    },
-    {
-        key: ProjectStage.Operation,
-        label: 'Vận hành',
-        icon: Cog,
-        description: 'Bảo trì, bảo hành',
-        requiredDocs: ['Biên bản bàn giao']
+        description: 'Nghiệm thu, quyết toán, bàn giao, đưa vào khai thác',
+        requiredDocs: ['BB nghiệm thu', 'QĐ quyết toán', 'Biên bản bàn giao']
     }
 ];
 
