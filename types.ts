@@ -131,6 +131,12 @@ export interface Project {
     RequiresBIM?: boolean;
     BIMStatus?: 'NotRequired' | 'Pending' | 'EIRApproved' | 'BEPApproved' | 'Active';
     CDEProjectCode?: string;
+
+    // Trường bổ sung theo mẫu BCNCKT (Phụ lục I - Mẫu 05)
+    ApplicableStandards?: string;    // Tiêu chuẩn, quy chuẩn áp dụng
+    FeasibilityContractor?: string;  // Nhà thầu lập BCNCKT
+    SurveyContractor?: string;       // Nhà thầu khảo sát xây dựng
+    ReviewContractor?: string;       // Nhà thầu thẩm tra
 }
 
 // ═══════════════════════════════════════════════════════════════
