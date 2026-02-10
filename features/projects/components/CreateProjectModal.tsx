@@ -22,6 +22,73 @@ const CONSTRUCTION_GRADES = [
     { value: 'IV', label: 'Cấp IV' },
 ];
 
+/** Danh sách 63 tỉnh thành với mã hành chính */
+const PROVINCES = [
+    { code: '01', name: 'Hà Nội' },
+    { code: '02', name: 'Hà Giang' },
+    { code: '04', name: 'Cao Bằng' },
+    { code: '06', name: 'Bắc Kạn' },
+    { code: '08', name: 'Tuyên Quang' },
+    { code: '10', name: 'Lào Cai' },
+    { code: '11', name: 'Điện Biên' },
+    { code: '12', name: 'Lai Châu' },
+    { code: '14', name: 'Sơn La' },
+    { code: '15', name: 'Yên Bái' },
+    { code: '17', name: 'Hoà Bình' },
+    { code: '19', name: 'Thái Nguyên' },
+    { code: '20', name: 'Lạng Sơn' },
+    { code: '22', name: 'Quảng Ninh' },
+    { code: '24', name: 'Bắc Giang' },
+    { code: '25', name: 'Phú Thọ' },
+    { code: '26', name: 'Vĩnh Phúc' },
+    { code: '27', name: 'Bắc Ninh' },
+    { code: '30', name: 'Hải Dương' },
+    { code: '31', name: 'Hải Phòng' },
+    { code: '33', name: 'Hưng Yên' },
+    { code: '34', name: 'Thái Bình' },
+    { code: '35', name: 'Hà Nam' },
+    { code: '36', name: 'Nam Định' },
+    { code: '37', name: 'Ninh Bình' },
+    { code: '38', name: 'Thanh Hóa' },
+    { code: '40', name: 'Nghệ An' },
+    { code: '42', name: 'Hà Tĩnh' },
+    { code: '44', name: 'Quảng Bình' },
+    { code: '45', name: 'Quảng Trị' },
+    { code: '46', name: 'Thừa Thiên Huế' },
+    { code: '48', name: 'Đà Nẵng' },
+    { code: '49', name: 'Quảng Nam' },
+    { code: '51', name: 'Quảng Ngãi' },
+    { code: '52', name: 'Bình Định' },
+    { code: '54', name: 'Phú Yên' },
+    { code: '56', name: 'Khánh Hòa' },
+    { code: '58', name: 'Ninh Thuận' },
+    { code: '60', name: 'Bình Thuận' },
+    { code: '62', name: 'Kon Tum' },
+    { code: '64', name: 'Gia Lai' },
+    { code: '66', name: 'Đắk Lắk' },
+    { code: '67', name: 'Đắk Nông' },
+    { code: '68', name: 'Lâm Đồng' },
+    { code: '70', name: 'Bình Phước' },
+    { code: '72', name: 'Tây Ninh' },
+    { code: '74', name: 'Bình Dương' },
+    { code: '75', name: 'Đồng Nai' },
+    { code: '77', name: 'Bà Rịa - Vũng Tàu' },
+    { code: '79', name: 'TP. Hồ Chí Minh' },
+    { code: '80', name: 'Long An' },
+    { code: '82', name: 'Tiền Giang' },
+    { code: '83', name: 'Bến Tre' },
+    { code: '84', name: 'Trà Vinh' },
+    { code: '86', name: 'Vĩnh Long' },
+    { code: '87', name: 'Đồng Tháp' },
+    { code: '89', name: 'An Giang' },
+    { code: '91', name: 'Kiên Giang' },
+    { code: '92', name: 'Cần Thơ' },
+    { code: '93', name: 'Hậu Giang' },
+    { code: '94', name: 'Sóc Trăng' },
+    { code: '95', name: 'Bạc Liêu' },
+    { code: '96', name: 'Cà Mau' },
+];
+
 export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ isOpen, onClose, onSave }) => {
     const [isLoading, setIsLoading] = useState(false);
     const [formData, setFormData] = useState({
@@ -34,7 +101,8 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ isOpen, 
         // Section 2 - Thông tin đầu tư
         TotalInvestment: 0,
         CapitalSource: 'Ngân sách Tỉnh',
-        LocationCode: 'Hà Tĩnh',
+        ProvinceCode: '42', // Hà Tĩnh default
+        LocationCode: '',
         ConstructionType: '',
         ConstructionGrade: '',
         CompetentAuthority: '',
@@ -51,10 +119,10 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ isOpen, 
     useEffect(() => {
         if (isOpen) {
             const year = new Date(formData.StartDate).getFullYear();
-            const code = generateProjectCode('38', formData.GroupCode, formData.InvestmentType, year);
+            const code = generateProjectCode(formData.ProvinceCode, formData.GroupCode, formData.InvestmentType, year);
             setFormData(prev => ({ ...prev, ProjectID: code }));
         }
-    }, [isOpen, formData.GroupCode, formData.InvestmentType, formData.StartDate]);
+    }, [isOpen, formData.GroupCode, formData.InvestmentType, formData.StartDate, formData.ProvinceCode]);
 
     if (!isOpen) return null;
 
@@ -226,6 +294,20 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ isOpen, 
                                 </div>
                             </div>
 
+                            {/* Start Date */}
+                            <div>
+                                <label className="block text-sm font-semibold text-gray-700 mb-2">Ngày bắt đầu dự kiến</label>
+                                <div className="relative">
+                                    <input
+                                        type="date"
+                                        className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none"
+                                        value={formData.StartDate}
+                                        onChange={e => updateField('StartDate', e.target.value)}
+                                    />
+                                    <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                                </div>
+                            </div>
+
                             {/* Capital Source */}
                             <div>
                                 <label className="block text-sm font-semibold text-gray-700 mb-2">Nguồn vốn đầu tư</label>
@@ -238,32 +320,39 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ isOpen, 
                                 />
                             </div>
 
-                            {/* Location */}
+                            {/* Province */}
+                            <div>
+                                <label className="block text-sm font-semibold text-gray-700 mb-2">Tỉnh/Thành phố <span className="text-red-500">*</span></label>
+                                <div className="relative">
+                                    <select
+                                        className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none appearance-none bg-white"
+                                        value={formData.ProvinceCode}
+                                        onChange={e => updateField('ProvinceCode', e.target.value)}
+                                    >
+                                        {PROVINCES.map(p => (
+                                            <option key={p.code} value={p.code}>{p.name} ({p.code})</option>
+                                        ))}
+                                    </select>
+                                    <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                                </div>
+                                <p className="text-[11px] text-blue-600 mt-1 flex items-center gap-1">
+                                    <span className="inline-block w-1.5 h-1.5 bg-blue-500 rounded-full"></span>
+                                    Mã tỉnh dùng cho mã dự án tự động
+                                </p>
+                            </div>
+
+                            {/* Location (free text) */}
                             <div>
                                 <label className="block text-sm font-semibold text-gray-700 mb-2">Địa điểm xây dựng</label>
                                 <div className="relative">
                                     <input
                                         type="text"
-                                        placeholder="Hà Tĩnh"
+                                        placeholder="VD: Xã Thạch Hạ, TP. Hà Tĩnh"
                                         className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none"
                                         value={formData.LocationCode}
                                         onChange={e => updateField('LocationCode', e.target.value)}
                                     />
                                     <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                                </div>
-                            </div>
-
-                            {/* Start Date */}
-                            <div>
-                                <label className="block text-sm font-semibold text-gray-700 mb-2">Ngày bắt đầu dự kiến</label>
-                                <div className="relative">
-                                    <input
-                                        type="date"
-                                        className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none"
-                                        value={formData.StartDate}
-                                        onChange={e => updateField('StartDate', e.target.value)}
-                                    />
-                                    <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                                 </div>
                             </div>
 
