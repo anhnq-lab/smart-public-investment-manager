@@ -138,8 +138,13 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
                 const grids = components.get(OBC.Grids);
                 grids.create(world);
 
-                // Initialize FragmentsManager first (required by IfcLoader)
+                // Initialize FragmentsManager with worker (required in v3.3)
                 const fragments = components.get(OBC.FragmentsManager);
+                const workerUrl = new URL(
+                    '@thatopen/fragments/dist/Worker/worker.mjs',
+                    import.meta.url
+                ).href;
+                fragments.init(workerUrl);
 
                 // Setup IFC loader
                 const ifcLoader = components.get(OBC.IfcLoader);
