@@ -2,7 +2,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { Task, TaskStatus, Employee, ProjectGroup } from '@/types';
 import {
     Layers, CheckCircle2, Circle, Clock, ChevronDown, ChevronRight,
-    FileText, AlertCircle, Plus, Calendar, User, Flag
+    FileText, AlertCircle, Plus, Calendar, User, Flag, Zap, Building2, Scale, Info
 } from 'lucide-react';
 import { ProjectGanttChart } from '../ProjectGanttChart';
 import { ProjectTaskModal } from '../ProjectTaskModal';
@@ -13,6 +13,8 @@ import { TaskFilterBar, TaskFilter, TaskViewMode } from '../TaskFilterBar';
 import { KanbanBoardView } from '../KanbanBoardView';
 import { ResourceAllocationView } from '../ResourceAllocationView';
 import { ProgressBadge } from '../ProgressSlider';
+import { getSubTasksForStep, hasSubTasks, SubTaskDef } from '@/utils/stepSubtasksRegistry';
+import { SubTaskDetailModal } from '../SubTaskDetailModal';
 
 interface ProjectPlanTabProps {
     tasks: Task[];
@@ -171,6 +173,9 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({
     const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
     const [selectedStep, setSelectedStep] = useState<{ name: string; code: string } | null>(null);
     const [editingTask, setEditingTask] = useState<Task | null>(null);
+    // Sub-task registry state
+    const [expandedSubTasks, setExpandedSubTasks] = useState<Record<string, boolean>>({});
+    const [selectedSubTask, setSelectedSubTask] = useState<{ def: SubTaskDef; stepTitle: string } | null>(null);
 
     // 2. Filter Tasks
     const filteredTasks = useMemo(() => {
@@ -433,10 +438,10 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({
                     </p>
                 </div>
                 <span className={`px-3 py-1 text-xs font-bold rounded-full ${groupCode === ProjectGroup.A || groupCode === ProjectGroup.QN
-                        ? 'bg-red-100 text-red-700 border border-red-200'
-                        : groupCode === ProjectGroup.B
-                            ? 'bg-amber-100 text-amber-700 border border-amber-200'
-                            : 'bg-green-100 text-green-700 border border-green-200'
+                    ? 'bg-red-100 text-red-700 border border-red-200'
+                    : groupCode === ProjectGroup.B
+                        ? 'bg-amber-100 text-amber-700 border border-amber-200'
+                        : 'bg-green-100 text-green-700 border border-green-200'
                     }`}>
                     {getGroupLabel(groupCode)}
                 </span>
@@ -521,6 +526,21 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({
                                                 </span>
 
                                                 {/* Add Task Button */}
+                                                {/* Sub-task expand toggle */}
+                                                {hasSubTasks(item.code) && (
+                                                    <button
+                                                        onClick={() => setExpandedSubTasks(prev => ({ ...prev, [item.code]: !prev[item.code] }))}
+                                                        className={`px-2 py-1 text-xs font-medium rounded border flex items-center gap-1 shrink-0 transition-colors ${expandedSubTasks[item.code]
+                                                            ? 'text-amber-700 bg-amber-50 border-amber-200'
+                                                            : 'text-purple-600 bg-purple-50 hover:bg-purple-100 border-purple-200'
+                                                            }`}
+                                                        title="Xem quy trình chi tiết (NĐ 175, Luật 135, NĐ 140, NĐ 144)"
+                                                    >
+                                                        <Zap className="w-3 h-3" />
+                                                        {expandedSubTasks[item.code] ? 'Ẩn QT' : 'Quy trình'}
+                                                    </button>
+                                                )}
+
                                                 <button
                                                     onClick={() => handleAddTask(item.title, item.code)}
                                                     className="opacity-0 group-hover:opacity-100 transition-opacity px-2 py-1 text-xs font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 rounded border border-blue-200 flex items-center gap-1 shrink-0"
@@ -619,11 +639,66 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({
                                             )}
 
                                             {/* Empty state */}
-                                            {linkedTasks.length === 0 && (
+                                            {linkedTasks.length === 0 && !expandedSubTasks[item.code] && (
                                                 <p className="text-xs text-gray-400 mt-2 italic">
-                                                    Chưa có công việc nào được tạo. Click "Thêm" để bắt đầu.
+                                                    Chưa có công việc nào được tạo. Click "Quy trình" để xem các bước cần thực hiện.
                                                 </p>
                                             )}
+
+                                            {/* Sub-tasks from Registry */}
+                                            {expandedSubTasks[item.code] && (() => {
+                                                const subTasks = getSubTasksForStep(item.code, groupCode);
+                                                return (
+                                                    <div className="mt-3 border border-purple-100 rounded-lg overflow-hidden bg-purple-50/30">
+                                                        <div className="px-3 py-2 bg-purple-50 border-b border-purple-100 flex items-center justify-between">
+                                                            <div className="flex items-center gap-2">
+                                                                <Scale className="w-3.5 h-3.5 text-purple-500" />
+                                                                <span className="text-xs font-semibold text-purple-700">
+                                                                    Quy trình theo NĐ 175, Luật 135, NĐ 140, NĐ 144
+                                                                </span>
+                                                            </div>
+                                                            <span className="text-[10px] text-purple-500">
+                                                                {subTasks.length} bước
+                                                            </span>
+                                                        </div>
+                                                        <div className="divide-y divide-purple-100">
+                                                            {subTasks.map((st, idx) => (
+                                                                <div
+                                                                    key={st.code}
+                                                                    onClick={() => setSelectedSubTask({ def: st, stepTitle: item.title })}
+                                                                    className="px-3 py-2 flex items-center gap-3 hover:bg-purple-50 transition-colors cursor-pointer group/st"
+                                                                >
+                                                                    <span className="w-5 h-5 rounded-full bg-purple-100 text-purple-600 text-[10px] font-bold flex items-center justify-center shrink-0">
+                                                                        {idx + 1}
+                                                                    </span>
+                                                                    <div className="flex-1 min-w-0">
+                                                                        <p className="text-xs font-medium text-gray-700 truncate">{st.title}</p>
+                                                                        <div className="flex items-center gap-2 mt-0.5">
+                                                                            <span className="flex items-center gap-1 text-[10px] text-blue-600">
+                                                                                <Building2 className="w-2.5 h-2.5" />
+                                                                                {st.responsible}
+                                                                            </span>
+                                                                            {st.estimatedDays && (
+                                                                                <span className="flex items-center gap-0.5 text-[10px] text-gray-400">
+                                                                                    <Clock className="w-2.5 h-2.5" />
+                                                                                    {st.estimatedDays}d
+                                                                                </span>
+                                                                            )}
+                                                                            {st.templatePath && (
+                                                                                <span className="flex items-center gap-0.5 text-[10px] text-cyan-600">
+                                                                                    <FileText className="w-2.5 h-2.5" />
+                                                                                    Biểu mẫu
+                                                                                </span>
+                                                                            )}
+                                                                        </div>
+                                                                    </div>
+                                                                    <Info className="w-3.5 h-3.5 text-gray-300 group-hover/st:text-purple-400 transition-colors shrink-0" />
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                    </div>
+                                                );
+                                            })()}
                                         </div>
                                     );
                                 })}
@@ -720,6 +795,14 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({
                 stepName={selectedStep?.name}
                 stepCode={selectedStep?.code}
                 allTasks={tasks}
+            />
+
+            {/* Sub-task Detail Modal */}
+            <SubTaskDetailModal
+                subTask={selectedSubTask?.def ?? null}
+                stepTitle={selectedSubTask?.stepTitle}
+                isOpen={!!selectedSubTask}
+                onClose={() => setSelectedSubTask(null)}
             />
         </div>
     );
