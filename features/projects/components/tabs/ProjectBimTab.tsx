@@ -3,11 +3,7 @@ import * as OBC from '@thatopen/components';
 import * as OBCF from '@thatopen/components-front';
 import * as THREE from 'three';
 import {
-    Upload, Loader2, Box, ArrowUp, Square,
-    ArrowRight as ArrowRightIcon, Building2, PanelLeft,
-    Sun, Moon, AlertCircle, CheckCircle,
-    ChevronDown, ChevronRight, Copy, FolderTree, Trash2,
-    Eye, EyeOff, Layers, ZoomIn, Crosshair, FileUp
+    Upload, Loader2, Building2, AlertCircle, CheckCircle
 } from 'lucide-react';
 import {
     uploadIFCFile, uploadFragments, getProjectModels,
@@ -15,28 +11,16 @@ import {
     type BimModel
 } from '../../../../lib/bimStorage';
 
+// Sub-components
+import { useBimTools } from '../bim/useBimTools';
+import { BimToolbar } from '../bim/BimToolbar';
+import { BimPropertiesPanel, type SelectedElement, type PropertySetGroup, type PropertyItem } from '../bim/BimPropertiesPanel';
+import { BimModelTree, type SpatialNode, type TypeGroup } from '../bim/BimModelTree';
+import { BimViewCube } from '../bim/BimViewCube';
+
 // ── Types ───────────────────────────────────────────
 interface ProjectBimTabProps {
     projectID: string;
-}
-
-interface PropertyItem {
-    name: string;
-    value: string;
-}
-
-interface PropertySetGroup {
-    name: string;
-    properties: PropertyItem[];
-}
-
-interface SelectedElement {
-    id: string;
-    name: string;
-    type: string;
-    globalId?: string;
-    propertySets: PropertySetGroup[];
-    materials: string[];
 }
 
 type LoadStatus = 'idle' | 'initializing' | 'loading' | 'converting' | 'success' | 'error';
@@ -54,57 +38,46 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
     const worldRef = useRef<OBC.World | null>(null);
     const ifcLoaderRef = useRef<OBC.IfcLoader | null>(null);
 
+    // Tools hook
+    const tools = useBimTools();
+
     // State
     const [status, setStatus] = useState<LoadStatus>('idle');
     const [statusMessage, setStatusMessage] = useState('');
     const [loadingProgress, setLoadingProgress] = useState(0);
     const [selectedElement, setSelectedElement] = useState<SelectedElement | null>(null);
-    const [showProperties, setShowProperties] = useState(true);
-    const [isDarkMode, setIsDarkMode] = useState(true);
     const [viewerReady, setViewerReady] = useState(false);
     const [isMobile, setIsMobile] = useState(false);
     const [isTablet, setIsTablet] = useState(false);
-    const [expandedSets, setExpandedSets] = useState<Record<string, boolean>>({});
     const [disciplineModels, setDisciplineModels] = useState<DisciplineModel[]>([]);
     const [objectCount, setObjectCount] = useState(0);
-    const [showDisciplinePanel, setShowDisciplinePanel] = useState(false);
+    const [spatialTree, setSpatialTree] = useState<SpatialNode[]>([]);
+    const [typeGroups, setTypeGroups] = useState<TypeGroup[]>([]);
+    const [cameraRotation, setCameraRotation] = useState({ x: -30, y: 45, z: 0 });
+
+    // Store original materials for render mode switching
+    const originalMaterialsRef = useRef<Map<string, THREE.Material>>(new Map());
 
     // Map IFC file data for property lookups (modelId → raw IFC data)
     const ifcDataMapRef = useRef<Map<string, Uint8Array>>(new Map());
 
-    // ── Helpers ──────────────────────────────────────
-    const toggleSet = (name: string) => {
-        setExpandedSets(prev => ({ ...prev, [name]: !prev[name] }));
-    };
-
-    const copyValue = (value: string) => {
-        navigator.clipboard.writeText(value).catch(() => { });
-    };
-
-    useEffect(() => {
-        if (selectedElement) {
-            const initial: Record<string, boolean> = { identity: true };
-            selectedElement.propertySets.slice(0, 2).forEach(ps => {
-                initial[ps.name] = true;
-            });
-            if (selectedElement.materials.length > 0) initial['material'] = true;
-            setExpandedSets(initial);
-        }
-    }, [selectedElement]);
-
+    // ── Responsive check ────────────────────────────
     useEffect(() => {
         const check = () => {
             const w = window.innerWidth;
             setIsMobile(w < 768);
             setIsTablet(w >= 768 && w < 1024);
-            if (w < 1024) setShowProperties(false);
+            if (w < 1024) {
+                tools.toggleRightPanel('none');
+                tools.toggleLeftPanel('none');
+            }
         };
         check();
         window.addEventListener('resize', check);
         return () => window.removeEventListener('resize', check);
     }, []);
 
-    // ── Initialize That Open Engine ──────────────────
+    // ── Initialize That Open Engine ─────────────────
     useEffect(() => {
         if (!containerRef.current) return;
         let disposed = false;
@@ -127,7 +100,9 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
 
                 world.scene = new OBC.SimpleScene(components);
                 world.scene.setup();
-                (world.scene.three as THREE.Scene).background = new THREE.Color(isDarkMode ? 0x0f172a : 0xf1f5f9);
+                (world.scene.three as THREE.Scene).background = new THREE.Color(
+                    tools.isDarkMode ? 0x0f172a : 0xf1f5f9
+                );
 
                 world.renderer = new OBCF.PostproductionRenderer(components, containerRef.current!);
                 world.camera = new OBC.SimpleCamera(components);
@@ -138,8 +113,7 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
                 const grids = components.get(OBC.Grids);
                 grids.create(world);
 
-                // Initialize FragmentsManager with worker (official v3.3 pattern)
-                // Must fetch → Blob → ObjectURL (direct URL does NOT work)
+                // Initialize FragmentsManager with worker
                 const fragments = components.get(OBC.FragmentsManager);
                 const workerGithubUrl = 'https://thatopen.github.io/engine_fragment/resources/worker.mjs';
                 const fetchedWorker = await fetch(workerGithubUrl);
@@ -167,7 +141,7 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
                     }
                 });
 
-                // Setup IFC loader with WASM config (pass directly to setup)
+                // Setup IFC loader with WASM config
                 const ifcLoader = components.get(OBC.IfcLoader);
                 await ifcLoader.setup({
                     autoSetWasm: false,
@@ -191,8 +165,20 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
                     if (!disposed) setSelectedElement(null);
                 });
 
-                // Store ifcLoader ref for property extraction
+                // Store ifcLoader ref
                 ifcLoaderRef.current = ifcLoader;
+
+                // Track camera rotation for ViewCube
+                world.camera.controls.addEventListener('update', () => {
+                    if (disposed) return;
+                    const cam = world.camera.three;
+                    const euler = new THREE.Euler().setFromQuaternion(cam.quaternion, 'YXZ');
+                    setCameraRotation({
+                        x: THREE.MathUtils.radToDeg(euler.x),
+                        y: THREE.MathUtils.radToDeg(euler.y),
+                        z: THREE.MathUtils.radToDeg(euler.z),
+                    });
+                });
 
                 if (!disposed) {
                     setViewerReady(true);
@@ -221,29 +207,110 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
         };
     }, []);
 
+    // ── Dark mode sync ──────────────────────────────
     useEffect(() => {
         if (worldRef.current?.scene) {
             (worldRef.current.scene.three as THREE.Scene).background = new THREE.Color(
-                isDarkMode ? 0x0f172a : 0xf1f5f9
+                tools.isDarkMode ? 0x0f172a : 0xf1f5f9
             );
         }
-    }, [isDarkMode]);
+    }, [tools.isDarkMode]);
 
-    // ── Handle element selection from Highlighter ────
+    // ── Render mode switching ───────────────────────
+    useEffect(() => {
+        const scene = worldRef.current?.scene?.three;
+        if (!scene) return;
+
+        scene.traverse((obj: any) => {
+            if (obj.isMesh && obj.material) {
+                const matId = obj.uuid;
+                // Store original material on first encounter
+                if (!originalMaterialsRef.current.has(matId) && tools.renderMode !== 'shading') {
+                    originalMaterialsRef.current.set(matId, obj.material.clone());
+                }
+
+                switch (tools.renderMode) {
+                    case 'shading':
+                        // Restore original materials
+                        if (originalMaterialsRef.current.has(matId)) {
+                            obj.material = originalMaterialsRef.current.get(matId)!;
+                            originalMaterialsRef.current.delete(matId);
+                        }
+                        break;
+                    case 'wireframe':
+                        if (obj.material.wireframe !== undefined) {
+                            obj.material = obj.material.clone();
+                            obj.material.wireframe = true;
+                        }
+                        break;
+                    case 'xray':
+                        obj.material = obj.material.clone();
+                        obj.material.transparent = true;
+                        obj.material.opacity = 0.3;
+                        obj.material.depthWrite = false;
+                        break;
+                    case 'ghosting':
+                        obj.material = obj.material.clone();
+                        obj.material.transparent = true;
+                        obj.material.opacity = 0.08;
+                        obj.material.depthWrite = false;
+                        break;
+                }
+            }
+        });
+    }, [tools.renderMode]);
+
+    // ── Keyboard shortcuts ──────────────────────────
+    useEffect(() => {
+        const handler = (e: KeyboardEvent) => {
+            // Don't capture if typing in input
+            if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+
+            switch (e.key) {
+                case '0': setView('iso'); break;
+                case '1': setView('front'); break;
+                case '2': setView('back'); break;
+                case '3': setView('left'); break;
+                case '4': setView('right'); break;
+                case '5': setView('top'); break;
+                case '6': setView('bottom'); break;
+                case 'f': case 'F': fitAll(); break;
+                case 'v': case 'V': tools.activateTool('select'); break;
+                case 'i': case 'I': handleIsolateSelected(); break;
+                case 'h':
+                    if (e.shiftKey) handleShowAll();
+                    else handleHideSelected();
+                    break;
+                case 'H':
+                    if (e.shiftKey) handleShowAll();
+                    else handleHideSelected();
+                    break;
+                case 'Escape':
+                    tools.activateTool('select');
+                    setSelectedElement(null);
+                    break;
+                case 'Delete':
+                    tools.clearClipPlanes();
+                    tools.clearMeasurements();
+                    break;
+            }
+        };
+        window.addEventListener('keydown', handler);
+        return () => window.removeEventListener('keydown', handler);
+    }, []);
+
+    // ── Handle element selection from Highlighter ───
     const handleElementSelection = useCallback(async (modelIdMap: Record<string, Set<number>>) => {
         try {
             const ifcLoader = ifcLoaderRef.current;
             if (!ifcLoader) return;
 
-            // Get the first selected item
             for (const [modelId, expressIDs] of Object.entries(modelIdMap)) {
                 if (!expressIDs || expressIDs.size === 0) continue;
                 const expressID = Array.from(expressIDs)[0];
 
-                // Try to find the IFC data for this model
                 const ifcData = ifcDataMapRef.current.get(modelId);
                 if (!ifcData) {
-                    // Fallback: basic info only
                     setSelectedElement({
                         id: String(expressID),
                         name: `Element #${expressID}`,
@@ -251,30 +318,32 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
                         propertySets: [],
                         materials: [],
                     });
+                    // Auto-show properties panel
+                    if (tools.rightPanel !== 'properties') tools.toggleRightPanel('properties');
                     return;
                 }
 
-                // Open IFC model in web-ifc for property extraction
                 const modelID = ifcLoader.webIfc.OpenModel(ifcData, { COORDINATE_TO_ORIGIN: false });
                 try {
                     await extractPropertiesFromWebIfc(ifcLoader.webIfc, modelID, expressID);
                 } finally {
                     ifcLoader.webIfc.CloseModel(modelID);
                 }
+                // Auto-show properties panel
+                if (tools.rightPanel !== 'properties') tools.toggleRightPanel('properties');
                 break;
             }
         } catch (err) {
             console.warn('Selection error:', err);
         }
-    }, []);
+    }, [tools.rightPanel]);
 
-    // ── Extract properties using web-ifc ─────────────
+    // ── Extract properties using web-ifc ────────────
     const extractPropertiesFromWebIfc = useCallback(async (
         ifcApi: any,
         modelID: number,
         expressID: number
     ) => {
-        // Get the element line with inverse relations
         const line = ifcApi.GetLine(modelID, expressID, false, true);
         const name = line?.Name?.value || line?.LongName?.value || `Element #${expressID}`;
         const typeCode = line?.type;
@@ -286,16 +355,14 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
         const materials: string[] = [];
 
         // Traverse inverse relations to find IfcRelDefinesByProperties
-        // The inverse key is 'IsDefinedBy' on IFC elements
         try {
-            const IFCRELDEFINESBYPROPERTIES = 4186316022; // IFC4 type code
+            const IFCRELDEFINESBYPROPERTIES = 4186316022;
             const relIds = ifcApi.GetLineIDsWithType(modelID, IFCRELDEFINESBYPROPERTIES);
             for (let i = 0; i < relIds.size(); i++) {
                 const relId = relIds.get(i);
                 const rel = ifcApi.GetLine(modelID, relId, false);
                 if (!rel?.RelatedObjects) continue;
 
-                // Check if this relation references our element
                 const related = Array.isArray(rel.RelatedObjects) ? rel.RelatedObjects : [rel.RelatedObjects];
                 const isRelated = related.some((r: any) => {
                     const val = r?.value ?? r;
@@ -303,7 +370,6 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
                 });
                 if (!isRelated) continue;
 
-                // Get the property set
                 const psetId = rel.RelatingPropertyDefinition?.value;
                 if (!psetId) continue;
                 const pset = ifcApi.GetLine(modelID, psetId, false);
@@ -373,7 +439,6 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
                 try {
                     const mat = ifcApi.GetLine(modelID, matId, false);
                     if (mat?.Name?.value) materials.push(mat.Name.value);
-                    // Handle MaterialLayerSetUsage / MaterialLayerSet
                     if (mat?.ForLayerSet?.value) {
                         const layerSet = ifcApi.GetLine(modelID, mat.ForLayerSet.value, false);
                         if (layerSet?.MaterialLayers) {
@@ -427,7 +492,7 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
                 try {
                     const fragData = await downloadFile(m.frag_path!);
                     if (fragments && worldRef.current) {
-                        const fragModel = fragments.load(new Uint8Array(fragData));
+                        const fragModel = (fragments as any).load(new Uint8Array(fragData));
                         worldRef.current.scene.three.add((fragModel as any).object || fragModel);
                         newDisciplineModels.push({ model: m, visible: true, fragModel });
                     }
@@ -475,7 +540,6 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
             const buffer = await file.arrayBuffer();
             const uint8Array = new Uint8Array(buffer);
 
-            // Load IFC → FragmentsModel
             const model = await ifcLoader.load(uint8Array, true, file.name);
             setLoadingProgress(70);
 
@@ -484,7 +548,7 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
 
             // Export fragments for caching
             const fragments = componentsRef.current.get(OBC.FragmentsManager);
-            const fragData = fragments.export(model);
+            const fragData = (fragments as any).export(model);
             setLoadingProgress(80);
 
             setStatusMessage('Đang lưu Fragments lên server...');
@@ -500,6 +564,9 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
                 fragModel: model,
             }]);
             setObjectCount(prev => prev + elementCount);
+
+            // Build spatial tree from IFC data
+            buildSpatialTree(uint8Array);
 
             // Fit camera to model
             const camera = worldRef.current.camera as OBC.SimpleCamera;
@@ -518,6 +585,129 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
             setStatusMessage(`Lỗi: ${err.message}`);
         }
     }, [projectID]);
+
+    // ── Build spatial tree from IFC data ─────────────
+    const buildSpatialTree = useCallback((ifcData: Uint8Array) => {
+        try {
+            const ifcLoader = ifcLoaderRef.current;
+            if (!ifcLoader) return;
+
+            const modelID = ifcLoader.webIfc.OpenModel(ifcData, { COORDINATE_TO_ORIGIN: false });
+            try {
+                // IFC type codes
+                const IFC_TYPES = {
+                    IFCPROJECT: 103090709,
+                    IFCSITE: 4097777520,
+                    IFCBUILDING: 4031249490,
+                    IFCBUILDINGSTOREY: 3124254112,
+                    IFCRELAGGREGATES: 160246688,
+                    IFCRELCONTAINEDINSPATIALSTRUCTURE: 3242617779,
+                };
+
+                // Build spatial hierarchy
+                const buildNode = (expressID: number, ifcApi: any): SpatialNode => {
+                    const line = ifcApi.GetLine(modelID, expressID, false);
+                    const name = line?.Name?.value || line?.LongName?.value || `#${expressID}`;
+                    let type = 'Unknown';
+                    try { type = ifcApi.GetNameFromTypeCode(line?.type) || 'Unknown'; } catch { }
+
+                    const children: SpatialNode[] = [];
+
+                    // Find aggregated children (IfcRelAggregates)
+                    const aggRelIds = ifcApi.GetLineIDsWithType(modelID, IFC_TYPES.IFCRELAGGREGATES);
+                    for (let i = 0; i < aggRelIds.size(); i++) {
+                        const relId = aggRelIds.get(i);
+                        const rel = ifcApi.GetLine(modelID, relId, false);
+                        if (!rel?.RelatingObject) continue;
+                        const relObjId = rel.RelatingObject?.value ?? rel.RelatingObject;
+                        if (relObjId !== expressID) continue;
+
+                        const relatedObjects = Array.isArray(rel.RelatedObjects) ? rel.RelatedObjects : [rel.RelatedObjects];
+                        for (const obj of relatedObjects) {
+                            const childId = obj?.value ?? obj;
+                            if (childId) children.push(buildNode(childId, ifcApi));
+                        }
+                    }
+
+                    // Count contained elements (for stories)
+                    let elementCount = 0;
+                    const containRelIds = ifcApi.GetLineIDsWithType(modelID, IFC_TYPES.IFCRELCONTAINEDINSPATIALSTRUCTURE);
+                    for (let i = 0; i < containRelIds.size(); i++) {
+                        const relId = containRelIds.get(i);
+                        const rel = ifcApi.GetLine(modelID, relId, false);
+                        if (!rel?.RelatingStructure) continue;
+                        const structId = rel.RelatingStructure?.value ?? rel.RelatingStructure;
+                        if (structId !== expressID) continue;
+
+                        const contained = Array.isArray(rel.RelatedElements) ? rel.RelatedElements : [rel.RelatedElements];
+                        elementCount += contained.length;
+                    }
+
+                    return { id: expressID, name, type, children, elementCount };
+                };
+
+                // Find root IfcProject
+                const projectIds = ifcLoader.webIfc.GetLineIDsWithType(modelID, IFC_TYPES.IFCPROJECT);
+                const tree: SpatialNode[] = [];
+                for (let i = 0; i < projectIds.size(); i++) {
+                    tree.push(buildNode(projectIds.get(i), ifcLoader.webIfc));
+                }
+                setSpatialTree(tree);
+
+                // Build type groups
+                const typeMap = new Map<string, { id: number; name: string }[]>();
+                const commonTypes = [
+                    { code: 3512223829, name: 'IfcWallStandardCase' },
+                    { code: 2391406531, name: 'IfcWall' },
+                    { code: 1529196076, name: 'IfcSlab' },
+                    { code: 843113511, name: 'IfcColumn' },
+                    { code: 753842376, name: 'IfcBeam' },
+                    { code: 395920057, name: 'IfcDoor' },
+                    { code: 3304561284, name: 'IfcWindow' },
+                    { code: 331165859, name: 'IfcStair' },
+                    { code: 2262370178, name: 'IfcRailing' },
+                    { code: 1281925730, name: 'IfcCovering' },
+                    { code: 2058353004, name: 'IfcRoof' },
+                    { code: 3856911033, name: 'IfcSpace' },
+                    { code: 979105199, name: 'IfcBuildingElementProxy' },
+                    { code: 1687234759, name: 'IfcPile' },
+                    { code: 1335981549, name: 'IfcDiscreteAccessory' },
+                    { code: 1051757585, name: 'IfcCurtainWall' },
+                    { code: 4105962743, name: 'IfcMember' },
+                    { code: 3758799889, name: 'IfcPlate' },
+                    { code: 900683007, name: 'IfcFooting' },
+                ];
+
+                for (const ct of commonTypes) {
+                    try {
+                        const ids = ifcLoader.webIfc.GetLineIDsWithType(modelID, ct.code);
+                        if (ids.size() === 0) continue;
+                        const elements: { id: number; name: string }[] = [];
+                        for (let j = 0; j < ids.size(); j++) {
+                            const id = ids.get(j);
+                            try {
+                                const el = ifcLoader.webIfc.GetLine(modelID, id, false);
+                                elements.push({ id, name: el?.Name?.value || `#${id}` });
+                            } catch { elements.push({ id, name: `#${id}` }); }
+                        }
+                        typeMap.set(ct.name, elements);
+                    } catch { /* type not found */ }
+                }
+
+                const groups: TypeGroup[] = [];
+                typeMap.forEach((elements, type) => {
+                    groups.push({ type, count: elements.length, elements, visible: true });
+                });
+                groups.sort((a, b) => b.count - a.count);
+                setTypeGroups(groups);
+
+            } finally {
+                ifcLoader.webIfc.CloseModel(modelID);
+            }
+        } catch (err) {
+            console.warn('Spatial tree build error:', err);
+        }
+    }, []);
 
     // ── Toggle visibility ───────────────────────────
     const toggleDisciplineVisibility = useCallback((index: number) => {
@@ -558,8 +748,11 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
         switch (view) {
             case 'iso': camera.controls.setLookAt(d, d, d, 0, 0, 0, true); break;
             case 'top': camera.controls.setLookAt(0, d * 2, 0, 0, 0, 0, true); break;
+            case 'bottom': camera.controls.setLookAt(0, -d * 2, 0, 0, 0, 0, true); break;
             case 'front': camera.controls.setLookAt(0, 0, d * 2, 0, 0, 0, true); break;
+            case 'back': camera.controls.setLookAt(0, 0, -d * 2, 0, 0, 0, true); break;
             case 'right': camera.controls.setLookAt(d * 2, 0, 0, 0, 0, 0, true); break;
+            case 'left': camera.controls.setLookAt(-d * 2, 0, 0, 0, 0, 0, true); break;
         }
     }, []);
 
@@ -573,101 +766,113 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
         camera.controls.fitToSphere(sphere, true);
     }, []);
 
+    // ── Visibility actions ──────────────────────────
+    const handleIsolateSelected = useCallback(() => {
+        if (!selectedElement || !worldRef.current) return;
+        // Hide all, show only selected
+        worldRef.current.scene.three.traverse((obj: any) => {
+            if (obj.isMesh) {
+                obj.visible = false;
+            }
+        });
+        // The highlighter already shows the selected element
+    }, [selectedElement]);
+
+    const handleHideSelected = useCallback(() => {
+        // Works via highlighter — placeholder
+        console.log('Hide selected');
+    }, []);
+
+    const handleShowAll = useCallback(() => {
+        if (!worldRef.current) return;
+        worldRef.current.scene.three.traverse((obj: any) => {
+            if (obj.isMesh) obj.visible = true;
+        });
+    }, []);
+
+    // ── Screenshot ──────────────────────────────────
+    const handleScreenshot = useCallback(() => {
+        const renderer = worldRef.current?.renderer;
+        if (!renderer) return;
+        try {
+            const canvas = (renderer as any).three?.domElement;
+            if (canvas) {
+                const link = document.createElement('a');
+                link.download = `bim-screenshot-${Date.now()}.png`;
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            }
+        } catch (err) {
+            console.warn('Screenshot error:', err);
+        }
+    }, []);
+
+    // ── Select element from tree ────────────────────
+    const handleSelectElementFromTree = useCallback((expressId: number) => {
+        // Try to highlight the element; for now set basic info
+        setSelectedElement({
+            id: String(expressId),
+            name: `Element #${expressId}`,
+            type: 'Unknown',
+            propertySets: [],
+            materials: [],
+        });
+        if (tools.rightPanel !== 'properties') tools.toggleRightPanel('properties');
+    }, [tools.rightPanel]);
+
     // ── Status classes ──────────────────────────────
     const getStatusClasses = () => {
         switch (status) {
             case 'loading': case 'converting': case 'initializing':
-                return isDarkMode ? 'bg-blue-500/10 border-blue-500/30 text-blue-300' : 'bg-blue-50 border-blue-200 text-blue-700';
+                return tools.isDarkMode ? 'bg-blue-500/10 border-blue-500/30 text-blue-300' : 'bg-blue-50 border-blue-200 text-blue-700';
             case 'success':
-                return isDarkMode ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300' : 'bg-green-50 border-green-200 text-green-700';
+                return tools.isDarkMode ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300' : 'bg-green-50 border-green-200 text-green-700';
             case 'error':
-                return isDarkMode ? 'bg-red-500/10 border-red-500/30 text-red-300' : 'bg-red-50 border-red-200 text-red-700';
+                return tools.isDarkMode ? 'bg-red-500/10 border-red-500/30 text-red-300' : 'bg-red-50 border-red-200 text-red-700';
             default:
-                return isDarkMode ? 'bg-slate-800/50 border-slate-700 text-slate-400' : 'bg-gray-50 border-gray-200 text-gray-600';
+                return tools.isDarkMode ? 'bg-slate-800/50 border-slate-700 text-slate-400' : 'bg-gray-50 border-gray-200 text-gray-600';
         }
     };
 
-    // ── Discipline color ────────────────────────────
-    const getDisciplineColor = (d: string | null) => {
-        const c: Record<string, string> = {
-            ARCH: 'bg-blue-500', STRU: 'bg-red-500', ELEC: 'bg-yellow-500',
-            HVAC: 'bg-green-500', PLUM: 'bg-cyan-500', FIRE: 'bg-orange-500',
-            LAND: 'bg-emerald-500', MEP: 'bg-purple-500', COMBINE: 'bg-slate-400',
-        };
-        return c[d || ''] || 'bg-slate-500';
-    };
-
-    // ── Tool button ─────────────────────────────────
-    const ToolBtn = ({ active, onClick, title, children, disabled }: {
-        active?: boolean; onClick?: () => void; title: string; children?: React.ReactNode; disabled?: boolean;
-    }) => (
-        <button onClick={onClick} title={title} disabled={disabled}
-            className={`w-10 h-10 flex items-center justify-center rounded-xl transition-all ${active
-                ? 'bg-blue-500/20 text-blue-400 ring-1 ring-blue-500/50'
-                : isDarkMode ? 'text-slate-400 hover:bg-white/10 hover:text-white' : 'text-gray-500 hover:bg-gray-200 hover:text-gray-800'
-                } ${disabled ? 'opacity-30 cursor-not-allowed' : 'cursor-pointer'}`}>
-            {children}
-        </button>
-    );
-
-    const ViewBtn = ({ view, icon: Icon, label }: { view: string; icon: any; label: string }) => (
-        <button onClick={() => setView(view)}
-            className={`px-2 py-1 text-[10px] font-semibold rounded-md transition-all flex items-center gap-1 
-                ${isDarkMode ? 'text-slate-400 hover:bg-slate-700 hover:text-white' : 'text-gray-500 hover:bg-gray-200 hover:text-gray-800'}`}>
-            <Icon className="w-3 h-3" />{label}
-        </button>
-    );
-
     // ── Render ───────────────────────────────────────
+    const hasModels = disciplineModels.length > 0;
+
     return (
-        <div className={`flex flex-col overflow-hidden rounded-xl border ${isDarkMode ? 'bg-slate-900 border-slate-700/50' : 'bg-gray-100 border-gray-200'}`}
+        <div className={`flex flex-col overflow-hidden rounded-xl border ${tools.isDarkMode ? 'bg-slate-900 border-slate-700/50' : 'bg-gray-100 border-gray-200'}`}
             style={{ height: isMobile ? 'calc(100vh - 120px)' : 'calc(100vh - 200px)', minHeight: isMobile ? '400px' : '600px', touchAction: 'none' }}>
 
-            {/* HEADER */}
-            <div className={`${isMobile ? 'h-14' : 'h-12'} ${isDarkMode ? 'bg-slate-800/90 border-slate-700/50' : 'bg-white border-gray-200'} border-b flex items-center justify-between ${isMobile ? 'px-2' : 'px-3'} shrink-0`}>
+            {/* HEADER — Compact info bar */}
+            <div className={`h-10 ${tools.isDarkMode ? 'bg-slate-800/90 border-slate-700/50' : 'bg-white border-gray-200'} border-b flex items-center justify-between px-3 shrink-0`}>
                 <div className="flex items-center gap-2">
-                    <div className={`${isMobile ? 'hidden' : 'flex'} items-center gap-2 px-2 py-1 rounded-lg bg-gradient-to-r from-blue-500/10 to-cyan-500/10 border border-blue-500/20`}>
-                        <Building2 className="w-4 h-4 text-blue-400" />
-                        <span className="text-xs font-bold text-blue-400 uppercase tracking-wide">BIM Viewer</span>
+                    <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-gradient-to-r from-blue-500/10 to-cyan-500/10 border border-blue-500/20">
+                        <Building2 className="w-3.5 h-3.5 text-blue-400" />
+                        <span className="text-[10px] font-bold text-blue-400 uppercase tracking-wide">BIM Viewer Pro</span>
                     </div>
-                    <div className={`h-5 w-px ${isDarkMode ? 'bg-slate-700' : 'bg-gray-300'}`} />
-                    <div className="flex items-center gap-1.5">
-                        <div className={`w-2 h-2 rounded-full ${viewerReady ? 'bg-emerald-400' : 'bg-amber-400 animate-pulse'}`} />
-                        <span className="text-[10px] text-slate-500">{viewerReady ? 'Ready' : 'Loading...'}</span>
+                    <div className={`h-4 w-px ${tools.isDarkMode ? 'bg-slate-700' : 'bg-gray-300'}`} />
+                    <div className="flex items-center gap-1">
+                        <div className={`w-1.5 h-1.5 rounded-full ${viewerReady ? 'bg-emerald-400' : 'bg-amber-400 animate-pulse'}`} />
+                        <span className="text-[9px] text-slate-500">{viewerReady ? 'Ready' : 'Loading'}</span>
                     </div>
                     {objectCount > 0 && (
                         <>
-                            <div className={`h-5 w-px ${isDarkMode ? 'bg-slate-700' : 'bg-gray-300'}`} />
-                            <span className="text-[10px] text-slate-500 font-mono">{objectCount.toLocaleString()} el.</span>
+                            <div className={`h-4 w-px ${tools.isDarkMode ? 'bg-slate-700' : 'bg-gray-300'}`} />
+                            <span className="text-[9px] text-slate-500 font-mono">{objectCount.toLocaleString()} elements</span>
+                        </>
+                    )}
+                    {tools.renderMode !== 'shading' && (
+                        <>
+                            <div className={`h-4 w-px ${tools.isDarkMode ? 'bg-slate-700' : 'bg-gray-300'}`} />
+                            <span className="text-[9px] text-amber-400 font-mono uppercase">{tools.renderMode}</span>
                         </>
                     )}
                 </div>
-                <div className="flex items-center gap-1">
+                <div className="flex items-center gap-1.5">
                     {!isMobile && (
-                        <div className={`flex ${isDarkMode ? 'bg-slate-800/80 border-slate-700/50' : 'bg-gray-100 border-gray-200'} rounded-lg p-0.5 border`}>
-                            <ViewBtn view="iso" icon={Box} label="3D" />
-                            <ViewBtn view="top" icon={ArrowUp} label="Top" />
-                            <ViewBtn view="front" icon={Square} label="Front" />
-                            <ViewBtn view="right" icon={ArrowRightIcon} label="Right" />
-                        </div>
+                        <label className={`flex items-center gap-1.5 px-3 py-1 bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-400 hover:to-cyan-400 text-white text-[10px] font-bold rounded-md cursor-pointer transition-all shadow-lg shadow-blue-500/25 ${status === 'loading' || status === 'converting' ? 'opacity-50 pointer-events-none' : ''}`}>
+                            <Upload className="w-3 h-3" /><span>Upload IFC</span>
+                            <input type="file" accept=".ifc" className="hidden" onChange={handleFileUpload} disabled={status === 'loading' || status === 'converting'} />
+                        </label>
                     )}
-                    <ToolBtn onClick={fitAll} title="Fit All"><ZoomIn className="w-4 h-4" /></ToolBtn>
-                    <ToolBtn active={showDisciplinePanel} onClick={() => setShowDisciplinePanel(!showDisciplinePanel)} title="Disciplines"><Layers className="w-4 h-4" /></ToolBtn>
-                    {!isMobile && (
-                        <ToolBtn active={showProperties} onClick={() => setShowProperties(!showProperties)} title="Properties"><PanelLeft className="w-4 h-4" /></ToolBtn>
-                    )}
-                    {!isMobile && (
-                        <>
-                            <div className={`h-5 w-px ${isDarkMode ? 'bg-slate-700' : 'bg-gray-300'}`} />
-                            <label className={`flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-400 hover:to-cyan-400 text-white text-xs font-semibold rounded-lg cursor-pointer transition-all shadow-lg shadow-blue-500/25 ${status === 'loading' || status === 'converting' ? 'opacity-50 pointer-events-none' : ''}`}>
-                                <Upload className="w-3.5 h-3.5" /><span>Upload IFC</span>
-                                <input type="file" accept=".ifc" className="hidden" onChange={handleFileUpload} disabled={status === 'loading' || status === 'converting'} />
-                            </label>
-                        </>
-                    )}
-                    <button onClick={() => setIsDarkMode(!isDarkMode)} className="w-10 h-10 flex items-center justify-center rounded-xl text-slate-400 hover:bg-white/10 hover:text-white transition-all">
-                        {isDarkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
-                    </button>
                 </div>
             </div>
 
@@ -695,63 +900,59 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
             {/* MAIN */}
             <div className="flex-1 flex overflow-hidden relative">
 
-                {/* Discipline Panel */}
-                {showDisciplinePanel && (
-                    <div className={`${isMobile ? 'absolute inset-y-0 left-0 z-30' : 'relative'} ${isDarkMode ? 'bg-slate-800/95 border-slate-700/50' : 'bg-white border-gray-200'} border-r w-56 flex flex-col shrink-0 backdrop-blur-xl`}>
-                        <div className="p-3 border-b border-slate-700/30 flex items-center justify-between">
-                            <div className="flex items-center gap-2">
-                                <Layers className="w-4 h-4 text-blue-400" />
-                                <span className="text-xs font-bold text-slate-400 uppercase">Disciplines</span>
-                            </div>
-                            {(isMobile || isTablet) && (
-                                <button onClick={() => setShowDisciplinePanel(false)} className="text-slate-500 hover:text-white">✕</button>
-                            )}
-                        </div>
-                        <div className="flex-1 overflow-y-auto p-2 space-y-1">
-                            {disciplineModels.length === 0 ? (
-                                <div className="text-center py-8">
-                                    <FileUp className="w-8 h-8 text-slate-600 mx-auto mb-2" />
-                                    <p className="text-xs text-slate-500">Upload IFC files</p>
-                                </div>
-                            ) : disciplineModels.map((dm, idx) => (
-                                <div key={dm.model.id} className={`group flex items-center gap-2 p-2 rounded-lg transition-all ${isDarkMode ? 'hover:bg-white/5' : 'hover:bg-gray-100'}`}>
-                                    <div className={`w-3 h-3 rounded-sm ${getDisciplineColor(dm.model.discipline)} shrink-0`} />
-                                    <div className="flex-1 min-w-0">
-                                        <p className="text-xs text-slate-300 truncate">{dm.model.discipline || dm.model.file_name.slice(0, 20)}</p>
-                                        <p className="text-[9px] text-slate-600">{dm.model.status === 'ready' ? `${(dm.model.element_count || 0).toLocaleString()} el.` : dm.model.status}</p>
-                                    </div>
-                                    <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                        {dm.model.status === 'ready' && (
-                                            <button onClick={() => toggleDisciplineVisibility(idx)} className="p-1 rounded hover:bg-white/10" title={dm.visible ? 'Ẩn' : 'Hiện'}>
-                                                {dm.visible ? <Eye className="w-3.5 h-3.5 text-emerald-400" /> : <EyeOff className="w-3.5 h-3.5 text-slate-500" />}
-                                            </button>
-                                        )}
-                                        <button onClick={() => handleDeleteModel(idx)} className="p-1 rounded hover:bg-red-500/20" title="Xóa">
-                                            <Trash2 className="w-3.5 h-3.5 text-red-400" />
-                                        </button>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                        <div className="p-2 border-t border-slate-700/30">
-                            <label className="flex items-center justify-center gap-2 w-full px-3 py-2 bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 text-xs font-semibold rounded-lg cursor-pointer transition-all border border-blue-500/20">
-                                <Upload className="w-3.5 h-3.5" /><span>Thêm IFC</span>
-                                <input type="file" accept=".ifc" className="hidden" onChange={handleFileUpload} disabled={status === 'loading' || status === 'converting'} />
-                            </label>
-                        </div>
-                    </div>
+                {/* LEFT PANEL — Model Tree */}
+                {tools.leftPanel === 'tree' && (
+                    <BimModelTree
+                        isDarkMode={tools.isDarkMode}
+                        isMobile={isMobile}
+                        onClose={() => tools.toggleLeftPanel('none')}
+                        spatialTree={spatialTree}
+                        typeGroups={typeGroups}
+                        disciplineModels={disciplineModels}
+                        onSelectElement={handleSelectElementFromTree}
+                        onToggleVisibility={() => { }}
+                        onToggleTypeVisibility={() => { }}
+                        onToggleDiscipline={toggleDisciplineVisibility}
+                        onDeleteDiscipline={handleDeleteModel}
+                        onUploadIFC={handleFileUpload}
+                        isLoading={status === 'loading' || status === 'converting'}
+                    />
                 )}
 
                 {/* 3D VIEWER */}
                 <div className="flex-1 relative">
                     <div ref={containerRef} className="absolute inset-0" style={{ touchAction: 'none' }} />
 
-                    {viewerReady && disciplineModels.length === 0 && status === 'idle' && (
+                    {/* Floating Toolbar */}
+                    <BimToolbar
+                        tools={tools}
+                        viewerReady={viewerReady}
+                        hasModels={hasModels}
+                        onSetView={setView}
+                        onFitAll={fitAll}
+                        onScreenshot={handleScreenshot}
+                        onIsolateSelected={handleIsolateSelected}
+                        onHideSelected={handleHideSelected}
+                        onShowAll={handleShowAll}
+                        isMobile={isMobile}
+                    />
+
+                    {/* ViewCube */}
+                    {!isMobile && viewerReady && (
+                        <BimViewCube
+                            isDarkMode={tools.isDarkMode}
+                            cameraRotation={cameraRotation}
+                            onSetView={setView}
+                        />
+                    )}
+
+                    {/* Empty state */}
+                    {viewerReady && !hasModels && status === 'idle' && (
                         <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
-                            <div className={`text-center p-8 rounded-2xl ${isDarkMode ? 'bg-slate-800/80' : 'bg-white/80'} backdrop-blur-xl border ${isDarkMode ? 'border-slate-700/50' : 'border-gray-200'} pointer-events-auto`}>
+                            <div className={`text-center p-8 rounded-2xl ${tools.isDarkMode ? 'bg-slate-800/80' : 'bg-white/80'} backdrop-blur-xl border ${tools.isDarkMode ? 'border-slate-700/50' : 'border-gray-200'} pointer-events-auto`}>
                                 <Building2 className="w-16 h-16 text-blue-500/50 mx-auto mb-4" />
-                                <h3 className={`text-lg font-bold mb-2 ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>BIM Viewer</h3>
-                                <p className={`text-sm mb-4 ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}>
+                                <h3 className={`text-lg font-bold mb-2 ${tools.isDarkMode ? 'text-white' : 'text-gray-800'}`}>BIM Viewer Pro</h3>
+                                <p className={`text-sm mb-4 ${tools.isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}>
                                     Upload file IFC để xem mô hình 3D BIM.<br />Hỗ trợ multi-discipline (ARCH, STRU, MEP...)
                                 </p>
                                 <label className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-400 hover:to-cyan-400 text-white text-sm font-semibold rounded-xl cursor-pointer transition-all shadow-lg shadow-blue-500/25">
@@ -761,134 +962,34 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
                             </div>
                         </div>
                     )}
-
-                    {(isMobile || isTablet) && viewerReady && (
-                        <div className={`absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 p-2 rounded-2xl ${isDarkMode ? 'bg-slate-800/95 border-slate-700/50' : 'bg-white/95 border-gray-200'} border shadow-2xl backdrop-blur-xl z-20`}>
-                            <ToolBtn onClick={() => setView('iso')} title="3D">{<Box className="w-5 h-5" />}</ToolBtn>
-                            <ToolBtn onClick={fitAll} title="Fit All">{<ZoomIn className="w-5 h-5" />}</ToolBtn>
-                            <ToolBtn active={showDisciplinePanel} onClick={() => setShowDisciplinePanel(!showDisciplinePanel)} title="Layers">{<Layers className="w-5 h-5" />}</ToolBtn>
-                            <ToolBtn active={showProperties} onClick={() => setShowProperties(!showProperties)} title="Properties">{<Crosshair className="w-5 h-5" />}</ToolBtn>
-                            <label className="w-10 h-10 flex items-center justify-center rounded-xl bg-blue-500 text-white cursor-pointer">
-                                <Upload className="w-5 h-5" />
-                                <input type="file" accept=".ifc" className="hidden" onChange={handleFileUpload} />
-                            </label>
-                        </div>
-                    )}
                 </div>
 
-                {/* PROPERTIES PANEL */}
-                {showProperties && (
-                    <div className={`${isMobile ? 'absolute inset-y-0 right-0 z-30 w-72' : 'relative w-64'} ${isDarkMode ? 'bg-slate-800/95 border-slate-700/50' : 'bg-white border-gray-200'} border-l flex flex-col shrink-0 backdrop-blur-xl`}>
-                        <div className="p-3 border-b border-slate-700/30 flex items-center justify-between">
-                            <span className="text-xs font-bold text-slate-400 uppercase">Properties</span>
-                            {(isMobile || isTablet) && (
-                                <button onClick={() => setShowProperties(false)} className="text-slate-500 hover:text-white">✕</button>
-                            )}
-                        </div>
-                        <div className="flex-1 overflow-y-auto">
-                            {selectedElement ? (
-                                <div className="divide-y divide-slate-700/30">
-                                    <div className="p-3 bg-gradient-to-r from-blue-500/10 to-transparent">
-                                        <p className="text-[10px] font-bold text-blue-400 uppercase mb-1">{selectedElement.type}</p>
-                                        <p className="font-bold text-white text-sm">{selectedElement.name}</p>
-                                    </div>
-
-                                    {/* Identity */}
-                                    <div>
-                                        <button onClick={() => toggleSet('identity')} className="w-full p-3 flex items-center gap-2 hover:bg-white/5 transition-colors">
-                                            {expandedSets['identity'] ? <ChevronDown className="w-3.5 h-3.5 text-slate-500" /> : <ChevronRight className="w-3.5 h-3.5 text-slate-500" />}
-                                            <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Identity</span>
-                                        </button>
-                                        {expandedSets['identity'] && (
-                                            <div className="px-3 pb-3 space-y-2">
-                                                <div className="flex justify-between items-start">
-                                                    <span className="text-xs text-slate-500">Express ID</span>
-                                                    <div className="flex items-center gap-1">
-                                                        <span className="text-xs text-slate-300 font-mono bg-slate-700/50 px-1.5 py-0.5 rounded truncate max-w-[140px]">{selectedElement.id}</span>
-                                                        <button onClick={() => copyValue(selectedElement.id)} className="text-slate-600 hover:text-slate-300 p-0.5" title="Copy"><Copy className="w-3 h-3" /></button>
-                                                    </div>
-                                                </div>
-                                                {selectedElement.globalId && (
-                                                    <div className="flex justify-between items-start">
-                                                        <span className="text-xs text-slate-500">GlobalId</span>
-                                                        <div className="flex items-center gap-1">
-                                                            <span className="text-xs text-slate-300 font-mono bg-slate-700/50 px-1.5 py-0.5 rounded truncate max-w-[140px]">{selectedElement.globalId}</span>
-                                                            <button onClick={() => copyValue(selectedElement.globalId!)} className="text-slate-600 hover:text-slate-300 p-0.5" title="Copy"><Copy className="w-3 h-3" /></button>
-                                                        </div>
-                                                    </div>
-                                                )}
-                                                <div className="flex justify-between">
-                                                    <span className="text-xs text-slate-500">IFC Type</span>
-                                                    <span className="text-xs text-cyan-400">{selectedElement.type}</span>
-                                                </div>
-                                            </div>
-                                        )}
-                                    </div>
-
-                                    {/* Property Sets */}
-                                    {selectedElement.propertySets.map((pset) => (
-                                        <div key={pset.name}>
-                                            <button onClick={() => toggleSet(pset.name)} className="w-full p-3 flex items-center justify-between hover:bg-white/5 transition-colors">
-                                                <div className="flex items-center gap-2">
-                                                    {expandedSets[pset.name] ? <ChevronDown className="w-3.5 h-3.5 text-slate-500" /> : <ChevronRight className="w-3.5 h-3.5 text-slate-500" />}
-                                                    <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wide truncate max-w-[150px]">{pset.name}</span>
-                                                </div>
-                                                <span className="text-[9px] text-slate-600 bg-slate-700/40 px-1.5 py-0.5 rounded">{pset.properties.length}</span>
-                                            </button>
-                                            {expandedSets[pset.name] && (
-                                                <div className="px-3 pb-3 space-y-1.5">
-                                                    {pset.properties.map((prop, idx) => (
-                                                        <div key={`${pset.name}-${idx}`} className="flex justify-between items-start group">
-                                                            <span className="text-xs text-slate-500 truncate max-w-[120px]" title={prop.name}>{prop.name}</span>
-                                                            <div className="flex items-center gap-1">
-                                                                <span className="text-xs text-slate-300 truncate max-w-[130px]" title={prop.value}>{prop.value || '—'}</span>
-                                                                <button onClick={() => copyValue(prop.value)} className="text-slate-700 hover:text-slate-300 p-0.5 opacity-0 group-hover:opacity-100 transition-opacity" title="Copy">
-                                                                    <Copy className="w-3 h-3" />
-                                                                </button>
-                                                            </div>
-                                                        </div>
-                                                    ))}
-                                                </div>
-                                            )}
-                                        </div>
-                                    ))}
-
-                                    {/* Materials */}
-                                    {selectedElement.materials.length > 0 && (
-                                        <div>
-                                            <button onClick={() => toggleSet('material')} className="w-full p-3 flex items-center gap-2 hover:bg-white/5 transition-colors">
-                                                {expandedSets['material'] ? <ChevronDown className="w-3.5 h-3.5 text-amber-500" /> : <ChevronRight className="w-3.5 h-3.5 text-amber-500" />}
-                                                <span className="text-[10px] font-bold text-amber-500 uppercase tracking-wide">Material</span>
-                                            </button>
-                                            {expandedSets['material'] && (
-                                                <div className="px-3 pb-3 space-y-1.5">
-                                                    {selectedElement.materials.map((mat, idx) => (
-                                                        <div key={idx} className="flex items-center gap-2">
-                                                            <div className="w-3 h-3 rounded-sm bg-amber-500/30 border border-amber-500/50 shrink-0" />
-                                                            <span className="text-xs text-slate-300">{mat}</span>
-                                                        </div>
-                                                    ))}
-                                                </div>
-                                            )}
-                                        </div>
-                                    )}
-                                </div>
-                            ) : (
-                                <div className="flex flex-col items-center justify-center h-full text-center p-4">
-                                    <Crosshair className="w-8 h-8 text-slate-600 mb-3" />
-                                    <p className={`text-sm font-medium ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}>Select an element</p>
-                                    <p className={`text-xs mt-1 ${isDarkMode ? 'text-slate-600' : 'text-gray-400'}`}>Click to view properties</p>
-                                </div>
-                            )}
-                        </div>
-                    </div>
+                {/* RIGHT PANEL — Properties */}
+                {tools.rightPanel === 'properties' && (
+                    <BimPropertiesPanel
+                        selectedElement={selectedElement}
+                        isDarkMode={tools.isDarkMode}
+                        isMobile={isMobile}
+                        onClose={() => tools.toggleRightPanel('none')}
+                    />
                 )}
             </div>
 
             {/* FOOTER */}
-            <div className={`h-7 ${isDarkMode ? 'bg-slate-800/90 border-slate-700/50 text-slate-500' : 'bg-white border-gray-200 text-gray-400'} border-t flex items-center justify-between px-3 text-[10px] shrink-0`}>
-                <span>Powered by <strong className="text-blue-400">That Open Engine</strong></span>
-                <span>{disciplineModels.filter(d => d.visible).length}/{disciplineModels.length} models</span>
+            <div className={`h-7 ${tools.isDarkMode ? 'bg-slate-800/90 border-slate-700/50 text-slate-500' : 'bg-white border-gray-200 text-gray-400'} border-t flex items-center justify-between px-3 text-[9px] shrink-0`}>
+                <div className="flex items-center gap-3">
+                    <span>Powered by <strong className="text-blue-400">That Open Engine</strong></span>
+                    {tools.activeTool && tools.activeTool !== 'select' && (
+                        <>
+                            <div className={`h-3 w-px ${tools.isDarkMode ? 'bg-slate-700' : 'bg-gray-300'}`} />
+                            <span className="text-amber-400 font-semibold uppercase">{tools.activeTool.replace('-', ' ')}</span>
+                        </>
+                    )}
+                </div>
+                <div className="flex items-center gap-3">
+                    <span>{disciplineModels.filter(d => d.visible).length}/{disciplineModels.length} models</span>
+                    <span>Press <kbd className={`px-1 py-0.5 rounded text-[8px] font-mono ${tools.isDarkMode ? 'bg-slate-700' : 'bg-gray-200'}`}>?</kbd> for shortcuts</span>
+                </div>
             </div>
         </div>
     );
