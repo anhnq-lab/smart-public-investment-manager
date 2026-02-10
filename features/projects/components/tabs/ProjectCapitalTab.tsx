@@ -57,10 +57,14 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
 
     const [disbursementFilter, setDisbursementFilter] = useState<DisbursementFilter>('all');
 
-    if (isLoading) return <div className="p-8 text-center text-gray-500">Đang tải dữ liệu vốn...</div>;
-    if (!data) return <div className="p-8 text-center text-red-500">Không có dữ liệu vốn</div>;
-
-    const { allocations, disbursements, summary } = data;
+    // Safe destructure — hooks must always run regardless of data
+    const allocations = data?.allocations ?? [];
+    const disbursements = data?.disbursements ?? [];
+    const summary = data?.summary ?? {
+        totalInvestment: 0, totalAllocated: 0, totalDisbursed: 0,
+        totalAdvance: 0, advanceRecovered: 0, advanceBalance: 0,
+        completionPayment: 0, disbursementRate: 0, yearlyTarget: 0, yearlyDisbursed: 0,
+    };
 
     // ── Computed Data ──
     const filteredDisbursements = disbursementFilter === 'all'
@@ -138,6 +142,10 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
             return { ...a, disbursed: disbursed - recovered, rate: a.Amount > 0 ? ((disbursed - recovered) / a.Amount) * 100 : 0 };
         });
     }, [allocations, disbursements]);
+
+    // Early returns AFTER all hooks
+    if (isLoading) return <div className="p-8 text-center text-gray-500">Đang tải dữ liệu vốn...</div>;
+    if (!data) return <div className="p-8 text-center text-red-500">Không có dữ liệu vốn</div>;
 
     return (
         <div className="space-y-6">
