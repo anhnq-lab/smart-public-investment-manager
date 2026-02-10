@@ -138,19 +138,22 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
                 const grids = components.get(OBC.Grids);
                 grids.create(world);
 
-                // Initialize FragmentsManager with official CDN worker
-                // (Vite can't bundle WASM inside Web Workers from node_modules)
+                // Initialize FragmentsManager with worker (optional - for pre-converted fragments)
                 const fragments = components.get(OBC.FragmentsManager);
-                fragments.init('https://thatopen.github.io/engine_fragment/resources/worker.mjs');
+                try {
+                    fragments.init('https://thatopen.github.io/engine_fragment/resources/worker.mjs');
+                } catch (e) {
+                    console.warn('FragmentsManager worker init failed (non-critical):', e);
+                }
 
-                // Setup IFC loader
+                // Setup IFC loader - IMPORTANT: set WASM path BEFORE calling setup()
                 const ifcLoader = components.get(OBC.IfcLoader);
-                await ifcLoader.setup();
                 ifcLoader.settings.wasm = {
                     path: 'https://unpkg.com/web-ifc@0.0.75/',
                     absolute: true,
                 };
                 ifcLoader.settings.webIfc.COORDINATE_TO_ORIGIN = true;
+                await ifcLoader.setup();
 
                 // Setup Highlighter
                 const highlighter = components.get(OBCF.Highlighter);
