@@ -175,7 +175,7 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({
     const [editingTask, setEditingTask] = useState<Task | null>(null);
     // Sub-task registry state
     const [expandedSubTasks, setExpandedSubTasks] = useState<Record<string, boolean>>({});
-    const [selectedSubTask, setSelectedSubTask] = useState<{ def: SubTaskDef; stepTitle: string } | null>(null);
+    const [selectedSubTask, setSelectedSubTask] = useState<{ def: SubTaskDef; stepTitle: string; stepCode: string } | null>(null);
 
     // 2. Filter Tasks
     const filteredTasks = useMemo(() => {
@@ -665,7 +665,7 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({
                                                             {subTasks.map((st, idx) => (
                                                                 <div
                                                                     key={st.code}
-                                                                    onClick={() => setSelectedSubTask({ def: st, stepTitle: item.title })}
+                                                                    onClick={() => setSelectedSubTask({ def: st, stepTitle: item.title, stepCode: item.code })}
                                                                     className="px-3 py-2 flex items-center gap-3 hover:bg-purple-50 transition-colors cursor-pointer group/st"
                                                                 >
                                                                     <span className="w-5 h-5 rounded-full bg-purple-100 text-purple-600 text-[10px] font-bold flex items-center justify-center shrink-0">
@@ -801,8 +801,10 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({
             <SubTaskDetailModal
                 subTask={selectedSubTask?.def ?? null}
                 stepTitle={selectedSubTask?.stepTitle}
+                stepCode={selectedSubTask?.stepCode}
                 isOpen={!!selectedSubTask}
                 onClose={() => setSelectedSubTask(null)}
+                onCreateTask={handleSaveTask}
             />
         </div>
     );
