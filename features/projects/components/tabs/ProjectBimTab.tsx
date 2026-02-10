@@ -11,7 +11,8 @@ import {
     MousePointer, Grid3X3, Slice, Target, Home, Move, Crosshair,
     Focus, Settings2, Info, Building2, Cuboid, Minus, Plus,
     PanelLeftClose, PanelRightClose, PanelLeft, PanelRight,
-    Sun, Moon, AlertCircle, CheckCircle, Menu, Smartphone
+    Sun, Moon, AlertCircle, CheckCircle, Menu, Smartphone,
+    Copy, FolderTree
 } from 'lucide-react';
 
 // IFC Converter API URL
@@ -21,14 +22,137 @@ interface ProjectBimTabProps {
     projectID: string;
 }
 
+interface PropertyItem {
+    name: string;
+    value: string;
+    type?: string;
+}
+
+interface PropertySetGroup {
+    name: string;
+    properties: PropertyItem[];
+}
+
+interface SpatialNode {
+    name: string;
+    type: string;
+    isCurrent?: boolean;
+}
+
 interface SelectedElement {
     id: string;
     name: string;
     type: string;
-    properties: Record<string, any>;
+    globalId?: string;
+    propertySets: PropertySetGroup[];
+    materials: string[];
+    spatialHierarchy: SpatialNode[];
 }
 
 type LoadStatus = 'idle' | 'initializing' | 'loading' | 'processing' | 'success' | 'error';
+
+// ── Helpers ──────────────────────────────────────────
+
+/** Extract ALL property sets from a xeokit MetaObject */
+function extractAllProperties(metaObject: any): {
+    propertySets: PropertySetGroup[];
+    materials: string[];
+    spatialHierarchy: SpatialNode[];
+    globalId?: string;
+} {
+    const propertySets: PropertySetGroup[] = [];
+    const materials: string[] = [];
+    const spatialHierarchy: SpatialNode[] = [];
+    let globalId: string | undefined;
+
+    if (!metaObject) return { propertySets, materials, spatialHierarchy };
+
+    // 1) Iterate over ALL propertySets
+    if (metaObject.propertySets && Array.isArray(metaObject.propertySets)) {
+        for (const pset of metaObject.propertySets) {
+            const setName = pset.name || pset.id || 'Properties';
+            const props: PropertyItem[] = [];
+
+            if (pset.properties && Array.isArray(pset.properties)) {
+                for (const p of pset.properties) {
+                    const name = p.name || p.label || '';
+                    const value = p.value !== undefined && p.value !== null
+                        ? String(p.value)
+                        : p.description || '';
+                    if (name) {
+                        props.push({ name, value, type: p.type });
+                        // Capture GlobalId
+                        if (name === 'GlobalId' || name === 'globalId') {
+                            globalId = value;
+                        }
+                    }
+                }
+            } else if (pset.properties && typeof pset.properties === 'object') {
+                // Handle legacy object format
+                for (const [key, val] of Object.entries(pset.properties)) {
+                    props.push({ name: key, value: String(val ?? '') });
+                }
+            }
+
+            if (props.length > 0) {
+                // Detect material sets
+                const lcName = setName.toLowerCase();
+                if (lcName.includes('material')) {
+                    for (const p of props) {
+                        if (p.value && p.value !== 'undefined') {
+                            materials.push(p.value);
+                        }
+                    }
+                }
+                propertySets.push({ name: setName, properties: props });
+            }
+        }
+    }
+
+    // 2) Build spatial hierarchy by walking up parent chain
+    let current = metaObject;
+    const chain: SpatialNode[] = [];
+    while (current) {
+        chain.push({
+            name: current.name || current.id || 'Unnamed',
+            type: current.type || '',
+            isCurrent: current === metaObject,
+        });
+        current = current.parent;
+    }
+    chain.reverse();
+    spatialHierarchy.push(...chain);
+
+    return { propertySets, materials, spatialHierarchy, globalId };
+}
+
+/** Fetch with retry for Render.com cold start */
+async function fetchWithRetry(
+    url: string,
+    options?: RequestInit,
+    retries = 3,
+    onRetry?: (attempt: number) => void
+): Promise<Response> {
+    for (let i = 0; i < retries; i++) {
+        try {
+            const controller = new AbortController();
+            const timeout = setTimeout(() => controller.abort(), 60000); // 60s timeout
+            const res = await fetch(url, { ...options, signal: controller.signal });
+            clearTimeout(timeout);
+            if (res.ok) return res;
+            throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+        } catch (err: any) {
+            if (i < retries - 1) {
+                onRetry?.(i + 1);
+                // Wait longer on each retry (cold start handling)
+                await new Promise(r => setTimeout(r, (i + 1) * 3000));
+            } else {
+                throw err;
+            }
+        }
+    }
+    throw new Error('Unexpected: all retries exhausted');
+}
 
 export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -54,6 +178,31 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
     const [viewerReady, setViewerReady] = useState(false);
     const [isMobile, setIsMobile] = useState(false);
     const [isTablet, setIsTablet] = useState(false);
+    const [expandedSets, setExpandedSets] = useState<Record<string, boolean>>({});
+
+    // Toggle a property set section
+    const toggleSet = (name: string) => {
+        setExpandedSets(prev => ({ ...prev, [name]: !prev[name] }));
+    };
+
+    // Copy value to clipboard
+    const copyValue = (value: string) => {
+        navigator.clipboard.writeText(value).catch(() => { });
+    };
+
+    // Reset expanded sets when selected element changes
+    useEffect(() => {
+        if (selectedElement) {
+            // Auto-expand first 2 property sets
+            const initial: Record<string, boolean> = { identity: true };
+            selectedElement.propertySets.slice(0, 2).forEach(ps => {
+                initial[ps.name] = true;
+            });
+            if (selectedElement.materials.length > 0) initial['material'] = true;
+            if (selectedElement.spatialHierarchy.length > 0) initial['hierarchy'] = true;
+            setExpandedSets(initial);
+        }
+    }, [selectedElement]);
 
     // Detect screen size for responsive layout
     useEffect(() => {
@@ -157,17 +306,24 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
                     if (hit && hit.entity) {
                         const entity = hit.entity;
                         const metaObject = viewer.metaScene.metaObjects[entity.id];
+                        const extracted = extractAllProperties(metaObject);
 
                         setSelectedElement({
                             id: entity.id,
                             name: metaObject?.name || entity.id,
                             type: metaObject?.type || 'Unknown',
-                            properties: metaObject?.propertySets?.[0]?.properties || {},
+                            globalId: extracted.globalId,
+                            propertySets: extracted.propertySets,
+                            materials: extracted.materials,
+                            spatialHierarchy: extracted.spatialHierarchy,
                         });
 
                         // Highlight selected
                         viewer.scene.setObjectsHighlighted(viewer.scene.highlightedObjectIds, false);
                         entity.highlighted = true;
+
+                        // Auto-show properties panel on pick
+                        if (!showProperties) setShowProperties(true);
                     }
                 });
 
@@ -247,10 +403,12 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
             formData.append('file', file);
 
             setLoadingProgress(10);
-            const uploadResponse = await fetch(`${IFC_CONVERTER_API}/convert`, {
-                method: 'POST',
-                body: formData,
-            });
+            const uploadResponse = await fetchWithRetry(
+                `${IFC_CONVERTER_API}/convert`,
+                { method: 'POST', body: formData },
+                3,
+                (attempt) => setStatusMessage(`Server đang khởi động... (lần thử ${attempt}/3)`)
+            );
 
             if (!uploadResponse.ok) {
                 throw new Error(`Upload failed: ${uploadResponse.statusText}`);
@@ -878,36 +1036,138 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
                                 <div className="flex-1 overflow-y-auto">
                                     {selectedElement ? (
                                         <div className="divide-y divide-slate-700/30">
+                                            {/* Element Header */}
                                             <div className="p-3 bg-gradient-to-r from-blue-500/10 to-transparent">
                                                 <p className="text-[10px] font-bold text-blue-400 uppercase mb-1">{selectedElement.type}</p>
                                                 <p className="font-bold text-white text-sm">{selectedElement.name}</p>
                                             </div>
-                                            <div className="p-3">
-                                                <p className="text-[10px] font-bold text-slate-500 uppercase mb-2 tracking-wide">Identity</p>
-                                                <div className="space-y-2">
-                                                    <div className="flex justify-between items-start">
-                                                        <span className="text-xs text-slate-500">ID</span>
-                                                        <span className="text-xs text-slate-300 font-mono bg-slate-700/50 px-1.5 py-0.5 rounded truncate max-w-[150px]">{selectedElement.id}</span>
-                                                    </div>
-                                                    <div className="flex justify-between">
-                                                        <span className="text-xs text-slate-500">IFC Type</span>
-                                                        <span className="text-xs text-cyan-400">{selectedElement.type}</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            {Object.keys(selectedElement.properties).length > 0 && (
-                                                <div className="p-3">
-                                                    <p className="text-[10px] font-bold text-slate-500 uppercase mb-2 tracking-wide">Properties</p>
-                                                    <div className="space-y-2">
-                                                        {Object.entries(selectedElement.properties).slice(0, 10).map(([key, value]) => (
-                                                            <div key={key} className="flex justify-between">
-                                                                <span className="text-xs text-slate-500 truncate max-w-[100px]">{key}</span>
-                                                                <span className="text-xs text-slate-300 truncate max-w-[120px]">{String(value)}</span>
+
+                                            {/* Identity Section */}
+                                            <div>
+                                                <button onClick={() => toggleSet('identity')}
+                                                    className="w-full p-3 flex items-center gap-2 hover:bg-white/5 transition-colors">
+                                                    {expandedSets['identity']
+                                                        ? <ChevronDown className="w-3.5 h-3.5 text-slate-500" />
+                                                        : <ChevronRight className="w-3.5 h-3.5 text-slate-500" />}
+                                                    <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Identity</span>
+                                                </button>
+                                                {expandedSets['identity'] && (
+                                                    <div className="px-3 pb-3 space-y-2">
+                                                        <div className="flex justify-between items-start">
+                                                            <span className="text-xs text-slate-500">ID</span>
+                                                            <div className="flex items-center gap-1">
+                                                                <span className="text-xs text-slate-300 font-mono bg-slate-700/50 px-1.5 py-0.5 rounded truncate max-w-[140px]">{selectedElement.id}</span>
+                                                                <button onClick={() => copyValue(selectedElement.id)} className="text-slate-600 hover:text-slate-300 p-0.5" title="Copy">
+                                                                    <Copy className="w-3 h-3" />
+                                                                </button>
                                                             </div>
-                                                        ))}
+                                                        </div>
+                                                        {selectedElement.globalId && (
+                                                            <div className="flex justify-between items-start">
+                                                                <span className="text-xs text-slate-500">GlobalId</span>
+                                                                <div className="flex items-center gap-1">
+                                                                    <span className="text-xs text-slate-300 font-mono bg-slate-700/50 px-1.5 py-0.5 rounded truncate max-w-[140px]">{selectedElement.globalId}</span>
+                                                                    <button onClick={() => copyValue(selectedElement.globalId!)} className="text-slate-600 hover:text-slate-300 p-0.5" title="Copy">
+                                                                        <Copy className="w-3 h-3" />
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                        )}
+                                                        <div className="flex justify-between">
+                                                            <span className="text-xs text-slate-500">IFC Type</span>
+                                                            <span className="text-xs text-cyan-400">{selectedElement.type}</span>
+                                                        </div>
                                                     </div>
+                                                )}
+                                            </div>
+
+                                            {/* All Property Sets */}
+                                            {selectedElement.propertySets.map((pset) => (
+                                                <div key={pset.name}>
+                                                    <button onClick={() => toggleSet(pset.name)}
+                                                        className="w-full p-3 flex items-center justify-between hover:bg-white/5 transition-colors">
+                                                        <div className="flex items-center gap-2">
+                                                            {expandedSets[pset.name]
+                                                                ? <ChevronDown className="w-3.5 h-3.5 text-slate-500" />
+                                                                : <ChevronRight className="w-3.5 h-3.5 text-slate-500" />}
+                                                            <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wide">{pset.name}</span>
+                                                        </div>
+                                                        <span className="text-[9px] text-slate-600 bg-slate-700/40 px-1.5 py-0.5 rounded">{pset.properties.length}</span>
+                                                    </button>
+                                                    {expandedSets[pset.name] && (
+                                                        <div className="px-3 pb-3 space-y-1.5">
+                                                            {pset.properties.map((prop, idx) => (
+                                                                <div key={`${pset.name}-${idx}`} className="flex justify-between items-start group">
+                                                                    <span className="text-xs text-slate-500 truncate max-w-[120px]" title={prop.name}>{prop.name}</span>
+                                                                    <div className="flex items-center gap-1">
+                                                                        <span className="text-xs text-slate-300 truncate max-w-[130px]" title={prop.value}>{prop.value || '—'}</span>
+                                                                        <button onClick={() => copyValue(prop.value)}
+                                                                            className="text-slate-700 hover:text-slate-300 p-0.5 opacity-0 group-hover:opacity-100 transition-opacity" title="Copy">
+                                                                            <Copy className="w-3 h-3" />
+                                                                        </button>
+                                                                    </div>
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            ))}
+
+                                            {/* Material Section */}
+                                            {selectedElement.materials.length > 0 && (
+                                                <div>
+                                                    <button onClick={() => toggleSet('material')}
+                                                        className="w-full p-3 flex items-center gap-2 hover:bg-white/5 transition-colors">
+                                                        {expandedSets['material']
+                                                            ? <ChevronDown className="w-3.5 h-3.5 text-amber-500" />
+                                                            : <ChevronRight className="w-3.5 h-3.5 text-amber-500" />}
+                                                        <span className="text-[10px] font-bold text-amber-500 uppercase tracking-wide">Material</span>
+                                                    </button>
+                                                    {expandedSets['material'] && (
+                                                        <div className="px-3 pb-3 space-y-1.5">
+                                                            {selectedElement.materials.map((mat, idx) => (
+                                                                <div key={idx} className="flex items-center gap-2">
+                                                                    <div className="w-3 h-3 rounded-sm bg-amber-500/30 border border-amber-500/50 shrink-0" />
+                                                                    <span className="text-xs text-slate-300">{mat}</span>
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                    )}
                                                 </div>
                                             )}
+
+                                            {/* Spatial Hierarchy */}
+                                            {selectedElement.spatialHierarchy.length > 0 && (
+                                                <div>
+                                                    <button onClick={() => toggleSet('hierarchy')}
+                                                        className="w-full p-3 flex items-center gap-2 hover:bg-white/5 transition-colors">
+                                                        {expandedSets['hierarchy']
+                                                            ? <ChevronDown className="w-3.5 h-3.5 text-emerald-500" />
+                                                            : <ChevronRight className="w-3.5 h-3.5 text-emerald-500" />}
+                                                        <span className="text-[10px] font-bold text-emerald-500 uppercase tracking-wide">Spatial Hierarchy</span>
+                                                    </button>
+                                                    {expandedSets['hierarchy'] && (
+                                                        <div className="px-3 pb-3">
+                                                            {selectedElement.spatialHierarchy.map((node, idx) => (
+                                                                <div key={idx} className="flex items-center gap-1" style={{ paddingLeft: `${idx * 12}px` }}>
+                                                                    <FolderTree className={`w-3 h-3 shrink-0 ${node.isCurrent ? 'text-emerald-400' : 'text-slate-600'}`} />
+                                                                    <span className={`text-xs ${node.isCurrent ? 'text-emerald-400 font-bold' : 'text-slate-400'}`}>
+                                                                        {node.name}
+                                                                    </span>
+                                                                    <span className="text-[9px] text-slate-600 ml-1">{node.type}</span>
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            )}
+
+                                            {/* Summary footer */}
+                                            <div className="p-3 text-center">
+                                                <span className="text-[10px] text-slate-600">
+                                                    {selectedElement.propertySets.length} property sets • {selectedElement.propertySets.reduce((a, b) => a + b.properties.length, 0)} properties
+                                                </span>
+                                            </div>
                                         </div>
                                     ) : (
                                         <div className="h-full flex flex-col items-center justify-center text-slate-500 p-6">
@@ -916,7 +1176,7 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
                                             </div>
                                             <p className="text-sm font-medium text-slate-400">Select an element</p>
                                             <p className="text-[11px] text-slate-600 text-center">
-                                                Click on a model element to view properties
+                                                Click on a model element to view all properties
                                             </p>
                                         </div>
                                     )}
@@ -956,11 +1216,14 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
                                 {/* Content */}
                                 <div className="flex-1 overflow-y-auto p-4">
                                     {selectedElement ? (
-                                        <div className="space-y-4">
+                                        <div className="space-y-3">
+                                            {/* Element Header */}
                                             <div className="bg-blue-500/10 rounded-xl p-4">
                                                 <p className="text-xs font-bold text-blue-400 uppercase mb-1">{selectedElement.type}</p>
                                                 <p className="font-bold text-white text-lg">{selectedElement.name}</p>
                                             </div>
+
+                                            {/* Identity */}
                                             <div className="grid grid-cols-2 gap-3">
                                                 <div className="bg-slate-800/50 rounded-xl p-3">
                                                     <p className="text-[10px] text-slate-500 uppercase mb-1">ID</p>
@@ -971,19 +1234,62 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
                                                     <p className="text-xs text-cyan-400">{selectedElement.type}</p>
                                                 </div>
                                             </div>
-                                            {Object.keys(selectedElement.properties).length > 0 && (
-                                                <div className="bg-slate-800/30 rounded-xl p-3">
-                                                    <p className="text-xs font-bold text-slate-500 uppercase mb-3">Properties</p>
-                                                    <div className="space-y-2">
-                                                        {Object.entries(selectedElement.properties).slice(0, 8).map(([key, value]) => (
-                                                            <div key={key} className="flex justify-between py-1">
-                                                                <span className="text-sm text-slate-500">{key}</span>
-                                                                <span className="text-sm text-slate-300">{String(value)}</span>
-                                                            </div>
-                                                        ))}
-                                                    </div>
+
+                                            {/* All Property Sets */}
+                                            {selectedElement.propertySets.map((pset) => (
+                                                <div key={pset.name} className="bg-slate-800/30 rounded-xl overflow-hidden">
+                                                    <button onClick={() => toggleSet(pset.name)}
+                                                        className="w-full p-3 flex items-center justify-between">
+                                                        <div className="flex items-center gap-2">
+                                                            {expandedSets[pset.name]
+                                                                ? <ChevronDown className="w-4 h-4 text-slate-500" />
+                                                                : <ChevronRight className="w-4 h-4 text-slate-500" />}
+                                                            <span className="text-xs font-bold text-slate-400 uppercase">{pset.name}</span>
+                                                        </div>
+                                                        <span className="text-[10px] text-slate-600">{pset.properties.length}</span>
+                                                    </button>
+                                                    {expandedSets[pset.name] && (
+                                                        <div className="px-3 pb-3 space-y-2">
+                                                            {pset.properties.map((prop, idx) => (
+                                                                <div key={idx} className="flex justify-between py-1">
+                                                                    <span className="text-sm text-slate-500">{prop.name}</span>
+                                                                    <span className="text-sm text-slate-300">{prop.value || '—'}</span>
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            ))}
+
+                                            {/* Materials */}
+                                            {selectedElement.materials.length > 0 && (
+                                                <div className="bg-amber-500/10 rounded-xl p-3">
+                                                    <p className="text-xs font-bold text-amber-400 uppercase mb-2">Material</p>
+                                                    {selectedElement.materials.map((mat, idx) => (
+                                                        <div key={idx} className="flex items-center gap-2">
+                                                            <div className="w-3 h-3 rounded-sm bg-amber-500/30 border border-amber-500/50" />
+                                                            <span className="text-sm text-slate-300">{mat}</span>
+                                                        </div>
+                                                    ))}
                                                 </div>
                                             )}
+
+                                            {/* Spatial Hierarchy */}
+                                            {selectedElement.spatialHierarchy.length > 0 && (
+                                                <div className="bg-emerald-500/10 rounded-xl p-3">
+                                                    <p className="text-xs font-bold text-emerald-400 uppercase mb-2">Hierarchy</p>
+                                                    {selectedElement.spatialHierarchy.map((node, idx) => (
+                                                        <div key={idx} className="flex items-center gap-1" style={{ paddingLeft: `${idx * 12}px` }}>
+                                                            <FolderTree className={`w-3 h-3 ${node.isCurrent ? 'text-emerald-400' : 'text-slate-600'}`} />
+                                                            <span className={`text-xs ${node.isCurrent ? 'text-emerald-400 font-bold' : 'text-slate-400'}`}>{node.name}</span>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            )}
+
+                                            <p className="text-center text-[10px] text-slate-600">
+                                                {selectedElement.propertySets.length} sets • {selectedElement.propertySets.reduce((a, b) => a + b.properties.length, 0)} props
+                                            </p>
                                         </div>
                                     ) : (
                                         <div className="flex flex-col items-center justify-center py-8 text-slate-500">
