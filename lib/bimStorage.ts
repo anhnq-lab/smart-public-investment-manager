@@ -17,9 +17,13 @@ export interface BimModel {
 
 const BUCKET = 'bim-models';
 
+function requireSupabase() {
+    if (!supabase) throw new Error('Supabase chưa được cấu hình. Vui lòng thiết lập VITE_SUPABASE_URL và VITE_SUPABASE_ANON_KEY trong file .env');
+    return supabase;
+}
+
 /**
  * Detect discipline from filename
- * e.g. "25032-CRCVN_CIC_ARCH_ZZ_ZZ" → "ARCH"
  */
 function detectDiscipline(fileName: string): string | null {
     const upper = fileName.toUpperCase();
@@ -40,11 +44,11 @@ export async function uploadIFCFile(
     file: File,
     onProgress?: (percent: number) => void
 ): Promise<BimModel> {
+    const sb = requireSupabase();
     const storagePath = `${projectId}/${file.name}`;
     const discipline = detectDiscipline(file.name);
 
-    // Create database record first
-    const { data: record, error: dbError } = await supabase
+    const { data: record, error: dbError } = await sb
         .from('bim_models')
         .insert({
             project_id: projectId,
@@ -59,23 +63,16 @@ export async function uploadIFCFile(
 
     if (dbError) throw new Error(`Database error: ${dbError.message}`);
 
-    // Upload file to storage
-    const { error: uploadError } = await supabase.storage
+    const { error: uploadError } = await sb.storage
         .from(BUCKET)
-        .upload(storagePath, file, {
-            cacheControl: '3600',
-            upsert: true,
-        });
+        .upload(storagePath, file, { cacheControl: '3600', upsert: true });
 
     if (uploadError) {
-        // Update status to error on failure
-        await supabase.from('bim_models').update({ status: 'error', error_message: uploadError.message }).eq('id', record.id);
+        await sb.from('bim_models').update({ status: 'error', error_message: uploadError.message }).eq('id', record.id);
         throw new Error(`Upload error: ${uploadError.message}`);
     }
 
-    // Mark as converting
-    await supabase.from('bim_models').update({ status: 'converting' }).eq('id', record.id);
-
+    await sb.from('bim_models').update({ status: 'converting' }).eq('id', record.id);
     onProgress?.(100);
     return record;
 }
@@ -89,23 +86,16 @@ export async function uploadFragments(
     fragData: Uint8Array,
     fileName: string
 ): Promise<void> {
+    const sb = requireSupabase();
     const fragPath = `${projectId}/${fileName.replace(/\.ifc$/i, '.frag')}`;
 
-    const { error } = await supabase.storage
+    const { error } = await sb.storage
         .from(BUCKET)
-        .upload(fragPath, fragData, {
-            cacheControl: '31536000', // 1 year cache (immutable)
-            upsert: true,
-            contentType: 'application/octet-stream',
-        });
+        .upload(fragPath, fragData, { cacheControl: '31536000', upsert: true, contentType: 'application/octet-stream' });
 
     if (error) throw new Error(`Fragment upload error: ${error.message}`);
 
-    // Update record with frag path and set ready
-    await supabase
-        .from('bim_models')
-        .update({ frag_path: fragPath, status: 'ready' })
-        .eq('id', modelId);
+    await sb.from('bim_models').update({ frag_path: fragPath, status: 'ready' }).eq('id', modelId);
 }
 
 /**
@@ -117,28 +107,23 @@ export async function uploadProperties(
     propertiesJson: string,
     fileName: string
 ): Promise<void> {
+    const sb = requireSupabase();
     const propsPath = `${projectId}/${fileName.replace(/\.ifc$/i, '-properties.json')}`;
 
-    const { error } = await supabase.storage
+    const { error } = await sb.storage
         .from(BUCKET)
-        .upload(propsPath, propertiesJson, {
-            cacheControl: '31536000',
-            upsert: true,
-            contentType: 'application/json',
-        });
+        .upload(propsPath, propertiesJson, { cacheControl: '31536000', upsert: true, contentType: 'application/json' });
 
     if (error) throw new Error(`Properties upload error: ${error.message}`);
 
-    await supabase
-        .from('bim_models')
-        .update({ properties_path: propsPath })
-        .eq('id', modelId);
+    await sb.from('bim_models').update({ properties_path: propsPath }).eq('id', modelId);
 }
 
 /**
  * Get all BIM models for a project
  */
 export async function getProjectModels(projectId: string): Promise<BimModel[]> {
+    if (!supabase) return []; // Gracefully return empty if not configured
     const { data, error } = await supabase
         .from('bim_models')
         .select('*')
@@ -153,7 +138,8 @@ export async function getProjectModels(projectId: string): Promise<BimModel[]> {
  * Get public URL for a file in storage
  */
 export function getStorageUrl(path: string): string {
-    const { data } = supabase.storage.from(BUCKET).getPublicUrl(path);
+    const sb = requireSupabase();
+    const { data } = sb.storage.from(BUCKET).getPublicUrl(path);
     return data.publicUrl;
 }
 
@@ -161,7 +147,8 @@ export function getStorageUrl(path: string): string {
  * Download a file from storage as ArrayBuffer
  */
 export async function downloadFile(path: string): Promise<ArrayBuffer> {
-    const { data, error } = await supabase.storage.from(BUCKET).download(path);
+    const sb = requireSupabase();
+    const { data, error } = await sb.storage.from(BUCKET).download(path);
     if (error) throw new Error(`Download error: ${error.message}`);
     return await data.arrayBuffer();
 }
@@ -170,16 +157,16 @@ export async function downloadFile(path: string): Promise<ArrayBuffer> {
  * Delete a BIM model and its files
  */
 export async function deleteModel(model: BimModel): Promise<void> {
+    const sb = requireSupabase();
     const filesToDelete: string[] = [];
     if (model.ifc_path) filesToDelete.push(model.ifc_path);
     if (model.frag_path) filesToDelete.push(model.frag_path);
     if (model.properties_path) filesToDelete.push(model.properties_path);
 
     if (filesToDelete.length > 0) {
-        await supabase.storage.from(BUCKET).remove(filesToDelete);
+        await sb.storage.from(BUCKET).remove(filesToDelete);
     }
-
-    await supabase.from('bim_models').delete().eq('id', model.id);
+    await sb.from('bim_models').delete().eq('id', model.id);
 }
 
 /**
@@ -190,8 +177,8 @@ export async function updateModelStatus(
     status: BimModel['status'],
     extra?: Partial<BimModel>
 ): Promise<void> {
-    await supabase
-        .from('bim_models')
-        .update({ status, ...extra, updated_at: new Date().toISOString() })
+    const sb = requireSupabase();
+    await sb.from('bim_models')
+        .update({ status, ...extra, updated_at: new Date().toISOString() } as any)
         .eq('id', modelId);
 }
