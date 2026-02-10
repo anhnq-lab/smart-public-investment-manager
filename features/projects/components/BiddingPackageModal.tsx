@@ -89,7 +89,25 @@ interface FormData {
     WinningContractorID: string;
     WinningPrice: string;
     ApprovalDate_Result: string;
+    // KHLCNT specific fields
+    FundingSource: string;
+    Description: string;
+    SelectionDuration: string;
+    SelectionStartDate: string;
+    HasOption: string;
 }
+
+const FUNDING_SOURCE_OPTIONS = [
+    'Ngân sách Nhà nước',
+    'Ngân sách Trung ương',
+    'Ngân sách địa phương',
+    'Ngân sách tỉnh',
+    'Ngân sách tỉnh và Trung ương',
+    'Vốn ODA',
+    'Vốn vay ưu đãi',
+    'Vốn hỗn hợp (NSNN + ODA)',
+    'Khác',
+];
 
 const initialFormData: FormData = {
     PackageNumber: '',
@@ -112,6 +130,11 @@ const initialFormData: FormData = {
     WinningContractorID: '',
     WinningPrice: '',
     ApprovalDate_Result: '',
+    FundingSource: 'Ngân sách Nhà nước',
+    Description: '',
+    SelectionDuration: '45 ngày',
+    SelectionStartDate: '',
+    HasOption: 'false',
 };
 
 export const BiddingPackageModal: React.FC<BiddingPackageModalProps> = ({
@@ -168,6 +191,11 @@ export const BiddingPackageModal: React.FC<BiddingPackageModalProps> = ({
                 WinningContractorID: packageToEdit.WinningContractorID || '',
                 WinningPrice: packageToEdit.WinningPrice?.toString() || '',
                 ApprovalDate_Result: packageToEdit.ApprovalDate_Result || '',
+                FundingSource: packageToEdit.FundingSource || 'Ngân sách Nhà nước',
+                Description: packageToEdit.Description || '',
+                SelectionDuration: packageToEdit.SelectionDuration || '45 ngày',
+                SelectionStartDate: packageToEdit.SelectionStartDate || '',
+                HasOption: packageToEdit.HasOption ? 'true' : 'false',
             });
         } else {
             setFormData(initialFormData);
@@ -251,6 +279,11 @@ export const BiddingPackageModal: React.FC<BiddingPackageModalProps> = ({
             WinningContractorID: formData.WinningContractorID || undefined,
             WinningPrice: formData.WinningPrice ? parseFloat(formData.WinningPrice) : undefined,
             ApprovalDate_Result: formData.ApprovalDate_Result || undefined,
+            FundingSource: formData.FundingSource || undefined,
+            Description: formData.Description || undefined,
+            SelectionDuration: formData.SelectionDuration || undefined,
+            SelectionStartDate: formData.SelectionStartDate || undefined,
+            HasOption: formData.HasOption === 'true',
         };
 
         if (isEditMode) {
@@ -407,6 +440,51 @@ export const BiddingPackageModal: React.FC<BiddingPackageModalProps> = ({
                                     )}
                                 </div>
 
+                                {/* Tóm tắt công việc */}
+                                <div className="col-span-2">
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                        Tóm tắt công việc chính
+                                    </label>
+                                    <textarea
+                                        placeholder="Mô tả ngắn gọn nội dung công việc chính của gói thầu..."
+                                        value={formData.Description}
+                                        onChange={(e) => handleChange('Description', e.target.value)}
+                                        rows={2}
+                                        className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none"
+                                    />
+                                </div>
+
+                                {/* Nguồn vốn */}
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                        Nguồn vốn
+                                    </label>
+                                    <select
+                                        value={formData.FundingSource}
+                                        onChange={(e) => handleChange('FundingSource', e.target.value)}
+                                        className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500"
+                                    >
+                                        {FUNDING_SOURCE_OPTIONS.map(opt => (
+                                            <option key={opt} value={opt}>{opt}</option>
+                                        ))}
+                                    </select>
+                                </div>
+
+                                {/* Tùy chọn mua thêm */}
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                        Tùy chọn mua thêm
+                                    </label>
+                                    <select
+                                        value={formData.HasOption}
+                                        onChange={(e) => handleChange('HasOption', e.target.value)}
+                                        className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500"
+                                    >
+                                        <option value="false">Không</option>
+                                        <option value="true">Có</option>
+                                    </select>
+                                </div>
+
                                 {/* NĐ 214/2025 Guidance Banner */}
                                 {methodGuidance && (
                                     <div className="col-span-2 p-4 bg-blue-50 border border-blue-200 rounded-xl">
@@ -550,6 +628,30 @@ export const BiddingPackageModal: React.FC<BiddingPackageModalProps> = ({
                                                 type="date"
                                                 value={formData.DecisionDate}
                                                 onChange={(e) => handleChange('DecisionDate', e.target.value)}
+                                                className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                                Thời gian tổ chức LCNT
+                                            </label>
+                                            <input
+                                                type="text"
+                                                placeholder="VD: 45 ngày"
+                                                value={formData.SelectionDuration}
+                                                onChange={(e) => handleChange('SelectionDuration', e.target.value)}
+                                                className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                                Thời gian bắt đầu tổ chức LCNT
+                                            </label>
+                                            <input
+                                                type="text"
+                                                placeholder="VD: Quý I/2026 hoặc Tháng 3/2026"
+                                                value={formData.SelectionStartDate}
+                                                onChange={(e) => handleChange('SelectionStartDate', e.target.value)}
                                                 className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500"
                                             />
                                         </div>

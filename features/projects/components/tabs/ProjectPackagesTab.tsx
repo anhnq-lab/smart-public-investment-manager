@@ -6,10 +6,11 @@ import { BiddingPackage, PackageStatus } from '../../../../types';
 import { formatCurrency, formatDate } from '../../../../utils/format';
 import { BiddingPackageModal } from '../BiddingPackageModal';
 import { BiddingPackageDetail } from '../BiddingPackageDetail';
+import { KHLCNTExportModal } from '../KHLCNTExportModal';
 import {
     Briefcase, CheckCircle2, FileText, Search, Plus,
     MoreVertical, Eye, Edit, Trash2, ExternalLink,
-    Copy, X, AlertTriangle, Loader2, Clock, Circle
+    Copy, X, AlertTriangle, Loader2, Clock, Circle, Printer
 } from 'lucide-react';
 
 // ========================================
@@ -40,6 +41,7 @@ export const ProjectPackagesTab: React.FC<ProjectPackagesTabProps> = ({ projectI
 
     // Dropdown state
     const [openDropdownId, setOpenDropdownId] = useState<string | null>(null);
+    const [isExportModalOpen, setIsExportModalOpen] = useState(false);
 
     // Delete mutation
     const deleteMutation = useMutation({
@@ -262,13 +264,23 @@ export const ProjectPackagesTab: React.FC<ProjectPackagesTabProps> = ({ projectI
                         <option value={PackageStatus.Awarded}>Đã có kết quả</option>
                     </select>
                 </div>
-                <button
-                    onClick={() => setIsCreateModalOpen(true)}
-                    className="flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors text-sm font-medium shadow-sm shadow-primary-200"
-                >
-                    <Plus size={16} />
-                    <span>Thêm gói thầu</span>
-                </button>
+                <div className="flex gap-2">
+                    <button
+                        onClick={() => setIsExportModalOpen(true)}
+                        disabled={!packages || packages.length === 0}
+                        className="flex items-center gap-2 px-4 py-2 bg-white border border-blue-300 text-blue-700 rounded-lg hover:bg-blue-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm font-medium"
+                    >
+                        <Printer size={16} />
+                        <span>Xuất QĐ KHLCNT</span>
+                    </button>
+                    <button
+                        onClick={() => setIsCreateModalOpen(true)}
+                        className="flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors text-sm font-medium shadow-sm shadow-primary-200"
+                    >
+                        <Plus size={16} />
+                        <span>Thêm gói thầu</span>
+                    </button>
+                </div>
             </div>
 
             {/* PHỤ LỤC KHLCNT - Bảng theo định dạng chính thức */}
@@ -564,10 +576,17 @@ export const ProjectPackagesTab: React.FC<ProjectPackagesTabProps> = ({ projectI
                     </div>
                 </div>
             )}
+
+            {/* KHLCNT Export Modal */}
+            <KHLCNTExportModal
+                isOpen={isExportModalOpen}
+                onClose={() => setIsExportModalOpen(false)}
+                packages={packages || []}
+                projectId={projectID}
+            />
         </div>
     );
 };
-
 // Action Dropdown Component
 interface ActionDropdownProps {
     pkg: BiddingPackage;
@@ -658,3 +677,4 @@ const ActionDropdown: React.FC<ActionDropdownProps> = ({
 };
 
 export default ProjectPackagesTab;
+
