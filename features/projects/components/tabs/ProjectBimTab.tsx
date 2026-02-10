@@ -1,23 +1,22 @@
 import React, { useRef, useEffect, useState, useCallback } from 'react';
-import { Viewer } from '@xeokit/xeokit-sdk/src/viewer/Viewer';
-import { XKTLoaderPlugin } from '@xeokit/xeokit-sdk/src/plugins/XKTLoaderPlugin/XKTLoaderPlugin';
-import { NavCubePlugin } from '@xeokit/xeokit-sdk/src/plugins/NavCubePlugin/NavCubePlugin';
-import { TreeViewPlugin } from '@xeokit/xeokit-sdk/src/plugins/TreeViewPlugin/TreeViewPlugin';
-import { SectionPlanesPlugin } from '@xeokit/xeokit-sdk/src/plugins/SectionPlanesPlugin/SectionPlanesPlugin';
+import * as OBC from '@thatopen/components';
+import * as OBCF from '@thatopen/components-front';
+import * as THREE from 'three';
 import {
-    Box, Maximize2, RotateCcw, Loader2, Upload, Eye, EyeOff,
-    Layers, X, ChevronRight, ChevronDown, Ruler, ZoomIn, ZoomOut,
-    ArrowUp, ArrowRight as ArrowRightIcon, List, Square, RotateCw,
-    MousePointer, Grid3X3, Slice, Target, Home, Move, Crosshair,
-    Focus, Settings2, Info, Building2, Cuboid, Minus, Plus,
-    PanelLeftClose, PanelRightClose, PanelLeft, PanelRight,
-    Sun, Moon, AlertCircle, CheckCircle, Menu, Smartphone,
-    Copy, FolderTree
+    Upload, Loader2, Box, ArrowUp, Square,
+    ArrowRight as ArrowRightIcon, Building2, PanelLeft,
+    Sun, Moon, AlertCircle, CheckCircle,
+    ChevronDown, ChevronRight, Copy, FolderTree, Trash2,
+    Eye, EyeOff, Layers, RotateCcw, ZoomIn, Crosshair,
+    FileUp
 } from 'lucide-react';
+import {
+    uploadIFCFile, uploadFragments, getProjectModels,
+    getStorageUrl, downloadFile, deleteModel, updateModelStatus,
+    type BimModel
+} from '../../../../lib/bimStorage';
 
-// IFC Converter API URL
-const IFC_CONVERTER_API = 'https://smart-public-investment-manager.onrender.com';
-
+// ── Types ───────────────────────────────────────────
 interface ProjectBimTabProps {
     projectID: string;
 }
@@ -49,151 +48,51 @@ interface SelectedElement {
     spatialHierarchy: SpatialNode[];
 }
 
-type LoadStatus = 'idle' | 'initializing' | 'loading' | 'processing' | 'success' | 'error';
+type LoadStatus = 'idle' | 'initializing' | 'loading' | 'processing' | 'converting' | 'success' | 'error';
 
-// ── Helpers ──────────────────────────────────────────
-
-/** Extract ALL property sets from a xeokit MetaObject */
-function extractAllProperties(metaObject: any): {
-    propertySets: PropertySetGroup[];
-    materials: string[];
-    spatialHierarchy: SpatialNode[];
-    globalId?: string;
-} {
-    const propertySets: PropertySetGroup[] = [];
-    const materials: string[] = [];
-    const spatialHierarchy: SpatialNode[] = [];
-    let globalId: string | undefined;
-
-    if (!metaObject) return { propertySets, materials, spatialHierarchy };
-
-    // 1) Iterate over ALL propertySets
-    if (metaObject.propertySets && Array.isArray(metaObject.propertySets)) {
-        for (const pset of metaObject.propertySets) {
-            const setName = pset.name || pset.id || 'Properties';
-            const props: PropertyItem[] = [];
-
-            if (pset.properties && Array.isArray(pset.properties)) {
-                for (const p of pset.properties) {
-                    const name = p.name || p.label || '';
-                    const value = p.value !== undefined && p.value !== null
-                        ? String(p.value)
-                        : p.description || '';
-                    if (name) {
-                        props.push({ name, value, type: p.type });
-                        // Capture GlobalId
-                        if (name === 'GlobalId' || name === 'globalId') {
-                            globalId = value;
-                        }
-                    }
-                }
-            } else if (pset.properties && typeof pset.properties === 'object') {
-                // Handle legacy object format
-                for (const [key, val] of Object.entries(pset.properties)) {
-                    props.push({ name: key, value: String(val ?? '') });
-                }
-            }
-
-            if (props.length > 0) {
-                // Detect material sets
-                const lcName = setName.toLowerCase();
-                if (lcName.includes('material')) {
-                    for (const p of props) {
-                        if (p.value && p.value !== 'undefined') {
-                            materials.push(p.value);
-                        }
-                    }
-                }
-                propertySets.push({ name: setName, properties: props });
-            }
-        }
-    }
-
-    // 2) Build spatial hierarchy by walking up parent chain
-    let current = metaObject;
-    const chain: SpatialNode[] = [];
-    while (current) {
-        chain.push({
-            name: current.name || current.id || 'Unnamed',
-            type: current.type || '',
-            isCurrent: current === metaObject,
-        });
-        current = current.parent;
-    }
-    chain.reverse();
-    spatialHierarchy.push(...chain);
-
-    return { propertySets, materials, spatialHierarchy, globalId };
+interface DisciplineModel {
+    model: BimModel;
+    visible: boolean;
+    fragmentGroup?: any; // FragmentsGroup reference
 }
 
-/** Fetch with retry for Render.com cold start */
-async function fetchWithRetry(
-    url: string,
-    options?: RequestInit,
-    retries = 3,
-    onRetry?: (attempt: number) => void
-): Promise<Response> {
-    for (let i = 0; i < retries; i++) {
-        try {
-            const controller = new AbortController();
-            const timeout = setTimeout(() => controller.abort(), 60000); // 60s timeout
-            const res = await fetch(url, { ...options, signal: controller.signal });
-            clearTimeout(timeout);
-            if (res.ok) return res;
-            throw new Error(`HTTP ${res.status}: ${res.statusText}`);
-        } catch (err: any) {
-            if (i < retries - 1) {
-                onRetry?.(i + 1);
-                // Wait longer on each retry (cold start handling)
-                await new Promise(r => setTimeout(r, (i + 1) * 3000));
-            } else {
-                throw err;
-            }
-        }
-    }
-    throw new Error('Unexpected: all retries exhausted');
-}
-
+// ── Component ───────────────────────────────────────
 export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
-    const canvasRef = useRef<HTMLCanvasElement>(null);
-    const navCubeCanvasRef = useRef<HTMLCanvasElement>(null);
-    const treeContainerRef = useRef<HTMLDivElement>(null);
+    const containerRef = useRef<HTMLDivElement>(null);
 
-    const viewerRef = useRef<Viewer | null>(null);
-    const xktLoaderRef = useRef<XKTLoaderPlugin | null>(null);
-    const sectionPlanesRef = useRef<SectionPlanesPlugin | null>(null);
+    // Engine refs
+    const worldRef = useRef<OBC.World | null>(null);
+    const componentsRef = useRef<OBC.Components | null>(null);
+    const ifcLoaderRef = useRef<OBC.IfcLoader | null>(null);
+    const fragmentsRef = useRef<OBC.FragmentsManager | null>(null);
 
-    const [status, setStatus] = useState<LoadStatus>('initializing');
-    const [statusMessage, setStatusMessage] = useState('Đang khởi tạo viewer...');
+    // State
+    const [status, setStatus] = useState<LoadStatus>('idle');
+    const [statusMessage, setStatusMessage] = useState('');
     const [loadingProgress, setLoadingProgress] = useState(0);
-    const [modelLoaded, setModelLoaded] = useState(false);
     const [selectedElement, setSelectedElement] = useState<SelectedElement | null>(null);
-    const [showModelTree, setShowModelTree] = useState(true);
     const [showProperties, setShowProperties] = useState(true);
-    const [sectionEnabled, setSectionEnabled] = useState(false);
-    const [objectCount, setObjectCount] = useState(0);
-    const [activeView, setActiveView] = useState('iso');
     const [isDarkMode, setIsDarkMode] = useState(true);
-    const [fileName, setFileName] = useState('');
     const [viewerReady, setViewerReady] = useState(false);
     const [isMobile, setIsMobile] = useState(false);
     const [isTablet, setIsTablet] = useState(false);
     const [expandedSets, setExpandedSets] = useState<Record<string, boolean>>({});
+    const [disciplineModels, setDisciplineModels] = useState<DisciplineModel[]>([]);
+    const [objectCount, setObjectCount] = useState(0);
+    const [showDisciplinePanel, setShowDisciplinePanel] = useState(false);
 
-    // Toggle a property set section
+    // ── Helpers ──────────────────────────────────────
     const toggleSet = (name: string) => {
         setExpandedSets(prev => ({ ...prev, [name]: !prev[name] }));
     };
 
-    // Copy value to clipboard
     const copyValue = (value: string) => {
         navigator.clipboard.writeText(value).catch(() => { });
     };
 
-    // Reset expanded sets when selected element changes
+    // Auto-expand property sets when element selected
     useEffect(() => {
         if (selectedElement) {
-            // Auto-expand first 2 property sets
             const initial: Record<string, boolean> = { identity: true };
             selectedElement.propertySets.slice(0, 2).forEach(ps => {
                 initial[ps.name] = true;
@@ -204,466 +103,586 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
         }
     }, [selectedElement]);
 
-    // Detect screen size for responsive layout
+    // Responsive
     useEffect(() => {
-        const checkScreenSize = () => {
-            const width = window.innerWidth;
-            setIsMobile(width < 768);
-            setIsTablet(width >= 768 && width < 1024);
-
-            // Auto-hide sidebars on tablet/mobile
-            if (width < 1024) {
-                setShowModelTree(false);
-                setShowProperties(false);
-            }
+        const check = () => {
+            const w = window.innerWidth;
+            setIsMobile(w < 768);
+            setIsTablet(w >= 768 && w < 1024);
+            if (w < 1024) setShowProperties(false);
         };
-
-        checkScreenSize();
-        window.addEventListener('resize', checkScreenSize);
-        return () => window.removeEventListener('resize', checkScreenSize);
+        check();
+        window.addEventListener('resize', check);
+        return () => window.removeEventListener('resize', check);
     }, []);
 
-    // Initialize xeokit viewer
+    // ── Initialize That Open Engine ──────────────────
     useEffect(() => {
-        if (!canvasRef.current) {
-            console.warn('Canvas ref not ready');
-            return;
-        }
+        if (!containerRef.current) return;
+        let disposed = false;
 
-        // Ensure canvas has valid dimensions
-        const canvas = canvasRef.current;
-        if (!canvas.offsetWidth || !canvas.offsetHeight) {
-            console.warn('Canvas has no dimensions yet, retrying...');
-            const timer = setTimeout(() => {
-                // Force re-render
-                setViewerReady(false);
-            }, 100);
-            return () => clearTimeout(timer);
-        }
-
-        let viewer: any = null;
-        let cancelled = false;
-
-        const initViewer = async () => {
+        const init = async () => {
             try {
                 setStatus('initializing');
-                setStatusMessage('Đang khởi tạo xeokit viewer...');
+                setStatusMessage('Đang khởi tạo BIM viewer...');
 
-                // Create viewer with canvas element directly
-                viewer = new Viewer({
-                    canvasElement: canvas,
-                    transparent: false,
-                    saoEnabled: true,
-                    pbrEnabled: false,
-                });
+                // Create components
+                const components = new OBC.Components();
+                componentsRef.current = components;
 
-                // Set initial camera
-                viewer.scene.camera.eye = [50, 35, 50];
-                viewer.scene.camera.look = [0, 5, 0];
-                viewer.scene.camera.up = [0, 1, 0];
+                // Create world with scene, camera, renderer
+                const worlds = components.get(OBC.Worlds);
+                const world = worlds.create<
+                    OBC.SimpleScene,
+                    OBC.SimpleCamera,
+                    OBCF.PostproductionRenderer
+                >();
+                worldRef.current = world;
 
-                // Background
-                canvas.style.background = isDarkMode
-                    ? 'linear-gradient(180deg, #1e293b 0%, #0f172a 100%)'
-                    : 'linear-gradient(180deg, #f1f5f9 0%, #e2e8f0 100%)';
+                // Setup scene
+                world.scene = new OBC.SimpleScene(components);
+                world.scene.setup();
+                (world.scene.three as any).background = new THREE.Color(isDarkMode ? 0x0f172a : 0xf1f5f9);
 
-                viewerRef.current = viewer;
+                // Setup renderer
+                world.renderer = new OBCF.PostproductionRenderer(components, containerRef.current!);
 
-                // Add NavCube
-                if (navCubeCanvasRef.current) {
-                    new NavCubePlugin(viewer, {
-                        canvasElement: navCubeCanvasRef.current,
-                        visible: true,
-                        size: 250,
-                        alignment: 'bottomRight',
-                        bottomMargin: 80,
-                        rightMargin: 10,
-                    });
-                }
+                // Setup camera
+                world.camera = new OBC.SimpleCamera(components);
+                world.camera.controls.setLookAt(15, 15, 15, 0, 0, 0);
 
-                // Add XKT Loader (for loading XKT files converted from IFC by backend)
-                const xktLoader = new XKTLoaderPlugin(viewer);
-                xktLoaderRef.current = xktLoader;
+                // Init components
+                await components.init();
 
-                // Add Section Planes
-                const sectionPlanes = new SectionPlanesPlugin(viewer, {
-                    overviewVisible: false,
-                });
-                sectionPlanesRef.current = sectionPlanes;
+                // Setup grid
+                const grids = components.get(OBC.Grids);
+                grids.create(world);
 
-                // Add TreeView with containment hierarchy (Building > Storey > Space)
-                if (treeContainerRef.current) {
-                    new TreeViewPlugin(viewer, {
-                        containerElement: treeContainerRef.current,
-                        autoExpandDepth: 1,  // Only expand first level by default
-                        hierarchy: 'containment',  // Group by building structure
-                        pruneEmptyNodes: true,  // Hide empty nodes
-                    });
-                }
+                // Setup IFC loader
+                const ifcLoader = components.get(OBC.IfcLoader);
+                await ifcLoader.setup();
+                ifcLoaderRef.current = ifcLoader;
 
-                // Handle element picking
-                viewer.scene.input.on('picked', (hit: any) => {
-                    if (hit && hit.entity) {
-                        const entity = hit.entity;
-                        const metaObject = viewer.metaScene.metaObjects[entity.id];
-                        const extracted = extractAllProperties(metaObject);
+                // Configure for web
+                ifcLoader.settings.wasm = {
+                    path: 'https://unpkg.com/web-ifc@0.0.68/',
+                    absolute: true,
+                };
+                ifcLoader.settings.webIfc.COORDINATE_TO_ORIGIN = true;
 
-                        setSelectedElement({
-                            id: entity.id,
-                            name: metaObject?.name || entity.id,
-                            type: metaObject?.type || 'Unknown',
-                            globalId: extracted.globalId,
-                            propertySets: extracted.propertySets,
-                            materials: extracted.materials,
-                            spatialHierarchy: extracted.spatialHierarchy,
-                        });
+                // Setup fragments manager
+                const fragments = components.get(OBC.FragmentsManager);
+                fragmentsRef.current = fragments;
 
-                        // Highlight selected
-                        viewer.scene.setObjectsHighlighted(viewer.scene.highlightedObjectIds, false);
-                        entity.highlighted = true;
+                // Setup highlighter for selection
+                const highlighter = components.get(OBCF.Highlighter);
+                highlighter.setup({ world });
 
-                        // Auto-show properties panel on pick
-                        if (!showProperties) setShowProperties(true);
+                // Handle element selection
+                highlighter.events.select.onHighlight.add((data: any) => {
+                    if (disposed) return;
+                    const fragmentIdMap = data;
+                    if (!fragmentIdMap || Object.keys(fragmentIdMap).length === 0) return;
+
+                    // Get the first selected element
+                    const indexer = components.get(OBC.IfcRelationsIndexer);
+                    const classifier = components.get(OBC.Classifier);
+
+                    for (const fragID in fragmentIdMap) {
+                        const expressIDs = fragmentIdMap[fragID];
+                        if (!expressIDs || expressIDs.size === 0) continue;
+
+                        const fragment = fragments.list.get(fragID);
+                        if (!fragment) continue;
+
+                        const model = fragment.group;
+                        if (!model) continue;
+
+                        const expressID = Array.from(expressIDs)[0] as number;
+
+                        // Extract properties
+                        extractElementProperties(components, model, expressID);
+                        break; // Only first selected
                     }
                 });
 
-                viewer.scene.input.on('pickedNothing', () => {
-                    setSelectedElement(null);
-                    viewer.scene.setObjectsHighlighted(viewer.scene.highlightedObjectIds, false);
+                highlighter.events.select.onClear.add(() => {
+                    if (!disposed) setSelectedElement(null);
                 });
 
-                if (!cancelled) {
+                if (!disposed) {
                     setViewerReady(true);
                     setStatus('idle');
                     setStatusMessage('');
-                    console.log('xeokit viewer initialized successfully');
-                }
 
-            } catch (error: any) {
-                if (!cancelled) {
-                    console.error('Viewer init error:', error);
+                    // Load existing models from Supabase
+                    loadExistingModels();
+                }
+            } catch (err: any) {
+                console.error('Viewer init error:', err);
+                if (!disposed) {
                     setStatus('error');
-                    const errorMsg = error?.message || error?.toString?.() || 'Unknown initialization error';
-                    setStatusMessage(`Lỗi khởi tạo: ${errorMsg}`);
+                    setStatusMessage(`Lỗi khởi tạo: ${err.message}`);
                 }
             }
         };
 
-        initViewer();
+        init();
 
         return () => {
-            cancelled = true;
-            if (viewer) {
-                try {
-                    viewer.destroy();
-                } catch (e) {
-                    console.warn('Error destroying viewer:', e);
-                }
+            disposed = true;
+            if (componentsRef.current) {
+                componentsRef.current.dispose();
+                componentsRef.current = null;
             }
         };
-    }, [isDarkMode, viewerReady]);
+    }, []);
 
-    // Handle file upload
+    // Update background color when dark mode changes
+    useEffect(() => {
+        if (worldRef.current?.scene) {
+            (worldRef.current.scene.three as any).background = new THREE.Color(
+                isDarkMode ? 0x0f172a : 0xf1f5f9
+            );
+        }
+    }, [isDarkMode]);
+
+    // ── Extract element properties ──────────────────
+    const extractElementProperties = useCallback(async (
+        components: OBC.Components,
+        model: any, // FragmentsGroup
+        expressID: number
+    ) => {
+        try {
+            const indexer = components.get(OBC.IfcRelationsIndexer);
+
+            // Get element properties from the model
+            const props = model.getLocalProperties();
+            if (!props) return;
+
+            const elementProps = props[expressID];
+            if (!elementProps) return;
+
+            const name = elementProps.Name?.value || elementProps.LongName?.value || `Element #${expressID}`;
+            const type = elementProps.type || 'Unknown';
+            const globalId = elementProps.GlobalId?.value || undefined;
+
+            // Extract all property sets
+            const propertySets: PropertySetGroup[] = [];
+            const materials: string[] = [];
+            const spatialHierarchy: SpatialNode[] = [];
+
+            // Get property sets via relations
+            const psetRelations = indexer.getEntityRelations(model, expressID, 'IsDefinedBy');
+            if (psetRelations) {
+                for (const psetId of psetRelations) {
+                    const psetProps = props[psetId];
+                    if (!psetProps) continue;
+
+                    const psetName = psetProps.Name?.value || `PropertySet_${psetId}`;
+                    const items: PropertyItem[] = [];
+
+                    // HasProperties relation
+                    if (psetProps.HasProperties) {
+                        for (const propRef of psetProps.HasProperties) {
+                            const propId = propRef.value;
+                            const prop = props[propId];
+                            if (!prop) continue;
+
+                            const propName = prop.Name?.value || '';
+                            let propValue = '';
+
+                            if (prop.NominalValue !== undefined && prop.NominalValue !== null) {
+                                propValue = String(prop.NominalValue.value ?? prop.NominalValue ?? '');
+                            } else if (prop.Value !== undefined) {
+                                propValue = String(prop.Value.value ?? prop.Value ?? '');
+                            }
+
+                            if (propName) {
+                                items.push({ name: propName, value: propValue });
+                            }
+                        }
+                    }
+
+                    // Quantities 
+                    if (psetProps.Quantities) {
+                        for (const qRef of psetProps.Quantities) {
+                            const qId = qRef.value;
+                            const q = props[qId];
+                            if (!q) continue;
+
+                            const qName = q.Name?.value || '';
+                            const qValue = q.LengthValue?.value ?? q.AreaValue?.value ?? q.VolumeValue?.value ?? q.WeightValue?.value ?? q.CountValue?.value ?? '';
+
+                            if (qName) {
+                                items.push({ name: qName, value: String(qValue), type: 'quantity' });
+                            }
+                        }
+                    }
+
+                    if (items.length > 0) {
+                        propertySets.push({ name: psetName, properties: items });
+                    }
+                }
+            }
+
+            // Get materials
+            const materialRelations = indexer.getEntityRelations(model, expressID, 'HasAssociations');
+            if (materialRelations) {
+                for (const matId of materialRelations) {
+                    const matProps = props[matId];
+                    if (matProps?.Name?.value) {
+                        materials.push(matProps.Name.value);
+                    }
+                    if (matProps?.RelatingMaterial) {
+                        const relMat = props[matProps.RelatingMaterial.value];
+                        if (relMat?.Name?.value) {
+                            materials.push(relMat.Name.value);
+                        }
+                    }
+                }
+            }
+
+            // Build spatial hierarchy
+            const containedRels = indexer.getEntityRelations(model, expressID, 'ContainedInStructure');
+            if (containedRels) {
+                for (const relId of containedRels) {
+                    const buildSpatialChain = (id: number, chain: SpatialNode[]) => {
+                        const p = props[id];
+                        if (!p) return;
+                        chain.unshift({
+                            name: p.Name?.value || p.LongName?.value || `#${id}`,
+                            type: p.type || '',
+                            isCurrent: false,
+                        });
+                        // Walk up
+                        const parentRels = indexer.getEntityRelations(model, id, 'ContainedInStructure');
+                        if (parentRels && parentRels.length > 0) {
+                            buildSpatialChain(parentRels[0] as number, chain);
+                        }
+                        const decompRels = indexer.getEntityRelations(model, id, 'Decomposes');
+                        if (decompRels && decompRels.length > 0) {
+                            buildSpatialChain(decompRels[0] as number, chain);
+                        }
+                    };
+                    const chain: SpatialNode[] = [];
+                    buildSpatialChain(relId as number, chain);
+                    chain.push({ name, type, isCurrent: true });
+                    spatialHierarchy.push(...chain);
+                }
+            }
+
+            setSelectedElement({
+                id: String(expressID),
+                name,
+                type,
+                globalId,
+                propertySets,
+                materials: [...new Set(materials)],
+                spatialHierarchy,
+            });
+        } catch (err) {
+            console.warn('Property extraction error:', err);
+        }
+    }, []);
+
+    // ── Load existing models from Supabase ──────────
+    const loadExistingModels = useCallback(async () => {
+        try {
+            const models = await getProjectModels(projectID);
+            if (models.length === 0) return;
+
+            const readyModels = models.filter(m => m.status === 'ready' && m.frag_path);
+            if (readyModels.length === 0) {
+                setDisciplineModels(models.map(m => ({ model: m, visible: false })));
+                return;
+            }
+
+            setStatus('loading');
+            setStatusMessage(`Đang tải ${readyModels.length} mô hình...`);
+
+            const newDisciplineModels: DisciplineModel[] = [];
+
+            for (let i = 0; i < readyModels.length; i++) {
+                const m = readyModels[i];
+                setLoadingProgress(((i) / readyModels.length) * 100);
+                setStatusMessage(`Đang tải: ${m.file_name} (${i + 1}/${readyModels.length})`);
+
+                try {
+                    const fragData = await downloadFile(m.frag_path!);
+                    const fragments = componentsRef.current?.get(OBC.FragmentsManager);
+                    if (fragments && worldRef.current) {
+                        const fragGroup = fragments.load(new Uint8Array(fragData));
+                        worldRef.current.scene.three.add(fragGroup);
+
+                        newDisciplineModels.push({
+                            model: m,
+                            visible: true,
+                            fragmentGroup: fragGroup,
+                        });
+                    }
+                } catch (err) {
+                    console.warn(`Failed to load ${m.file_name}:`, err);
+                    newDisciplineModels.push({ model: m, visible: false });
+                }
+            }
+
+            // Also add non-ready models
+            models.filter(m => m.status !== 'ready' || !m.frag_path).forEach(m => {
+                newDisciplineModels.push({ model: m, visible: false });
+            });
+
+            setDisciplineModels(newDisciplineModels);
+
+            // Count objects
+            const total = newDisciplineModels.reduce((sum, dm) => {
+                return sum + (dm.model.element_count || 0);
+            }, 0);
+            setObjectCount(total);
+
+            setStatus('success');
+            setStatusMessage(`Đã tải ${readyModels.length} mô hình thành công`);
+            setLoadingProgress(100);
+            setTimeout(() => { setStatus('idle'); setStatusMessage(''); }, 3000);
+        } catch (err: any) {
+            console.warn('Load models error:', err);
+        }
+    }, [projectID]);
+
+    // ── Upload & Convert IFC ────────────────────────
     const handleFileUpload = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
-        if (!file || !xktLoaderRef.current || !viewerRef.current) {
-            setStatus('error');
-            setStatusMessage('Viewer chưa sẵn sàng. Vui lòng tải lại trang.');
-            return;
-        }
+        if (!file || !componentsRef.current || !ifcLoaderRef.current || !worldRef.current) return;
 
-        // Validate file
-        if (!file.name.toLowerCase().endsWith('.ifc')) {
-            setStatus('error');
-            setStatusMessage('Định dạng không hợp lệ. Vui lòng chọn file .IFC');
-            return;
-        }
-
-        const fileSizeMB = file.size / (1024 * 1024);
-        if (fileSizeMB > 200) {
-            setStatus('error');
-            setStatusMessage(`File quá lớn (${fileSizeMB.toFixed(1)}MB). Giới hạn 200MB`);
-            return;
-        }
-
-        setFileName(file.name);
-        setStatus('loading');
-
-        // Warn for large files
-        if (fileSizeMB > 50) {
-            setStatusMessage(`⚠️ File lớn (${fileSizeMB.toFixed(1)}MB) - có thể mất 2-5 phút...`);
-        } else {
-            setStatusMessage(`Đang upload "${file.name}" (${fileSizeMB.toFixed(1)}MB)...`);
-        }
-        setLoadingProgress(0);
+        // Reset input
+        e.target.value = '';
 
         try {
-            // Step 1: Upload IFC to backend for conversion
-            const formData = new FormData();
-            formData.append('file', file);
-
+            // Step 1: Upload IFC to Supabase
+            setStatus('loading');
+            setStatusMessage(`Đang upload ${file.name} (${(file.size / 1024 / 1024).toFixed(1)} MB)...`);
             setLoadingProgress(10);
-            const uploadResponse = await fetchWithRetry(
-                `${IFC_CONVERTER_API}/convert`,
-                { method: 'POST', body: formData },
-                3,
-                (attempt) => setStatusMessage(`Server đang khởi động... (lần thử ${attempt}/3)`)
-            );
 
-            if (!uploadResponse.ok) {
-                throw new Error(`Upload failed: ${uploadResponse.statusText}`);
-            }
+            const record = await uploadIFCFile(projectID, file, (p) => {
+                setLoadingProgress(10 + p * 0.2); // 10-30%
+            });
 
-            const { jobId: conversionId } = await uploadResponse.json();
-            setStatusMessage(`Đang convert "${file.name}" sang XKT...`);
+            // Step 2: Convert IFC → Fragments (client-side)
+            setStatus('converting');
+            setStatusMessage(`Đang convert ${file.name} → Fragments...`);
             setLoadingProgress(30);
 
-            // Step 2: Poll for conversion status - 10 min timeout for large files
-            let xktUrl = '';
-            let attempts = 0;
-            const maxAttempts = 300; // 10 minutes max (2s intervals)
+            const ifcLoader = ifcLoaderRef.current;
+            const buffer = await file.arrayBuffer();
+            const uint8Array = new Uint8Array(buffer);
 
-            const stageLabels: Record<string, string> = {
-                'uploading': 'Uploading...',
-                'parsing': 'Đang phân tích IFC...',
-                'loading_ifc': 'Đang load IFC...',
-                'converting': 'Đang convert 3D geometry...',
-                'writing_xkt': 'Đang tạo file XKT...',
-                'finalizing': 'Đang hoàn thành...',
-            };
+            // Load IFC and convert to fragments
+            const model = await ifcLoader.load(uint8Array, worldRef.current);
+            setLoadingProgress(70);
 
-            while (attempts < maxAttempts) {
-                const statusResponse = await fetch(`${IFC_CONVERTER_API}/status/${conversionId}`);
-                const statusData = await statusResponse.json();
+            // Index relations for property queries
+            const indexer = componentsRef.current.get(OBC.IfcRelationsIndexer);
+            await indexer.process(model);
 
-                if (statusData.status === 'completed') {
-                    xktUrl = `${IFC_CONVERTER_API}/download/${conversionId}`;
-                    break;
-                } else if (statusData.status === 'failed') {
-                    throw new Error(statusData.error || 'Conversion failed');
-                }
+            // Export fragments for caching
+            const fragments = componentsRef.current.get(OBC.FragmentsManager);
+            const fragData = fragments.export(model);
+            setLoadingProgress(80);
 
-                // Use actual backend progress
-                const backendProgress = statusData.progress || 0;
-                const mappedProgress = 20 + Math.floor(backendProgress * 0.6); // 20-80%
-                setLoadingProgress(mappedProgress);
+            // Step 3: Upload fragments to Supabase
+            setStatusMessage('Đang lưu Fragments lên server...');
+            await uploadFragments(record.id, projectID, fragData, file.name);
+            setLoadingProgress(90);
 
-                // Show stage info
-                const stage = statusData.stage || 'processing';
-                const stageLabel = stageLabels[stage] || 'Đang xử lý...';
-                const elapsed = statusData.elapsedSeconds || 0;
-                setStatusMessage(`${stageLabel} (${elapsed}s)`);
-
-                await new Promise(resolve => setTimeout(resolve, 2000));
-                attempts++;
+            // Count elements
+            let elementCount = 0;
+            const localProps = model.getLocalProperties();
+            if (localProps) {
+                elementCount = Object.keys(localProps).length;
             }
 
-            if (!xktUrl) {
-                throw new Error('Conversion timeout (10 phút) - file quá lớn hoặc server quá tải');
-            }
+            await updateModelStatus(record.id, 'ready', { element_count: elementCount });
 
-            setStatusMessage(`Đang tải mô hình 3D...`);
-            setLoadingProgress(85);
+            // Add to discipline panel
+            setDisciplineModels(prev => [...prev, {
+                model: { ...record, status: 'ready', element_count: elementCount },
+                visible: true,
+                fragmentGroup: model,
+            }]);
 
-            // Step 3: Load XKT model
-            const model = xktLoaderRef.current.load({
-                id: `model-${Date.now()}`,
-                src: xktUrl,
-                edges: true,
-            });
+            setObjectCount(prev => prev + elementCount);
 
-            model.on('loaded', () => {
-                setLoadingProgress(100);
-                setModelLoaded(true);
-                setStatus('success');
-                setStatusMessage(`✓ Đã tải "${file.name}" thành công!`);
+            // Fit camera to model
+            const camera = worldRef.current.camera as OBC.SimpleCamera;
+            camera.controls.fitToSphere(model, true);
 
-                // Count objects
-                const count = Object.keys(viewerRef.current!.scene.objects).length;
-                setObjectCount(count);
-
-                // Fit camera to model
-                viewerRef.current!.cameraFlight.flyTo({
-                    aabb: model.aabb,
-                    duration: 1,
-                });
-
-                // Hide success message after 3s
-                setTimeout(() => {
-                    setStatus('idle');
-                    setStatusMessage('');
-                }, 3000);
-            });
-
-            model.on('error', (err: any) => {
-                console.error('XKT load error:', err);
-                setStatus('error');
-                const errorMsg = err?.message || 'Lỗi không xác định khi load XKT';
-                setStatusMessage(`Lỗi load model: ${errorMsg}`);
-            });
-
-        } catch (error: any) {
-            console.error('Upload/conversion error:', error);
+            setStatus('success');
+            setStatusMessage(`✅ ${file.name} — ${elementCount} elements loaded`);
+            setLoadingProgress(100);
+            setTimeout(() => { setStatus('idle'); setStatusMessage(''); }, 3000);
+        } catch (err: any) {
+            console.error('Upload/convert error:', err);
             setStatus('error');
-            setStatusMessage(`Lỗi: ${error.message}`);
+            setStatusMessage(`Lỗi: ${err.message}`);
         }
-    }, []);
+    }, [projectID]);
 
-    // Camera controls
-    const setCameraView = useCallback((view: string) => {
-        if (!viewerRef.current) return;
-
-        const aabb = viewerRef.current.scene.aabb;
-        const center = [
-            (aabb[0] + aabb[3]) / 2,
-            (aabb[1] + aabb[4]) / 2,
-            (aabb[2] + aabb[5]) / 2,
-        ];
-        const size = Math.max(aabb[3] - aabb[0], aabb[4] - aabb[1], aabb[5] - aabb[2]) || 50;
-        const distance = size * 1.5;
-
-        const views: Record<string, { eye: number[], up: number[] }> = {
-            top: { eye: [center[0], center[1] + distance, center[2] + 0.01], up: [0, 0, -1] },
-            front: { eye: [center[0], center[1], center[2] + distance], up: [0, 1, 0] },
-            right: { eye: [center[0] + distance, center[1], center[2]], up: [0, 1, 0] },
-            back: { eye: [center[0], center[1], center[2] - distance], up: [0, 1, 0] },
-            left: { eye: [center[0] - distance, center[1], center[2]], up: [0, 1, 0] },
-            iso: { eye: [center[0] + distance * 0.7, center[1] + distance * 0.5, center[2] + distance * 0.7], up: [0, 1, 0] },
-        };
-
-        const viewConfig = views[view] || views.iso;
-
-        viewerRef.current.cameraFlight.flyTo({
-            eye: viewConfig.eye,
-            look: center,
-            up: viewConfig.up,
-            duration: 0.8,
-        });
-
-        setActiveView(view);
-    }, []);
-
-    // Toggle section plane
-    const toggleSection = useCallback(() => {
-        if (!sectionPlanesRef.current || !viewerRef.current) return;
-
-        if (sectionEnabled) {
-            sectionPlanesRef.current.clear();
-        } else {
-            const aabb = viewerRef.current.scene.aabb;
-            const centerY = (aabb[1] + aabb[4]) / 2;
-
-            sectionPlanesRef.current.createSectionPlane({
-                id: 'horizontalSection',
-                pos: [0, centerY, 0],
-                dir: [0, -1, 0],
-            });
-        }
-        setSectionEnabled(!sectionEnabled);
-    }, [sectionEnabled]);
-
-    // Fit to view
-    const fitToView = useCallback(() => {
-        if (!viewerRef.current) return;
-        viewerRef.current.cameraFlight.flyTo({
-            aabb: viewerRef.current.scene.aabb,
-            duration: 0.8,
+    // ── Toggle discipline visibility ────────────────
+    const toggleDisciplineVisibility = useCallback((index: number) => {
+        setDisciplineModels(prev => {
+            const updated = [...prev];
+            const dm = updated[index];
+            if (dm.fragmentGroup) {
+                dm.visible = !dm.visible;
+                dm.fragmentGroup.visible = dm.visible;
+            }
+            return updated;
         });
     }, []);
 
-    // Get status color classes
+    // ── Delete a model ──────────────────────────────
+    const handleDeleteModel = useCallback(async (index: number) => {
+        const dm = disciplineModels[index];
+        if (!dm) return;
+
+        try {
+            // Remove from scene
+            if (dm.fragmentGroup && worldRef.current) {
+                worldRef.current.scene.three.remove(dm.fragmentGroup);
+                const fragments = componentsRef.current?.get(OBC.FragmentsManager);
+                if (fragments) {
+                    fragments.dispose();
+                }
+            }
+
+            // Delete from Supabase
+            await deleteModel(dm.model);
+
+            setDisciplineModels(prev => prev.filter((_, i) => i !== index));
+            setObjectCount(prev => prev - (dm.model.element_count || 0));
+        } catch (err: any) {
+            console.error('Delete error:', err);
+        }
+    }, [disciplineModels]);
+
+    // ── Camera Views ────────────────────────────────
+    const setView = useCallback((view: string) => {
+        const camera = worldRef.current?.camera as OBC.SimpleCamera | undefined;
+        if (!camera) return;
+
+        const dist = 30;
+        switch (view) {
+            case 'iso':
+                camera.controls.setLookAt(dist, dist, dist, 0, 0, 0, true);
+                break;
+            case 'top':
+                camera.controls.setLookAt(0, dist * 2, 0, 0, 0, 0, true);
+                break;
+            case 'front':
+                camera.controls.setLookAt(0, 0, dist * 2, 0, 0, 0, true);
+                break;
+            case 'right':
+                camera.controls.setLookAt(dist * 2, 0, 0, 0, 0, 0, true);
+                break;
+        }
+    }, []);
+
+    const fitAll = useCallback(() => {
+        const camera = worldRef.current?.camera as OBC.SimpleCamera | undefined;
+        const scene = worldRef.current?.scene;
+        if (!camera || !scene) return;
+
+        const box = new THREE.Box3().setFromObject(scene.three);
+        const sphere = new THREE.Sphere();
+        box.getBoundingSphere(sphere);
+        camera.controls.fitToSphere(sphere, true);
+    }, []);
+
+    // ── Status Classes ──────────────────────────────
     const getStatusClasses = () => {
         switch (status) {
-            case 'loading':
-            case 'processing':
-            case 'initializing':
-                return 'bg-blue-500/20 border-blue-500/30 text-blue-400';
+            case 'loading': case 'processing': case 'converting': case 'initializing':
+                return isDarkMode
+                    ? 'bg-blue-500/10 border-blue-500/30 text-blue-300'
+                    : 'bg-blue-50 border-blue-200 text-blue-700';
             case 'success':
-                return 'bg-emerald-500/20 border-emerald-500/30 text-emerald-400';
+                return isDarkMode
+                    ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300'
+                    : 'bg-green-50 border-green-200 text-green-700';
             case 'error':
-                return 'bg-red-500/20 border-red-500/30 text-red-400';
+                return isDarkMode
+                    ? 'bg-red-500/10 border-red-500/30 text-red-300'
+                    : 'bg-red-50 border-red-200 text-red-700';
             default:
-                return '';
+                return isDarkMode ? 'bg-slate-800/50 border-slate-700 text-slate-400' : 'bg-gray-50 border-gray-200 text-gray-600';
         }
     };
 
-    // Tool button component - iPad-friendly with min 48px touch target
-    const ToolBtn = ({ active, onClick, title, children, disabled, size = 'md' }: {
-        active?: boolean;
-        onClick?: () => void;
-        title: string;
-        children: React.ReactNode;
-        disabled?: boolean;
-        size?: 'sm' | 'md' | 'lg';
-    }) => {
-        const sizeClasses = {
-            sm: 'w-10 h-10',
-            md: 'w-12 h-12',
-            lg: 'w-14 h-14'
-        };
-        return (
-            <button
-                onClick={onClick}
-                title={title}
-                disabled={disabled}
-                className={`${sizeClasses[size]} flex items-center justify-center rounded-xl transition-all backdrop-blur-sm ${active
-                    ? 'bg-blue-500 text-white shadow-lg shadow-blue-500/40'
-                    : disabled
-                        ? 'text-slate-600 cursor-not-allowed bg-slate-800/30'
-                        : 'text-slate-300 bg-slate-800/60 hover:bg-slate-700/80 hover:text-white active:scale-95'
-                    }`}
-            >
-                {children}
-            </button>
-        );
-    };
-
-    // View button component
-    const ViewBtn = ({ view, icon: Icon, label }: { view: string; icon: any; label: string }) => (
+    // ── Tool Button ─────────────────────────────────
+    const ToolBtn = ({ active, onClick, title, children, disabled }: {
+        active?: boolean; onClick?: () => void; title: string; children: React.ReactNode; disabled?: boolean;
+    }) => (
         <button
-            onClick={() => setCameraView(view)}
-            className={`px-2 py-1 rounded text-[10px] font-medium transition-all flex items-center gap-1 ${activeView === view
-                ? 'bg-blue-500 text-white'
-                : 'text-slate-400 hover:bg-white/10 hover:text-white'
-                }`}
-            title={label}
+            onClick={onClick}
+            title={title}
+            disabled={disabled}
+            className={`w-10 h-10 flex items-center justify-center rounded-xl transition-all ${active
+                ? 'bg-blue-500/20 text-blue-400 ring-1 ring-blue-500/50'
+                : isDarkMode
+                    ? 'text-slate-400 hover:bg-white/10 hover:text-white'
+                    : 'text-gray-500 hover:bg-gray-200 hover:text-gray-800'
+                } ${disabled ? 'opacity-30 cursor-not-allowed' : 'cursor-pointer'}`}
         >
-            <Icon className="w-3 h-3" />
-            <span className="hidden xl:inline">{label}</span>
+            {children}
         </button>
     );
 
+    // ── View Button ─────────────────────────────────
+    const ViewBtn = ({ view, icon: Icon, label }: { view: string; icon: any; label: string }) => (
+        <button
+            onClick={() => setView(view)}
+            className={`px-2 py-1 text-[10px] font-semibold rounded-md transition-all flex items-center gap-1 
+                ${isDarkMode
+                    ? 'text-slate-400 hover:bg-slate-700 hover:text-white'
+                    : 'text-gray-500 hover:bg-gray-200 hover:text-gray-800'
+                }`}
+        >
+            <Icon className="w-3 h-3" />
+            {label}
+        </button>
+    );
+
+    // ── Discipline Color ────────────────────────────
+    const getDisciplineColor = (discipline: string | null) => {
+        const colors: Record<string, string> = {
+            ARCH: 'bg-blue-500', STRU: 'bg-red-500', ELEC: 'bg-yellow-500',
+            HVAC: 'bg-green-500', PLUM: 'bg-cyan-500', FIRE: 'bg-orange-500',
+            LAND: 'bg-emerald-500', MEP: 'bg-purple-500', COMBINE: 'bg-slate-400',
+        };
+        return colors[discipline || ''] || 'bg-slate-500';
+    };
+
+    // ── Render ───────────────────────────────────────
     return (
         <div className={`flex flex-col overflow-hidden rounded-xl border ${isDarkMode ? 'bg-slate-900 border-slate-700/50' : 'bg-gray-100 border-gray-200'}`}
             style={{
                 height: isMobile ? 'calc(100vh - 120px)' : 'calc(100vh - 200px)',
                 minHeight: isMobile ? '400px' : '600px',
-                touchAction: 'none' // Better touch handling for 3D
+                touchAction: 'none',
             }}>
 
-            {/* HEADER TOOLBAR - Responsive */}
+            {/* HEADER TOOLBAR */}
             <div className={`${isMobile ? 'h-14' : 'h-12'} ${isDarkMode ? 'bg-slate-800/90 border-slate-700/50' : 'bg-white border-gray-200'} border-b flex items-center justify-between ${isMobile ? 'px-2' : 'px-3'} shrink-0`}>
                 <div className="flex items-center gap-2">
-                    {/* Toggle sidebars on mobile/tablet */}
-                    {(isMobile || isTablet) && (
-                        <button
-                            onClick={() => setShowModelTree(!showModelTree)}
-                            className={`p-2 rounded-lg transition-all ${showModelTree ? 'bg-blue-500 text-white' : 'text-slate-400 hover:bg-white/10'}`}
-                            title="Model Tree"
-                        >
-                            <PanelLeft className="w-5 h-5" />
-                        </button>
-                    )}
-
-                    {/* Logo/Title - Hidden on mobile */}
+                    {/* Logo */}
                     <div className={`${isMobile ? 'hidden' : 'flex'} items-center gap-2 px-2 py-1 rounded-lg bg-gradient-to-r from-blue-500/10 to-cyan-500/10 border border-blue-500/20`}>
                         <Building2 className="w-4 h-4 text-blue-400" />
-                        <span className="text-xs font-bold text-blue-400 uppercase tracking-wide">xeokit BIM</span>
+                        <span className="text-xs font-bold text-blue-400 uppercase tracking-wide">BIM Viewer</span>
                     </div>
 
-                    <div className="h-5 w-px bg-slate-700" />
+                    <div className={`h-5 w-px ${isDarkMode ? 'bg-slate-700' : 'bg-gray-300'}`} />
 
-                    {/* Status indicator */}
+                    {/* Status */}
                     <div className="flex items-center gap-1.5">
                         <div className={`w-2 h-2 rounded-full ${viewerReady ? 'bg-emerald-400' : 'bg-amber-400 animate-pulse'}`} />
                         <span className="text-[10px] text-slate-500">
@@ -671,20 +690,29 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
                         </span>
                     </div>
 
-                    {modelLoaded && (
+                    {objectCount > 0 && (
                         <>
-                            <div className="h-5 w-px bg-slate-700" />
+                            <div className={`h-5 w-px ${isDarkMode ? 'bg-slate-700' : 'bg-gray-300'}`} />
                             <span className="text-[10px] text-slate-500 font-mono">
-                                {objectCount} objects
+                                {objectCount.toLocaleString()} elements
+                            </span>
+                        </>
+                    )}
+
+                    {disciplineModels.length > 0 && (
+                        <>
+                            <div className={`h-5 w-px ${isDarkMode ? 'bg-slate-700' : 'bg-gray-300'}`} />
+                            <span className="text-[10px] text-slate-500">
+                                {disciplineModels.length} models
                             </span>
                         </>
                     )}
                 </div>
 
-                <div className="flex items-center gap-2">
-                    {/* View buttons - Desktop only (tablet has floating bar) */}
-                    {!isTablet && !isMobile && (
-                        <div className="flex bg-slate-800/80 rounded-lg p-0.5 border border-slate-700/50">
+                <div className="flex items-center gap-1">
+                    {/* View buttons */}
+                    {!isMobile && (
+                        <div className={`flex ${isDarkMode ? 'bg-slate-800/80 border-slate-700/50' : 'bg-gray-100 border-gray-200'} rounded-lg p-0.5 border`}>
                             <ViewBtn view="iso" icon={Box} label="3D" />
                             <ViewBtn view="top" icon={ArrowUp} label="Top" />
                             <ViewBtn view="front" icon={Square} label="Front" />
@@ -692,11 +720,28 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
                         </div>
                     )}
 
-                    {/* Upload button - Desktop only (tablet has floating bar) */}
-                    {!isTablet && !isMobile && (
+                    {/* Fit all */}
+                    <ToolBtn onClick={fitAll} title="Fit All">
+                        <ZoomIn className="w-4 h-4" />
+                    </ToolBtn>
+
+                    {/* Discipline Panel Toggle */}
+                    <ToolBtn active={showDisciplinePanel} onClick={() => setShowDisciplinePanel(!showDisciplinePanel)} title="Disciplines">
+                        <Layers className="w-4 h-4" />
+                    </ToolBtn>
+
+                    {/* Properties Toggle */}
+                    {!isMobile && (
+                        <ToolBtn active={showProperties} onClick={() => setShowProperties(!showProperties)} title="Properties">
+                            <PanelLeft className="w-4 h-4" />
+                        </ToolBtn>
+                    )}
+
+                    {/* Upload */}
+                    {!isMobile && (
                         <>
-                            <div className="h-5 w-px bg-slate-700" />
-                            <label className={`flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-400 hover:to-cyan-400 text-white text-xs font-semibold rounded-lg cursor-pointer transition-all shadow-lg shadow-blue-500/25 ${status === 'loading' ? 'opacity-50 pointer-events-none' : ''}`}>
+                            <div className={`h-5 w-px ${isDarkMode ? 'bg-slate-700' : 'bg-gray-300'}`} />
+                            <label className={`flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-400 hover:to-cyan-400 text-white text-xs font-semibold rounded-lg cursor-pointer transition-all shadow-lg shadow-blue-500/25 ${status === 'loading' || status === 'converting' ? 'opacity-50 pointer-events-none' : ''}`}>
                                 <Upload className="w-3.5 h-3.5" />
                                 <span>Upload IFC</span>
                                 <input
@@ -704,13 +749,14 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
                                     accept=".ifc"
                                     className="hidden"
                                     onChange={handleFileUpload}
-                                    disabled={status === 'loading'}
+                                    disabled={status === 'loading' || status === 'converting'}
+                                    multiple
                                 />
                             </label>
                         </>
                     )}
 
-                    {/* Theme toggle - Always visible */}
+                    {/* Theme */}
                     <button
                         onClick={() => setIsDarkMode(!isDarkMode)}
                         className="w-10 h-10 flex items-center justify-center rounded-xl text-slate-400 hover:bg-white/10 hover:text-white transition-all"
@@ -723,7 +769,7 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
             {/* STATUS BAR */}
             {status !== 'idle' && statusMessage && (
                 <div className={`px-4 py-2 border-b flex items-center gap-3 ${getStatusClasses()}`}>
-                    {(status === 'loading' || status === 'processing' || status === 'initializing') && (
+                    {(status === 'loading' || status === 'processing' || status === 'initializing' || status === 'converting') && (
                         <Loader2 className="w-4 h-4 animate-spin" />
                     )}
                     {status === 'success' && <CheckCircle className="w-4 h-4" />}
@@ -731,599 +777,305 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
 
                     <span className="text-sm font-medium flex-1">{statusMessage}</span>
 
-                    {(status === 'loading' || status === 'processing') && (
+                    {(status === 'loading' || status === 'converting') && (
                         <div className="flex items-center gap-2 min-w-[120px]">
                             <div className="flex-1 bg-slate-700/50 rounded-full h-1.5 overflow-hidden">
-                                <div
-                                    className="bg-blue-500 h-full transition-all duration-300"
-                                    style={{ width: `${loadingProgress}%` }}
-                                />
+                                <div className="bg-blue-500 h-full transition-all duration-300" style={{ width: `${loadingProgress}%` }} />
                             </div>
                             <span className="text-xs font-mono w-8">{Math.round(loadingProgress)}%</span>
                         </div>
                     )}
 
                     {status === 'error' && (
-                        <button
-                            onClick={() => { setStatus('idle'); setStatusMessage(''); }}
-                            className="text-red-400 hover:text-red-300 text-sm"
-                        >
-                            Đóng
-                        </button>
+                        <button onClick={() => { setStatus('idle'); setStatusMessage(''); }} className="text-red-400 hover:text-red-300 text-sm">Đóng</button>
                     )}
                 </div>
             )}
 
-            <div className="flex-1 flex overflow-hidden">
-                {/* LEFT SIDEBAR - Model Tree (Responsive) */}
-                {showModelTree && (
-                    <div className={`${isMobile || isTablet ? 'absolute left-0 top-0 bottom-0 z-30 w-72' : 'w-72'} ${isDarkMode ? 'bg-slate-900/98 border-slate-700/50' : 'bg-white/98 border-gray-200'} ${isMobile || isTablet ? 'backdrop-blur-xl shadow-2xl' : ''} border-r flex flex-col shrink-0`}>
-                        {/* Header with close button */}
-                        <div className="p-3 border-b border-slate-700/30 flex items-center justify-between bg-gradient-to-r from-blue-500/10 to-transparent">
+            {/* MAIN CONTENT */}
+            <div className="flex-1 flex overflow-hidden relative">
+
+                {/* Discipline Panel (Left) */}
+                {showDisciplinePanel && (
+                    <div className={`${isMobile ? 'absolute inset-y-0 left-0 z-30' : 'relative'} ${isDarkMode ? 'bg-slate-800/95 border-slate-700/50' : 'bg-white border-gray-200'} border-r w-56 flex flex-col shrink-0 backdrop-blur-xl`}>
+                        <div className="p-3 border-b border-slate-700/30 flex items-center justify-between">
                             <div className="flex items-center gap-2">
-                                <div className="w-8 h-8 rounded-lg bg-blue-500/20 flex items-center justify-center">
-                                    <Layers className="w-4 h-4 text-blue-400" />
-                                </div>
-                                <div>
-                                    <span className="text-sm font-bold text-white">Model Tree</span>
-                                    {modelLoaded && (
-                                        <p className="text-[10px] text-slate-500">{objectCount} objects</p>
-                                    )}
-                                </div>
+                                <Layers className="w-4 h-4 text-blue-400" />
+                                <span className="text-xs font-bold text-slate-400 uppercase">Disciplines</span>
                             </div>
-                            <button
-                                onClick={() => setShowModelTree(false)}
-                                className="w-8 h-8 flex items-center justify-center text-slate-500 hover:text-white rounded-lg hover:bg-white/10 transition-all"
-                            >
-                                <X className="w-5 h-5" />
-                            </button>
+                            {(isMobile || isTablet) && (
+                                <button onClick={() => setShowDisciplinePanel(false)} className="text-slate-500 hover:text-white">✕</button>
+                            )}
+                        </div>
+                        <div className="flex-1 overflow-y-auto p-2 space-y-1">
+                            {disciplineModels.length === 0 ? (
+                                <div className="text-center py-8">
+                                    <FileUp className="w-8 h-8 text-slate-600 mx-auto mb-2" />
+                                    <p className="text-xs text-slate-500">Upload IFC files</p>
+                                    <p className="text-[10px] text-slate-600 mt-1">Hỗ trợ multi-discipline</p>
+                                </div>
+                            ) : (
+                                disciplineModels.map((dm, idx) => (
+                                    <div key={dm.model.id} className={`group flex items-center gap-2 p-2 rounded-lg transition-all ${isDarkMode ? 'hover:bg-white/5' : 'hover:bg-gray-100'}`}>
+                                        <div className={`w-3 h-3 rounded-sm ${getDisciplineColor(dm.model.discipline)} shrink-0`} />
+                                        <div className="flex-1 min-w-0">
+                                            <p className="text-xs text-slate-300 truncate" title={dm.model.file_name}>
+                                                {dm.model.discipline || dm.model.file_name.slice(0, 20)}
+                                            </p>
+                                            <p className="text-[9px] text-slate-600">
+                                                {dm.model.status === 'ready'
+                                                    ? `${(dm.model.element_count || 0).toLocaleString()} el.`
+                                                    : dm.model.status
+                                                }
+                                            </p>
+                                        </div>
+                                        <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                            {dm.model.status === 'ready' && (
+                                                <button onClick={() => toggleDisciplineVisibility(idx)}
+                                                    className="p-1 rounded hover:bg-white/10" title={dm.visible ? 'Ẩn' : 'Hiện'}>
+                                                    {dm.visible
+                                                        ? <Eye className="w-3.5 h-3.5 text-emerald-400" />
+                                                        : <EyeOff className="w-3.5 h-3.5 text-slate-500" />}
+                                                </button>
+                                            )}
+                                            <button onClick={() => handleDeleteModel(idx)}
+                                                className="p-1 rounded hover:bg-red-500/20" title="Xóa">
+                                                <Trash2 className="w-3.5 h-3.5 text-red-400" />
+                                            </button>
+                                        </div>
+                                    </div>
+                                ))
+                            )}
                         </div>
 
-                        {/* Tree content */}
-                        <div
-                            ref={treeContainerRef}
-                            className="flex-1 overflow-y-auto p-2 xeokit-tree-view"
-                            style={{
-                                fontSize: '12px',
-                                color: isDarkMode ? '#94a3b8' : '#475569',
-                            }}
-                        >
-                            {!modelLoaded && (
-                                <div className="flex flex-col items-center justify-center h-full text-slate-500 p-6">
-                                    <div className="w-16 h-16 rounded-2xl bg-slate-800/50 flex items-center justify-center mb-4">
-                                        <Cuboid className="w-8 h-8 text-slate-600" />
+                        {/* Upload button in discipline panel */}
+                        <div className="p-2 border-t border-slate-700/30">
+                            <label className="flex items-center justify-center gap-2 w-full px-3 py-2 bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 text-xs font-semibold rounded-lg cursor-pointer transition-all border border-blue-500/20">
+                                <Upload className="w-3.5 h-3.5" />
+                                <span>Thêm IFC</span>
+                                <input
+                                    type="file"
+                                    accept=".ifc"
+                                    className="hidden"
+                                    onChange={handleFileUpload}
+                                    disabled={status === 'loading' || status === 'converting'}
+                                />
+                            </label>
+                        </div>
+                    </div>
+                )}
+
+                {/* 3D VIEWER */}
+                <div className="flex-1 relative">
+                    <div
+                        ref={containerRef}
+                        className="absolute inset-0"
+                        style={{ touchAction: 'none' }}
+                    />
+
+                    {/* Empty state */}
+                    {viewerReady && disciplineModels.length === 0 && status === 'idle' && (
+                        <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
+                            <div className={`text-center p-8 rounded-2xl ${isDarkMode ? 'bg-slate-800/80' : 'bg-white/80'} backdrop-blur-xl border ${isDarkMode ? 'border-slate-700/50' : 'border-gray-200'} pointer-events-auto`}>
+                                <Building2 className="w-16 h-16 text-blue-500/50 mx-auto mb-4" />
+                                <h3 className={`text-lg font-bold mb-2 ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
+                                    BIM Viewer
+                                </h3>
+                                <p className={`text-sm mb-4 ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}>
+                                    Upload file IFC để xem mô hình 3D BIM.<br />
+                                    Hỗ trợ multi-discipline (ARCH, STRU, MEP...)
+                                </p>
+                                <label className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-400 hover:to-cyan-400 text-white text-sm font-semibold rounded-xl cursor-pointer transition-all shadow-lg shadow-blue-500/25">
+                                    <Upload className="w-4 h-4" />
+                                    Chọn file IFC
+                                    <input
+                                        type="file"
+                                        accept=".ifc"
+                                        className="hidden"
+                                        onChange={handleFileUpload}
+                                        multiple
+                                    />
+                                </label>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Mobile floating toolbar */}
+                    {(isMobile || isTablet) && viewerReady && (
+                        <div className={`absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 p-2 rounded-2xl ${isDarkMode ? 'bg-slate-800/95 border-slate-700/50' : 'bg-white/95 border-gray-200'} border shadow-2xl backdrop-blur-xl z-20`}>
+                            <ToolBtn onClick={() => setView('iso')} title="3D"><Box className="w-5 h-5" /></ToolBtn>
+                            <ToolBtn onClick={fitAll} title="Fit All"><ZoomIn className="w-5 h-5" /></ToolBtn>
+                            <ToolBtn active={showDisciplinePanel} onClick={() => setShowDisciplinePanel(!showDisciplinePanel)} title="Layers"><Layers className="w-5 h-5" /></ToolBtn>
+                            <ToolBtn active={showProperties} onClick={() => setShowProperties(!showProperties)} title="Properties"><Crosshair className="w-5 h-5" /></ToolBtn>
+                            <label className="w-10 h-10 flex items-center justify-center rounded-xl bg-blue-500 text-white cursor-pointer">
+                                <Upload className="w-5 h-5" />
+                                <input type="file" accept=".ifc" className="hidden" onChange={handleFileUpload} />
+                            </label>
+                        </div>
+                    )}
+                </div>
+
+                {/* PROPERTIES PANEL (Right) */}
+                {showProperties && (
+                    <div className={`${isMobile ? 'absolute inset-y-0 right-0 z-30 w-72' : 'relative w-64'} ${isDarkMode ? 'bg-slate-800/95 border-slate-700/50' : 'bg-white border-gray-200'} border-l flex flex-col shrink-0 backdrop-blur-xl`}>
+                        <div className="p-3 border-b border-slate-700/30 flex items-center justify-between">
+                            <span className="text-xs font-bold text-slate-400 uppercase">Properties</span>
+                            {(isMobile || isTablet) && (
+                                <button onClick={() => setShowProperties(false)} className="text-slate-500 hover:text-white">✕</button>
+                            )}
+                        </div>
+                        <div className="flex-1 overflow-y-auto">
+                            {selectedElement ? (
+                                <div className="divide-y divide-slate-700/30">
+                                    {/* Element Header */}
+                                    <div className="p-3 bg-gradient-to-r from-blue-500/10 to-transparent">
+                                        <p className="text-[10px] font-bold text-blue-400 uppercase mb-1">{selectedElement.type}</p>
+                                        <p className="font-bold text-white text-sm">{selectedElement.name}</p>
                                     </div>
-                                    <p className="text-sm font-medium text-slate-400">No model loaded</p>
-                                    <p className="text-[11px] text-slate-600 mt-1 text-center">
-                                        Upload an IFC file to view structure
+
+                                    {/* Identity */}
+                                    <div>
+                                        <button onClick={() => toggleSet('identity')}
+                                            className="w-full p-3 flex items-center gap-2 hover:bg-white/5 transition-colors">
+                                            {expandedSets['identity']
+                                                ? <ChevronDown className="w-3.5 h-3.5 text-slate-500" />
+                                                : <ChevronRight className="w-3.5 h-3.5 text-slate-500" />}
+                                            <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Identity</span>
+                                        </button>
+                                        {expandedSets['identity'] && (
+                                            <div className="px-3 pb-3 space-y-2">
+                                                <div className="flex justify-between items-start">
+                                                    <span className="text-xs text-slate-500">Express ID</span>
+                                                    <div className="flex items-center gap-1">
+                                                        <span className="text-xs text-slate-300 font-mono bg-slate-700/50 px-1.5 py-0.5 rounded truncate max-w-[140px]">{selectedElement.id}</span>
+                                                        <button onClick={() => copyValue(selectedElement.id)} className="text-slate-600 hover:text-slate-300 p-0.5" title="Copy"><Copy className="w-3 h-3" /></button>
+                                                    </div>
+                                                </div>
+                                                {selectedElement.globalId && (
+                                                    <div className="flex justify-between items-start">
+                                                        <span className="text-xs text-slate-500">GlobalId</span>
+                                                        <div className="flex items-center gap-1">
+                                                            <span className="text-xs text-slate-300 font-mono bg-slate-700/50 px-1.5 py-0.5 rounded truncate max-w-[140px]">{selectedElement.globalId}</span>
+                                                            <button onClick={() => copyValue(selectedElement.globalId!)} className="text-slate-600 hover:text-slate-300 p-0.5" title="Copy"><Copy className="w-3 h-3" /></button>
+                                                        </div>
+                                                    </div>
+                                                )}
+                                                <div className="flex justify-between">
+                                                    <span className="text-xs text-slate-500">IFC Type</span>
+                                                    <span className="text-xs text-cyan-400">{selectedElement.type}</span>
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    {/* All Property Sets */}
+                                    {selectedElement.propertySets.map((pset) => (
+                                        <div key={pset.name}>
+                                            <button onClick={() => toggleSet(pset.name)}
+                                                className="w-full p-3 flex items-center justify-between hover:bg-white/5 transition-colors">
+                                                <div className="flex items-center gap-2">
+                                                    {expandedSets[pset.name]
+                                                        ? <ChevronDown className="w-3.5 h-3.5 text-slate-500" />
+                                                        : <ChevronRight className="w-3.5 h-3.5 text-slate-500" />}
+                                                    <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wide truncate max-w-[150px]">{pset.name}</span>
+                                                </div>
+                                                <span className="text-[9px] text-slate-600 bg-slate-700/40 px-1.5 py-0.5 rounded">{pset.properties.length}</span>
+                                            </button>
+                                            {expandedSets[pset.name] && (
+                                                <div className="px-3 pb-3 space-y-1.5">
+                                                    {pset.properties.map((prop, idx) => (
+                                                        <div key={`${pset.name}-${idx}`} className="flex justify-between items-start group">
+                                                            <span className="text-xs text-slate-500 truncate max-w-[120px]" title={prop.name}>{prop.name}</span>
+                                                            <div className="flex items-center gap-1">
+                                                                <span className="text-xs text-slate-300 truncate max-w-[130px]" title={prop.value}>{prop.value || '—'}</span>
+                                                                <button onClick={() => copyValue(prop.value)}
+                                                                    className="text-slate-700 hover:text-slate-300 p-0.5 opacity-0 group-hover:opacity-100 transition-opacity" title="Copy">
+                                                                    <Copy className="w-3 h-3" />
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            )}
+                                        </div>
+                                    ))}
+
+                                    {/* Materials */}
+                                    {selectedElement.materials.length > 0 && (
+                                        <div>
+                                            <button onClick={() => toggleSet('material')}
+                                                className="w-full p-3 flex items-center gap-2 hover:bg-white/5 transition-colors">
+                                                {expandedSets['material']
+                                                    ? <ChevronDown className="w-3.5 h-3.5 text-amber-500" />
+                                                    : <ChevronRight className="w-3.5 h-3.5 text-amber-500" />}
+                                                <span className="text-[10px] font-bold text-amber-500 uppercase tracking-wide">Material</span>
+                                            </button>
+                                            {expandedSets['material'] && (
+                                                <div className="px-3 pb-3 space-y-1.5">
+                                                    {selectedElement.materials.map((mat, idx) => (
+                                                        <div key={idx} className="flex items-center gap-2">
+                                                            <div className="w-3 h-3 rounded-sm bg-amber-500/30 border border-amber-500/50 shrink-0" />
+                                                            <span className="text-xs text-slate-300">{mat}</span>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            )}
+                                        </div>
+                                    )}
+
+                                    {/* Spatial Hierarchy */}
+                                    {selectedElement.spatialHierarchy.length > 0 && (
+                                        <div>
+                                            <button onClick={() => toggleSet('hierarchy')}
+                                                className="w-full p-3 flex items-center gap-2 hover:bg-white/5 transition-colors">
+                                                {expandedSets['hierarchy']
+                                                    ? <ChevronDown className="w-3.5 h-3.5 text-emerald-500" />
+                                                    : <ChevronRight className="w-3.5 h-3.5 text-emerald-500" />}
+                                                <span className="text-[10px] font-bold text-emerald-500 uppercase tracking-wide">Spatial Hierarchy</span>
+                                            </button>
+                                            {expandedSets['hierarchy'] && (
+                                                <div className="px-3 pb-3">
+                                                    {selectedElement.spatialHierarchy.map((node, idx) => (
+                                                        <div key={idx} className="flex items-center gap-1" style={{ paddingLeft: `${idx * 12}px` }}>
+                                                            <FolderTree className={`w-3 h-3 shrink-0 ${node.isCurrent ? 'text-emerald-400' : 'text-slate-600'}`} />
+                                                            <span className={`text-xs ${node.isCurrent ? 'text-emerald-400 font-bold' : 'text-slate-400'}`}>
+                                                                {node.name}
+                                                            </span>
+                                                            <span className="text-[9px] text-slate-600 ml-1">{node.type}</span>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            )}
+                                        </div>
+                                    )}
+                                </div>
+                            ) : (
+                                <div className="flex flex-col items-center justify-center h-full text-center p-4">
+                                    <Crosshair className="w-8 h-8 text-slate-600 mb-3" />
+                                    <p className={`text-sm font-medium ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}>
+                                        Select an element
+                                    </p>
+                                    <p className={`text-xs mt-1 ${isDarkMode ? 'text-slate-600' : 'text-gray-400'}`}>
+                                        Click on a model element to view all properties
                                     </p>
                                 </div>
                             )}
                         </div>
                     </div>
                 )}
-
-                {/* LEFT TOOLBAR - Hidden on iPad, show on desktop only */}
-                {!isTablet && !isMobile && (
-                    <div className={`w-14 ${isDarkMode ? 'bg-slate-800/50 border-slate-700/30' : 'bg-gray-50 border-gray-200'} border-r flex flex-col items-center py-3 gap-2 shrink-0`}>
-                        <ToolBtn onClick={fitToView} title="Fit to View" size="sm">
-                            <Home className="w-5 h-5" />
-                        </ToolBtn>
-                        <ToolBtn onClick={fitToView} title="Focus" disabled={!modelLoaded} size="sm">
-                            <Focus className="w-5 h-5" />
-                        </ToolBtn>
-
-                        <div className="h-px w-8 bg-slate-700/50 my-1" />
-
-                        <ToolBtn active={sectionEnabled} onClick={toggleSection} title="Section" disabled={!modelLoaded} size="sm">
-                            <Slice className="w-5 h-5" />
-                        </ToolBtn>
-                        <ToolBtn title="Measure" disabled={!modelLoaded} size="sm">
-                            <Ruler className="w-5 h-5" />
-                        </ToolBtn>
-
-                        <div className="flex-1" />
-
-                        <ToolBtn onClick={() => setIsDarkMode(!isDarkMode)} title="Theme" size="sm">
-                            {isDarkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
-                        </ToolBtn>
-                    </div>
-                )}
-
-                {/* 3D CANVAS */}
-                <div className="flex-1 relative">
-                    <canvas
-                        ref={canvasRef}
-                        id="xeokit-canvas"
-                        className="w-full h-full"
-                        style={{
-                            background: isDarkMode
-                                ? 'linear-gradient(180deg, #1e293b 0%, #0f172a 100%)'
-                                : 'linear-gradient(180deg, #f1f5f9 0%, #e2e8f0 100%)'
-                        }}
-                    />
-
-                    {/* NavCube canvas */}
-                    <canvas
-                        ref={navCubeCanvasRef}
-                        id="navCubeCanvas"
-                        className="absolute bottom-3 right-3"
-                        style={{ width: '100px', height: '100px' }}
-                    />
-
-                    {/* Loading overlay */}
-                    {status === 'loading' && (
-                        <div className="absolute inset-0 bg-slate-900/95 flex items-center justify-center z-20 backdrop-blur-sm">
-                            <div className="flex flex-col items-center gap-4 w-80 bg-slate-800 p-8 rounded-2xl shadow-2xl border border-slate-700">
-                                <div className="relative w-20 h-20">
-                                    <svg className="w-full h-full -rotate-90">
-                                        <circle cx="40" cy="40" r="36" fill="none" stroke="#334155" strokeWidth="6" />
-                                        <circle
-                                            cx="40" cy="40" r="36" fill="none"
-                                            stroke="url(#gradient)"
-                                            strokeWidth="6"
-                                            strokeLinecap="round"
-                                            strokeDasharray={`${loadingProgress * 2.26} 226`}
-                                            className="transition-all duration-300"
-                                        />
-                                        <defs>
-                                            <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                                                <stop offset="0%" stopColor="#3b82f6" />
-                                                <stop offset="100%" stopColor="#22d3ee" />
-                                            </linearGradient>
-                                        </defs>
-                                    </svg>
-                                    <div className="absolute inset-0 flex items-center justify-center">
-                                        <span className="text-lg font-bold text-white">{Math.round(loadingProgress)}%</span>
-                                    </div>
-                                </div>
-                                <div className="text-center">
-                                    <p className="text-white font-semibold mb-1">Đang xử lý IFC model...</p>
-                                    <p className="text-slate-400 text-sm">{fileName}</p>
-                                </div>
-                                <div className="w-full bg-slate-700 rounded-full h-1.5 overflow-hidden">
-                                    <div
-                                        className="h-full bg-gradient-to-r from-blue-500 to-cyan-400 transition-all duration-300"
-                                        style={{ width: `${loadingProgress}%` }}
-                                    />
-                                </div>
-                            </div>
-                        </div>
-                    )}
-
-                    {/* Empty state */}
-                    {!modelLoaded && status !== 'loading' && (
-                        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                            <div className="bg-slate-800/90 backdrop-blur-sm p-8 rounded-2xl shadow-2xl border border-slate-700/50 text-center max-w-md">
-                                <div className="w-20 h-20 bg-gradient-to-br from-blue-500/20 to-cyan-500/20 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                                    <Building2 className="w-10 h-10 text-blue-400" />
-                                </div>
-                                <h3 className="text-white font-bold text-lg mb-2">xeokit BIM Viewer</h3>
-                                <p className="text-slate-400 text-sm mb-4">
-                                    Tải lên file .IFC để xem mô hình 3D BIM. Sử dụng WebIFC để load trực tiếp trong browser.
-                                </p>
-                                <label className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-400 hover:to-cyan-400 text-white text-sm font-semibold rounded-lg cursor-pointer transition-all shadow-lg shadow-blue-500/25 pointer-events-auto">
-                                    <Upload className="w-4 h-4" />
-                                    <span>Chọn file IFC</span>
-                                    <input type="file" accept=".ifc" className="hidden" onChange={handleFileUpload} />
-                                </label>
-                            </div>
-                        </div>
-                    )}
-
-                    {/* Model loaded badge */}
-                    {modelLoaded && status !== 'loading' && (
-                        <div className="absolute top-3 right-3 flex items-center gap-2">
-                            <div className="bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5">
-                                <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                                Model loaded
-                            </div>
-                        </div>
-                    )}
-
-                    {/* View indicator */}
-                    <div className="absolute top-4 left-4 text-[11px] text-slate-400 uppercase tracking-widest font-mono bg-slate-800/60 backdrop-blur-sm px-3 py-1.5 rounded-lg">
-                        {activeView.toUpperCase()} VIEW
-                    </div>
-
-                    {/* FLOATING ACTION BAR - iPad Optimized */}
-                    <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-2 p-2 bg-slate-900/80 backdrop-blur-xl rounded-2xl border border-slate-700/50 shadow-2xl">
-                        {/* Navigation Group */}
-                        <div className="flex items-center gap-1.5">
-                            <ToolBtn onClick={fitToView} title="Fit to View" size="md">
-                                <Home className="w-5 h-5" />
-                            </ToolBtn>
-                            <ToolBtn onClick={() => setCameraView('iso')} active={activeView === 'iso'} title="3D View" size="md">
-                                <Box className="w-5 h-5" />
-                            </ToolBtn>
-                        </div>
-
-                        <div className="w-px h-8 bg-slate-700" />
-
-                        {/* Tools Group */}
-                        <div className="flex items-center gap-1.5">
-                            <ToolBtn active={sectionEnabled} onClick={toggleSection} title="Section Cut" disabled={!modelLoaded} size="md">
-                                <Slice className="w-5 h-5" />
-                            </ToolBtn>
-                            <ToolBtn title="Measure" disabled={!modelLoaded} size="md">
-                                <Ruler className="w-5 h-5" />
-                            </ToolBtn>
-                        </div>
-
-                        <div className="w-px h-8 bg-slate-700" />
-
-                        {/* Panels Group */}
-                        <div className="flex items-center gap-1.5">
-                            <ToolBtn active={showModelTree} onClick={() => setShowModelTree(!showModelTree)} title="Model Tree" size="md">
-                                <Layers className="w-5 h-5" />
-                            </ToolBtn>
-                            <ToolBtn active={showProperties} onClick={() => setShowProperties(!showProperties)} title="Properties" size="md">
-                                <Info className="w-5 h-5" />
-                            </ToolBtn>
-                        </div>
-
-                        <div className="w-px h-8 bg-slate-700" />
-
-                        {/* Upload Button - Primary Action */}
-                        <label className={`w-12 h-12 flex items-center justify-center rounded-xl cursor-pointer transition-all ${status === 'loading'
-                            ? 'bg-slate-700/50 text-slate-500 cursor-not-allowed'
-                            : 'bg-gradient-to-br from-blue-500 to-cyan-500 text-white shadow-lg shadow-blue-500/30 hover:shadow-blue-500/50 active:scale-95'
-                            }`}>
-                            <Upload className="w-5 h-5" />
-                            <input
-                                type="file"
-                                accept=".ifc"
-                                className="hidden"
-                                onChange={handleFileUpload}
-                                disabled={status === 'loading'}
-                            />
-                        </label>
-                    </div>
-
-                    {/* Zoom Controls - Right Side */}
-                    <div className="absolute bottom-4 right-4 flex flex-col gap-1.5">
-                        <button
-                            onClick={() => {
-                                if (viewerRef.current) {
-                                    const camera = viewerRef.current.scene.camera;
-                                    const eye = camera.eye;
-                                    const look = camera.look;
-                                    const dir = [eye[0] - look[0], eye[1] - look[1], eye[2] - look[2]];
-                                    camera.eye = [look[0] + dir[0] * 0.8, look[1] + dir[1] * 0.8, look[2] + dir[2] * 0.8];
-                                }
-                            }}
-                            className="w-11 h-11 flex items-center justify-center bg-slate-800/80 hover:bg-slate-700 rounded-xl text-slate-300 hover:text-white transition-all border border-slate-700/50 backdrop-blur-sm active:scale-95"
-                        >
-                            <Plus className="w-5 h-5" />
-                        </button>
-                        <button
-                            onClick={() => {
-                                if (viewerRef.current) {
-                                    const camera = viewerRef.current.scene.camera;
-                                    const eye = camera.eye;
-                                    const look = camera.look;
-                                    const dir = [eye[0] - look[0], eye[1] - look[1], eye[2] - look[2]];
-                                    camera.eye = [look[0] + dir[0] * 1.2, look[1] + dir[1] * 1.2, look[2] + dir[2] * 1.2];
-                                }
-                            }}
-                            className="w-11 h-11 flex items-center justify-center bg-slate-800/80 hover:bg-slate-700 rounded-xl text-slate-300 hover:text-white transition-all border border-slate-700/50 backdrop-blur-sm active:scale-95"
-                        >
-                            <Minus className="w-5 h-5" />
-                        </button>
-                    </div>
-                </div>
-
-                {/* RIGHT SIDEBAR / BOTTOM SHEET - Properties (iPad: Bottom Sheet) */}
-                {showProperties && (
-                    <>
-                        {/* Desktop: Right Sidebar */}
-                        {!isMobile && !isTablet && (
-                            <div className={`w-80 ${isDarkMode ? 'bg-slate-900/98 border-slate-700/50' : 'bg-white/98 border-gray-200'} border-l flex flex-col shrink-0`}>
-                                <div className="p-3 border-b border-slate-700/30 flex items-center justify-between bg-gradient-to-r from-cyan-500/10 to-transparent">
-                                    <div className="flex items-center gap-2">
-                                        <div className="w-8 h-8 rounded-lg bg-cyan-500/20 flex items-center justify-center">
-                                            <Info className="w-4 h-4 text-cyan-400" />
-                                        </div>
-                                        <span className="text-sm font-bold text-white">Properties</span>
-                                    </div>
-                                    <button
-                                        onClick={() => setShowProperties(false)}
-                                        className="w-8 h-8 flex items-center justify-center text-slate-500 hover:text-white rounded-lg hover:bg-white/10 transition-all"
-                                    >
-                                        <X className="w-5 h-5" />
-                                    </button>
-                                </div>
-                                <div className="flex-1 overflow-y-auto">
-                                    {selectedElement ? (
-                                        <div className="divide-y divide-slate-700/30">
-                                            {/* Element Header */}
-                                            <div className="p-3 bg-gradient-to-r from-blue-500/10 to-transparent">
-                                                <p className="text-[10px] font-bold text-blue-400 uppercase mb-1">{selectedElement.type}</p>
-                                                <p className="font-bold text-white text-sm">{selectedElement.name}</p>
-                                            </div>
-
-                                            {/* Identity Section */}
-                                            <div>
-                                                <button onClick={() => toggleSet('identity')}
-                                                    className="w-full p-3 flex items-center gap-2 hover:bg-white/5 transition-colors">
-                                                    {expandedSets['identity']
-                                                        ? <ChevronDown className="w-3.5 h-3.5 text-slate-500" />
-                                                        : <ChevronRight className="w-3.5 h-3.5 text-slate-500" />}
-                                                    <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Identity</span>
-                                                </button>
-                                                {expandedSets['identity'] && (
-                                                    <div className="px-3 pb-3 space-y-2">
-                                                        <div className="flex justify-between items-start">
-                                                            <span className="text-xs text-slate-500">ID</span>
-                                                            <div className="flex items-center gap-1">
-                                                                <span className="text-xs text-slate-300 font-mono bg-slate-700/50 px-1.5 py-0.5 rounded truncate max-w-[140px]">{selectedElement.id}</span>
-                                                                <button onClick={() => copyValue(selectedElement.id)} className="text-slate-600 hover:text-slate-300 p-0.5" title="Copy">
-                                                                    <Copy className="w-3 h-3" />
-                                                                </button>
-                                                            </div>
-                                                        </div>
-                                                        {selectedElement.globalId && (
-                                                            <div className="flex justify-between items-start">
-                                                                <span className="text-xs text-slate-500">GlobalId</span>
-                                                                <div className="flex items-center gap-1">
-                                                                    <span className="text-xs text-slate-300 font-mono bg-slate-700/50 px-1.5 py-0.5 rounded truncate max-w-[140px]">{selectedElement.globalId}</span>
-                                                                    <button onClick={() => copyValue(selectedElement.globalId!)} className="text-slate-600 hover:text-slate-300 p-0.5" title="Copy">
-                                                                        <Copy className="w-3 h-3" />
-                                                                    </button>
-                                                                </div>
-                                                            </div>
-                                                        )}
-                                                        <div className="flex justify-between">
-                                                            <span className="text-xs text-slate-500">IFC Type</span>
-                                                            <span className="text-xs text-cyan-400">{selectedElement.type}</span>
-                                                        </div>
-                                                    </div>
-                                                )}
-                                            </div>
-
-                                            {/* All Property Sets */}
-                                            {selectedElement.propertySets.map((pset) => (
-                                                <div key={pset.name}>
-                                                    <button onClick={() => toggleSet(pset.name)}
-                                                        className="w-full p-3 flex items-center justify-between hover:bg-white/5 transition-colors">
-                                                        <div className="flex items-center gap-2">
-                                                            {expandedSets[pset.name]
-                                                                ? <ChevronDown className="w-3.5 h-3.5 text-slate-500" />
-                                                                : <ChevronRight className="w-3.5 h-3.5 text-slate-500" />}
-                                                            <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wide">{pset.name}</span>
-                                                        </div>
-                                                        <span className="text-[9px] text-slate-600 bg-slate-700/40 px-1.5 py-0.5 rounded">{pset.properties.length}</span>
-                                                    </button>
-                                                    {expandedSets[pset.name] && (
-                                                        <div className="px-3 pb-3 space-y-1.5">
-                                                            {pset.properties.map((prop, idx) => (
-                                                                <div key={`${pset.name}-${idx}`} className="flex justify-between items-start group">
-                                                                    <span className="text-xs text-slate-500 truncate max-w-[120px]" title={prop.name}>{prop.name}</span>
-                                                                    <div className="flex items-center gap-1">
-                                                                        <span className="text-xs text-slate-300 truncate max-w-[130px]" title={prop.value}>{prop.value || '—'}</span>
-                                                                        <button onClick={() => copyValue(prop.value)}
-                                                                            className="text-slate-700 hover:text-slate-300 p-0.5 opacity-0 group-hover:opacity-100 transition-opacity" title="Copy">
-                                                                            <Copy className="w-3 h-3" />
-                                                                        </button>
-                                                                    </div>
-                                                                </div>
-                                                            ))}
-                                                        </div>
-                                                    )}
-                                                </div>
-                                            ))}
-
-                                            {/* Material Section */}
-                                            {selectedElement.materials.length > 0 && (
-                                                <div>
-                                                    <button onClick={() => toggleSet('material')}
-                                                        className="w-full p-3 flex items-center gap-2 hover:bg-white/5 transition-colors">
-                                                        {expandedSets['material']
-                                                            ? <ChevronDown className="w-3.5 h-3.5 text-amber-500" />
-                                                            : <ChevronRight className="w-3.5 h-3.5 text-amber-500" />}
-                                                        <span className="text-[10px] font-bold text-amber-500 uppercase tracking-wide">Material</span>
-                                                    </button>
-                                                    {expandedSets['material'] && (
-                                                        <div className="px-3 pb-3 space-y-1.5">
-                                                            {selectedElement.materials.map((mat, idx) => (
-                                                                <div key={idx} className="flex items-center gap-2">
-                                                                    <div className="w-3 h-3 rounded-sm bg-amber-500/30 border border-amber-500/50 shrink-0" />
-                                                                    <span className="text-xs text-slate-300">{mat}</span>
-                                                                </div>
-                                                            ))}
-                                                        </div>
-                                                    )}
-                                                </div>
-                                            )}
-
-                                            {/* Spatial Hierarchy */}
-                                            {selectedElement.spatialHierarchy.length > 0 && (
-                                                <div>
-                                                    <button onClick={() => toggleSet('hierarchy')}
-                                                        className="w-full p-3 flex items-center gap-2 hover:bg-white/5 transition-colors">
-                                                        {expandedSets['hierarchy']
-                                                            ? <ChevronDown className="w-3.5 h-3.5 text-emerald-500" />
-                                                            : <ChevronRight className="w-3.5 h-3.5 text-emerald-500" />}
-                                                        <span className="text-[10px] font-bold text-emerald-500 uppercase tracking-wide">Spatial Hierarchy</span>
-                                                    </button>
-                                                    {expandedSets['hierarchy'] && (
-                                                        <div className="px-3 pb-3">
-                                                            {selectedElement.spatialHierarchy.map((node, idx) => (
-                                                                <div key={idx} className="flex items-center gap-1" style={{ paddingLeft: `${idx * 12}px` }}>
-                                                                    <FolderTree className={`w-3 h-3 shrink-0 ${node.isCurrent ? 'text-emerald-400' : 'text-slate-600'}`} />
-                                                                    <span className={`text-xs ${node.isCurrent ? 'text-emerald-400 font-bold' : 'text-slate-400'}`}>
-                                                                        {node.name}
-                                                                    </span>
-                                                                    <span className="text-[9px] text-slate-600 ml-1">{node.type}</span>
-                                                                </div>
-                                                            ))}
-                                                        </div>
-                                                    )}
-                                                </div>
-                                            )}
-
-                                            {/* Summary footer */}
-                                            <div className="p-3 text-center">
-                                                <span className="text-[10px] text-slate-600">
-                                                    {selectedElement.propertySets.length} property sets • {selectedElement.propertySets.reduce((a, b) => a + b.properties.length, 0)} properties
-                                                </span>
-                                            </div>
-                                        </div>
-                                    ) : (
-                                        <div className="h-full flex flex-col items-center justify-center text-slate-500 p-6">
-                                            <div className="w-16 h-16 rounded-2xl bg-slate-800/50 flex items-center justify-center mb-4">
-                                                <Target className="w-8 h-8 text-slate-600" />
-                                            </div>
-                                            <p className="text-sm font-medium text-slate-400">Select an element</p>
-                                            <p className="text-[11px] text-slate-600 text-center">
-                                                Click on a model element to view all properties
-                                            </p>
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
-                        )}
-
-                        {/* iPad/Mobile: Bottom Sheet */}
-                        {(isMobile || isTablet) && (
-                            <div className="absolute bottom-0 left-0 right-0 z-30 bg-slate-900/98 backdrop-blur-xl rounded-t-3xl border-t border-slate-700/50 shadow-2xl max-h-[60%] flex flex-col">
-                                {/* Drag Handle */}
-                                <div className="flex justify-center py-3">
-                                    <div className="w-12 h-1.5 rounded-full bg-slate-600" />
-                                </div>
-
-                                {/* Header */}
-                                <div className="px-4 pb-3 flex items-center justify-between border-b border-slate-700/30">
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-10 h-10 rounded-xl bg-cyan-500/20 flex items-center justify-center">
-                                            <Info className="w-5 h-5 text-cyan-400" />
-                                        </div>
-                                        <div>
-                                            <span className="text-base font-bold text-white">Properties</span>
-                                            {selectedElement && (
-                                                <p className="text-xs text-slate-500">{selectedElement.type}</p>
-                                            )}
-                                        </div>
-                                    </div>
-                                    <button
-                                        onClick={() => setShowProperties(false)}
-                                        className="w-10 h-10 flex items-center justify-center text-slate-500 hover:text-white rounded-xl hover:bg-white/10 transition-all"
-                                    >
-                                        <X className="w-6 h-6" />
-                                    </button>
-                                </div>
-
-                                {/* Content */}
-                                <div className="flex-1 overflow-y-auto p-4">
-                                    {selectedElement ? (
-                                        <div className="space-y-3">
-                                            {/* Element Header */}
-                                            <div className="bg-blue-500/10 rounded-xl p-4">
-                                                <p className="text-xs font-bold text-blue-400 uppercase mb-1">{selectedElement.type}</p>
-                                                <p className="font-bold text-white text-lg">{selectedElement.name}</p>
-                                            </div>
-
-                                            {/* Identity */}
-                                            <div className="grid grid-cols-2 gap-3">
-                                                <div className="bg-slate-800/50 rounded-xl p-3">
-                                                    <p className="text-[10px] text-slate-500 uppercase mb-1">ID</p>
-                                                    <p className="text-xs text-slate-300 font-mono truncate">{selectedElement.id}</p>
-                                                </div>
-                                                <div className="bg-slate-800/50 rounded-xl p-3">
-                                                    <p className="text-[10px] text-slate-500 uppercase mb-1">IFC Type</p>
-                                                    <p className="text-xs text-cyan-400">{selectedElement.type}</p>
-                                                </div>
-                                            </div>
-
-                                            {/* All Property Sets */}
-                                            {selectedElement.propertySets.map((pset) => (
-                                                <div key={pset.name} className="bg-slate-800/30 rounded-xl overflow-hidden">
-                                                    <button onClick={() => toggleSet(pset.name)}
-                                                        className="w-full p-3 flex items-center justify-between">
-                                                        <div className="flex items-center gap-2">
-                                                            {expandedSets[pset.name]
-                                                                ? <ChevronDown className="w-4 h-4 text-slate-500" />
-                                                                : <ChevronRight className="w-4 h-4 text-slate-500" />}
-                                                            <span className="text-xs font-bold text-slate-400 uppercase">{pset.name}</span>
-                                                        </div>
-                                                        <span className="text-[10px] text-slate-600">{pset.properties.length}</span>
-                                                    </button>
-                                                    {expandedSets[pset.name] && (
-                                                        <div className="px-3 pb-3 space-y-2">
-                                                            {pset.properties.map((prop, idx) => (
-                                                                <div key={idx} className="flex justify-between py-1">
-                                                                    <span className="text-sm text-slate-500">{prop.name}</span>
-                                                                    <span className="text-sm text-slate-300">{prop.value || '—'}</span>
-                                                                </div>
-                                                            ))}
-                                                        </div>
-                                                    )}
-                                                </div>
-                                            ))}
-
-                                            {/* Materials */}
-                                            {selectedElement.materials.length > 0 && (
-                                                <div className="bg-amber-500/10 rounded-xl p-3">
-                                                    <p className="text-xs font-bold text-amber-400 uppercase mb-2">Material</p>
-                                                    {selectedElement.materials.map((mat, idx) => (
-                                                        <div key={idx} className="flex items-center gap-2">
-                                                            <div className="w-3 h-3 rounded-sm bg-amber-500/30 border border-amber-500/50" />
-                                                            <span className="text-sm text-slate-300">{mat}</span>
-                                                        </div>
-                                                    ))}
-                                                </div>
-                                            )}
-
-                                            {/* Spatial Hierarchy */}
-                                            {selectedElement.spatialHierarchy.length > 0 && (
-                                                <div className="bg-emerald-500/10 rounded-xl p-3">
-                                                    <p className="text-xs font-bold text-emerald-400 uppercase mb-2">Hierarchy</p>
-                                                    {selectedElement.spatialHierarchy.map((node, idx) => (
-                                                        <div key={idx} className="flex items-center gap-1" style={{ paddingLeft: `${idx * 12}px` }}>
-                                                            <FolderTree className={`w-3 h-3 ${node.isCurrent ? 'text-emerald-400' : 'text-slate-600'}`} />
-                                                            <span className={`text-xs ${node.isCurrent ? 'text-emerald-400 font-bold' : 'text-slate-400'}`}>{node.name}</span>
-                                                        </div>
-                                                    ))}
-                                                </div>
-                                            )}
-
-                                            <p className="text-center text-[10px] text-slate-600">
-                                                {selectedElement.propertySets.length} sets • {selectedElement.propertySets.reduce((a, b) => a + b.properties.length, 0)} props
-                                            </p>
-                                        </div>
-                                    ) : (
-                                        <div className="flex flex-col items-center justify-center py-8 text-slate-500">
-                                            <div className="w-16 h-16 rounded-2xl bg-slate-800/50 flex items-center justify-center mb-4">
-                                                <Target className="w-8 h-8 text-slate-600" />
-                                            </div>
-                                            <p className="text-base font-medium text-slate-400">Select an element</p>
-                                            <p className="text-sm text-slate-600 mt-1">Tap on a model element</p>
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
-                        )}
-                    </>
-                )}
             </div>
 
-            {/* FOOTER STATUS BAR - Desktop only (iPad hides for max 3D space) */}
-            {!isMobile && !isTablet && (
-                <div className={`h-8 ${isDarkMode ? 'bg-slate-800/90 border-slate-700/50' : 'bg-white border-gray-200'} border-t flex items-center justify-between px-4 text-[11px] text-slate-500 shrink-0`}>
-                    <div className="flex items-center gap-4">
-                        <span>Viewer: <span className="text-cyan-400 font-medium">xeokit SDK</span></span>
-                        <span className="text-slate-700">•</span>
-                        <span>{modelLoaded ? `${fileName} | ${objectCount} elements` : 'No model loaded'}</span>
-                    </div>
-                    <div className="flex items-center gap-3 text-slate-600">
-                        <span>LMB: Rotate</span>
-                        <span>•</span>
-                        <span>RMB: Pan</span>
-                        <span>•</span>
-                        <span>Scroll: Zoom</span>
-                    </div>
+            {/* FOOTER */}
+            <div className={`h-7 ${isDarkMode ? 'bg-slate-800/90 border-slate-700/50 text-slate-500' : 'bg-white border-gray-200 text-gray-400'} border-t flex items-center justify-between px-3 text-[10px] shrink-0`}>
+                <div className="flex items-center gap-3">
+                    <span>Powered by <strong className="text-blue-400">That Open Engine</strong></span>
+                    <span>•</span>
+                    <span>{disciplineModels.filter(d => d.visible).length}/{disciplineModels.length} visible</span>
                 </div>
-            )}
+                <div className="flex items-center gap-3">
+                    {objectCount > 0 && <span>{objectCount.toLocaleString()} elements</span>}
+                </div>
+            </div>
         </div>
     );
 };

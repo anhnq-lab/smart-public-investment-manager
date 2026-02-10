@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import ProjectService from '../../../../services/ProjectService';
 import ApiClient from '../../../../services/api';
-import { BiddingPackage, PackageStatus } from '../../../../types';
+import { BiddingPackage, PackageStatus, Project } from '../../../../types';
 import { formatCurrency, formatDate } from '../../../../utils/format';
 import { BiddingPackageModal } from '../BiddingPackageModal';
 import { BiddingPackageDetail } from '../BiddingPackageDetail';
@@ -19,9 +19,10 @@ import {
 
 interface ProjectPackagesTabProps {
     projectID: string;
+    project?: Project | null;
 }
 
-export const ProjectPackagesTab: React.FC<ProjectPackagesTabProps> = ({ projectID }) => {
+export const ProjectPackagesTab: React.FC<ProjectPackagesTabProps> = ({ projectID, project }) => {
     const queryClient = useQueryClient();
 
     const { data: packages, isLoading, error } = useQuery({
@@ -616,7 +617,7 @@ export const ProjectPackagesTab: React.FC<ProjectPackagesTabProps> = ({ projectI
                 isOpen={isExportModalOpen}
                 onClose={() => setIsExportModalOpen(false)}
                 packages={(packages || []).filter(p => selectedPackageIds.has(p.PackageID))}
-                projectId={projectID}
+                project={project}
             />
         </div>
     );

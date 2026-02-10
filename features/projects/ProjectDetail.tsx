@@ -178,7 +178,7 @@ const ProjectDetail: React.FC = () => {
                         />
                     )}
                     {activeTab === 'packages' && (
-                        <ProjectPackagesTab projectID={project.ProjectID} />
+                        <ProjectPackagesTab projectID={project.ProjectID} project={project} />
                     )}
                     {activeTab === 'capital' && (
                         <ProjectCapitalTab projectID={project.ProjectID} />

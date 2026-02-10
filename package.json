@@ -12,10 +12,13 @@
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
     "@prisma/client": "^5.22.0",
+    "@supabase/supabase-js": "^2.95.3",
     "@tanstack/react-query": "^5.90.20",
+    "@thatopen/components": "^3.3.1",
+    "@thatopen/components-front": "^3.3.1",
+    "@thatopen/fragments": "^3.3.3",
     "@types/leaflet": "^1.9.21",
     "@types/three": "^0.182.0",
-    "@xeokit/xeokit-sdk": "^2.6.105",
     "docx": "^9.5.1",
     "file-saver": "^2.0.5",
     "jspdf": "^4.1.0",
@@ -31,9 +34,7 @@
     "react-router-dom": "^6.30.3",
     "recharts": "^3.6.0",
     "three": "^0.149.0",
-    "web-ifc": "^0.0.75",
-    "web-ifc-three": "^0.0.126",
-    "web-ifc-viewer": "^1.0.218"
+    "web-ifc": "^0.0.75"
   },
   "devDependencies": {
     "@types/file-saver": "^2.0.7",
