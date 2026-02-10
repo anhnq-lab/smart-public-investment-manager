@@ -363,7 +363,7 @@ export interface CapitalAllocation {
     DateAssigned: string;
 }
 
-// Ensure Disbursement matches
+// Disbursement (Giải ngân) — NĐ 99/2021/NĐ-CP
 export interface Disbursement {
     DisbursementID: string;
     ProjectID: string;
@@ -373,9 +373,27 @@ export interface Disbursement {
     Amount: number;
     Date: string;
     TreasuryCode?: string; // Mã Kho bạc
-    FormType?: string; // Biểu mẫu (03a, 03b...)
+    FormType?: string; // Biểu mẫu (03a, 03b, 04a, 04b, 05)
     Description?: string;
     Status: 'Pending' | 'Approved' | 'Rejected';
+    Type?: 'TamUng' | 'ThanhToanKLHT' | 'ThuHoiTamUng'; // Loại thanh toán
+    ContractNumber?: string; // Số hợp đồng
+    CumulativeBefore?: number; // Lũy kế TT trước
+    AdvanceBalance?: number;   // Số dư tạm ứng
+}
+
+// Capital Summary Extended (Tổng hợp vốn)
+export interface CapitalSummaryExtended {
+    totalInvestment: number;     // Tổng mức đầu tư
+    totalAllocated: number;      // Tổng vốn bố trí lũy kế
+    totalDisbursed: number;      // Tổng đã giải ngân
+    totalAdvance: number;        // Tổng tạm ứng
+    advanceRecovered: number;    // Đã thu hồi tạm ứng
+    advanceBalance: number;      // Số dư tạm ứng chưa thu hồi
+    completionPayment: number;   // Thanh toán KLHT
+    disbursementRate: number;    // Tỷ lệ giải ngân (%)
+    yearlyTarget: number;        // KH vốn năm nay
+    yearlyDisbursed: number;     // Giải ngân năm nay
 }
 
 // Capital Plan (Kế hoạch vốn)

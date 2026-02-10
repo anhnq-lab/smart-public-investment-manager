@@ -355,7 +355,7 @@ export class ProjectService {
     }
 
     /**
-     * Get capital and disbursement info
+     * Get capital and disbursement info (NĐ 99/2021/NĐ-CP)
      */
     static async getCapitalInfo(projectId: string): Promise<{
         allocations: CapitalAllocation[];
@@ -364,10 +364,26 @@ export class ProjectService {
             totalInvestment: number;
             totalAllocated: number;
             totalDisbursed: number;
+            totalAdvance: number;
+            advanceRecovered: number;
+            advanceBalance: number;
+            completionPayment: number;
+            disbursementRate: number;
+            yearlyTarget: number;
+            yearlyDisbursed: number;
         }
     }> {
         return api.get(`/projects/${projectId}/capital`, () => {
             const allocations: CapitalAllocation[] = [
+                {
+                    AllocationID: 'AL-2023-01',
+                    ProjectID: projectId,
+                    Year: 2023,
+                    Amount: 8000000000,
+                    Source: 'NganSachTrungUong',
+                    DateAssigned: '2023-02-15',
+                    DecisionNumber: '112/QĐ-UBND'
+                },
                 {
                     AllocationID: 'AL-2024-01',
                     ProjectID: projectId,
@@ -389,42 +405,176 @@ export class ProjectService {
             ];
 
             const disbursements: Disbursement[] = [
+                // 2023 — Tạm ứng XL
                 {
                     DisbursementID: 'DIS-001',
                     ProjectID: projectId,
-                    AllocationID: 'AL-2024-01',
-                    Amount: 3000000000,
-                    Date: '2024-03-10',
+                    AllocationID: 'AL-2023-01',
+                    Amount: 2400000000,
+                    Date: '2023-03-20',
                     Status: 'Approved',
-                    Description: 'Tạm ứng hợp đồng XL-01'
+                    Description: 'Tạm ứng hợp đồng XL-01 (30%)',
+                    Type: 'TamUng',
+                    ContractNumber: 'HĐ-XL-01/2023',
+                    FormType: '04a',
+                    TreasuryCode: 'KB-HT-23001',
+                    CumulativeBefore: 0,
                 },
+                // 2023 — TT KLHT đợt 1
                 {
                     DisbursementID: 'DIS-002',
                     ProjectID: projectId,
-                    AllocationID: 'AL-2024-01',
-                    Amount: 2500000000,
-                    Date: '2024-06-20',
+                    AllocationID: 'AL-2023-01',
+                    Amount: 3200000000,
+                    Date: '2023-07-15',
                     Status: 'Approved',
-                    Description: 'Thanh toán đợt 1 XL-01'
+                    Description: 'Thanh toán KLHT đợt 1 XL-01',
+                    Type: 'ThanhToanKLHT',
+                    ContractNumber: 'HĐ-XL-01/2023',
+                    FormType: '03a',
+                    TreasuryCode: 'KB-HT-23045',
+                    CumulativeBefore: 2400000000,
                 },
+                // 2023 — Thu hồi tạm ứng
                 {
                     DisbursementID: 'DIS-003',
                     ProjectID: projectId,
+                    AllocationID: 'AL-2023-01',
+                    Amount: 960000000,
+                    Date: '2023-07-15',
+                    Status: 'Approved',
+                    Description: 'Thu hồi tạm ứng đợt 1 XL-01',
+                    Type: 'ThuHoiTamUng',
+                    ContractNumber: 'HĐ-XL-01/2023',
+                    FormType: '04b',
+                    TreasuryCode: 'KB-HT-23046',
+                    CumulativeBefore: 5600000000,
+                },
+                // 2024 — Tạm ứng TV
+                {
+                    DisbursementID: 'DIS-004',
+                    ProjectID: projectId,
                     AllocationID: 'AL-2024-01',
-                    Amount: 1000000000,
-                    Date: '2024-08-15',
+                    Amount: 500000000,
+                    Date: '2024-02-10',
+                    Status: 'Approved',
+                    Description: 'Tạm ứng hợp đồng TV-01 (20%)',
+                    Type: 'TamUng',
+                    ContractNumber: 'HĐ-TV-01/2024',
+                    FormType: '04a',
+                    TreasuryCode: 'KB-HT-24012',
+                    CumulativeBefore: 0,
+                },
+                // 2024 — TT KLHT đợt 2 XL
+                {
+                    DisbursementID: 'DIS-005',
+                    ProjectID: projectId,
+                    AllocationID: 'AL-2024-01',
+                    Amount: 2800000000,
+                    Date: '2024-05-20',
+                    Status: 'Approved',
+                    Description: 'Thanh toán KLHT đợt 2 XL-01',
+                    Type: 'ThanhToanKLHT',
+                    ContractNumber: 'HĐ-XL-01/2023',
+                    FormType: '03a',
+                    TreasuryCode: 'KB-HT-24056',
+                    CumulativeBefore: 5600000000,
+                },
+                // 2024 — Thu hồi tạm ứng TV
+                {
+                    DisbursementID: 'DIS-006',
+                    ProjectID: projectId,
+                    AllocationID: 'AL-2024-01',
+                    Amount: 250000000,
+                    Date: '2024-06-15',
+                    Status: 'Approved',
+                    Description: 'Thu hồi tạm ứng TV-01',
+                    Type: 'ThuHoiTamUng',
+                    ContractNumber: 'HĐ-TV-01/2024',
+                    FormType: '04b',
+                    TreasuryCode: 'KB-HT-24067',
+                    CumulativeBefore: 8900000000,
+                },
+                // 2024 — TT KLHT đợt 3 XL
+                {
+                    DisbursementID: 'DIS-007',
+                    ProjectID: projectId,
+                    AllocationID: 'AL-2024-01',
+                    Amount: 2500000000,
+                    Date: '2024-09-10',
+                    Status: 'Approved',
+                    Description: 'Thanh toán KLHT đợt 3 XL-01',
+                    Type: 'ThanhToanKLHT',
+                    ContractNumber: 'HĐ-XL-01/2023',
+                    FormType: '03a',
+                    TreasuryCode: 'KB-HT-24089',
+                    CumulativeBefore: 8400000000,
+                },
+                // 2025 — Tạm ứng TB
+                {
+                    DisbursementID: 'DIS-008',
+                    ProjectID: projectId,
+                    AllocationID: 'AL-2025-01',
+                    Amount: 1200000000,
+                    Date: '2025-01-25',
+                    Status: 'Approved',
+                    Description: 'Tạm ứng hợp đồng TB-01 (30%)',
+                    Type: 'TamUng',
+                    ContractNumber: 'HĐ-TB-01/2025',
+                    FormType: '04a',
+                    TreasuryCode: 'KB-HT-25003',
+                    CumulativeBefore: 0,
+                },
+                // 2025 — Chờ duyệt
+                {
+                    DisbursementID: 'DIS-009',
+                    ProjectID: projectId,
+                    AllocationID: 'AL-2025-01',
+                    Amount: 800000000,
+                    Date: '2025-02-05',
                     Status: 'Pending',
-                    Description: 'Thanh toán TV-01'
-                }
+                    Description: 'Thanh toán KLHT TV-01',
+                    Type: 'ThanhToanKLHT',
+                    ContractNumber: 'HĐ-TV-01/2024',
+                    FormType: '03a',
+                    CumulativeBefore: 500000000,
+                },
             ];
+
+            // Tính toán summary
+            const totalAdvance = disbursements
+                .filter(d => d.Type === 'TamUng' && d.Status === 'Approved')
+                .reduce((s, d) => s + d.Amount, 0);
+            const advanceRecovered = disbursements
+                .filter(d => d.Type === 'ThuHoiTamUng' && d.Status === 'Approved')
+                .reduce((s, d) => s + d.Amount, 0);
+            const completionPayment = disbursements
+                .filter(d => d.Type === 'ThanhToanKLHT' && d.Status === 'Approved')
+                .reduce((s, d) => s + d.Amount, 0);
+            const totalDisbursed = totalAdvance + completionPayment - advanceRecovered;
+            const totalAllocated = allocations.reduce((s, a) => s + a.Amount, 0);
+            const currentYear = new Date().getFullYear();
+            const yearlyTarget = allocations
+                .filter(a => a.Year === currentYear)
+                .reduce((s, a) => s + a.Amount, 0);
+            const yearlyDisbursed = disbursements
+                .filter(d => new Date(d.Date).getFullYear() === currentYear && d.Status === 'Approved')
+                .reduce((s, d) => s + d.Amount, 0);
 
             return {
                 allocations,
                 disbursements,
                 summary: {
                     totalInvestment: 25000000000,
-                    totalAllocated: 15000000000,
-                    totalDisbursed: 5500000000
+                    totalAllocated,
+                    totalDisbursed,
+                    totalAdvance,
+                    advanceRecovered,
+                    advanceBalance: totalAdvance - advanceRecovered,
+                    completionPayment,
+                    disbursementRate: totalAllocated > 0 ? Math.round((totalDisbursed / totalAllocated) * 100) : 0,
+                    yearlyTarget,
+                    yearlyDisbursed: 2000000000, // Hardcode for demo
                 }
             };
         });
