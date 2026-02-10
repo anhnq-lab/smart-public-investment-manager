@@ -33,7 +33,7 @@
     "react-router": "^6.30.3",
     "react-router-dom": "^6.30.3",
     "recharts": "^3.6.0",
-    "three": "^0.149.0",
+    "three": "^0.182.0",
     "web-ifc": "^0.0.75"
   },
   "devDependencies": {
