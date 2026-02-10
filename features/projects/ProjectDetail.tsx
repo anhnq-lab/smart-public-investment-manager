@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, Suspense } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ProjectService } from '@/services/ProjectService';
 import { NationalGatewayService, SyncResult } from '@/services/NationalGatewayService';
@@ -9,7 +9,7 @@ import { mockEmployees } from '@/mockData';
 import { ProjectHeader } from './components/ProjectHeader';
 import { ProjectInfoTab } from './components/tabs/ProjectInfoTab';
 import { ProjectPlanTab } from './components/tabs/ProjectPlanTab';
-import { ProjectBimTab } from './components/tabs/ProjectBimTab';
+const ProjectBimTab = React.lazy(() => import('./components/tabs/ProjectBimTab').then(m => ({ default: m.ProjectBimTab })));
 import { ProjectPackagesTab } from './components/tabs/ProjectPackagesTab';
 import { ProjectCapitalTab } from './components/tabs/ProjectCapitalTab';
 import { ProjectDocumentsTab } from './components/tabs/ProjectDocumentsTab';
@@ -190,7 +190,9 @@ const ProjectDetail: React.FC = () => {
                         />
                     )}
                     {activeTab === 'bim' && (
-                        <ProjectBimTab projectID={project.ProjectID} />
+                        <Suspense fallback={<div className="flex items-center justify-center h-96 text-blue-500">Đang tải BIM Viewer...</div>}>
+                            <ProjectBimTab projectID={project.ProjectID} />
+                        </Suspense>
                     )}
                 </div>
             </div>
