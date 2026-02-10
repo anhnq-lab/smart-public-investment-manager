@@ -138,11 +138,14 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
                 const grids = components.get(OBC.Grids);
                 grids.create(world);
 
+                // Initialize FragmentsManager first (required by IfcLoader)
+                const fragments = components.get(OBC.FragmentsManager);
+
                 // Setup IFC loader
                 const ifcLoader = components.get(OBC.IfcLoader);
                 await ifcLoader.setup();
                 ifcLoader.settings.wasm = {
-                    path: 'https://unpkg.com/web-ifc@0.0.68/',
+                    path: 'https://unpkg.com/web-ifc@0.0.75/',
                     absolute: true,
                 };
                 ifcLoader.settings.webIfc.COORDINATE_TO_ORIGIN = true;
