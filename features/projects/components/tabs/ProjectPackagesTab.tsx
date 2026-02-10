@@ -275,7 +275,7 @@ export const ProjectPackagesTab: React.FC<ProjectPackagesTabProps> = ({ projectI
                         className="flex items-center gap-2 px-4 py-2 bg-white border border-blue-300 text-blue-700 rounded-lg hover:bg-blue-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm font-medium"
                     >
                         <Download size={16} />
-                        <span>Xuất QĐ KHLCNT {selectedPackageIds.size > 0 && `(${selectedPackageIds.size})`}</span>
+                        <span>Xuất VB KHLCNT {selectedPackageIds.size > 0 && `(${selectedPackageIds.size})`}</span>
                     </button>
                     <button
                         onClick={() => setIsCreateModalOpen(true)}

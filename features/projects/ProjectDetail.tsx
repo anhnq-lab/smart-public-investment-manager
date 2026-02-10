@@ -15,6 +15,45 @@ import { ProjectCapitalTab } from './components/tabs/ProjectCapitalTab';
 import { ProjectDocumentsTab } from './components/tabs/ProjectDocumentsTab';
 import { Info, CalendarCheck, Briefcase, FolderOpen, Layers, Landmark } from 'lucide-react';
 
+// Error Boundary for BIM tab - catches runtime crashes from 3D libraries
+class BimErrorBoundary extends React.Component<
+    { children: React.ReactNode },
+    { hasError: boolean; error: Error | null }
+> {
+    constructor(props: { children: React.ReactNode }) {
+        super(props);
+        this.state = { hasError: false, error: null };
+    }
+    static getDerivedStateFromError(error: Error) {
+        return { hasError: true, error };
+    }
+    componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+        console.error('BIM Tab Error:', error, errorInfo);
+    }
+    render() {
+        if (this.state.hasError) {
+            return (
+                <div className="flex flex-col items-center justify-center h-96 gap-4 text-center p-8">
+                    <div className="text-red-500 text-lg font-bold">⚠️ BIM Viewer Error</div>
+                    <div className="text-gray-600 text-sm max-w-lg">
+                        {this.state.error?.message || 'Unknown error'}
+                    </div>
+                    <pre className="text-xs bg-gray-100 p-4 rounded-lg max-w-2xl overflow-auto max-h-48 text-left text-gray-500">
+                        {this.state.error?.stack}
+                    </pre>
+                    <button
+                        onClick={() => this.setState({ hasError: false, error: null })}
+                        className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+                    >
+                        Thử lại
+                    </button>
+                </div>
+            );
+        }
+        return this.props.children;
+    }
+}
+
 const ProjectDetail: React.FC = () => {
     const { id } = useParams<{ id: string }>();
 
@@ -190,9 +229,11 @@ const ProjectDetail: React.FC = () => {
                         />
                     )}
                     {activeTab === 'bim' && (
-                        <Suspense fallback={<div className="flex items-center justify-center h-96 text-blue-500">Đang tải BIM Viewer...</div>}>
-                            <ProjectBimTab projectID={project.ProjectID} />
-                        </Suspense>
+                        <BimErrorBoundary>
+                            <Suspense fallback={<div className="flex items-center justify-center h-96 text-blue-500">Đang tải BIM Viewer...</div>}>
+                                <ProjectBimTab projectID={project.ProjectID} />
+                            </Suspense>
+                        </BimErrorBoundary>
                     )}
                 </div>
             </div>
