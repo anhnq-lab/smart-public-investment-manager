@@ -1,13 +1,13 @@
 import React, { useState, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import ProjectService from '../../../../services/ProjectService';
-import { CapitalService } from '../../../../services/CapitalService';
+
 import { formatCurrency } from '../../../../utils/format';
 import { Disbursement, CapitalAllocation } from '../../../../types';
 import {
-    Coins, TrendingUp, Wallet, ArrowUpRight, AlertTriangle,
+    Coins, TrendingUp, Wallet, AlertTriangle,
     Calendar, FileText, Landmark, DollarSign, FileDown,
-    Filter, ArrowDownUp, Receipt, RefreshCcw, RotateCcw
+    ArrowDownUp, Receipt, RefreshCcw, RotateCcw
 } from 'lucide-react';
 import {
     BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
@@ -337,9 +337,9 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
                                     </td>
                                     <td className="px-6 py-4">
                                         <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${a.Source === 'NganSachTrungUong' ? 'bg-blue-100 text-blue-700' :
-                                                a.Source === 'NganSachDiaPhuong' ? 'bg-purple-100 text-purple-700' :
-                                                    a.Source === 'ODA' ? 'bg-cyan-100 text-cyan-700' :
-                                                        'bg-gray-100 text-gray-700'
+                                            a.Source === 'NganSachDiaPhuong' ? 'bg-purple-100 text-purple-700' :
+                                                a.Source === 'ODA' ? 'bg-cyan-100 text-cyan-700' :
+                                                    'bg-gray-100 text-gray-700'
                                             }`}>
                                             {SOURCE_LABELS[a.Source] || a.Source}
                                         </span>
@@ -388,8 +388,8 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
                                     key={key}
                                     onClick={() => setDisbursementFilter(key)}
                                     className={`px-3 py-1.5 text-xs font-medium rounded-md transition-all ${disbursementFilter === key
-                                            ? 'bg-white text-gray-800 shadow-sm'
-                                            : 'text-gray-500 hover:text-gray-700'
+                                        ? 'bg-white text-gray-800 shadow-sm'
+                                        : 'text-gray-500 hover:text-gray-700'
                                         }`}
                                 >
                                     {label}
@@ -415,7 +415,7 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
                         <tbody className="divide-y divide-gray-50">
                             {filteredDisbursements.map((d) => (
                                 <tr key={d.DisbursementID} className={`hover:bg-gray-50 transition-colors ${d.Type === 'ThuHoiTamUng' ? 'bg-green-50/30' :
-                                        d.Type === 'TamUng' ? 'bg-amber-50/20' : ''
+                                    d.Type === 'TamUng' ? 'bg-amber-50/20' : ''
                                     }`}>
                                     <td className="px-4 py-3.5 text-gray-600 font-mono text-xs whitespace-nowrap">
                                         {d.Date}
@@ -429,9 +429,9 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
                                     </td>
                                     <td className="px-4 py-3.5 text-center">
                                         <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold ${d.Type === 'TamUng' ? 'bg-amber-100 text-amber-700' :
-                                                d.Type === 'ThanhToanKLHT' ? 'bg-blue-100 text-blue-700' :
-                                                    d.Type === 'ThuHoiTamUng' ? 'bg-green-100 text-green-700' :
-                                                        'bg-gray-100 text-gray-600'
+                                            d.Type === 'ThanhToanKLHT' ? 'bg-blue-100 text-blue-700' :
+                                                d.Type === 'ThuHoiTamUng' ? 'bg-green-100 text-green-700' :
+                                                    'bg-gray-100 text-gray-600'
                                             }`}>
                                             {d.Type === 'TamUng' && <Receipt className="w-3 h-3" />}
                                             {d.Type === 'ThanhToanKLHT' && <DollarSign className="w-3 h-3" />}
@@ -454,11 +454,11 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
                                     </td>
                                     <td className="px-4 py-3.5 text-center">
                                         <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold ${d.Status === 'Approved' ? 'bg-green-100 text-green-700' :
-                                                d.Status === 'Pending' ? 'bg-orange-100 text-orange-700' :
-                                                    'bg-red-100 text-red-700'
+                                            d.Status === 'Pending' ? 'bg-orange-100 text-orange-700' :
+                                                'bg-red-100 text-red-700'
                                             }`}>
                                             <span className={`w-1.5 h-1.5 rounded-full ${d.Status === 'Approved' ? 'bg-green-500' :
-                                                    d.Status === 'Pending' ? 'bg-orange-500' : 'bg-red-500'
+                                                d.Status === 'Pending' ? 'bg-orange-500' : 'bg-red-500'
                                                 }`} />
                                             {d.Status === 'Approved' ? 'Đã duyệt' :
                                                 d.Status === 'Pending' ? 'Chờ duyệt' : 'Từ chối'}
@@ -492,8 +492,8 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
                     <div className="p-4 space-y-2">
                         {alerts.map((a, i) => (
                             <div key={i} className={`p-3 rounded-lg border flex items-start gap-3 ${a.level === 'high'
-                                    ? 'bg-red-50 border-red-200 text-red-800'
-                                    : 'bg-amber-50 border-amber-200 text-amber-800'
+                                ? 'bg-red-50 border-red-200 text-red-800'
+                                : 'bg-amber-50 border-amber-200 text-amber-800'
                                 }`}>
                                 <div className="mt-0.5">{a.icon}</div>
                                 <p className="text-sm font-medium">{a.message}</p>
