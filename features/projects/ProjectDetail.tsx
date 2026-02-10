@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo, Suspense } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { ProjectService } from '@/services/ProjectService';
 import { NationalGatewayService, SyncResult } from '@/services/NationalGatewayService';
 import { Project, Employee, ProjectStage } from '@/types';
@@ -56,11 +56,15 @@ class BimErrorBoundary extends React.Component<
 
 const ProjectDetail: React.FC = () => {
     const { id } = useParams<{ id: string }>();
+    const location = useLocation();
 
     // State
     const [project, setProject] = useState<Project | null>(null);
     const [loading, setLoading] = useState(true);
-    const [activeTab, setActiveTab] = useState<'info' | 'plan' | 'packages' | 'capital' | 'documents' | 'bim'>('info');
+
+    // Read initial tab from navigation state (e.g. from TaskDetail breadcrumb)
+    const initialTab = (location.state as any)?.activeTab || 'info';
+    const [activeTab, setActiveTab] = useState<'info' | 'plan' | 'packages' | 'capital' | 'documents' | 'bim'>(initialTab);
 
     // Module 1: National Gateway State
     const [isSyncing, setIsSyncing] = useState(false);
@@ -226,6 +230,8 @@ const ProjectDetail: React.FC = () => {
                         <ProjectDocumentsTab
                             projectID={project.ProjectID}
                             projectStage={project.Stage || ProjectStage.Execution}
+                            investmentPolicy={(project as any).InvestmentPolicy}
+                            feasibilityStudy={(project as any).FeasibilityStudy}
                         />
                     )}
                     {activeTab === 'bim' && (

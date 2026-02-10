@@ -125,4 +125,48 @@ export class DocumentService {
             default: return status;
         }
     }
+
+    /**
+     * Get all documents belonging to a project
+     */
+    static getDocumentsByProject(projectId: string): Document[] {
+        return mockDocuments.filter(d => d.ProjectID === projectId || d.ReferenceID === projectId);
+    }
+
+    /**
+     * Get document statistics for a project
+     */
+    static getDocumentStats(projectId: string): {
+        total: number;
+        approved: number;
+        inProgress: number;
+        wip: number;
+    } {
+        const docs = this.getDocumentsByProject(projectId);
+        return {
+            total: docs.length,
+            approved: docs.filter(d =>
+                d.ISOStatus === ISO19650Status.A1 ||
+                d.ISOStatus === ISO19650Status.A2 ||
+                d.ISOStatus === ISO19650Status.A3
+            ).length,
+            inProgress: docs.filter(d =>
+                d.ISOStatus === ISO19650Status.S1 ||
+                d.ISOStatus === ISO19650Status.S2 ||
+                d.ISOStatus === ISO19650Status.S3
+            ).length,
+            wip: docs.filter(d =>
+                d.ISOStatus === ISO19650Status.S0
+            ).length,
+        };
+    }
+
+    /**
+     * Search documents by name within a project
+     */
+    static searchDocuments(query: string, projectId?: string): Document[] {
+        const lowerQuery = query.toLowerCase();
+        let docs = projectId ? this.getDocumentsByProject(projectId) : mockDocuments;
+        return docs.filter(d => d.DocName.toLowerCase().includes(lowerQuery));
+    }
 }

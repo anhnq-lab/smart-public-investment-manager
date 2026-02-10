@@ -1,8 +1,9 @@
 import React, { useState, useMemo, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Task, TaskStatus, Employee, ProjectGroup } from '@/types';
 import {
     Layers, CheckCircle2, Circle, Clock, ChevronDown, ChevronRight,
-    FileText, AlertCircle, Plus, Calendar, User, Flag, Zap, Building2, Scale, Info
+    FileText, AlertCircle, Plus, Calendar, User, Flag, Zap, Building2, Scale, Info, ExternalLink
 } from 'lucide-react';
 import { ProjectGanttChart } from '../ProjectGanttChart';
 import { ProjectTaskModal } from '../ProjectTaskModal';
@@ -153,6 +154,7 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({
     groupCode = ProjectGroup.C,
     isODA = false
 }) => {
+    const navigate = useNavigate();
     // Dynamic phases based on project group
     const DECREE_175_PHASES = useMemo(() => getProjectPhases(groupCode, isODA), [groupCode, isODA]);
     // 1. Local Tasks State (Optimistic UI)
@@ -437,14 +439,23 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({
                         Căn cứ theo Điều 4, Nghị định 175/NĐ-CP về trình tự đầu tư xây dựng.
                     </p>
                 </div>
-                <span className={`px-3 py-1 text-xs font-bold rounded-full ${groupCode === ProjectGroup.A || groupCode === ProjectGroup.QN
-                    ? 'bg-red-100 text-red-700 border border-red-200'
-                    : groupCode === ProjectGroup.B
-                        ? 'bg-amber-100 text-amber-700 border border-amber-200'
-                        : 'bg-green-100 text-green-700 border border-green-200'
-                    }`}>
-                    {getGroupLabel(groupCode)}
-                </span>
+                <div className="flex items-center gap-3">
+                    <button
+                        onClick={() => navigate(`/tasks`, { state: { filterProject: projectID } })}
+                        className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-blue-600 bg-white hover:bg-blue-50 rounded-lg border border-blue-200 transition-colors shadow-sm"
+                    >
+                        <ExternalLink className="w-3 h-3" />
+                        Xem tất cả công việc
+                    </button>
+                    <span className={`px-3 py-1 text-xs font-bold rounded-full ${groupCode === ProjectGroup.A || groupCode === ProjectGroup.QN
+                        ? 'bg-red-100 text-red-700 border border-red-200'
+                        : groupCode === ProjectGroup.B
+                            ? 'bg-amber-100 text-amber-700 border border-amber-200'
+                            : 'bg-green-100 text-green-700 border border-green-200'
+                        }`}>
+                        {getGroupLabel(groupCode)}
+                    </span>
+                </div>
             </div>
 
             {/* Phase Cards with Expandable Items */}
@@ -562,6 +573,7 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({
                                                                 <th className="px-2 py-1.5 text-left font-medium w-20 hidden sm:table-cell">Phụ trách</th>
                                                                 <th className="px-2 py-1.5 text-left font-medium w-24 hidden sm:table-cell">Hạn</th>
                                                                 <th className="px-2 py-1.5 text-center font-medium w-16">Ưu tiên</th>
+                                                                <th className="px-2 py-1.5 text-center font-medium w-8"></th>
                                                             </tr>
                                                         </thead>
                                                         <tbody className="divide-y divide-gray-50">
@@ -630,6 +642,19 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({
                                                                                 {t.Priority}
                                                                             </span>
                                                                         )}
+                                                                    </td>
+                                                                    {/* Navigate to Task Detail */}
+                                                                    <td className="px-2 py-2 text-center">
+                                                                        <button
+                                                                            onClick={(e) => {
+                                                                                e.stopPropagation();
+                                                                                navigate(`/tasks/${t.TaskID}`);
+                                                                            }}
+                                                                            className="opacity-0 group-hover:opacity-100 transition-opacity p-1 hover:bg-blue-50 rounded text-blue-500"
+                                                                            title="Xem chi tiết công việc"
+                                                                        >
+                                                                            <ExternalLink className="w-3 h-3" />
+                                                                        </button>
                                                                     </td>
                                                                 </tr>
                                                             ))}

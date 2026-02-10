@@ -8,7 +8,7 @@ interface FilePreviewModalProps {
 
 export const FilePreviewModal: React.FC<FilePreviewModalProps> = ({ file, onClose }) => {
     const f = file as any;
-    const fileName = (f.title || f.number || f.name || '').toLowerCase();
+    const fileName = (f.DocName || f.title || f.number || f.name || '').toLowerCase();
     const isPDF = fileName.endsWith('.pdf');
     const isImage = fileName.endsWith('.png') || fileName.endsWith('.jpg') || fileName.endsWith('.jpeg');
     const isExcel = fileName.includes('vốn') || fileName.includes('dự toán') || fileName.endsWith('.xlsx') || fileName.endsWith('.xls');
@@ -40,8 +40,8 @@ export const FilePreviewModal: React.FC<FilePreviewModalProps> = ({ file, onClos
                             {isImage ? <ImageIcon className="w-6 h-6" /> : <FileText className="w-6 h-6" />}
                         </div>
                         <div>
-                            <h3 className="text-base font-black text-gray-800 tracking-tight">{f.title || f.number || f.name}</h3>
-                            <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">{f.isLocal ? 'TÀI LIỆU VỪA TẢI LÊN' : f.code || 'TÀI LIỆU DỰ ÁN'}</p>
+                            <h3 className="text-base font-black text-gray-800 tracking-tight">{f.DocName || f.title || f.number || f.name}</h3>
+                            <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">{f.isLocal ? 'TÀI LIỆU VỪA TẢI LÊN' : f.Version ? `PHIÊN BẢN: ${f.Version}` : f.code || 'TÀI LIỆU DỰ ÁN'}{f.Size ? ` • ${f.Size}` : ''}</p>
                         </div>
                     </div>
                     <div className="flex items-center gap-2">
@@ -126,3 +126,5 @@ export const FilePreviewModal: React.FC<FilePreviewModalProps> = ({ file, onClos
         </div>
     );
 };
+
+export default FilePreviewModal;
