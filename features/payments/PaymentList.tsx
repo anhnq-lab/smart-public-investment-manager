@@ -8,12 +8,12 @@ import { useContracts } from '../../hooks/useContracts';
 import { mockContractors, mockBiddingPackages } from '../../mockData';
 import { useProjects } from '../../hooks/useProjects';
 import {
-    CreditCard, Download, TrendingUp, Search, Plus,
+    CreditCard, Download, Search, Plus,
     DollarSign, Clock, CheckCircle2, FileText,
-    Building2, ChevronRight, ArrowUpRight, Filter,
-    BarChart3, Banknote, Wallet
+    Building2, ChevronRight, Filter,
+    BarChart3, Wallet, CalendarDays, TrendingUp,
+    ArrowUpRight, Hash, Landmark
 } from 'lucide-react';
-import { Input } from '../../components/ui/Input';
 import { Card } from '../../components/ui/Card';
 import { Skeleton } from '../../components/ui/Skeleton';
 
@@ -45,6 +45,11 @@ const PaymentList: React.FC = () => {
         return project?.ProjectName || '—';
     };
 
+    const getContractValue = (contractId: string): number => {
+        const contract = contracts.find(c => c.ContractID === contractId);
+        return contract?.Value || 0;
+    };
+
     // === Stats ===
     const stats = useMemo(() => {
         const totalAmount = payments.reduce((sum, p) => sum + p.Amount, 0);
@@ -52,7 +57,11 @@ const PaymentList: React.FC = () => {
         const transferredAmount = transferred.reduce((sum, p) => sum + p.Amount, 0);
         const pending = payments.filter(p => p.Status === PaymentStatus.Pending);
         const pendingAmount = pending.reduce((sum, p) => sum + p.Amount, 0);
-        const advanceAmount = payments.filter(p => p.Type === PaymentType.Advance).reduce((sum, p) => sum + p.Amount, 0);
+        const advancePayments = payments.filter(p => p.Type === PaymentType.Advance);
+        const advanceAmount = advancePayments.reduce((sum, p) => sum + p.Amount, 0);
+        const volumePayments = payments.filter(p => p.Type === PaymentType.Volume);
+        const volumeAmount = volumePayments.reduce((sum, p) => sum + p.Amount, 0);
+        const uniqueContracts = new Set(payments.map(p => p.ContractID)).size;
         return {
             total: payments.length,
             totalAmount,
@@ -61,6 +70,10 @@ const PaymentList: React.FC = () => {
             pendingCount: pending.length,
             pendingAmount,
             advanceAmount,
+            advanceCount: advancePayments.length,
+            volumeAmount,
+            volumeCount: volumePayments.length,
+            uniqueContracts,
         };
     }, [payments]);
 
@@ -86,11 +99,11 @@ const PaymentList: React.FC = () => {
 
     if (isLoading) {
         return (
-            <div className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                    {[1, 2, 3, 4].map(i => <Skeleton key={i} className="h-28 rounded-2xl" />)}
+            <div className="space-y-6 p-1">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+                    {[1, 2, 3, 4].map(i => <Skeleton key={i} className="h-32 rounded-2xl" />)}
                 </div>
-                <Skeleton className="h-16 rounded-2xl" />
+                <Skeleton className="h-14 rounded-2xl" />
                 <Card className="p-6"><div className="space-y-4">{[1, 2, 3, 4, 5].map(i => <Skeleton key={i} className="h-16 w-full rounded-xl" />)}</div></Card>
             </div>
         );
@@ -100,203 +113,269 @@ const PaymentList: React.FC = () => {
         {
             label: 'Tổng giải ngân',
             value: formatCurrency(stats.totalAmount),
-            sub: `${stats.total} phiếu`,
+            sub: `${stats.total} phiếu · ${stats.uniqueContracts} hợp đồng`,
             icon: DollarSign,
-            gradient: 'from-blue-500 to-indigo-600',
+            gradient: 'from-blue-500 via-blue-600 to-indigo-700',
+            ring: 'ring-blue-400/30',
         },
         {
             label: 'Đã chuyển tiền',
             value: formatCurrency(stats.transferredAmount),
-            sub: `${stats.transferredCount} phiếu`,
+            sub: `${stats.transferredCount}/${stats.total} phiếu hoàn thành`,
             icon: CheckCircle2,
-            gradient: 'from-emerald-500 to-teal-600',
+            gradient: 'from-emerald-500 via-emerald-600 to-teal-700',
+            ring: 'ring-emerald-400/30',
+            progressPercent: stats.total > 0 ? (stats.transferredCount / stats.total) * 100 : 0,
         },
         {
             label: 'Đang chờ duyệt',
             value: formatCurrency(stats.pendingAmount),
-            sub: `${stats.pendingCount} phiếu`,
+            sub: `${stats.pendingCount} phiếu cần xử lý`,
             icon: Clock,
-            gradient: 'from-amber-500 to-orange-600',
+            gradient: 'from-amber-500 via-orange-500 to-red-500',
+            ring: 'ring-amber-400/30',
+            highlight: stats.pendingCount > 0,
         },
         {
-            label: 'Tạm ứng HĐ',
+            label: 'Tạm ứng',
             value: formatCurrency(stats.advanceAmount),
-            sub: 'Tổng tạm ứng',
+            sub: `KL: ${formatCurrency(stats.volumeAmount)} (${stats.volumeCount} phiếu)`,
             icon: Wallet,
-            gradient: 'from-violet-500 to-purple-600',
+            gradient: 'from-violet-500 via-violet-600 to-purple-700',
+            ring: 'ring-violet-400/30',
         },
     ];
 
     return (
         <>
-            <div className="space-y-6 animate-in fade-in duration-300">
-                {/* Stat Cards */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="space-y-6 animate-in fade-in duration-500">
+                {/* === Stat Cards === */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
                     {statCards.map((card, idx) => (
-                        <div key={idx} className={`relative overflow-hidden rounded-2xl bg-gradient-to-br ${card.gradient} text-white p-5 shadow-lg`}>
-                            <div className="absolute -right-4 -top-4 opacity-20">
-                                <card.icon className="w-24 h-24" />
+                        <div
+                            key={idx}
+                            className={`relative overflow-hidden rounded-2xl bg-gradient-to-br ${card.gradient} text-white p-5 shadow-xl ring-1 ${card.ring} transition-transform hover:scale-[1.02] hover:shadow-2xl duration-300`}
+                        >
+                            <div className="absolute -right-3 -top-3 opacity-[0.12]">
+                                <card.icon className="w-24 h-24" strokeWidth={1.2} />
                             </div>
-                            <div className="relative">
-                                <p className="text-xs font-bold uppercase tracking-widest text-white/80">{card.label}</p>
-                                <p className="text-2xl font-black mt-2 tracking-tight">{card.value}</p>
-                                <p className="text-xs text-white/60 mt-1 font-medium">{card.sub}</p>
+                            {/* Pending highlight pulse */}
+                            {(card as any).highlight && (
+                                <div className="absolute top-3 right-3">
+                                    <span className="flex h-3 w-3">
+                                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-50"></span>
+                                        <span className="relative inline-flex rounded-full h-3 w-3 bg-white/70"></span>
+                                    </span>
+                                </div>
+                            )}
+                            <div className="relative z-10">
+                                <p className="text-[10px] font-extrabold uppercase tracking-[0.2em] text-white/70">{card.label}</p>
+                                <p className="text-3xl font-black mt-2 tracking-tight drop-shadow-sm">{card.value}</p>
+                                {(card as any).progressPercent !== undefined && (
+                                    <div className="mt-2 w-full bg-white/20 rounded-full h-1.5">
+                                        <div className="h-full bg-white/80 rounded-full transition-all duration-1000" style={{ width: `${Math.min((card as any).progressPercent, 100)}%` }}></div>
+                                    </div>
+                                )}
+                                <p className="text-[11px] text-white/50 mt-1.5 font-medium">{card.sub}</p>
                             </div>
                         </div>
                     ))}
                 </div>
 
-                {/* Toolbar */}
-                <div className="flex flex-col md:flex-row items-center gap-3">
-                    <div className="w-full md:w-80">
-                        <Input
-                            placeholder="Tìm mã TT, mã HĐ, mã Kho bạc..."
-                            leftIcon={<Search className="w-4 h-4" />}
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                        />
-                    </div>
+                {/* === Toolbar === */}
+                <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
+                    <div className="flex flex-col md:flex-row items-center gap-3">
+                        <div className="relative w-full md:w-80">
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                            <input
+                                type="text"
+                                placeholder="Tìm mã TT, mã HĐ, nhà thầu, Kho bạc..."
+                                className="w-full pl-10 pr-4 py-2.5 text-sm rounded-xl border border-gray-200 bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition-all placeholder:text-gray-400"
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                            />
+                        </div>
 
-                    {/* Status filter */}
-                    <div className="flex items-center gap-2">
-                        {[
-                            { value: 'all' as const, label: 'Tất cả' },
-                            { value: PaymentStatus.Transferred, label: 'Đã chuyển' },
-                            { value: PaymentStatus.Pending, label: 'Chờ duyệt' }
-                        ].map(opt => (
-                            <button
-                                key={opt.value}
-                                onClick={() => setFilterStatus(opt.value)}
-                                className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all ${filterStatus === opt.value
-                                    ? 'bg-blue-600 text-white shadow-md shadow-blue-200'
-                                    : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'
-                                    }`}
-                            >
-                                {opt.label}
+                        {/* Status segmented control */}
+                        <div className="flex items-center bg-gray-100 rounded-xl p-1 gap-0.5">
+                            {[
+                                { value: 'all' as const, label: 'Tất cả', count: stats.total },
+                                { value: PaymentStatus.Transferred, label: 'Đã chuyển', count: stats.transferredCount },
+                                { value: PaymentStatus.Pending, label: 'Chờ duyệt', count: stats.pendingCount },
+                            ].map(opt => (
+                                <button
+                                    key={opt.value}
+                                    onClick={() => setFilterStatus(opt.value)}
+                                    className={`px-3.5 py-2 text-xs font-bold rounded-lg transition-all duration-200 ${filterStatus === opt.value
+                                        ? 'bg-white text-gray-900 shadow-sm'
+                                        : 'text-gray-500 hover:text-gray-700'
+                                        }`}
+                                >
+                                    {opt.label}
+                                    <span className={`ml-1 text-[10px] ${filterStatus === opt.value ? 'text-blue-600' : 'text-gray-400'}`}>
+                                        {opt.count}
+                                    </span>
+                                </button>
+                            ))}
+                        </div>
+
+                        {/* Type pills */}
+                        <div className="flex items-center gap-1.5">
+                            <span className="text-[10px] font-bold uppercase text-gray-400 tracking-wider mr-1">Loại</span>
+                            {[
+                                { value: 'all' as const, label: 'Tất cả' },
+                                { value: PaymentType.Advance, label: 'Tạm ứng' },
+                                { value: PaymentType.Volume, label: 'Khối lượng' },
+                            ].map(opt => (
+                                <button
+                                    key={opt.value}
+                                    onClick={() => setFilterType(opt.value)}
+                                    className={`px-2.5 py-1.5 text-xs font-medium rounded-lg transition-all ${filterType === opt.value
+                                        ? 'bg-violet-100 text-violet-700 ring-1 ring-violet-200 shadow-sm'
+                                        : 'text-gray-500 hover:bg-gray-100'
+                                        }`}
+                                >
+                                    {opt.label}
+                                </button>
+                            ))}
+                        </div>
+
+                        <div className="ml-auto flex items-center gap-2">
+                            <button className="px-4 py-2.5 text-sm font-medium text-gray-600 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors flex items-center gap-2 hover:shadow-sm">
+                                <Download className="w-4 h-4" />
+                                Xuất Excel
                             </button>
-                        ))}
-                    </div>
-
-                    {/* Type filter */}
-                    <div className="flex items-center gap-2">
-                        <span className="text-[10px] font-bold uppercase text-gray-400 tracking-wider">Loại:</span>
-                        {[
-                            { value: 'all' as const, label: 'Tất cả' },
-                            { value: PaymentType.Advance, label: 'Tạm ứng' },
-                            { value: PaymentType.Volume, label: 'Khối lượng' },
-                        ].map(opt => (
                             <button
-                                key={opt.value}
-                                onClick={() => setFilterType(opt.value)}
-                                className={`px-2.5 py-1 text-xs font-medium rounded-md transition-all ${filterType === opt.value
-                                    ? 'bg-violet-100 text-violet-700 ring-1 ring-violet-200'
-                                    : 'text-gray-500 hover:bg-gray-100'
-                                    }`}
+                                onClick={() => setIsFormOpen(true)}
+                                className="bg-gradient-to-r from-emerald-600 to-teal-600 text-white px-5 py-2.5 rounded-xl text-sm font-bold hover:shadow-lg hover:shadow-emerald-200 transition-all duration-300 flex items-center gap-2"
                             >
-                                {opt.label}
+                                <CreditCard className="w-4 h-4" />
+                                Tạo phiếu thanh toán
                             </button>
-                        ))}
-                    </div>
-
-                    <div className="ml-auto flex gap-2">
-                        <button className="px-4 py-2 text-sm font-medium text-gray-600 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors flex items-center gap-2">
-                            <Download className="w-4 h-4" />
-                            Xuất Excel
-                        </button>
-                        <button
-                            onClick={() => setIsFormOpen(true)}
-                            className="bg-emerald-600 text-white px-4 py-2 rounded-xl text-sm font-bold hover:bg-emerald-700 transition-colors shadow-lg shadow-emerald-200 flex items-center gap-2"
-                        >
-                            <CreditCard className="w-4 h-4" />
-                            Tạo phiếu thanh toán
-                        </button>
+                        </div>
                     </div>
                 </div>
 
-                {/* Table */}
-                <Card className="overflow-hidden border-0 shadow-sm">
-                    <div className="px-6 py-3 border-b border-gray-100 flex items-center justify-between">
-                        <span className="text-xs font-bold text-gray-500 uppercase tracking-wider">
-                            {filteredPayments.length} phiếu thanh toán
-                        </span>
-                    </div>
+                {/* === Table === */}
+                <Card className="overflow-hidden border-0 shadow-sm ring-1 ring-gray-100">
                     <div className="overflow-x-auto">
-                        <table className="w-full text-left text-sm text-gray-600">
-                            <thead className="bg-gray-50/80 text-xs uppercase font-bold text-gray-500 tracking-wider">
-                                <tr>
-                                    <th className="px-6 py-4">Mã TT</th>
-                                    <th className="px-6 py-4">Hợp đồng</th>
-                                    <th className="px-6 py-4">Nhà thầu</th>
-                                    <th className="px-6 py-4">Dự án</th>
-                                    <th className="px-6 py-4 text-center">Đợt</th>
-                                    <th className="px-6 py-4">Loại</th>
-                                    <th className="px-6 py-4 text-right">Số tiền</th>
-                                    <th className="px-6 py-4 text-center">Trạng thái</th>
-                                    <th className="px-6 py-4 w-10"></th>
+                        <table className="w-full text-left text-sm">
+                            <thead>
+                                <tr className="bg-gradient-to-r from-gray-50 to-gray-100/50 border-b border-gray-100">
+                                    <th className="px-5 py-4 text-[10px] font-extrabold uppercase tracking-[0.15em] text-gray-500">Mã TT</th>
+                                    <th className="px-5 py-4 text-[10px] font-extrabold uppercase tracking-[0.15em] text-gray-500">Hợp đồng</th>
+                                    <th className="px-5 py-4 text-[10px] font-extrabold uppercase tracking-[0.15em] text-gray-500">Nhà thầu</th>
+                                    <th className="px-5 py-4 text-[10px] font-extrabold uppercase tracking-[0.15em] text-gray-500">Dự án</th>
+                                    <th className="px-5 py-4 text-[10px] font-extrabold uppercase tracking-[0.15em] text-gray-500 text-center">Đợt</th>
+                                    <th className="px-5 py-4 text-[10px] font-extrabold uppercase tracking-[0.15em] text-gray-500">Loại</th>
+                                    <th className="px-5 py-4 text-[10px] font-extrabold uppercase tracking-[0.15em] text-gray-500 text-right">Số tiền</th>
+                                    <th className="px-5 py-4 text-[10px] font-extrabold uppercase tracking-[0.15em] text-gray-500 text-center">Trạng thái</th>
+                                    <th className="px-5 py-4 w-10"></th>
                                 </tr>
                             </thead>
-                            <tbody className="divide-y divide-gray-100">
-                                {filteredPayments.map((payment) => {
+                            <tbody>
+                                {filteredPayments.map((payment, rowIdx) => {
                                     const contractorName = getContractorName(payment.ContractID);
                                     const projectName = getProjectName(payment.ContractID);
+                                    const contractValue = getContractValue(payment.ContractID);
+                                    const payPercent = contractValue > 0 ? (payment.Amount / contractValue) * 100 : 0;
+                                    const isEven = rowIdx % 2 === 0;
 
                                     return (
                                         <tr
                                             key={payment.PaymentID}
-                                            className="hover:bg-blue-50/40 transition-colors cursor-pointer group"
+                                            className={`group cursor-pointer transition-all duration-200 hover:bg-blue-50/60 hover:shadow-sm ${isEven ? 'bg-white' : 'bg-gray-50/30'} border-b border-gray-50`}
                                             onClick={() => navigate(`/contracts/${encodeURIComponent(payment.ContractID)}`)}
                                         >
-                                            <td className="px-6 py-4">
-                                                <span className="font-mono text-xs text-gray-500">#{payment.PaymentID}</span>
-                                            </td>
-                                            <td className="px-6 py-4">
+                                            {/* Payment ID */}
+                                            <td className="px-5 py-4">
                                                 <div className="flex items-center gap-2">
-                                                    <FileText className="w-3.5 h-3.5 text-blue-400" />
-                                                    <span className="font-medium text-blue-600 text-xs">{payment.ContractID}</span>
+                                                    <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center ring-1 ring-gray-200">
+                                                        <Hash className="w-3 h-3 text-gray-500" />
+                                                    </div>
+                                                    <span className="font-mono text-xs font-bold text-gray-600">{payment.PaymentID}</span>
                                                 </div>
                                             </td>
-                                            <td className="px-6 py-4">
+
+                                            {/* Contract */}
+                                            <td className="px-5 py-4">
                                                 <div className="flex items-center gap-2">
-                                                    <div className="w-6 h-6 rounded-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center flex-shrink-0">
-                                                        <Building2 className="w-3 h-3 text-gray-500" />
+                                                    <FileText className="w-3.5 h-3.5 text-blue-400 flex-shrink-0" />
+                                                    <span className="font-medium text-blue-600 text-xs group-hover:text-blue-700 truncate max-w-[140px]">{payment.ContractID}</span>
+                                                </div>
+                                            </td>
+
+                                            {/* Contractor */}
+                                            <td className="px-5 py-4">
+                                                <div className="flex items-center gap-2">
+                                                    <div className="w-7 h-7 rounded-full bg-gradient-to-br from-slate-100 to-slate-200 flex items-center justify-center ring-1 ring-slate-200 flex-shrink-0">
+                                                        <Building2 className="w-3 h-3 text-slate-500" />
                                                     </div>
-                                                    <span className="text-gray-700 text-xs max-w-[150px] truncate" title={contractorName}>
+                                                    <span className="text-gray-700 text-xs max-w-[160px] truncate font-medium" title={contractorName}>
                                                         {contractorName}
                                                     </span>
                                                 </div>
                                             </td>
-                                            <td className="px-6 py-4">
+
+                                            {/* Project */}
+                                            <td className="px-5 py-4">
                                                 <span className="text-gray-500 text-xs max-w-[160px] truncate block" title={projectName}>
                                                     {projectName}
                                                 </span>
                                             </td>
-                                            <td className="px-6 py-4 text-center">
-                                                <span className="inline-flex items-center justify-center w-7 h-7 rounded-lg bg-gray-100 text-xs font-bold text-gray-700">
+
+                                            {/* Batch */}
+                                            <td className="px-5 py-4 text-center">
+                                                <span className="inline-flex items-center justify-center w-8 h-8 rounded-xl bg-gradient-to-br from-gray-50 to-gray-100 text-xs font-black text-gray-700 ring-1 ring-gray-200">
                                                     {payment.BatchNo}
                                                 </span>
                                             </td>
-                                            <td className="px-6 py-4">
-                                                <span className={`px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wide ${payment.Type === PaymentType.Advance
-                                                    ? 'bg-purple-50 text-purple-700 ring-1 ring-purple-100'
-                                                    : 'bg-cyan-50 text-cyan-700 ring-1 ring-cyan-100'
-                                                    }`}>
-                                                    {payment.Type === PaymentType.Advance ? 'Tạm ứng' : 'Khối lượng'}
-                                                </span>
+
+                                            {/* Type */}
+                                            <td className="px-5 py-4">
+                                                {payment.Type === PaymentType.Advance ? (
+                                                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider bg-purple-50 text-purple-700 ring-1 ring-purple-100">
+                                                        <Wallet className="w-2.5 h-2.5" />
+                                                        Tạm ứng
+                                                    </span>
+                                                ) : (
+                                                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider bg-cyan-50 text-cyan-700 ring-1 ring-cyan-100">
+                                                        <BarChart3 className="w-2.5 h-2.5" />
+                                                        Khối lượng
+                                                    </span>
+                                                )}
                                             </td>
-                                            <td className="px-6 py-4 text-right">
-                                                <span className="font-bold text-gray-900 font-mono tracking-tight">{formatCurrency(payment.Amount)}</span>
+
+                                            {/* Amount */}
+                                            <td className="px-5 py-4 text-right">
+                                                <div className="text-right">
+                                                    <span className="font-bold text-gray-900 font-mono text-sm tracking-tight block">{formatCurrency(payment.Amount)}</span>
+                                                    {contractValue > 0 && (
+                                                        <span className="text-[10px] text-gray-400 font-medium">{payPercent.toFixed(1)}% giá trị HĐ</span>
+                                                    )}
+                                                </div>
                                             </td>
-                                            <td className="px-6 py-4 text-center">
-                                                <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase ${payment.Status === PaymentStatus.Transferred
-                                                    ? 'bg-emerald-100 text-emerald-700'
-                                                    : 'bg-yellow-100 text-yellow-700'
-                                                    }`}>
-                                                    {payment.Status === PaymentStatus.Transferred && <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>}
-                                                    {payment.Status === PaymentStatus.Transferred ? 'Đã chuyển' : 'Chờ duyệt'}
-                                                </span>
+
+                                            {/* Status */}
+                                            <td className="px-5 py-4 text-center">
+                                                {payment.Status === PaymentStatus.Transferred ? (
+                                                    <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-bold uppercase bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100">
+                                                        <CheckCircle2 className="w-3 h-3" />
+                                                        Đã chuyển
+                                                    </span>
+                                                ) : (
+                                                    <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-bold uppercase bg-amber-50 text-amber-700 ring-1 ring-amber-100">
+                                                        <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span>
+                                                        Chờ duyệt
+                                                    </span>
+                                                )}
                                             </td>
-                                            <td className="px-6 py-4">
-                                                <ChevronRight className="w-4 h-4 text-gray-300 group-hover:text-blue-500 transition-colors" />
+
+                                            {/* Arrow */}
+                                            <td className="px-4 py-4">
+                                                <div className="w-7 h-7 rounded-full bg-gray-50 flex items-center justify-center group-hover:bg-blue-50 group-hover:ring-1 group-hover:ring-blue-200 transition-all">
+                                                    <ChevronRight className="w-4 h-4 text-gray-300 group-hover:text-blue-500 transition-colors" />
+                                                </div>
                                             </td>
                                         </tr>
                                     );
@@ -304,19 +383,38 @@ const PaymentList: React.FC = () => {
                             </tbody>
                         </table>
                     </div>
-                    {filteredPayments.length === 0 && (
-                        <div className="p-16 text-center">
-                            <div className="w-16 h-16 rounded-2xl bg-gray-100 flex items-center justify-center mx-auto mb-4">
-                                <CreditCard className="w-8 h-8 text-gray-300" />
+
+                    {/* Summary Footer */}
+                    <div className="bg-gradient-to-r from-gray-50 to-emerald-50/30 border-t border-gray-100 px-6 py-4">
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-6">
+                                <div className="flex items-center gap-2">
+                                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
+                                    <span className="text-xs text-gray-500">Đã chuyển: <span className="font-bold text-emerald-700">{formatCurrency(stats.transferredAmount)}</span></span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <Clock className="w-3.5 h-3.5 text-amber-500" />
+                                    <span className="text-xs text-gray-500">Chờ duyệt: <span className="font-bold text-amber-700">{formatCurrency(stats.pendingAmount)}</span></span>
+                                </div>
+                                <div className="w-px h-4 bg-gray-200"></div>
+                                <span className="text-xs text-gray-500">Tổng: <span className="font-bold text-gray-900">{formatCurrency(stats.totalAmount)}</span></span>
                             </div>
-                            <p className="text-gray-500 font-medium">Không tìm thấy phiếu thanh toán nào.</p>
-                            <p className="text-gray-400 text-sm mt-1">Thử thay đổi bộ lọc hoặc từ khóa tìm kiếm</p>
+                            <span className="text-xs text-gray-400">{filteredPayments.length} phiếu thanh toán</span>
+                        </div>
+                    </div>
+
+                    {filteredPayments.length === 0 && (
+                        <div className="p-20 text-center">
+                            <div className="w-20 h-20 rounded-3xl bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center mx-auto mb-5 ring-1 ring-gray-200">
+                                <CreditCard className="w-10 h-10 text-gray-300" />
+                            </div>
+                            <p className="text-gray-600 font-bold text-lg">Không tìm thấy phiếu thanh toán</p>
+                            <p className="text-gray-400 text-sm mt-2">Thử thay đổi bộ lọc hoặc từ khóa tìm kiếm</p>
                         </div>
                     )}
                 </Card>
             </div>
 
-            {/* Payment Form Modal */}
             <PaymentForm
                 isOpen={isFormOpen}
                 onClose={() => setIsFormOpen(false)}
