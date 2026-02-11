@@ -2,10 +2,13 @@
 import React, { useState, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
-    mockContracts, mockContractors, mockBiddingPackages, mockProjects, mockPayments,
+    mockContractors, mockBiddingPackages,
     formatFullCurrency
 } from '../../mockData';
 import { ContractStatus, PaymentStatus } from '../../types';
+import { useContracts } from '../../hooks/useContracts';
+import { usePayments } from '../../hooks/usePayments';
+import { useProjects } from '../../hooks/useProjects';
 import {
     ArrowLeft, FileText, Calendar, DollarSign,
     Building2, Printer, Download, Edit3,
@@ -24,7 +27,11 @@ const ContractDetail: React.FC = () => {
 
     // 1. Get Data with decoding to handle IDs containing slashes
     const contractId = decodeURIComponent(id || '');
-    const contract = mockContracts.find(c => c.ContractID === contractId);
+    const { contracts } = useContracts();
+    const { payments: allPayments } = usePayments();
+    const { projects: allProjects } = useProjects();
+
+    const contract = contracts.find(c => c.ContractID === contractId);
 
     if (!contract) {
         return (
@@ -37,9 +44,9 @@ const ContractDetail: React.FC = () => {
     }
 
     const pkg = mockBiddingPackages.find(p => p.PackageID === contract.PackageID);
-    const project = mockProjects.find(p => p.ProjectID === pkg?.ProjectID);
+    const project = allProjects.find(p => p.ProjectID === pkg?.ProjectID);
     const contractor = mockContractors.find(c => c.ContractorID === contract.ContractorID);
-    const payments = mockPayments.filter(p => p.ContractID === contract.ContractID);
+    const payments = allPayments.filter(p => p.ContractID === contract.ContractID);
 
     // 2. Calculate Financials
     const totalPaid = payments
@@ -463,7 +470,7 @@ const ContractDetail: React.FC = () => {
                                         <div key={ms.id} className="relative pl-10 group">
                                             {/* Status Dot */}
                                             <div className={`absolute -left-[9px] top-1 w-4 h-4 rounded-full border-2 border-white shadow-sm transition-transform group-hover:scale-125 ${ms.status === 'Done' ? 'bg-emerald-500' :
-                                                    ms.status === 'In Progress' ? 'bg-blue-500 animate-pulse' : 'bg-gray-300'
+                                                ms.status === 'In Progress' ? 'bg-blue-500 animate-pulse' : 'bg-gray-300'
                                                 }`}></div>
 
                                             <div className="flex flex-col md:flex-row md:items-center justify-between p-4 bg-white border border-gray-100 rounded-xl hover:shadow-md transition-shadow">
@@ -474,7 +481,7 @@ const ContractDetail: React.FC = () => {
                                                     </p>
                                                 </div>
                                                 <span className={`mt-2 md:mt-0 px-3 py-1 rounded-full text-[10px] font-black uppercase w-fit ${ms.status === 'Done' ? 'bg-emerald-100 text-emerald-700' :
-                                                        ms.status === 'In Progress' ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-500'
+                                                    ms.status === 'In Progress' ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-500'
                                                     }`}>
                                                     {ms.status === 'Done' ? 'Hoàn thành' : ms.status === 'In Progress' ? 'Đang thực hiện' : 'Chưa đến hạn'}
                                                 </span>

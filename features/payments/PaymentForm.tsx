@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { X, CreditCard, FileText, Calendar, DollarSign, Building2, Hash, AlertCircle, CheckCircle2 } from 'lucide-react';
-import { mockContracts, mockContractors, formatCurrency } from '../../mockData';
+import { mockContractors, formatCurrency } from '../../mockData';
 import { PaymentType, PaymentStatus } from '../../types';
+import { useContracts } from '../../hooks/useContracts';
 
 interface PaymentFormProps {
     isOpen: boolean;
@@ -11,6 +12,7 @@ interface PaymentFormProps {
 }
 
 export const PaymentForm: React.FC<PaymentFormProps> = ({ isOpen, onClose, onSubmit, contractId }) => {
+    const { contracts } = useContracts();
     const [formData, setFormData] = useState({
         contractId: contractId || '',
         batchNo: 1,
@@ -25,7 +27,7 @@ export const PaymentForm: React.FC<PaymentFormProps> = ({ isOpen, onClose, onSub
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [showSuccess, setShowSuccess] = useState(false);
 
-    const selectedContract = mockContracts.find(c => c.ContractID === formData.contractId);
+    const selectedContract = contracts.find(c => c.ContractID === formData.contractId);
     const contractor = selectedContract ? mockContractors.find(ct => ct.ContractorID === selectedContract.ContractorID) : null;
 
     const validate = () => {
@@ -113,7 +115,7 @@ export const PaymentForm: React.FC<PaymentFormProps> = ({ isOpen, onClose, onSub
                                     }`}
                             >
                                 <option value="">-- Chọn hợp đồng --</option>
-                                {mockContracts.map(c => {
+                                {contracts.map(c => {
                                     const ct = mockContractors.find(x => x.ContractorID === c.ContractorID);
                                     return (
                                         <option key={c.ContractID} value={c.ContractID}>
