@@ -1,22 +1,49 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { mockAuditLogs } from '../../mockData';
 import { useEmployees, useDepartments, useCreateEmployee, useUpdateEmployee, useDeleteEmployee, useEmployeeStats } from '../../hooks/useEmployees';
-import { Employee, EmployeeStatus, Role, AuditLog } from '../../types';
-import { Search, Filter, Phone, Mail, UserPlus, MoreVertical, Briefcase, Trash2, Edit, X, Save, Clock, History, Shield, Check, User, LayoutGrid, List, Users, Building2, UserCheck } from 'lucide-react';
+import { useTasks } from '../../hooks/useTasks';
+import { useProjects } from '../../hooks/useProjects';
+import { Employee, EmployeeStatus, Role, TaskStatus } from '../../types';
+import {
+    Search, Phone, Mail, UserPlus, Briefcase, Trash2, Edit, X, Save,
+    Shield, User, LayoutGrid, List, Users, Building2, UserCheck,
+    ArrowUpRight, ChevronDown, ListTodo, Eye, Calendar, Hash, Lock,
+    Sparkles, ClipboardList, FolderOpen, TrendingUp
+} from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { useToast } from '../../components/ui/Toast';
+
+// ═══════════════════════════════════════════════════
+// Helpers
+// ═══════════════════════════════════════════════════
+
+const getRoleInfo = (role: Role) => {
+    switch (role) {
+        case Role.Admin: return { label: 'ADMIN', color: 'bg-purple-500/10 text-purple-600 ring-1 ring-purple-500/20', dot: 'bg-purple-500' };
+        case Role.Manager: return { label: 'QUẢN LÝ', color: 'bg-blue-500/10 text-blue-600 ring-1 ring-blue-500/20', dot: 'bg-blue-500' };
+        default: return { label: 'STAFF', color: 'bg-slate-500/10 text-slate-500 ring-1 ring-slate-500/20', dot: 'bg-slate-400' };
+    }
+};
+
+// ═══════════════════════════════════════════════════
+// Main Component
+// ═══════════════════════════════════════════════════
 
 const EmployeeList: React.FC = () => {
     const navigate = useNavigate();
     const { currentUser } = useAuth();
+    const { showToast } = useToast();
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedDept, setSelectedDept] = useState('All');
+    const [filterRole, setFilterRole] = useState('All');
     const [viewMode, setViewMode] = useState<'list' | 'grid'>('list');
 
     // Data Fetching
     const { data: employees = [], isLoading } = useEmployees();
     const { data: departments = [] } = useDepartments();
     const { data: stats } = useEmployeeStats();
+    const { data: tasks = [] } = useTasks();
+    const { projects = [] } = useProjects();
 
     // Mutations
     const createMutation = useCreateEmployee();
@@ -24,26 +51,47 @@ const EmployeeList: React.FC = () => {
     const deleteMutation = useDeleteEmployee();
 
     // Local state for UI
-    const [logs, setLogs] = useState<AuditLog[]>(mockAuditLogs);
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false);
     const [currentEmployee, setCurrentEmployee] = useState<Partial<Employee>>({});
     const [editMode, setEditMode] = useState<'create' | 'edit'>('create');
-    const [selectedAuditLogs, setSelectedAuditLogs] = useState<AuditLog[]>([]);
 
-    const filteredEmployees = employees.filter(emp => {
+    // ── Cross-Module Data ──
+    const employeeWorkload = useMemo(() => {
+        const workloadMap: Record<string, { taskCount: number; activeTaskCount: number; projectCount: number }> = {};
+        employees.forEach(emp => {
+            const empTasks = tasks.filter(t => t.AssigneeID === emp.EmployeeID);
+            const empActiveTasks = empTasks.filter(t => t.Status !== TaskStatus.Done);
+            // Projects: either Member[] or via Task assignments
+            const taskProjectIds = new Set(empTasks.map(t => t.ProjectID));
+            const memberProjectIds = new Set(
+                projects.filter(p => p.Members?.includes(emp.EmployeeID)).map(p => p.ProjectID)
+            );
+            const allProjectIds = new Set([...taskProjectIds, ...memberProjectIds]);
+
+            workloadMap[emp.EmployeeID] = {
+                taskCount: empTasks.length,
+                activeTaskCount: empActiveTasks.length,
+                projectCount: allProjectIds.size,
+            };
+        });
+        return workloadMap;
+    }, [employees, tasks, projects]);
+
+    // ── Filtering ──
+    const filteredEmployees = useMemo(() => employees.filter(emp => {
         const matchesSearch = emp.FullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            emp.Email.toLowerCase().includes(searchTerm.toLowerCase());
+            emp.Email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            emp.EmployeeID.toLowerCase().includes(searchTerm.toLowerCase());
         const matchesDept = selectedDept === 'All' || emp.Department === selectedDept;
-        return matchesSearch && matchesDept;
-    });
+        const matchesRole = filterRole === 'All' || emp.Role === filterRole;
+        return matchesSearch && matchesDept && matchesRole;
+    }), [employees, searchTerm, selectedDept, filterRole]);
 
-    // Permission Checks
+    // ── Permissions ──
     const canManageUsers = currentUser?.Role === Role.Admin;
     const canEdit = (targetId: string) => canManageUsers || currentUser?.EmployeeID === targetId;
 
-    // --- ACTIONS ---
-
+    // ── CRUD Handlers ──
     const handleCreate = () => {
         setEditMode('create');
         setCurrentEmployee({
@@ -52,7 +100,11 @@ const EmployeeList: React.FC = () => {
             Status: EmployeeStatus.Active,
             Role: Role.Staff,
             JoinDate: new Date().toISOString().split('T')[0],
-            Password: '123'
+            Password: '123456',
+            Email: '',
+            Phone: '',
+            FullName: '',
+            Username: '',
         });
         setIsModalOpen(true);
     };
@@ -66,96 +118,154 @@ const EmployeeList: React.FC = () => {
     const handleDelete = async (id: string) => {
         if (window.confirm('Bạn có chắc chắn muốn xóa tài khoản này?')) {
             await deleteMutation.mutateAsync(id);
-            // Log deletion locally if needed, or rely on backend
+            showToast('Đã xóa nhân sự thành công', 'success');
         }
-    };
-
-    const handleShowHistory = (empId: string) => {
-        const history = logs.filter(l => l.TargetID === empId || (l.TargetID === empId && l.TargetEntity === 'Employee'));
-        setSelectedAuditLogs(history);
-        setIsHistoryModalOpen(true);
     };
 
     const handleSave = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (editMode === 'create') {
-            await createMutation.mutateAsync(currentEmployee);
-        } else {
-            if (!currentEmployee.EmployeeID) return;
-            await updateMutation.mutateAsync({
-                id: currentEmployee.EmployeeID,
-                data: currentEmployee
-            });
+        try {
+            if (editMode === 'create') {
+                await createMutation.mutateAsync(currentEmployee);
+                showToast('Thêm nhân sự mới thành công!', 'success');
+            } else {
+                if (!currentEmployee.EmployeeID) return;
+                await updateMutation.mutateAsync({
+                    id: currentEmployee.EmployeeID,
+                    data: currentEmployee
+                });
+                showToast('Cập nhật thông tin thành công!', 'success');
+            }
+            setIsModalOpen(false);
+        } catch (err) {
+            showToast('Có lỗi xảy ra. Vui lòng thử lại.', 'error');
         }
-        setIsModalOpen(false);
     };
 
-    return (
-        <div className="space-y-8 animate-in fade-in duration-300 pb-20">
+    const hasActiveFilters = selectedDept !== 'All' || filterRole !== 'All' || searchTerm !== '';
 
-            {/* 1. STATS OVERVIEW */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-                <div className="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-4">
-                    <div className="p-3 bg-blue-50 text-blue-600 rounded-xl">
-                        <Users className="w-6 h-6" />
+    // ═══════════════════════════════════════════════════
+    // Render
+    // ═══════════════════════════════════════════════════
+    return (
+        <div className="space-y-6 animate-in fade-in duration-500">
+
+            {/* ══════════ STATS DASHBOARD ══════════ */}
+            <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
+                {/* Total - Hero Card */}
+                <div className="col-span-2 lg:col-span-1 bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl p-5 text-white relative overflow-hidden">
+                    <div className="absolute top-0 right-0 w-24 h-24 bg-white/5 rounded-full -translate-y-8 translate-x-8" />
+                    <div className="absolute bottom-0 left-0 w-16 h-16 bg-white/5 rounded-full translate-y-6 -translate-x-6" />
+                    <div className="flex items-center gap-3 mb-3 relative z-10">
+                        <div className="p-2 bg-white/10 rounded-xl backdrop-blur-sm">
+                            <Users className="w-5 h-5 text-white/80" />
+                        </div>
+                        <span className="text-xs font-medium text-white/60 uppercase tracking-wider">Tổng nhân sự</span>
                     </div>
-                    <div>
-                        <p className="text-xs font-bold text-gray-500 uppercase tracking-wide">Tổng nhân sự</p>
-                        <h3 className="text-2xl font-black text-gray-800">{stats?.total || 0}</h3>
+                    <p className="text-4xl font-black relative z-10">{stats?.total || 0}</p>
+                    <div className="mt-3 flex items-center gap-2 relative z-10">
+                        <div className="flex-1 h-1.5 bg-white/10 rounded-full overflow-hidden">
+                            <div
+                                className="h-full bg-gradient-to-r from-emerald-400 to-emerald-500 rounded-full transition-all duration-700"
+                                style={{ width: stats?.total ? `${((stats?.active || 0) / stats.total * 100)}%` : '0%' }}
+                            />
+                        </div>
+                        <span className="text-xs font-bold text-emerald-400">
+                            {stats?.total ? Math.round((stats?.active || 0) / stats.total * 100) : 0}% active
+                        </span>
                     </div>
                 </div>
-                <div className="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-4">
-                    <div className="p-3 bg-emerald-50 text-emerald-600 rounded-xl">
-                        <UserCheck className="w-6 h-6" />
+
+                {/* Active */}
+                <div className="bg-white rounded-2xl p-5 border border-emerald-100 hover:border-emerald-200 transition-colors group cursor-pointer">
+                    <div className="flex items-center justify-between mb-3">
+                        <div className="p-2 bg-emerald-50 rounded-xl group-hover:bg-emerald-100 transition-colors">
+                            <UserCheck className="w-4 h-4 text-emerald-600" />
+                        </div>
+                        <ArrowUpRight className="w-4 h-4 text-emerald-400 opacity-0 group-hover:opacity-100 transition-opacity" />
                     </div>
-                    <div>
-                        <p className="text-xs font-bold text-gray-500 uppercase tracking-wide">Đang hoạt động</p>
-                        <h3 className="text-2xl font-black text-gray-800">{stats?.active || 0}</h3>
-                    </div>
+                    <p className="text-3xl font-black text-emerald-600">{stats?.active || 0}</p>
+                    <p className="text-xs font-medium text-slate-400 mt-1">Đang hoạt động</p>
                 </div>
-                <div className="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-4">
-                    <div className="p-3 bg-purple-50 text-purple-600 rounded-xl">
-                        <Building2 className="w-6 h-6" />
+
+                {/* Departments */}
+                <div className="bg-white rounded-2xl p-5 border border-violet-100 hover:border-violet-200 transition-colors group cursor-pointer">
+                    <div className="flex items-center justify-between mb-3">
+                        <div className="p-2 bg-violet-50 rounded-xl group-hover:bg-violet-100 transition-colors">
+                            <Building2 className="w-4 h-4 text-violet-600" />
+                        </div>
+                        <ArrowUpRight className="w-4 h-4 text-violet-400 opacity-0 group-hover:opacity-100 transition-opacity" />
                     </div>
-                    <div>
-                        <p className="text-xs font-bold text-gray-500 uppercase tracking-wide">Phòng ban</p>
-                        <h3 className="text-2xl font-black text-gray-800">{departments.length}</h3>
-                    </div>
+                    <p className="text-3xl font-black text-violet-600">{departments.length}</p>
+                    <p className="text-xs font-medium text-slate-400 mt-1">Phòng ban</p>
                 </div>
-                <div className="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-4">
-                    <div className="p-3 bg-indigo-50 text-indigo-600 rounded-xl">
-                        <Shield className="w-6 h-6" />
+
+                {/* Admins */}
+                <div className="bg-white rounded-2xl p-5 border border-purple-100 hover:border-purple-200 transition-colors group cursor-pointer"
+                    onClick={() => setFilterRole(filterRole === Role.Admin ? 'All' : Role.Admin)}>
+                    <div className="flex items-center justify-between mb-3">
+                        <div className="p-2 bg-purple-50 rounded-xl group-hover:bg-purple-100 transition-colors">
+                            <Shield className="w-4 h-4 text-purple-600" />
+                        </div>
+                        <ArrowUpRight className="w-4 h-4 text-purple-400 opacity-0 group-hover:opacity-100 transition-opacity" />
                     </div>
-                    <div>
-                        <p className="text-xs font-bold text-gray-500 uppercase tracking-wide">Quản trị viên</p>
-                        <h3 className="text-2xl font-black text-gray-800">{employees.filter(e => e.Role === Role.Admin).length}</h3>
+                    <p className="text-3xl font-black text-purple-600">{stats?.byRole?.[Role.Admin] || 0}</p>
+                    <p className="text-xs font-medium text-slate-400 mt-1">Quản trị viên</p>
+                </div>
+
+                {/* Managers */}
+                <div className="bg-white rounded-2xl p-5 border border-blue-100 hover:border-blue-200 transition-colors group cursor-pointer"
+                    onClick={() => setFilterRole(filterRole === Role.Manager ? 'All' : Role.Manager)}>
+                    <div className="flex items-center justify-between mb-3">
+                        <div className="p-2 bg-blue-50 rounded-xl group-hover:bg-blue-100 transition-colors">
+                            <TrendingUp className="w-4 h-4 text-blue-600" />
+                        </div>
+                        <ArrowUpRight className="w-4 h-4 text-blue-400 opacity-0 group-hover:opacity-100 transition-opacity" />
                     </div>
+                    <p className="text-3xl font-black text-blue-600">{stats?.byRole?.[Role.Manager] || 0}</p>
+                    <p className="text-xs font-medium text-slate-400 mt-1">Quản lý</p>
                 </div>
             </div>
 
-            <div className="flex flex-col lg:flex-row gap-8">
+            {/* ══════════ MAIN LAYOUT ══════════ */}
+            <div className="flex flex-col lg:flex-row gap-6">
+
                 {/* LEFT SIDEBAR: DEPARTMENTS */}
-                <div className="w-full lg:w-64 space-y-4 shrink-0">
-                    <div className="bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
-                        <h3 className="text-xs font-black text-gray-500 uppercase tracking-widest marginBottom-4 px-2">Phòng ban</h3>
-                        <div className="space-y-1 mt-3">
+                <div className="w-full lg:w-60 shrink-0">
+                    <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden sticky top-4">
+                        <div className="px-4 py-3 border-b border-slate-100 bg-gradient-to-r from-slate-50 to-white">
+                            <h3 className="text-xs font-bold text-slate-500 uppercase tracking-widest flex items-center gap-2">
+                                <Building2 className="w-3.5 h-3.5" /> Phòng ban
+                            </h3>
+                        </div>
+                        <div className="p-2 space-y-0.5 max-h-[60vh] overflow-y-auto">
                             <button
                                 onClick={() => setSelectedDept('All')}
-                                className={`w-full text-left px-3 py-2 rounded-lg text-sm font-medium transition-colors flex justify-between items-center ${selectedDept === 'All' ? 'bg-blue-50 text-blue-700' : 'text-gray-600 hover:bg-gray-50'
+                                className={`w-full text-left px-3 py-2.5 rounded-xl text-sm font-medium transition-all flex justify-between items-center ${selectedDept === 'All'
+                                    ? 'bg-gradient-to-r from-blue-50 to-indigo-50 text-blue-700 shadow-sm'
+                                    : 'text-slate-600 hover:bg-slate-50'
                                     }`}
                             >
                                 <span>Tất cả</span>
-                                <span className="bg-gray-100 text-gray-400 px-1.5 py-0.5 rounded text-[10px]">{stats?.total || 0}</span>
+                                <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${selectedDept === 'All'
+                                    ? 'bg-blue-100 text-blue-600'
+                                    : 'bg-slate-100 text-slate-400'
+                                    }`}>{stats?.total || 0}</span>
                             </button>
                             {departments.map(dept => (
                                 <button
                                     key={dept}
                                     onClick={() => setSelectedDept(dept)}
-                                    className={`w-full text-left px-3 py-2 rounded-lg text-sm font-medium transition-colors flex justify-between items-center ${selectedDept === dept ? 'bg-blue-50 text-blue-700' : 'text-gray-600 hover:bg-gray-50'
+                                    className={`w-full text-left px-3 py-2.5 rounded-xl text-sm font-medium transition-all flex justify-between items-center gap-2 ${selectedDept === dept
+                                        ? 'bg-gradient-to-r from-blue-50 to-indigo-50 text-blue-700 shadow-sm'
+                                        : 'text-slate-600 hover:bg-slate-50'
                                         }`}
                                 >
-                                    <span className="truncate pr-2">{dept}</span>
-                                    <span className="bg-gray-100 text-gray-400 px-1.5 py-0.5 rounded text-[10px] shrink-0">
+                                    <span className="truncate">{dept}</span>
+                                    <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold shrink-0 ${selectedDept === dept
+                                        ? 'bg-blue-100 text-blue-600'
+                                        : 'bg-slate-100 text-slate-400'
+                                        }`}>
                                         {stats?.byDepartment?.[dept] || 0}
                                     </span>
                                 </button>
@@ -165,155 +275,301 @@ const EmployeeList: React.FC = () => {
                 </div>
 
                 {/* RIGHT CONTENT: EMPLOYEE LIST */}
-                <div className="flex-1 space-y-6">
-                    {/* Toolbar */}
-                    <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex flex-col md:flex-row justify-between items-center gap-4">
-                        <div className="relative w-full md:w-80">
-                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
-                            <input
-                                type="text"
-                                placeholder="Tìm kiếm nhân sự..."
-                                value={searchTerm}
-                                onChange={(e) => setSearchTerm(e.target.value)}
-                                className="w-full pl-9 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm font-medium"
-                            />
-                        </div>
+                <div className="flex-1 space-y-4">
 
-                        <div className="flex items-center gap-2 w-full md:w-auto">
-                            <div className="flex bg-gray-100 p-1 rounded-lg">
-                                <button
-                                    onClick={() => setViewMode('list')}
-                                    className={`p-1.5 rounded-md transition-all ${viewMode === 'list' ? 'bg-white shadow text-blue-600' : 'text-gray-500 hover:text-gray-700'}`}
-                                >
-                                    <List className="w-4 h-4" />
-                                </button>
-                                <button
-                                    onClick={() => setViewMode('grid')}
-                                    className={`p-1.5 rounded-md transition-all ${viewMode === 'grid' ? 'bg-white shadow text-blue-600' : 'text-gray-500 hover:text-gray-700'}`}
-                                >
-                                    <LayoutGrid className="w-4 h-4" />
-                                </button>
+                    {/* ══════════ TOOLBAR ══════════ */}
+                    <div className="bg-white rounded-2xl border border-slate-100 shadow-sm">
+                        <div className="p-4 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
+                            {/* Left: Search + Filters */}
+                            <div className="flex items-center gap-3 flex-wrap flex-1 w-full lg:w-auto">
+                                <div className="relative flex-1 min-w-[240px] max-w-[360px]">
+                                    <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
+                                    <input
+                                        type="text"
+                                        placeholder="Tìm kiếm nhân sự..."
+                                        value={searchTerm}
+                                        onChange={(e) => setSearchTerm(e.target.value)}
+                                        className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400 placeholder:text-slate-400 transition-all"
+                                    />
+                                    {searchTerm && (
+                                        <button onClick={() => setSearchTerm('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600">
+                                            <X className="w-3.5 h-3.5" />
+                                        </button>
+                                    )}
+                                </div>
+
+                                <div className="relative">
+                                    <Shield className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-3.5 h-3.5 pointer-events-none" />
+                                    <select
+                                        value={filterRole}
+                                        onChange={(e) => setFilterRole(e.target.value)}
+                                        className="pl-9 pr-8 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400 appearance-none cursor-pointer transition-all"
+                                    >
+                                        <option value="All">Tất cả vai trò</option>
+                                        <option value={Role.Admin}>Admin</option>
+                                        <option value={Role.Manager}>Quản lý</option>
+                                        <option value={Role.Staff}>Nhân viên</option>
+                                    </select>
+                                    <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 w-3.5 h-3.5 pointer-events-none" />
+                                </div>
+
+                                {hasActiveFilters && (
+                                    <button
+                                        onClick={() => { setSearchTerm(''); setSelectedDept('All'); setFilterRole('All'); }}
+                                        className="text-xs text-slate-500 hover:text-red-500 px-2 py-1 rounded-lg hover:bg-red-50 transition-colors"
+                                    >
+                                        Xóa bộ lọc
+                                    </button>
+                                )}
                             </div>
 
-                            {canManageUsers && (
-                                <button
-                                    onClick={handleCreate}
-                                    className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-xl text-sm font-bold hover:bg-blue-700 transition-colors shadow-lg shadow-blue-200 whitespace-nowrap"
-                                >
-                                    <UserPlus className="w-4 h-4" />
-                                    <span>Thêm nhân sự</span>
-                                </button>
-                            )}
+                            {/* Right: View toggle + Create */}
+                            <div className="flex items-center gap-2 shrink-0">
+                                <div className="flex items-center bg-slate-100 rounded-xl p-1">
+                                    <button
+                                        onClick={() => setViewMode('list')}
+                                        className={`p-2 rounded-lg transition-all ${viewMode === 'list' ? 'bg-white shadow-sm text-slate-700' : 'text-slate-400 hover:text-slate-600'}`}
+                                    >
+                                        <List className="w-4 h-4" />
+                                    </button>
+                                    <button
+                                        onClick={() => setViewMode('grid')}
+                                        className={`p-2 rounded-lg transition-all ${viewMode === 'grid' ? 'bg-white shadow-sm text-slate-700' : 'text-slate-400 hover:text-slate-600'}`}
+                                    >
+                                        <LayoutGrid className="w-4 h-4" />
+                                    </button>
+                                </div>
+
+                                {canManageUsers && (
+                                    <button
+                                        onClick={handleCreate}
+                                        className="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white px-5 py-2.5 rounded-xl text-sm font-semibold hover:from-blue-700 hover:to-blue-800 transition-all shadow-lg shadow-blue-600/25 active:scale-[0.98]"
+                                    >
+                                        <UserPlus className="w-4 h-4" />
+                                        <span>Thêm nhân sự</span>
+                                    </button>
+                                )}
+                            </div>
                         </div>
                     </div>
 
-                    {/* CONTENT AREA */}
+                    {/* ══════════ CONTENT ══════════ */}
                     {isLoading ? (
-                        <div className="flex items-center justify-center h-64">
-                            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                        <div className="flex items-center justify-center h-64 bg-white rounded-2xl border border-slate-100">
+                            <div className="flex flex-col items-center gap-3">
+                                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600" />
+                                <p className="text-sm text-slate-400">Đang tải dữ liệu...</p>
+                            </div>
                         </div>
                     ) : (
                         <>
                             {viewMode === 'list' ? (
-                                <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                                /* ══════════ TABLE VIEW ══════════ */
+                                <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
                                     <div className="overflow-x-auto">
-                                        <table className="w-full text-left text-sm text-gray-600">
-                                            <thead className="bg-gray-50/50 text-xs uppercase font-extrabold text-gray-400 tracking-wider">
-                                                <tr>
-                                                    <th className="px-6 py-4">Nhân viên</th>
-                                                    <th className="px-6 py-4">Chức vụ / Phòng ban</th>
-                                                    <th className="px-6 py-4">Liên hệ</th>
-                                                    <th className="px-6 py-4">Vai trò</th>
-                                                    <th className="px-6 py-4 text-center">TT</th>
-                                                    <th className="px-6 py-4 text-right"></th>
+                                        <table className="w-full">
+                                            <thead>
+                                                <tr className="border-b border-slate-100">
+                                                    <th className="px-5 py-3.5 text-left text-[10px] font-bold text-slate-400 uppercase tracking-wider">Nhân viên</th>
+                                                    <th className="px-5 py-3.5 text-left text-[10px] font-bold text-slate-400 uppercase tracking-wider">Chức vụ / Phòng ban</th>
+                                                    <th className="px-5 py-3.5 text-left text-[10px] font-bold text-slate-400 uppercase tracking-wider hidden md:table-cell">Liên hệ</th>
+                                                    <th className="px-5 py-3.5 text-center text-[10px] font-bold text-slate-400 uppercase tracking-wider">Khối lượng CV</th>
+                                                    <th className="px-5 py-3.5 text-center text-[10px] font-bold text-slate-400 uppercase tracking-wider">Vai trò</th>
+                                                    <th className="px-5 py-3.5 text-center text-[10px] font-bold text-slate-400 uppercase tracking-wider w-12">TT</th>
+                                                    <th className="px-5 py-3.5 w-20"></th>
                                                 </tr>
                                             </thead>
-                                            <tbody className="divide-y divide-gray-50">
-                                                {filteredEmployees.map((emp) => (
-                                                    <tr key={emp.EmployeeID} onClick={() => navigate(`/employees/${emp.EmployeeID}`)} className="hover:bg-gray-50 transition-colors group cursor-pointer">
-                                                        <td className="px-6 py-4">
-                                                            <div className="flex items-center gap-3">
-                                                                <img src={emp.AvatarUrl} alt={emp.FullName} className="w-10 h-10 rounded-full border border-gray-200 object-cover" />
-                                                                <div>
-                                                                    <p className="font-bold text-gray-900">{emp.FullName}</p>
-                                                                    <p className="text-xs text-gray-400 font-mono">{emp.EmployeeID}</p>
-                                                                </div>
-                                                            </div>
-                                                        </td>
-                                                        <td className="px-6 py-4">
-                                                            <div className="flex flex-col">
-                                                                <span className="font-bold text-gray-800">{emp.Position}</span>
-                                                                <span className="text-xs text-gray-500">{emp.Department}</span>
-                                                            </div>
-                                                        </td>
-                                                        <td className="px-6 py-4">
-                                                            <div className="flex flex-col gap-1">
-                                                                <div className="flex items-center gap-1.5 text-xs text-gray-500">
-                                                                    <Mail className="w-3 h-3 text-gray-400" /> {emp.Email}
-                                                                </div>
-                                                                {emp.Phone && (
-                                                                    <div className="flex items-center gap-1.5 text-xs text-gray-500">
-                                                                        <Phone className="w-3 h-3 text-gray-400" /> {emp.Phone}
+                                            <tbody className="divide-y divide-slate-50">
+                                                {filteredEmployees.map((emp) => {
+                                                    const roleInfo = getRoleInfo(emp.Role);
+                                                    const workload = employeeWorkload[emp.EmployeeID];
+                                                    return (
+                                                        <tr
+                                                            key={emp.EmployeeID}
+                                                            onClick={() => navigate(`/employees/${emp.EmployeeID}`)}
+                                                            className="hover:bg-slate-50/80 transition-colors group cursor-pointer"
+                                                        >
+                                                            {/* Employee */}
+                                                            <td className="px-5 py-3.5">
+                                                                <div className="flex items-center gap-3">
+                                                                    <div className="relative">
+                                                                        <img src={emp.AvatarUrl} alt={emp.FullName} className="w-10 h-10 rounded-full ring-2 ring-white shadow-sm object-cover" />
+                                                                        <div className={`absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2 border-white ${emp.Status === EmployeeStatus.Active ? 'bg-emerald-500' : 'bg-slate-300'}`} />
                                                                     </div>
-                                                                )}
-                                                            </div>
-                                                        </td>
-                                                        <td className="px-6 py-4">
-                                                            <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold border uppercase tracking-wide ${emp.Role === Role.Admin ? 'bg-purple-50 text-purple-700 border-purple-200' :
-                                                                    emp.Role === Role.Manager ? 'bg-blue-50 text-blue-700 border-blue-200' :
-                                                                        'bg-gray-50 text-gray-600 border-gray-200'
-                                                                }`}>
-                                                                {emp.Role}
-                                                            </span>
-                                                        </td>
-                                                        <td className="px-6 py-4 text-center">
-                                                            <div className={`w-2.5 h-2.5 rounded-full mx-auto ${emp.Status === EmployeeStatus.Active ? 'bg-emerald-500 ring-2 ring-emerald-200' : 'bg-gray-300'}`} title={emp.Status === EmployeeStatus.Active ? 'Đang hoạt động' : 'Đã nghỉ'}></div>
-                                                        </td>
-                                                        <td className="px-6 py-4 text-right">
-                                                            <div className="flex justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                                                {canEdit(emp.EmployeeID) && (
-                                                                    <button onClick={(e) => { e.stopPropagation(); handleEdit(emp); }} className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all"><Edit className="w-4 h-4" /></button>
-                                                                )}
-                                                            </div>
-                                                        </td>
-                                                    </tr>
-                                                ))}
+                                                                    <div className="min-w-0">
+                                                                        <p className="font-semibold text-slate-800 text-sm group-hover:text-blue-600 transition-colors truncate">{emp.FullName}</p>
+                                                                        <p className="text-[10px] text-slate-400 font-mono">{emp.EmployeeID}</p>
+                                                                    </div>
+                                                                </div>
+                                                            </td>
+                                                            {/* Position */}
+                                                            <td className="px-5 py-3.5">
+                                                                <div className="min-w-0">
+                                                                    <p className="font-medium text-slate-700 text-sm truncate">{emp.Position}</p>
+                                                                    <p className="text-[11px] text-slate-400 truncate">{emp.Department}</p>
+                                                                </div>
+                                                            </td>
+                                                            {/* Contact */}
+                                                            <td className="px-5 py-3.5 hidden md:table-cell">
+                                                                <div className="flex flex-col gap-1">
+                                                                    <div className="flex items-center gap-1.5 text-xs text-slate-500">
+                                                                        <Mail className="w-3 h-3 text-slate-400 shrink-0" />
+                                                                        <span className="truncate max-w-[180px]">{emp.Email}</span>
+                                                                    </div>
+                                                                    {emp.Phone && (
+                                                                        <div className="flex items-center gap-1.5 text-xs text-slate-500">
+                                                                            <Phone className="w-3 h-3 text-slate-400 shrink-0" />
+                                                                            <span>{emp.Phone}</span>
+                                                                        </div>
+                                                                    )}
+                                                                </div>
+                                                            </td>
+                                                            {/* Workload Badges */}
+                                                            <td className="px-5 py-3.5">
+                                                                <div className="flex items-center justify-center gap-2">
+                                                                    <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-1 rounded-lg bg-sky-500/10 text-sky-600 ring-1 ring-sky-500/20" title="Công việc đang thực hiện">
+                                                                        <ClipboardList className="w-3 h-3" />
+                                                                        {workload?.activeTaskCount || 0}
+                                                                    </span>
+                                                                    <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-1 rounded-lg bg-indigo-500/10 text-indigo-600 ring-1 ring-indigo-500/20" title="Dự án tham gia">
+                                                                        <FolderOpen className="w-3 h-3" />
+                                                                        {workload?.projectCount || 0}
+                                                                    </span>
+                                                                </div>
+                                                            </td>
+                                                            {/* Role */}
+                                                            <td className="px-5 py-3.5 text-center">
+                                                                <span className={`inline-flex items-center gap-1 text-[9px] font-bold px-2 py-1 rounded-md ${roleInfo.color}`}>
+                                                                    <span className={`w-1.5 h-1.5 rounded-full ${roleInfo.dot}`} />
+                                                                    {roleInfo.label}
+                                                                </span>
+                                                            </td>
+                                                            {/* Status */}
+                                                            <td className="px-5 py-3.5 text-center">
+                                                                <div
+                                                                    className={`w-2.5 h-2.5 rounded-full mx-auto ring-2 ${emp.Status === EmployeeStatus.Active
+                                                                        ? 'bg-emerald-500 ring-emerald-200'
+                                                                        : 'bg-slate-300 ring-slate-200'
+                                                                        }`}
+                                                                    title={emp.Status === EmployeeStatus.Active ? 'Đang hoạt động' : 'Đã nghỉ'}
+                                                                />
+                                                            </td>
+                                                            {/* Actions */}
+                                                            <td className="px-5 py-3.5">
+                                                                <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-all">
+                                                                    {canEdit(emp.EmployeeID) && (
+                                                                        <button
+                                                                            onClick={(e) => { e.stopPropagation(); handleEdit(emp); }}
+                                                                            className="p-1.5 rounded-lg hover:bg-blue-50 text-slate-400 hover:text-blue-600 transition-colors"
+                                                                            title="Chỉnh sửa"
+                                                                        >
+                                                                            <Edit className="w-3.5 h-3.5" />
+                                                                        </button>
+                                                                    )}
+                                                                    {canManageUsers && (
+                                                                        <button
+                                                                            onClick={(e) => { e.stopPropagation(); handleDelete(emp.EmployeeID); }}
+                                                                            className="p-1.5 rounded-lg hover:bg-red-50 text-slate-400 hover:text-red-500 transition-colors"
+                                                                            title="Xóa"
+                                                                        >
+                                                                            <Trash2 className="w-3.5 h-3.5" />
+                                                                        </button>
+                                                                    )}
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                    );
+                                                })}
                                             </tbody>
                                         </table>
                                     </div>
+                                    {/* Footer */}
+                                    <div className="px-5 py-3 border-t border-slate-100 bg-slate-50/50 flex justify-between items-center">
+                                        <p className="text-xs text-slate-400">
+                                            Hiển thị <span className="font-bold text-slate-600">{filteredEmployees.length}</span> / {employees.length} nhân sự
+                                        </p>
+                                    </div>
                                 </div>
                             ) : (
-                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                                    {filteredEmployees.map((emp) => (
-                                        <div key={emp.EmployeeID} onClick={() => navigate(`/employees/${emp.EmployeeID}`)} className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-all cursor-pointer group flex flex-col items-center">
-                                            <div className="relative mb-4">
-                                                <img src={emp.AvatarUrl} alt={emp.FullName} className="w-20 h-20 rounded-full object-cover border-4 border-white shadow-sm" />
-                                                <div className={`absolute bottom-0 right-0 w-5 h-5 rounded-full border-2 border-white ${emp.Status === EmployeeStatus.Active ? 'bg-emerald-500' : 'bg-gray-400'}`}></div>
-                                            </div>
-                                            <h3 className="text-lg font-black text-gray-800 text-center">{emp.FullName}</h3>
-                                            <p className="text-sm font-medium text-blue-600 mb-1">{emp.Position}</p>
-                                            <p className="text-xs text-gray-500 mb-4 text-center h-8 line-clamp-2">{emp.Department}</p>
+                                /* ══════════ GRID VIEW ══════════ */
+                                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+                                    {filteredEmployees.map((emp) => {
+                                        const roleInfo = getRoleInfo(emp.Role);
+                                        const workload = employeeWorkload[emp.EmployeeID];
+                                        return (
+                                            <div
+                                                key={emp.EmployeeID}
+                                                onClick={() => navigate(`/employees/${emp.EmployeeID}`)}
+                                                className="bg-white rounded-2xl border border-slate-100 hover:border-blue-200 hover:shadow-lg transition-all cursor-pointer group overflow-hidden"
+                                            >
+                                                {/* Header gradient */}
+                                                <div className="h-20 bg-gradient-to-br from-blue-500 via-indigo-500 to-purple-500 relative">
+                                                    <div className="absolute inset-0 bg-black/10" />
+                                                    <div className="absolute top-3 right-3">
+                                                        <span className={`inline-flex items-center gap-1 text-[9px] font-bold px-2 py-1 rounded-md bg-white/20 backdrop-blur-sm text-white`}>
+                                                            {roleInfo.label}
+                                                        </span>
+                                                    </div>
+                                                </div>
 
-                                            <div className="flex gap-2 w-full mt-auto">
-                                                <button className="flex-1 py-2 bg-gray-50 hover:bg-gray-100 text-gray-600 rounded-xl text-xs font-bold transition-colors flex items-center justify-center gap-2">
-                                                    <Mail className="w-3 h-3" /> Email
-                                                </button>
-                                                <button className="flex-1 py-2 bg-gray-50 hover:bg-gray-100 text-gray-600 rounded-xl text-xs font-bold transition-colors flex items-center justify-center gap-2">
-                                                    <Phone className="w-3 h-3" /> Gọi
-                                                </button>
+                                                {/* Avatar overlapping */}
+                                                <div className="px-5 -mt-10 relative z-10">
+                                                    <div className="relative inline-block">
+                                                        <img
+                                                            src={emp.AvatarUrl}
+                                                            alt={emp.FullName}
+                                                            className="w-20 h-20 rounded-2xl object-cover border-4 border-white shadow-lg"
+                                                        />
+                                                        <div className={`absolute bottom-1 right-1 w-4 h-4 rounded-full border-2 border-white ${emp.Status === EmployeeStatus.Active ? 'bg-emerald-500' : 'bg-slate-400'}`} />
+                                                    </div>
+                                                </div>
+
+                                                {/* Info */}
+                                                <div className="px-5 pt-3 pb-5">
+                                                    <h3 className="text-lg font-bold text-slate-800 group-hover:text-blue-600 transition-colors">{emp.FullName}</h3>
+                                                    <p className="text-sm text-blue-600 font-medium">{emp.Position}</p>
+                                                    <p className="text-xs text-slate-400 mt-0.5 line-clamp-1">{emp.Department}</p>
+
+                                                    {/* Workload Badges */}
+                                                    <div className="flex items-center gap-2 mt-4">
+                                                        <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2.5 py-1.5 rounded-lg bg-sky-50 text-sky-600">
+                                                            <ClipboardList className="w-3 h-3" /> {workload?.activeTaskCount || 0} công việc
+                                                        </span>
+                                                        <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2.5 py-1.5 rounded-lg bg-indigo-50 text-indigo-600">
+                                                            <FolderOpen className="w-3 h-3" /> {workload?.projectCount || 0} dự án
+                                                        </span>
+                                                    </div>
+
+                                                    {/* Contact actions */}
+                                                    <div className="flex gap-2 mt-4">
+                                                        <button
+                                                            onClick={(e) => { e.stopPropagation(); }}
+                                                            className="flex-1 py-2.5 bg-slate-50 hover:bg-slate-100 text-slate-600 rounded-xl text-xs font-semibold transition-colors flex items-center justify-center gap-2"
+                                                        >
+                                                            <Mail className="w-3 h-3" /> Email
+                                                        </button>
+                                                        <button
+                                                            onClick={(e) => { e.stopPropagation(); }}
+                                                            className="flex-1 py-2.5 bg-slate-50 hover:bg-slate-100 text-slate-600 rounded-xl text-xs font-semibold transition-colors flex items-center justify-center gap-2"
+                                                        >
+                                                            <Phone className="w-3 h-3" /> Gọi
+                                                        </button>
+                                                    </div>
+                                                </div>
                                             </div>
-                                        </div>
-                                    ))}
+                                        );
+                                    })}
                                 </div>
                             )}
 
+                            {/* Empty State */}
                             {filteredEmployees.length === 0 && (
-                                <div className="p-12 text-center">
-                                    <div className="bg-gray-50 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                                        <Search className="w-8 h-8 text-gray-400" />
+                                <div className="text-center py-16 bg-white rounded-2xl border border-dashed border-slate-200">
+                                    <div className="w-14 h-14 bg-slate-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                                        <Sparkles className="w-6 h-6 text-slate-300" />
                                     </div>
-                                    <h3 className="text-lg font-bold text-gray-800">Không tìm thấy kết quả</h3>
-                                    <p className="text-gray-500 mt-1">Thử thay đổi bộ lọc hoặc từ khóa tìm kiếm.</p>
+                                    <p className="text-slate-500 font-medium">Không tìm thấy nhân sự nào.</p>
+                                    <p className="text-xs text-slate-400 mt-1">Thử thay đổi bộ lọc hoặc từ khóa tìm kiếm.</p>
                                 </div>
                             )}
                         </>
@@ -321,42 +577,222 @@ const EmployeeList: React.FC = () => {
                 </div>
             </div>
 
-            {/* Modal Components (Create/Edit - keeping functionality) */}
+            {/* ══════════ MODAL — Create / Edit ══════════ */}
             {isModalOpen && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-                    <div className="bg-white rounded-2xl shadow-xl w-full max-w-2xl overflow-hidden animate-in zoom-in-95 duration-200">
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-in fade-in duration-200">
+                    <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden animate-in zoom-in-95 duration-200 max-h-[90vh] overflow-y-auto ring-1 ring-black/5">
+
                         {/* Header */}
-                        <div className="p-6 border-b border-gray-100 flex justify-between items-center bg-gray-50">
-                            <h3 className="text-xl font-bold text-gray-800">
-                                {editMode === 'create' ? 'Thêm nhân sự mới' : 'Cập nhật thông tin'}
-                            </h3>
-                            <button onClick={() => setIsModalOpen(false)} className="p-1 hover:bg-gray-200 rounded-full text-gray-500">
+                        <div className="px-6 py-4 border-b border-slate-100 flex justify-between items-center bg-gradient-to-r from-slate-50 to-white sticky top-0 z-10">
+                            <div>
+                                <h3 className="text-lg font-bold text-slate-800">
+                                    {editMode === 'create' ? 'Thêm nhân sự mới' : 'Cập nhật thông tin'}
+                                </h3>
+                                <p className="text-xs text-slate-400 mt-0.5">
+                                    {editMode === 'create' ? 'Điền đầy đủ thông tin để tạo tài khoản' : 'Chỉnh sửa thông tin nhân sự'}
+                                </p>
+                            </div>
+                            <button onClick={() => setIsModalOpen(false)} className="p-2 hover:bg-slate-100 rounded-xl text-slate-400 hover:text-slate-600 transition-colors">
                                 <X className="w-5 h-5" />
                             </button>
                         </div>
-                        {/* Form Body - Reusing existing form logic but styled */}
-                        <form onSubmit={handleSave} className="p-6">
-                            <div className="grid grid-cols-2 gap-6">
-                                <div className="col-span-2">
-                                    <label className="block text-sm font-bold text-gray-700 mb-2">Họ và tên</label>
-                                    <input required type="text" value={currentEmployee.FullName || ''} onChange={e => setCurrentEmployee({ ...currentEmployee, FullName: e.target.value })} className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-all" />
+
+                        {/* Form */}
+                        <form onSubmit={handleSave} className="p-6 space-y-5">
+
+                            {/* Section: Thông tin cơ bản */}
+                            <div>
+                                <h4 className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-4 flex items-center gap-2">
+                                    <User className="w-3.5 h-3.5" /> Thông tin cơ bản
+                                </h4>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="col-span-2">
+                                        <label className="block text-xs font-semibold text-slate-600 mb-1.5">Họ và tên *</label>
+                                        <input
+                                            required
+                                            type="text"
+                                            value={currentEmployee.FullName || ''}
+                                            onChange={e => setCurrentEmployee({ ...currentEmployee, FullName: e.target.value })}
+                                            className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400 text-sm font-medium placeholder:text-slate-400 transition-all"
+                                            placeholder="Nguyễn Văn A"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-xs font-semibold text-slate-600 mb-1.5">Phòng ban *</label>
+                                        <div className="relative">
+                                            <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4 pointer-events-none" />
+                                            <select
+                                                disabled={!canManageUsers && editMode === 'edit'}
+                                                value={currentEmployee.Department}
+                                                onChange={e => setCurrentEmployee({ ...currentEmployee, Department: e.target.value })}
+                                                className="w-full pl-10 pr-8 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400 transition-all appearance-none"
+                                            >
+                                                {departments.map(d => <option key={d} value={d}>{d}</option>)}
+                                            </select>
+                                            <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 w-3.5 h-3.5 pointer-events-none" />
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label className="block text-xs font-semibold text-slate-600 mb-1.5">Chức danh *</label>
+                                        <div className="relative">
+                                            <Briefcase className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4 pointer-events-none" />
+                                            <input
+                                                disabled={!canManageUsers && editMode === 'edit'}
+                                                type="text"
+                                                value={currentEmployee.Position || ''}
+                                                onChange={e => setCurrentEmployee({ ...currentEmployee, Position: e.target.value })}
+                                                className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400 transition-all"
+                                                placeholder="Trưởng phòng, Chuyên viên..."
+                                            />
+                                        </div>
+                                    </div>
                                 </div>
-                                <div>
-                                    <label className="block text-sm font-bold text-gray-700 mb-2">Phòng ban</label>
-                                    <select disabled={!canManageUsers && editMode === 'edit'} value={currentEmployee.Department} onChange={e => setCurrentEmployee({ ...currentEmployee, Department: e.target.value })} className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none">
-                                        {departments.map(d => <option key={d} value={d}>{d}</option>)}
-                                    </select>
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-bold text-gray-700 mb-2">Chức danh</label>
-                                    <input disabled={!canManageUsers && editMode === 'edit'} type="text" value={currentEmployee.Position || ''} onChange={e => setCurrentEmployee({ ...currentEmployee, Position: e.target.value })} className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none" />
-                                </div>
-                                {/* ... Other fields (Email, Phone, etc) ... */}
                             </div>
-                            <div className="mt-8 flex justify-end gap-3 pt-6 border-t border-gray-50">
-                                <button type="button" onClick={() => setIsModalOpen(false)} className="px-5 py-2.5 text-gray-600 hover:bg-gray-100 rounded-xl font-bold text-sm transition-colors">Hủy bỏ</button>
-                                <button type="submit" className="px-5 py-2.5 bg-blue-600 text-white hover:bg-blue-700 rounded-xl font-bold text-sm shadow-lg shadow-blue-200 flex items-center gap-2 transition-colors">
-                                    <Save className="w-4 h-4" /> Lưu thông tin
+
+                            <hr className="border-slate-100" />
+
+                            {/* Section: Liên hệ */}
+                            <div>
+                                <h4 className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-4 flex items-center gap-2">
+                                    <Mail className="w-3.5 h-3.5" /> Thông tin liên hệ
+                                </h4>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="block text-xs font-semibold text-slate-600 mb-1.5">Email *</label>
+                                        <div className="relative">
+                                            <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4 pointer-events-none" />
+                                            <input
+                                                required
+                                                type="email"
+                                                value={currentEmployee.Email || ''}
+                                                onChange={e => setCurrentEmployee({ ...currentEmployee, Email: e.target.value })}
+                                                className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400 transition-all"
+                                                placeholder="email@example.com"
+                                            />
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label className="block text-xs font-semibold text-slate-600 mb-1.5">Số điện thoại</label>
+                                        <div className="relative">
+                                            <Phone className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4 pointer-events-none" />
+                                            <input
+                                                type="tel"
+                                                value={currentEmployee.Phone || ''}
+                                                onChange={e => setCurrentEmployee({ ...currentEmployee, Phone: e.target.value })}
+                                                className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400 transition-all"
+                                                placeholder="0912345678"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <hr className="border-slate-100" />
+
+                            {/* Section: Tài khoản & Quyền */}
+                            <div>
+                                <h4 className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-4 flex items-center gap-2">
+                                    <Lock className="w-3.5 h-3.5" /> Tài khoản & Phân quyền
+                                </h4>
+                                <div className="grid grid-cols-3 gap-4">
+                                    <div>
+                                        <label className="block text-xs font-semibold text-slate-600 mb-1.5">Tên đăng nhập</label>
+                                        <div className="relative">
+                                            <Hash className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4 pointer-events-none" />
+                                            <input
+                                                type="text"
+                                                value={currentEmployee.Username || ''}
+                                                onChange={e => setCurrentEmployee({ ...currentEmployee, Username: e.target.value })}
+                                                className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400 transition-all"
+                                                placeholder="username"
+                                            />
+                                        </div>
+                                    </div>
+                                    {editMode === 'create' && (
+                                        <div>
+                                            <label className="block text-xs font-semibold text-slate-600 mb-1.5">Mật khẩu</label>
+                                            <div className="relative">
+                                                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4 pointer-events-none" />
+                                                <input
+                                                    type="password"
+                                                    value={currentEmployee.Password || ''}
+                                                    onChange={e => setCurrentEmployee({ ...currentEmployee, Password: e.target.value })}
+                                                    className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400 transition-all"
+                                                    placeholder="••••••"
+                                                />
+                                            </div>
+                                        </div>
+                                    )}
+                                    <div>
+                                        <label className="block text-xs font-semibold text-slate-600 mb-1.5">Vai trò *</label>
+                                        <div className="relative">
+                                            <Shield className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4 pointer-events-none" />
+                                            <select
+                                                disabled={!canManageUsers}
+                                                value={currentEmployee.Role}
+                                                onChange={e => setCurrentEmployee({ ...currentEmployee, Role: e.target.value as Role })}
+                                                className="w-full pl-10 pr-8 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400 transition-all appearance-none"
+                                            >
+                                                <option value={Role.Staff}>Nhân viên (Staff)</option>
+                                                <option value={Role.Manager}>Quản lý (Manager)</option>
+                                                <option value={Role.Admin}>Admin</option>
+                                            </select>
+                                            <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 w-3.5 h-3.5 pointer-events-none" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <hr className="border-slate-100" />
+
+                            {/* Section: Thời gian & Trạng thái */}
+                            <div>
+                                <h4 className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-4 flex items-center gap-2">
+                                    <Calendar className="w-3.5 h-3.5" /> Thời gian & Trạng thái
+                                </h4>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="block text-xs font-semibold text-slate-600 mb-1.5">Ngày vào làm</label>
+                                        <input
+                                            type="date"
+                                            value={currentEmployee.JoinDate || ''}
+                                            onChange={e => setCurrentEmployee({ ...currentEmployee, JoinDate: e.target.value })}
+                                            className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400 transition-all"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-xs font-semibold text-slate-600 mb-1.5">Trạng thái</label>
+                                        <div className="relative">
+                                            <select
+                                                disabled={!canManageUsers}
+                                                value={currentEmployee.Status}
+                                                onChange={e => setCurrentEmployee({ ...currentEmployee, Status: parseInt(e.target.value) as EmployeeStatus })}
+                                                className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400 transition-all appearance-none"
+                                            >
+                                                <option value={EmployeeStatus.Active}>Đang làm việc</option>
+                                                <option value={EmployeeStatus.Inactive}>Đã nghỉ việc</option>
+                                            </select>
+                                            <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 w-3.5 h-3.5 pointer-events-none" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Actions */}
+                            <div className="flex justify-end gap-3 pt-4 border-t border-slate-100">
+                                <button
+                                    type="button"
+                                    onClick={() => setIsModalOpen(false)}
+                                    className="px-5 py-2.5 text-sm font-medium text-slate-600 hover:bg-slate-100 rounded-xl transition-colors"
+                                >
+                                    Hủy bỏ
+                                </button>
+                                <button
+                                    type="submit"
+                                    className="px-6 py-2.5 text-sm font-bold text-white bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 rounded-xl shadow-lg shadow-blue-600/25 transition-all active:scale-[0.98] flex items-center gap-2"
+                                >
+                                    <Save className="w-4 h-4" />
+                                    {editMode === 'create' ? 'Tạo nhân sự' : 'Lưu thay đổi'}
                                 </button>
                             </div>
                         </form>
