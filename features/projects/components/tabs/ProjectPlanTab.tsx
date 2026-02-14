@@ -28,10 +28,11 @@ interface ProjectPlanTabProps {
 }
 
 /**
- * Sinh kế hoạch thực hiện dự án theo nhóm (NĐ 175/2024 & Luật ĐTC 2019)
- * - Nhóm A/QN: BC NCTKT → BC NCKT → 3 bước TK
- * - Nhóm B: Đề xuất chủ trương ĐT → BC NCKT → 2 bước TK  
- * - Nhóm C: Đề xuất chủ trương ĐT → BC KT-KT → 1 bước TK
+ * Sinh kế hoạch thực hiện dự án theo nhóm
+ * Căn cứ: NĐ 175/2024, Luật ĐTC 58/2024, Luật XD 135/2025
+ * - Nhóm A/QN: BC NCTKT → BC NCKT → TK triển khai (CĐT tự thẩm định)
+ * - Nhóm B: Đề xuất chủ trương ĐT → BC NCKT → TK triển khai (CĐT tự thẩm định)
+ * - Nhóm C: Đề xuất chủ trương ĐT → BC KT-KT (≤20 tỷ, NĐ 175 K3Đ5) → 1 bước TK
  */
 const getProjectPhases = (groupCode: ProjectGroup = ProjectGroup.C, isODA: boolean = false) => {
     // --- PHASE 1: Chuẩn bị dự án ---
@@ -96,7 +97,9 @@ const getProjectPhases = (groupCode: ProjectGroup = ProjectGroup.C, isODA: boole
         { id: '2.6', title: 'Thi công xây dựng công trình', code: 'IMPL_CONSTRUCTION' },
         { id: '2.7', title: 'Giám sát thi công xây dựng', code: 'IMPL_SUPERVISION' },
         { id: '2.8', title: 'Tạm ứng, thanh toán khối lượng hoàn thành', code: 'IMPL_PAYMENT' },
-        { id: '2.9', title: 'Nghiệm thu hoàn thành công trình', code: 'IMPL_ACCEPTANCE' }
+        { id: '2.9', title: 'Vận hành, chạy thử', code: 'IMPL_TRIAL_RUN' },
+        { id: '2.10', title: 'Nghiệm thu hoàn thành công trình', code: 'IMPL_ACCEPTANCE' },
+        { id: '2.11', title: 'Giám sát, đánh giá dự án đầu tư', code: 'IMPL_MONITORING' }
     );
 
     // --- PHASE 3: Kết thúc xây dựng (giống nhau cho mọi nhóm) ---
@@ -105,7 +108,8 @@ const getProjectPhases = (groupCode: ProjectGroup = ProjectGroup.C, isODA: boole
         { id: '3.2', title: 'Quyết toán vốn đầu tư dự án hoàn thành', code: 'CLOSE_CAPITAL_SETTLEMENT' },
         { id: '3.3', title: 'Bàn giao công trình đưa vào sử dụng', code: 'CLOSE_HANDOVER' },
         { id: '3.4', title: 'Bảo hành công trình xây dựng', code: 'CLOSE_WARRANTY' },
-        { id: '3.5', title: 'Bàn giao hồ sơ lưu trữ', code: 'CLOSE_ARCHIVE' }
+        { id: '3.5', title: 'Bàn giao hồ sơ lưu trữ', code: 'CLOSE_ARCHIVE' },
+        { id: '3.6', title: 'Giám sát, đánh giá sau hoàn thành', code: 'CLOSE_MONITORING' }
     ];
 
     return [

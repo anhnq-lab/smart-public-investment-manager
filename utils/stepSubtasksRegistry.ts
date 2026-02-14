@@ -4,10 +4,11 @@
  * Tự động tạo công việc con cho từng bước dự án
  * 
  * Căn cứ pháp lý:
- * - Luật XD 135/2025/QH15
+ * - Luật XD 135/2025/QH15 (thay thế Luật XD 2014)
+ * - Luật ĐTC 58/2024/QH15
+ * - NĐ 175/2024/NĐ-CP (thay thế NĐ 15/2021)
  * - NĐ 140/2025/NĐ-CP (chính quyền 2 cấp)
  * - NĐ 144/2025/NĐ-CP (phân quyền, phân cấp)
- * - NĐ 175/2024/NĐ-CP
  * - Sổ tay ĐTC Học viện CTQG HCM
  */
 
@@ -234,7 +235,7 @@ const PREP_DECISION: SubTaskDef[] = [
         code: 'DEC_02', title: 'Phê duyệt dự án đầu tư XD',
         responsible: 'Giám đốc Học viện CTQG HCM',
         estimatedDays: 7,
-        legalBasis: 'K1 Đ60 Luật XD 2014; K17 Đ1 Luật 62',
+        legalBasis: 'Luật XD 135/2025; Luật ĐTC 58/2024',
     },
 ];
 
@@ -269,7 +270,7 @@ const IMPL_SURVEY: SubTaskDef[] = [
     {
         code: 'ISURVEY_02', title: 'Nghiệm thu kết quả khảo sát',
         responsible: 'CĐT',
-        legalBasis: 'Đ79 Luật XD 2014',
+        legalBasis: 'Luật XD 135/2025',
     },
 ];
 
@@ -388,12 +389,12 @@ const IMPL_CONSTRUCTION: SubTaskDef[] = [
     {
         code: 'CONST_02', title: 'Tổ chức thi công xây dựng',
         responsible: 'Nhà thầu thi công',
-        legalBasis: 'Đ113 Luật XD sđ Luật 62',
+        legalBasis: 'Luật XD 135/2025',
     },
     {
         code: 'CONST_03', title: 'Quản lý tiến độ, an toàn lao động',
         responsible: 'CĐT',
-        legalBasis: 'Đ112 Luật XD sđ Luật 62',
+        legalBasis: 'Luật XD 135/2025',
     },
 ];
 
@@ -510,7 +511,7 @@ const CLOSE_WARRANTY: SubTaskDef[] = [
     {
         code: 'WARR_01', title: 'Bảo hành công trình xây dựng',
         responsible: 'Nhà thầu thi công',
-        legalBasis: 'Đ125 Luật XD sđ Luật 62; Đ35 NĐ 06',
+        legalBasis: 'Luật XD 135/2025; Đ35 NĐ 06',
     },
     {
         code: 'WARR_02', title: 'Giám sát bảo hành',
@@ -526,6 +527,60 @@ const CLOSE_ARCHIVE: SubTaskDef[] = [
     {
         code: 'ARCH_02', title: 'Bàn giao hồ sơ lưu trữ',
         responsible: 'CĐT',
+    },
+];
+
+// ============================================================
+// PHASE 2 BỔ SUNG: VẬN HÀNH, GIÁM SÁT (Đ50 Luật XD, NĐ 175)
+// ============================================================
+
+const IMPL_TRIAL_RUN: SubTaskDef[] = [
+    {
+        code: 'TRIAL_01', title: 'Lập kế hoạch vận hành, chạy thử',
+        responsible: 'CĐT, Nhà thầu',
+        legalBasis: 'NĐ 175/2024',
+    },
+    {
+        code: 'TRIAL_02', title: 'Vận hành chạy thử thiết bị, hệ thống',
+        responsible: 'CĐT, Nhà thầu thi công',
+        estimatedDays: 30,
+    },
+    {
+        code: 'TRIAL_03', title: 'Đánh giá kết quả vận hành chạy thử',
+        responsible: 'CĐT, TVGS',
+    },
+];
+
+const IMPL_MONITORING: SubTaskDef[] = [
+    {
+        code: 'MON_01', title: 'Lập báo cáo giám sát, đánh giá dự án đầu tư',
+        responsible: 'CĐT (Ban QLDA)',
+        legalBasis: 'Đ71-73 Luật ĐTC 58/2024',
+        templatePath: 'mau-bc-giam-sat-danh-gia-du-an.md',
+        templateLabel: 'Mẫu BC giám sát, đánh giá DA',
+    },
+    {
+        code: 'MON_02', title: 'Gửi báo cáo cho cơ quan có thẩm quyền',
+        responsible: 'CĐT',
+        legalBasis: 'Đ73 Luật ĐTC 58/2024',
+    },
+];
+
+// ============================================================
+// PHASE 3 BỔ SUNG: GIÁM SÁT SAU HOÀN THÀNH
+// ============================================================
+
+const CLOSE_MONITORING: SubTaskDef[] = [
+    {
+        code: 'CMON_01', title: 'Đánh giá kết quả, hiệu quả đầu tư',
+        responsible: 'CĐT',
+        legalBasis: 'Đ73 Luật ĐTC 58/2024',
+    },
+    {
+        code: 'CMON_02', title: 'Lập báo cáo kết thúc dự án',
+        responsible: 'CĐT',
+        templatePath: 'mau-bc-ket-thuc-du-an.md',
+        templateLabel: 'Mẫu BC kết thúc DA',
     },
 ];
 
@@ -552,13 +607,16 @@ const REGISTRY: Record<string, SubTaskDef[]> = {
     IMPL_CONSTRUCTION,
     IMPL_SUPERVISION,
     IMPL_PAYMENT,
+    IMPL_TRIAL_RUN,
     IMPL_ACCEPTANCE,
+    IMPL_MONITORING,
     // Phase 3
     CLOSE_CONTRACT_SETTLEMENT,
     CLOSE_CAPITAL_SETTLEMENT,
     CLOSE_HANDOVER,
     CLOSE_WARRANTY,
     CLOSE_ARCHIVE,
+    CLOSE_MONITORING,
 };
 
 /**

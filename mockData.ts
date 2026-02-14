@@ -105,7 +105,8 @@ export const mockProjects: Project[] = hvctqgProjects.map((p, i) => {
     return {
         ProjectID: p.id,
         ProjectName: p.name,
-        GroupCode: p.total >= 2300000000000 ? ProjectGroup.A : (p.total >= 80000000000 ? ProjectGroup.B : ProjectGroup.C),
+        // Luật ĐTC 58/2024 Đ9-11: Ngành giáo dục, văn hóa → A ≥ 1600 tỷ, B ≥ 90 tỷ
+        GroupCode: p.total >= 1600000000000 ? ProjectGroup.A : (p.total >= 90000000000 ? ProjectGroup.B : ProjectGroup.C),
         InvestmentType: InvestmentType.Public,
         DecisionMakerID: 100,
         TotalInvestment: p.total,
