@@ -1,21 +1,21 @@
 import React, { useState, useMemo } from 'react';
-import { 
-    Search, 
-    ChevronRight, 
-    BookOpen, 
-    Users, 
-    Layout, 
-    FileText, 
-    Share2, 
-    MoreHorizontal, 
-    MessageSquare, 
-    CornerDownRight, 
-    User, 
-    Info, 
-    Gavel, 
-    Shield, 
-    Clock, 
-    CheckCircle2, 
+import {
+    Search,
+    ChevronRight,
+    BookOpen,
+    Users,
+    Layout,
+    FileText,
+    Share2,
+    MoreHorizontal,
+    MessageSquare,
+    CornerDownRight,
+    User,
+    Info,
+    Gavel,
+    Shield,
+    Clock,
+    CheckCircle2,
     Send,
     BarChart3,
     PenTool,
@@ -65,57 +65,71 @@ interface Chapter {
 const OrgChart = () => {
     return (
         <div className="py-8 overflow-x-auto flex justify-center">
-            <div className="flex flex-col items-center min-w-[700px] max-w-full">
-                {/* Level 1: Lãnh đạo Ban */}
+            <div className="flex flex-col items-center min-w-[600px] max-w-full">
+                {/* Level 0: Học viện CTQG HCM */}
+                <div className="relative z-10 mb-6 group">
+                    <div className="bg-red-700 text-white px-8 py-2 rounded-xl shadow-lg border-2 border-white ring-1 ring-gray-200 text-center cursor-default hover:scale-105 transition-transform">
+                        <h4 className="font-black text-[10px] uppercase tracking-tight">Học viện Chính trị quốc gia Hồ Chí Minh</h4>
+                    </div>
+                    <div className="absolute top-full left-1/2 w-px h-5 bg-gray-300 -translate-x-1/2"></div>
+                </div>
+
+                {/* Level 1: Quyền Trưởng Ban */}
                 <div className="relative z-10 mb-8 group">
                     <div className="bg-orange-600 text-white px-8 py-3 rounded-xl shadow-lg border-2 border-white ring-1 ring-gray-200 text-center relative cursor-default hover:scale-105 transition-transform">
-                        <h4 className="font-black text-sm uppercase tracking-tight">GIÁM ĐỐC</h4>
+                        <h4 className="font-black text-sm uppercase tracking-tight">QUYỀN TRƯỞNG BAN</h4>
+                        <p className="text-[10px] mt-0.5 opacity-80">ThS. Hoàng Văn Hùng</p>
                         <div className="w-2 h-2 bg-white rounded-full absolute -bottom-1 left-1/2 -translate-x-1/2"></div>
                     </div>
-                    {/* Connection to VDs */}
                     <div className="absolute top-full left-1/2 w-px h-6 bg-gray-300 -translate-x-1/2"></div>
                 </div>
 
-                {/* Level 2: Phó Giám đốc */}
+                {/* Level 2: Kế toán trưởng */}
                 <div className="relative z-10 mb-10 w-full flex justify-center">
-                    {/* Horizontal bar for VDs */}
                     <div className="bg-white border border-gray-200 px-6 py-2 rounded-lg shadow-sm text-center relative z-10">
-                        <h4 className="font-bold text-xs uppercase text-blue-700">CÁC PHÓ GIÁM ĐỐC</h4>
+                        <h4 className="font-bold text-xs uppercase text-blue-700">KẾ TOÁN TRƯỞNG</h4>
+                        <p className="text-[10px] text-gray-500">ThS. Trần Xuân Ban</p>
                         <div className="w-2 h-2 bg-gray-300 rounded-full absolute -bottom-1 left-1/2 -translate-x-1/2"></div>
                     </div>
-                    {/* Line down to Departments */}
                     <div className="absolute top-full left-1/2 w-px h-8 bg-gray-300 -translate-x-1/2"></div>
                 </div>
 
-                {/* Level 3: Departments */}
-                <div className="relative w-full flex justify-between items-start gap-2">
-                    {/* Connector Line Top */}
-                    <div className="absolute -top-2 left-[7%] right-[7%] h-px bg-gray-300"></div>
-                    
-                    {/* Dept Nodes */}
+                {/* Level 3: Bộ phận chức năng */}
+                <div className="relative w-full flex justify-center items-start gap-4">
+                    <div className="absolute -top-2 left-[15%] right-[15%] h-px bg-gray-300"></div>
+
                     {[
-                        { name: "Phòng Hành chính - Tổng hợp", color: "bg-blue-50 text-blue-700 border-blue-200" },
-                        { name: "Phòng Kế hoạch - Đấu thầu", color: "bg-emerald-50 text-emerald-700 border-emerald-200" },
-                        { name: "Phòng Kỹ thuật - Thẩm định", color: "bg-purple-50 text-purple-700 border-purple-200" },
-                        { name: "Phòng Quản lý dự án 1", color: "bg-orange-50 text-orange-700 border-orange-200" },
-                        { name: "Phòng Quản lý dự án 2", color: "bg-orange-50 text-orange-700 border-orange-200" },
-                        { name: "Phòng Quản lý dự án 3", color: "bg-orange-50 text-orange-700 border-orange-200" },
-                        { name: "Phòng Phát triển dịch vụ", color: "bg-teal-50 text-teal-700 border-teal-200" },
+                        { name: "Bộ phận Kỹ thuật - Giám sát", color: "bg-purple-50 text-purple-700 border-purple-200" },
+                        { name: "Bộ phận Kế hoạch - Tài chính", color: "bg-emerald-50 text-emerald-700 border-emerald-200" },
+                        { name: "Bộ phận Hành chính - Tổng hợp", color: "bg-blue-50 text-blue-700 border-blue-200" },
                     ].map((dept, idx) => (
                         <div key={idx} className="flex flex-col items-center flex-1 relative group">
-                            {/* Vertical Connector */}
                             <div className="w-px h-2 bg-gray-300 mb-1 absolute -top-3"></div>
-                            
-                            <div className={`w-full p-2 rounded-lg border ${dept.color} shadow-sm text-center hover:shadow-md transition-all h-20 flex items-center justify-center cursor-default`}>
-                                <p className="text-[10px] font-bold leading-tight uppercase">{dept.name}</p>
+                            <div className={`w-full p-3 rounded-lg border ${dept.color} shadow-sm text-center hover:shadow-md transition-all h-20 flex items-center justify-center cursor-default`}>
+                                <p className="text-[11px] font-bold leading-tight uppercase">{dept.name}</p>
                             </div>
                         </div>
                     ))}
                 </div>
-                
-                {/* Note */}
-                <div className="mt-8 text-[10px] text-gray-400 italic text-center max-w-lg">
-                    * Sơ đồ tổ chức thể hiện mối quan hệ chỉ đạo, điều hành. Các Phó Giám đốc phụ trách các lĩnh vực và phòng chuyên môn theo phân công của Giám đốc.
+
+                {/* Stats */}
+                <div className="mt-6 flex gap-4">
+                    <div className="bg-orange-50 border border-orange-200 rounded-lg px-4 py-2 text-center">
+                        <p className="text-lg font-black text-orange-700">01</p>
+                        <p className="text-[9px] text-orange-600 font-bold uppercase">Lãnh đạo Ban</p>
+                    </div>
+                    <div className="bg-blue-50 border border-blue-200 rounded-lg px-4 py-2 text-center">
+                        <p className="text-lg font-black text-blue-700">01</p>
+                        <p className="text-[9px] text-blue-600 font-bold uppercase">Kế toán trưởng</p>
+                    </div>
+                    <div className="bg-emerald-50 border border-emerald-200 rounded-lg px-4 py-2 text-center">
+                        <p className="text-lg font-black text-emerald-700">07</p>
+                        <p className="text-[9px] text-emerald-600 font-bold uppercase">Cán bộ, công chức</p>
+                    </div>
+                </div>
+
+                <div className="mt-4 text-[10px] text-gray-400 italic text-center max-w-lg">
+                    * Theo QĐ số 145-QĐ/TW ngày 08/8/2018 của BCH Trung ương Đảng và QĐ số 6568-QĐ/HVCTQG ngày 01/11/2018 của Giám đốc Học viện CTQG HCM.
                 </div>
             </div>
         </div>
@@ -171,7 +185,7 @@ const SubmissionProcessChart = () => {
             <div className="relative">
                 {/* Vertical Line */}
                 <div className="absolute left-8 top-4 bottom-4 w-0.5 bg-gray-200 border-l border-dashed border-gray-300"></div>
-                
+
                 <div className="space-y-6">
                     {steps.map((step, idx) => (
                         <div key={step.id} className="relative flex items-start group">
@@ -179,7 +193,7 @@ const SubmissionProcessChart = () => {
                             <div className={`z-10 w-16 h-16 rounded-2xl flex items-center justify-center border-2 shadow-sm shrink-0 transition-transform group-hover:scale-110 ${step.color}`}>
                                 <step.icon className="w-6 h-6" />
                             </div>
-                            
+
                             {/* Arrow Connector (except last) */}
                             {idx < steps.length - 1 && (
                                 <div className="absolute left-8 top-16 w-0.5 h-6 bg-gray-300"></div>
@@ -189,7 +203,7 @@ const SubmissionProcessChart = () => {
                             <div className="ml-6 flex-1 bg-white p-4 rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow relative">
                                 {/* Triangle pointer */}
                                 <div className="absolute top-6 -left-2 w-4 h-4 bg-white border-l border-b border-gray-100 transform rotate-45"></div>
-                                
+
                                 <div className="flex justify-between items-start mb-1">
                                     <h5 className="font-bold text-gray-800 text-sm">{step.title}</h5>
                                     <span className="text-[10px] font-bold uppercase tracking-wider bg-gray-50 px-2 py-0.5 rounded text-gray-500">{step.actor}</span>
@@ -218,16 +232,16 @@ const RelationshipMap = () => {
                 {/* Center Node */}
                 <div className="relative z-20 w-32 h-32 bg-blue-600 rounded-full shadow-xl shadow-blue-200 flex flex-col items-center justify-center text-white border-4 border-white ring-4 ring-blue-50">
                     <Layout className="w-8 h-8 mb-1" />
-                    <span className="font-black text-xs text-center uppercase leading-tight">Ban QLDA<br/>Đầu tư công</span>
+                    <span className="font-black text-xs text-center uppercase leading-tight">Ban QLDA<br />ĐTXD CN</span>
                 </div>
 
-                {/* Node: UBND Tỉnh (Top) */}
+                {/* Node: Giám đốc Học viện (Top) */}
                 <div className="absolute top-6 left-1/2 -translate-x-1/2 flex flex-col items-center z-10 group">
                     <div className="w-14 h-14 bg-red-50 text-red-600 border border-red-200 rounded-2xl flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform">
                         <Landmark className="w-6 h-6" />
                     </div>
                     <div className="mt-2 bg-white px-3 py-1 rounded-lg shadow-sm border border-gray-100 text-center">
-                        <p className="text-[10px] font-bold text-gray-800 uppercase">UBND Tỉnh</p>
+                        <p className="text-[10px] font-bold text-gray-800 uppercase">Giám đốc Học viện</p>
                         <p className="text-[8px] text-gray-500">Chỉ đạo & Giám sát</p>
                     </div>
                     {/* Connector */}
@@ -235,14 +249,14 @@ const RelationshipMap = () => {
                     <div className="absolute top-24 left-1/2 -translate-x-1/2"><ArrowDownCircle className="w-4 h-4 text-red-300 bg-slate-50 rounded-full" /></div>
                 </div>
 
-                {/* Node: Sở Ban Ngành (Right) */}
+                {/* Node: Vụ KH-TC (Right) */}
                 <div className="absolute right-6 top-1/2 -translate-y-1/2 flex flex-col items-center z-10 group">
                     <div className="w-14 h-14 bg-purple-50 text-purple-600 border border-purple-200 rounded-2xl flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform">
                         <Network className="w-6 h-6" />
                     </div>
                     <div className="mt-2 bg-white px-3 py-1 rounded-lg shadow-sm border border-gray-100 text-center">
-                        <p className="text-[10px] font-bold text-gray-800 uppercase">Các Sở, Ngành</p>
-                        <p className="text-[8px] text-gray-500">Phối hợp & Hướng dẫn</p>
+                        <p className="text-[10px] font-bold text-gray-800 uppercase">Vụ KH-TC</p>
+                        <p className="text-[8px] text-gray-500">Thẩm định & Phối hợp</p>
                     </div>
                     {/* Connector */}
                     <div className="absolute right-14 top-5 w-24 h-0.5 bg-purple-200"></div>
@@ -261,14 +275,14 @@ const RelationshipMap = () => {
                     <div className="absolute bottom-14 left-1/2 -translate-x-1/2 w-0.5 h-12 bg-emerald-200"></div>
                 </div>
 
-                {/* Node: Địa phương (Left) */}
+                {/* Node: Đơn vị sử dụng / HV trực thuộc (Left) */}
                 <div className="absolute left-6 top-1/2 -translate-y-1/2 flex flex-col items-center z-10 group">
                     <div className="w-14 h-14 bg-orange-50 text-orange-600 border border-orange-200 rounded-2xl flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform">
                         <Map className="w-6 h-6" />
                     </div>
                     <div className="mt-2 bg-white px-3 py-1 rounded-lg shadow-sm border border-gray-100 text-center">
-                        <p className="text-[10px] font-bold text-gray-800 uppercase">UBND Xã/Phường</p>
-                        <p className="text-[8px] text-gray-500">GPMB & An ninh</p>
+                        <p className="text-[10px] font-bold text-gray-800 uppercase">HV trực thuộc</p>
+                        <p className="text-[8px] text-gray-500">Bàn giao & Sử dụng</p>
                     </div>
                     {/* Connector */}
                     <div className="absolute left-14 top-5 w-24 h-0.5 bg-orange-200"></div>
@@ -297,12 +311,12 @@ const Article2Visual = () => {
         {
             idx: 1,
             title: "Nguyên tắc tập trung dân chủ & Chế độ thủ trưởng",
-            content: "Ban QLDA làm việc theo nguyên tắc tập trung dân chủ, thực hiện chế độ thủ trưởng, đảm bảo sự chỉ đạo, điều hành thống nhất của Giám đốc đối với các lĩnh vực công tác của Ban QLDA, phát huy quyền làm chủ của VC, NLĐ gắn với sự lãnh đạo của Đảng và phát huy vai trò của các tổ chức đoàn thể trong cơ quan. Mọi hoạt động của Ban QLDA tỉnh đều phải tuân thủ quy định của pháp luật và Quy chế này. VC, NLĐ thuộc Ban QLDA phải xử lý và giải quyết công việc đúng phạm vi trách nhiệm, thẩm quyền;"
+            content: "Ban QLDA ĐTXD CN làm việc theo nguyên tắc tập trung dân chủ, thực hiện chế độ thủ trưởng, đảm bảo sự chỉ đạo, điều hành thống nhất của Trưởng Ban đối với các lĩnh vực công tác, phát huy quyền làm chủ của cán bộ, công chức, viên chức, NLĐ gắn với sự lãnh đạo của Đảng và phát huy vai trò của các tổ chức đoàn thể trong cơ quan. Mọi hoạt động của Ban QLDA ĐTXD CN đều phải tuân thủ quy định của pháp luật và Quy chế này."
         },
         {
             idx: 2,
             title: "Chấp hành nghiêm túc sự chỉ đạo",
-            content: "Chấp hành nghiêm túc sự chỉ đạo của Giám đốc và Phó Giám đốc phụ trách. Khi giải quyết, xử lý công việc, đơn vị trình trực tiếp Phó Giám đốc phụ trách. Trường hợp Phó Giám đốc phụ trách đi vắng thì đơn vị trình Giám đốc (hoặc Phó Giám đốc được Giám đốc phân công) xem xét xử lý và đơn vị đó phải báo cáo kết quả xử lý cho Phó Giám đốc phụ trách khi Phó Giám đốc phụ trách có mặt ở cơ quan;"
+            content: "Chấp hành nghiêm túc sự chỉ đạo của Trưởng Ban. Khi giải quyết, xử lý công việc, cán bộ trình trực tiếp Trưởng Ban. Trường hợp Trưởng Ban đi vắng thì cán bộ trình người được Trưởng Ban ủy quyền xem xét xử lý và phải báo cáo kết quả xử lý cho Trưởng Ban khi Trưởng Ban có mặt ở cơ quan;"
         },
         {
             idx: 3,
@@ -338,7 +352,7 @@ const Article2Visual = () => {
                             <Info className="w-3 h-3" /> Rê chuột để xem chi tiết
                         </p>
                     </div>
-                    
+
                     {/* Hover State: Full Content */}
                     <div className="absolute inset-0 bg-blue-600 p-6 flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-4 group-hover:translate-y-0">
                         <div className="overflow-y-auto custom-scrollbar max-h-full pr-2">
@@ -354,8 +368,8 @@ const Article2Visual = () => {
 };
 
 // --- REUSABLE INTERACTIVE LIST COMPONENT ---
-const DeptTasksLayout: React.FC<{ 
-    functionContent: string[], 
+const DeptTasksLayout: React.FC<{
+    functionContent: string[],
     tasks: { id: string, short: string, title: string, full: string }[],
     baseColor: 'blue' | 'emerald' | 'purple' | 'orange' | 'teal',
     icon: React.ElementType
@@ -370,7 +384,7 @@ const DeptTasksLayout: React.FC<{
         orange: { bg: 'bg-orange-50', text: 'text-orange-800', border: 'border-orange-100', active: 'bg-orange-600', activeText: 'text-white' },
         teal: { bg: 'bg-teal-50', text: 'text-teal-800', border: 'border-teal-100', active: 'bg-teal-600', activeText: 'text-white' },
     };
-    
+
     const c = colors[baseColor];
 
     return (
@@ -388,22 +402,21 @@ const DeptTasksLayout: React.FC<{
             {/* Nhiệm vụ chi tiết - Interactive Layout */}
             <div>
                 <h4 className="font-bold text-gray-800 text-sm mb-4 px-1 flex items-center gap-2">
-                    2. Nhiệm vụ cụ thể 
+                    2. Nhiệm vụ cụ thể
                     <span className="text-[10px] font-normal text-gray-400 italic bg-gray-50 px-2 py-0.5 rounded">(Rê chuột vào các mục bên dưới để xem chi tiết)</span>
                 </h4>
-                
+
                 <div className="flex flex-col md:flex-row gap-6 h-[400px]">
                     {/* Left: Navigation List */}
                     <div className="w-full md:w-1/3 flex flex-col gap-3">
                         {tasks.map(task => (
-                            <div 
+                            <div
                                 key={task.id}
                                 onMouseEnter={() => setHoveredTask(task.id)}
-                                className={`p-4 rounded-xl cursor-pointer border-2 transition-all duration-300 flex items-center justify-between group ${
-                                    hoveredTask === task.id 
-                                    ? `${c.active} text-white shadow-lg border-transparent scale-105` 
+                                className={`p-4 rounded-xl cursor-pointer border-2 transition-all duration-300 flex items-center justify-between group ${hoveredTask === task.id
+                                    ? `${c.active} text-white shadow-lg border-transparent scale-105`
                                     : 'bg-white text-gray-600 hover:bg-gray-50 border-gray-100'
-                                }`}
+                                    }`}
                             >
                                 <h5 className="font-bold text-xs uppercase tracking-wide">{task.short}</h5>
                                 <ChevronRight className={`w-4 h-4 transition-transform ${hoveredTask === task.id ? 'translate-x-1' : 'opacity-0 group-hover:opacity-50'}`} />
@@ -414,13 +427,12 @@ const DeptTasksLayout: React.FC<{
                     {/* Right: Content Display */}
                     <div className="flex-1 bg-white rounded-2xl border border-gray-200 p-6 relative overflow-hidden shadow-sm">
                         {tasks.map(task => (
-                            <div 
+                            <div
                                 key={task.id}
-                                className={`absolute inset-0 p-8 overflow-y-auto custom-scrollbar transition-all duration-500 ease-in-out bg-white ${
-                                    hoveredTask === task.id 
-                                    ? 'opacity-100 translate-y-0 z-10' 
+                                className={`absolute inset-0 p-8 overflow-y-auto custom-scrollbar transition-all duration-500 ease-in-out bg-white ${hoveredTask === task.id
+                                    ? 'opacity-100 translate-y-0 z-10'
                                     : 'opacity-0 translate-y-4 pointer-events-none z-0'
-                                }`}
+                                    }`}
                             >
                                 <h4 className={`font-black ${c.text} text-base mb-6 uppercase border-b ${c.border} pb-3 flex items-center gap-2`}>
                                     <div className={`w-1 h-6 ${c.active.replace('bg-', 'bg-')} rounded-full`}></div>
@@ -630,11 +642,11 @@ Thực hiện công tác báo cáo và trách nhiệm giải trình.`
             id: 'e',
             short: 'Đ) Phân công cụ thể',
             title: 'Phân công nhiệm vụ các phòng',
-            full: `Phòng Quản lý dự án 1: Thực hiện quản lý các dự án chuyển tiếp do Ban QLDA đầu tư XDCT Dân dụng và Công nghiêp thực hiện trước khi bàn giao; các dự án chuyển tiếp thuộc huyện Đức Thọ, Vũ Quang; Các dự án lĩnh vực văn hóa, y tế, giáo dục, quản lý nhà nước; dự án khởi công mới khu vực Đức Thọ, Vũ Quang.
+            full: `Nhóm 1: Quản lý các dự án đầu tư xây dựng mới tại Trung tâm Học viện (bao gồm nhà làm việc, giảng đường, ký túc xá, hạ tầng kỹ thuật).
 
-Phòng Quản lý dự án 2: Quản lý các dự án ODA, dự án BIG2; các dự án chuyển tiếp thuộc huyện Can Lộc, Cẩm Xuyên; dự án khởi công mới khu vực Can Lộc, Cẩm Xuyên.
+Nhóm 2: Quản lý các dự án tại các Học viện trực thuộc theo phân công của Giám đốc Học viện; các dự án sửa chữa lớn.
 
-Phòng Quản lý dự án 3: Quản lý các dự án chuyển tiếp thuộc huyện Thạch Hà, Hương Khê; dự án khởi công mới khu vực Thạch Hà, Hương Khê.`
+Nhóm 3: Quản lý các dự án mua sắm tập trung trong toàn hệ thống Học viện; các dự án theo hình thức PPP.`
         }
     ];
 
@@ -737,7 +749,29 @@ const regulationsData: Chapter[] = [
                 id: "02.04",
                 code: "Điều 4",
                 title: "Chức năng, nhiệm vụ và quyền hạn chung",
-                content: "Thực hiện theo Quyết định số 2760/QĐ-UBND ngày 06/11/2025 của UBND tỉnh Hà Tĩnh về việc Quy định chức năng, nhiệm vụ và quyền hạn của Ban QLDA."
+                content: (
+                    <div className="space-y-4 text-sm leading-relaxed text-gray-700">
+                        <p><strong>Căn cứ pháp lý:</strong> Quyết định số 6568-QĐ/HVCTQG ngày 01/11/2018 của Giám đốc Học viện Chính trị quốc gia Hồ Chí Minh về chức năng, nhiệm vụ và cơ cấu tổ chức của Ban Quản lý dự án đầu tư xây dựng chuyên ngành.</p>
+                        <div className="bg-blue-50 p-4 rounded-lg border border-blue-100">
+                            <p className="font-bold text-blue-800 mb-2">Vị trí, chức năng:</p>
+                            <p>Ban QLDAĐTXD chuyên ngành là đơn vị trực thuộc Học viện Chính trị quốc gia Hồ Chí Minh. Có chức năng: Làm chủ đầu tư và trực tiếp tổ chức quản lý, triển khai và thực hiện các dự án đầu tư xây dựng mới; các dự án sửa chữa lớn tại Trung tâm Học viện; các dự án khác và <strong>mua sắm tập trung</strong> trong toàn hệ thống Học viện.</p>
+                        </div>
+                        <div className="bg-emerald-50 p-4 rounded-lg border border-emerald-100">
+                            <p className="font-bold text-emerald-800 mb-2">Nhiệm vụ chính:</p>
+                            <ul className="list-disc pl-5 space-y-2 text-gray-700">
+                                <li>Phối hợp triển khai lập quy hoạch xây dựng và kế hoạch đầu tư xây dựng dài hạn, trung hạn, hàng năm trong toàn hệ thống Học viện.</li>
+                                <li>Chủ trì chuẩn bị thực hiện dự án: lập báo cáo chủ trương đầu tư, xây dựng kế hoạch đầu tư, giao nhận đất, đền bù GPMB.</li>
+                                <li>Thực hiện dự án ĐTXD: lập trình phê duyệt dự toán, tổ chức thiết kế, thẩm định hồ sơ mời thầu, lựa chọn nhà thầu.</li>
+                                <li>Ký kết hợp đồng, quản lý hợp đồng, tiến độ, chất lượng, vốn, chi phí, an toàn thi công.</li>
+                                <li>Tổ chức nghiệm thu, bàn giao, chuyển giao tài sản; lập báo cáo quyết toán vốn đầu tư.</li>
+                                <li>Thực hiện chế độ bảo hành, bảo trì công trình; lưu trữ hồ sơ.</li>
+                                <li>Chủ trì đấu thầu mua sắm tập trung sau khi được Vụ KH-TC thẩm định và Giám đốc Học viện phê duyệt.</li>
+                                <li>Triển khai dự án sửa chữa lớn tại Trung tâm Học viện; dự án PPP.</li>
+                                <li>Quản lý đội ngũ cán bộ, công chức, viên chức; phòng chống tham nhũng, tiêu cực.</li>
+                            </ul>
+                        </div>
+                    </div>
+                )
             },
             {
                 id: "02.05",
@@ -758,7 +792,7 @@ const regulationsData: Chapter[] = [
                                     { id: 'dept-4', label: '4. Các Phòng QLDA', color: 'text-orange-600 bg-orange-50 border-orange-200' },
                                     { id: 'dept-5', label: '5. Phát triển dịch vụ', color: 'text-teal-600 bg-teal-50 border-teal-200' },
                                 ].map(item => (
-                                    <button 
+                                    <button
                                         key={item.id}
                                         onClick={() => document.getElementById(item.id)?.scrollIntoView({ behavior: 'smooth', block: 'center' })}
                                         className={`px-3 py-2 rounded-lg text-[10px] font-bold border transition-transform hover:-translate-y-0.5 hover:shadow-sm text-left truncate ${item.color}`}
@@ -771,52 +805,52 @@ const regulationsData: Chapter[] = [
 
                         {/* 1. Phòng Hành chính Tổng hợp */}
                         <div id="dept-1" className="border border-blue-200 rounded-3xl p-6 bg-white shadow-sm relative overflow-hidden">
-                             <div className="absolute top-0 right-0 p-6 opacity-5"><Layout className="w-32 h-32" /></div>
-                             <h3 className="text-xl font-black text-blue-800 mb-6 border-b border-blue-100 pb-3 uppercase tracking-tight flex items-center gap-3">
-                                 <div className="w-8 h-8 rounded-lg bg-blue-600 text-white flex items-center justify-center text-sm">01</div>
-                                 Phòng Hành chính – Tổng hợp
-                             </h3>
-                             <AdminDeptDetail />
+                            <div className="absolute top-0 right-0 p-6 opacity-5"><Layout className="w-32 h-32" /></div>
+                            <h3 className="text-xl font-black text-blue-800 mb-6 border-b border-blue-100 pb-3 uppercase tracking-tight flex items-center gap-3">
+                                <div className="w-8 h-8 rounded-lg bg-blue-600 text-white flex items-center justify-center text-sm">01</div>
+                                Phòng Hành chính – Tổng hợp
+                            </h3>
+                            <AdminDeptDetail />
                         </div>
 
                         {/* 2. Phòng Kế hoạch - Đấu thầu */}
                         <div id="dept-2" className="border border-emerald-200 rounded-3xl p-6 bg-white shadow-sm relative overflow-hidden">
-                             <div className="absolute top-0 right-0 p-6 opacity-5 text-emerald-900"><BarChart3 className="w-32 h-32" /></div>
-                             <h3 className="text-xl font-black text-emerald-800 mb-6 border-b border-emerald-100 pb-3 uppercase tracking-tight flex items-center gap-3">
-                                 <div className="w-8 h-8 rounded-lg bg-emerald-600 text-white flex items-center justify-center text-sm">02</div>
-                                 Phòng Kế hoạch - Đấu thầu
-                             </h3>
-                             <PlanningDeptDetail />
+                            <div className="absolute top-0 right-0 p-6 opacity-5 text-emerald-900"><BarChart3 className="w-32 h-32" /></div>
+                            <h3 className="text-xl font-black text-emerald-800 mb-6 border-b border-emerald-100 pb-3 uppercase tracking-tight flex items-center gap-3">
+                                <div className="w-8 h-8 rounded-lg bg-emerald-600 text-white flex items-center justify-center text-sm">02</div>
+                                Phòng Kế hoạch - Đấu thầu
+                            </h3>
+                            <PlanningDeptDetail />
                         </div>
 
                         {/* 3. Phòng Kỹ thuật - Thẩm định */}
                         <div id="dept-3" className="border border-purple-200 rounded-3xl p-6 bg-white shadow-sm relative overflow-hidden">
-                             <div className="absolute top-0 right-0 p-6 opacity-5 text-purple-900"><PenTool className="w-32 h-32" /></div>
-                             <h3 className="text-xl font-black text-purple-800 mb-6 border-b border-purple-100 pb-3 uppercase tracking-tight flex items-center gap-3">
-                                 <div className="w-8 h-8 rounded-lg bg-purple-600 text-white flex items-center justify-center text-sm">03</div>
-                                 Phòng Kỹ thuật - Thẩm định
-                             </h3>
-                             <TechnicalDeptDetail />
+                            <div className="absolute top-0 right-0 p-6 opacity-5 text-purple-900"><PenTool className="w-32 h-32" /></div>
+                            <h3 className="text-xl font-black text-purple-800 mb-6 border-b border-purple-100 pb-3 uppercase tracking-tight flex items-center gap-3">
+                                <div className="w-8 h-8 rounded-lg bg-purple-600 text-white flex items-center justify-center text-sm">03</div>
+                                Phòng Kỹ thuật - Thẩm định
+                            </h3>
+                            <TechnicalDeptDetail />
                         </div>
 
                         {/* 4. Các Phòng Quản lý dự án */}
                         <div id="dept-4" className="border border-orange-200 rounded-3xl p-6 bg-white shadow-sm relative overflow-hidden">
-                             <div className="absolute top-0 right-0 p-6 opacity-5 text-orange-900"><Briefcase className="w-32 h-32" /></div>
-                             <h3 className="text-xl font-black text-orange-800 mb-6 border-b border-orange-100 pb-3 uppercase tracking-tight flex items-center gap-3">
-                                 <div className="w-8 h-8 rounded-lg bg-orange-600 text-white flex items-center justify-center text-sm">04</div>
-                                 Các Phòng Quản lý dự án
-                             </h3>
-                             <ProjectMgmtDeptDetail />
+                            <div className="absolute top-0 right-0 p-6 opacity-5 text-orange-900"><Briefcase className="w-32 h-32" /></div>
+                            <h3 className="text-xl font-black text-orange-800 mb-6 border-b border-orange-100 pb-3 uppercase tracking-tight flex items-center gap-3">
+                                <div className="w-8 h-8 rounded-lg bg-orange-600 text-white flex items-center justify-center text-sm">04</div>
+                                Các Phòng Quản lý dự án
+                            </h3>
+                            <ProjectMgmtDeptDetail />
                         </div>
 
                         {/* 5. Phòng Phát triển dịch vụ */}
                         <div id="dept-5" className="border border-teal-200 rounded-3xl p-6 bg-white shadow-sm relative overflow-hidden">
-                             <div className="absolute top-0 right-0 p-6 opacity-5 text-teal-900"><TrendingUp className="w-32 h-32" /></div>
-                             <h3 className="text-xl font-black text-teal-800 mb-6 border-b border-teal-100 pb-3 uppercase tracking-tight flex items-center gap-3">
-                                 <div className="w-8 h-8 rounded-lg bg-teal-600 text-white flex items-center justify-center text-sm">05</div>
-                                 Phòng Phát triển dịch vụ
-                             </h3>
-                             <ServiceDevDeptDetail />
+                            <div className="absolute top-0 right-0 p-6 opacity-5 text-teal-900"><TrendingUp className="w-32 h-32" /></div>
+                            <h3 className="text-xl font-black text-teal-800 mb-6 border-b border-teal-100 pb-3 uppercase tracking-tight flex items-center gap-3">
+                                <div className="w-8 h-8 rounded-lg bg-teal-600 text-white flex items-center justify-center text-sm">05</div>
+                                Phòng Phát triển dịch vụ
+                            </h3>
+                            <ServiceDevDeptDetail />
                         </div>
                     </div>
                 )
@@ -834,14 +868,14 @@ const regulationsData: Chapter[] = [
                 code: "Điều 6",
                 title: "Quyền hạn, trách nhiệm của Giám đốc Ban QLDA",
                 content: <ResponsibilityList items={[
-                    "Là người đứng đầu, phụ trách chung, lãnh đạo, chỉ đạo, điều hành và quản lý toàn diện mọi hoạt động của Ban QLDA theo chức năng, nhiệm vụ, quyền hạn; chịu trách nhiệm trước UBND tỉnh, Chủ tịch UBND tỉnh và trước pháp luật về toàn bộ hoạt động thuộc thẩm quyền của Ban.",
+                    "Là người đứng đầu, phụ trách chung, lãnh đạo, chỉ đạo, điều hành và quản lý toàn diện mọi hoạt động của Ban QLDA theo chức năng, nhiệm vụ, quyền hạn; chịu trách nhiệm trước Giám đốc Học viện CTQG HCM và trước pháp luật về toàn bộ hoạt động thuộc thẩm quyền của Ban.",
                     "Chỉ đạo tổ chức triển khai tất cả các dự án được cấp có thẩm quyền giao cho Ban QLDA làm Chủ đầu tư hoặc của các Chủ đầu tư khác thông qua hợp đồng tư vấn quản lý dự án.",
                     "Ban hành Quy chế làm việc, quy định cụ thể chức năng, nhiệm vụ, quyền hạn của các phòng trực thuộc, mối liên hệ công tác giữa các phòng và các quy chế khác đảm bảo công tác quản lý điều hành.",
                     "Ban hành Đề án vị trí việc làm theo đúng quy định; phân công, bố trí, sắp xếp hợp lý đội ngũ viên chức đúng cơ cấu, đảm bảo tiêu chuẩn ngạch và khung năng lực theo từng vị trí việc làm đã phê duyệt; phân công công việc cho các Phó Giám đốc; ủy quyền cho một Phó Giám đốc điều hành hoạt động của Ban khi vắng mặt.",
                     "Chỉ đạo, kiểm tra, giám sát và đôn đốc tổ chức, cá nhân và các Phòng trực thuộc Ban QLDA trong việc thực hiện các nhiệm vụ đã phân công.",
                     "Phụ trách công tác quản lý tài chính; tổ chức bộ máy, nhân sự; đào tạo, thi đua - khen thưởng, kỷ luật; bảo vệ chính trị nội bộ; kế hoạch - đầu tư - đấu thầu; thanh tra, kiểm tra, kiểm toán; phòng chống tham nhũng, lãng phí; tiếp công dân và giải quyết khiếu nại, tố cáo; chiến lược phát triển chung.",
                     "Tổ chức, chủ trì các cuộc họp định kỳ và đột xuất của Ban Quản lý dự án, đôn đốc, kiểm tra, giám sát việc thực hiện nhiệm vụ công tác của các phòng và của các thành viên Ban QLDA.",
-                    "Ký các văn bản trình Thường trực Tỉnh uỷ, Thường trực HĐND tỉnh, UBND tỉnh và Chủ tịch UBND tỉnh. Ký các văn bản, hợp đồng xây dựng, hồ sơ liên quan đến dự án; ký chứng từ thanh toán, tạm ứng; ký hợp đồng làm việc/lao động.",
+                    "Ký các văn bản trình Giám đốc Học viện, Ban Cán sự Đảng Học viện. Ký các văn bản, hợp đồng xây dựng, hồ sơ liên quan đến dự án; ký chứng từ thanh toán, tạm ứng; ký hợp đồng làm việc/lao động.",
                     "Là người phát ngôn của Ban QLDA hoặc ủy quyền cho Phó Giám đốc phát ngôn, cung cấp thông tin của đơn vị cho báo chí và các cơ quan chức năng khi có yêu cầu.",
                     "Trực tiếp giải quyết một số công việc đã phân công cho Phó Giám đốc phụ trách trong các trường hợp: cấp bách, quan trọng; Phó Giám đốc đi vắng; hoặc vấn đề có ý kiến khác nhau giữa các Phó Giám đốc.",
                     (
@@ -849,7 +883,7 @@ const regulationsData: Chapter[] = [
                             <strong>Những công việc cần thảo luận tập thể Lãnh đạo Ban QLDA trước khi Giám đốc quyết định:</strong>
                             <ul className="list-disc pl-5 mt-2 space-y-1 text-gray-600 font-medium">
                                 <li>Chiến lược, quy hoạch, kế hoạch phát triển Ban QLDA.</li>
-                                <li>Chương trình công tác, kế hoạch và dự thảo văn bản được UBND tỉnh giao chủ trì.</li>
+                                <li>Chương trình công tác, kế hoạch và dự thảo văn bản được Giám đốc Học viện giao chủ trì.</li>
                                 <li>Kế hoạch triển khai các chủ trương, chính sách quan trọng.</li>
                                 <li>Công tác tổ chức bộ máy và nhân sự theo quy định.</li>
                                 <li>Báo cáo hàng năm về tổng kết tình hình thực hiện kế hoạch và kiểm điểm chỉ đạo điều hành.</li>
@@ -865,7 +899,7 @@ const regulationsData: Chapter[] = [
                 code: "Điều 7",
                 title: "Quyền hạn, trách nhiệm của Phó Giám đốc Ban QLDA",
                 content: <ResponsibilityList items={[
-                    "Tham mưu, giúp việc cho Giám đốc, được phân công phụ trách một số lĩnh vực và phòng chuyên môn; thay mặt Giám đốc giải quyết công việc trong phạm vi được giao và chịu trách nhiệm trước Giám đốc, UBND tỉnh và pháp luật về kết quả thực hiện.",
+                    "Tham mưu, giúp việc cho Trưởng Ban, được phân công phụ trách một số lĩnh vực; thay mặt Trưởng Ban giải quyết công việc trong phạm vi được giao và chịu trách nhiệm trước Trưởng Ban, Giám đốc Học viện và pháp luật về kết quả thực hiện.",
                     "Chủ động phân công nhiệm vụ, bố trí nhân sự cho các phòng được giao phụ trách; tham mưu về việc điều chuyển, xử lý kỷ luật nhân sự thuộc lĩnh vực phụ trách khi có vi phạm.",
                     "Khi được giao QLDA: Chủ trì, chỉ đạo các phòng QLDA đề xuất nhân sự Tổ thực hiện dự án và phòng Kế hoạch - Đấu thầu đề xuất Tổ chuyên gia đấu thầu trình Giám đốc thành lập.",
                     "Tham gia các cuộc họp, đề xuất hoặc kiến nghị về các giải pháp, biện pháp cần thiết để thực hiện các nhiệm vụ của Ban Quản lý dự án.",
@@ -874,7 +908,7 @@ const regulationsData: Chapter[] = [
                     "Được duyệt, ký văn bản thuộc lĩnh vực được phân công (trừ văn bản thuộc thẩm quyền Giám đốc); ký các văn bản, hợp đồng xây dựng, hồ sơ dự án khi được Giám đốc ủy quyền.",
                     "Khi vắng mặt, Giám đốc trực tiếp hoặc phân công Phó Giám đốc khác giải quyết công việc thay thế và thông báo lại.",
                     "Chủ động giải quyết công việc và phối hợp với các Phó Giám đốc khác; trường hợp còn ý kiến khác nhau hoặc nội dung quan trọng thì báo cáo Giám đốc quyết định.",
-                    "Thực hiện các nhiệm vụ khác khi được UBND tỉnh, Chủ tịch UBND tỉnh giao, Giám đốc Ban giao."
+                    "Thực hiện các nhiệm vụ khác khi được Giám đốc Học viện giao, Trưởng Ban giao."
                 ]} />
             },
             {
@@ -1057,16 +1091,16 @@ const regulationsData: Chapter[] = [
             {
                 id: "05.16",
                 code: "Điều 16",
-                title: "Quan hệ công tác với UBND tỉnh, Chủ tịch UBND tỉnh",
+                title: "Quan hệ công tác với Giám đốc Học viện CTQG HCM",
                 content: (
                     <div className="space-y-4">
                         <RelationshipMap />
                         <ResponsibilityList items={[
-                            "Chịu sự chỉ đạo, kiểm tra, giám sát trực tiếp của UBND tỉnh, Chủ tịch UBND tỉnh về thực hiện chức năng, nhiệm vụ được giao.",
-                            "Trình cấp quyết định đầu tư phê duyệt các nội dung thuộc trách nhiệm của chủ đầu tư theo nhiệm vụ được giao và theo quy định của pháp luật.",
+                            "Chịu sự chỉ đạo, kiểm tra, giám sát trực tiếp của Giám đốc Học viện CTQG HCM về thực hiện chức năng, nhiệm vụ được giao.",
+                            "Trình Giám đốc Học viện phê duyệt các nội dung thuộc trách nhiệm của chủ đầu tư theo nhiệm vụ được giao và theo quy định của pháp luật.",
                             "Báo cáo định kỳ hoặc đột xuất về tình hình triển khai thực hiện các dự án được giao quản lý; đề xuất biện pháp xử lý những vấn đề vượt quá thẩm quyền giải quyết.",
-                            "Giải trình các nội dung cần thiết theo yêu cầu của UBND tỉnh, Chủ tịch UBND tỉnh.",
-                            "Phối hợp với các cơ quan, đơn vị chức năng của UBND tỉnh trong việc thực hiện các nhiệm vụ quản lý dự án."
+                            "Giải trình các nội dung cần thiết theo yêu cầu của Giám đốc Học viện.",
+                            "Phối hợp với các Vụ, đơn vị chức năng của Học viện trong việc thực hiện các nhiệm vụ quản lý dự án."
                         ]} />
                     </div>
                 )
@@ -1074,22 +1108,22 @@ const regulationsData: Chapter[] = [
             {
                 id: "05.17",
                 code: "Điều 17",
-                title: "Quan hệ công tác với các Sở, ban ngành thuộc tỉnh",
+                title: "Quan hệ công tác với Vụ KH-TC và các đơn vị chức năng Học viện",
                 content: <ResponsibilityList items={[
-                    "Khi giải quyết vấn đề thuộc thẩm quyền nhưng có liên quan đến chức năng của các Sở, ban, ngành khác thì chủ động tham khảo ý kiến các cơ quan đó.",
-                    "Đối với các vấn đề vượt thẩm quyền hoặc còn ý kiến khác nhau giữa các sở, ban ngành, địa phương thì báo cáo Chủ tịch/Phó Chủ tịch UBND tỉnh (trưởng Ban chỉ đạo dự án) phụ trách lĩnh vực giải quyết.",
+                    "Khi giải quyết vấn đề thuộc thẩm quyền nhưng có liên quan đến chức năng của Vụ KH-TC hoặc các đơn vị khác thì chủ động tham khảo ý kiến các đơn vị đó.",
+                    "Đối với các vấn đề vượt thẩm quyền hoặc còn ý kiến khác nhau giữa các đơn vị thì báo cáo Giám đốc Học viện giải quyết.",
                     "Báo cáo, giải trình về tình hình thực hiện dự án, sự cố công trình, an toàn xây dựng khi được yêu cầu; đề xuất biện pháp phối hợp xử lý vấn đề vượt thẩm quyền.",
-                    "Chịu sự kiểm tra, giám sát của cơ quan nhà nước có thẩm quyền. Chủ động phối hợp chặt chẽ với các sở, ban, ngành và chủ đầu tư dự án."
+                    "Chịu sự kiểm tra, giám sát của cơ quan nhà nước có thẩm quyền. Chủ động phối hợp chặt chẽ với Vụ KH-TC và các đơn vị liên quan."
                 ]} />
             },
             {
                 id: "05.18",
                 code: "Điều 18",
-                title: "Quan hệ công tác với UBND các phường/xã",
+                title: "Quan hệ công tác với đơn vị sử dụng và Học viện trực thuộc",
                 content: <ResponsibilityList items={[
-                    "Giám đốc Ban làm việc trực tiếp với Chủ tịch UBND phường/xã để giải quyết vấn đề liên quan. Ý kiến của người được Giám đốc ủy quyền (Phó Giám đốc, Trưởng phòng) được coi là ý kiến của Giám đốc.",
-                    "Nếu đề nghị của địa phương liên quan nhiều ngành, Ban phải chủ động phối hợp xử lý. Nếu không thống nhất thì báo cáo Lãnh đạo UBND tỉnh giải quyết.",
-                    "Phối hợp thực hiện công tác bồi thường, GPMB, tái định cư; quản lý hành chính, bảo đảm an ninh trật tự trong quá trình thực hiện dự án và bàn giao công trình."
+                    "Trưởng Ban làm việc trực tiếp với lãnh đạo các đơn vị sử dụng và Học viện trực thuộc để giải quyết vấn đề liên quan.",
+                    "Phối hợp thực hiện công tác bàn giao, chuyển giao tài sản, công nghệ và hướng dẫn sử dụng với đơn vị sử dụng thực tế và hồ sơ chất lượng với các bộ phận liên quan.",
+                    "Phối hợp triển khai thực hiện quy hoạch xây dựng tại các Học viện trực thuộc theo quy định của pháp luật."
                 ]} />
             },
             {
@@ -1287,15 +1321,15 @@ const Regulations: React.FC = () => {
 
     const filteredChapters = useMemo(() => {
         if (!searchQuery) return regulationsData;
-        return regulationsData.filter(c => 
-            c.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+        return regulationsData.filter(c =>
+            c.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
             c.articles.some(a => a.title.toLowerCase().includes(searchQuery.toLowerCase()))
         );
     }, [searchQuery]);
 
     return (
         <div className="flex h-[calc(100vh-100px)] bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden font-sans">
-            
+
             {/* LEFT SIDEBAR - NAVIGATION */}
             <div className="w-80 bg-gray-50/50 border-r border-gray-200 flex flex-col">
                 <div className="p-5 border-b border-gray-100 bg-white">
@@ -1305,26 +1339,25 @@ const Regulations: React.FC = () => {
                     </h2>
                     <div className="relative">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                        <input 
-                            type="text" 
-                            placeholder="Tìm điều khoản, quy định..." 
+                        <input
+                            type="text"
+                            placeholder="Tìm điều khoản, quy định..."
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                             className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
                         />
                     </div>
                 </div>
-                
+
                 <div className="flex-1 overflow-y-auto p-3 space-y-1 custom-scrollbar">
                     {filteredChapters.map(chapter => (
                         <button
                             key={chapter.id}
                             onClick={() => setSelectedChapterId(chapter.id)}
-                            className={`w-full text-left p-3 rounded-xl transition-all flex items-start gap-3 group ${
-                                selectedChapterId === chapter.id 
-                                ? 'bg-blue-50 border border-blue-100 shadow-sm' 
+                            className={`w-full text-left p-3 rounded-xl transition-all flex items-start gap-3 group ${selectedChapterId === chapter.id
+                                ? 'bg-blue-50 border border-blue-100 shadow-sm'
                                 : 'hover:bg-gray-100 border border-transparent'
-                            }`}
+                                }`}
                         >
                             <div className={`mt-0.5 p-2 rounded-lg ${selectedChapterId === chapter.id ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-500 group-hover:bg-white'}`}>
                                 {chapter.icon ? <chapter.icon className="w-4 h-4" /> : <BookOpen className="w-4 h-4" />}
@@ -1390,7 +1423,7 @@ const Regulations: React.FC = () => {
                                 <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow relative">
                                     {/* Action Buttons */}
                                     <div className="absolute top-4 right-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity z-20">
-                                        <button 
+                                        <button
                                             onClick={() => setActiveCommentId(activeCommentId === article.id ? null : article.id)}
                                             className={`flex items-center gap-1 px-3 py-1.5 rounded-lg transition-all text-xs font-bold ${activeCommentId === article.id ? 'bg-blue-50 text-blue-600' : 'bg-gray-50 text-gray-500 hover:bg-gray-100'}`}
                                         >
@@ -1412,7 +1445,7 @@ const Regulations: React.FC = () => {
                                     {(activeCommentId === article.id) && (
                                         <div className="mt-6 pt-6 border-t border-gray-100 animate-in fade-in">
                                             <h4 className="text-xs font-black text-gray-400 uppercase tracking-widest mb-4">Thảo luận nội bộ</h4>
-                                            
+
                                             <div className="space-y-4 mb-4">
                                                 {article.comments?.map(comment => (
                                                     <div key={comment.id} className="flex gap-3 items-start">
@@ -1432,16 +1465,16 @@ const Regulations: React.FC = () => {
                                                     <p className="text-xs text-gray-400 italic text-center py-2">Chưa có thảo luận nào.</p>
                                                 )}
                                             </div>
-                                            
+
                                             {/* Add Comment Input */}
                                             <div className="flex gap-3 items-center mt-4">
                                                 <div className="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-white shrink-0">
                                                     <User className="w-4 h-4" />
                                                 </div>
                                                 <div className="flex-1 relative">
-                                                    <input 
-                                                        type="text" 
-                                                        placeholder="Viết ý kiến đóng góp..." 
+                                                    <input
+                                                        type="text"
+                                                        placeholder="Viết ý kiến đóng góp..."
                                                         className="w-full pl-4 pr-10 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
                                                     />
                                                     <button className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 text-blue-600 hover:bg-blue-100 rounded-lg transition-colors">
