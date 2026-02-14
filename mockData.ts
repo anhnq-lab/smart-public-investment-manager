@@ -40,7 +40,7 @@ const hvctqgProjects = [
         location: "Tỉnh Hà Tĩnh",
         decisionNumber: "2810/QĐ-UBND",
         decisionDate: "2025-11-11",
-        decisionAuthority: "UBND tỉnh Hà Tĩnh"
+        decisionAuthority: "Giám đốc Học viện Chính trị quốc gia Hồ Chí Minh"
     },
     {
         id: "DA-NOHV-8567",
@@ -1354,7 +1354,7 @@ const generateDefaultTasks = (): Task[] => {
     tasks.push({
         TaskID: 'TSK-SPECIAL-002',
         Title: 'Rà soát báo cáo giải ngân quý 1/2026',
-        Description: 'Tổng hợp số liệu và lập báo cáo trình UBND tỉnh',
+        Description: 'Tổng hợp số liệu và lập báo cáo trình Giám đốc Học viện CTQG HCM',
         ProjectID: 'DA7501924',
         AssigneeID: 'NV1001',
         DueDate: new Date(today.getTime() + 5 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
@@ -1424,7 +1424,7 @@ const generateDefaultTasks = (): Task[] => {
         },
         {
             TaskID: 'TSK-DA7632186-0203',
-            Title: 'UBND tỉnh phê duyệt chủ trương đầu tư',
+            Title: 'Giám đốc Học viện phê duyệt chủ trương đầu tư',
             Description: 'QĐ phê duyệt chủ trương đầu tư số 456/QĐ-UBND',
             ProjectID: completedProjectId,
             AssigneeID: 'NV1001',
@@ -1501,7 +1501,7 @@ const generateDefaultTasks = (): Task[] => {
         {
             TaskID: 'TSK-DA7632186-0601',
             Title: 'Trình hồ sơ phê duyệt dự án',
-            Description: 'Hoàn thiện hồ sơ trình UBND tỉnh phê duyệt dự án',
+            Description: 'Hoàn thiện hồ sơ trình Giám đốc Học viện CTQG HCM phê duyệt dự án',
             ProjectID: completedProjectId,
             AssigneeID: 'NV1001',
             StartDate: '2021-10-20',
@@ -1512,7 +1512,7 @@ const generateDefaultTasks = (): Task[] => {
         },
         {
             TaskID: 'TSK-DA7632186-0602',
-            Title: 'UBND tỉnh ban hành QĐ phê duyệt dự án',
+            Title: 'Giám đốc Học viện ban hành QĐ phê duyệt dự án',
             Description: 'QĐ phê duyệt dự án đầu tư số 2156/QĐ-UBND',
             ProjectID: completedProjectId,
             AssigneeID: 'NV1001',
@@ -1832,7 +1832,7 @@ const generateDefaultTasks = (): Task[] => {
         {
             TaskID: 'TSK-DA7632186-1703',
             Title: 'Phê duyệt quyết toán dự án',
-            Description: 'UBND tỉnh phê duyệt quyết toán dự án hoàn thành',
+            Description: 'Giám đốc Học viện phê duyệt quyết toán dự án hoàn thành',
             ProjectID: completedProjectId,
             AssigneeID: 'NV1001',
             StartDate: '2024-03-01',
@@ -1984,8 +1984,8 @@ const generateDefaultTasks = (): Task[] => {
         },
         {
             TaskID: 'TSK-TCTTP-0203',
-            Title: 'HĐND tỉnh quyết định chủ trương đầu tư',
-            Description: 'Trình HĐND tỉnh quyết định chủ trương đầu tư dự án nhóm B',
+            Title: 'Giám đốc Học viện quyết định chủ trương đầu tư',
+            Description: 'Trình Giám đốc Học viện quyết định chủ trương đầu tư dự án nhóm B',
             ProjectID: tranPhuProjectId,
             AssigneeID: 'NV1002',
             StartDate: '2025-03-16',
@@ -1996,7 +1996,7 @@ const generateDefaultTasks = (): Task[] => {
             ProgressPercent: 100,
             IsCritical: true,
             Dependencies: [{ TaskID: 'TSK-TCTTP-0202', Type: 'FS' as const, LagDays: 1 }],
-            OutputDocument: 'Nghị quyết HĐND tỉnh'
+            OutputDocument: 'Quyết định của Giám đốc Học viện'
         },
 
         // 1.3 Khảo sát xây dựng phục vụ lập dự án
@@ -2122,7 +2122,7 @@ const generateDefaultTasks = (): Task[] => {
         {
             TaskID: 'TSK-TCTTP-0601',
             Title: 'Trình phê duyệt dự án đầu tư',
-            Description: 'Hoàn thiện hồ sơ trình UBND tỉnh phê duyệt dự án',
+            Description: 'Hoàn thiện hồ sơ trình Giám đốc Học viện CTQG HCM phê duyệt dự án',
             ProjectID: tranPhuProjectId,
             AssigneeID: 'NV1001',
             StartDate: '2025-09-01',
@@ -2136,7 +2136,7 @@ const generateDefaultTasks = (): Task[] => {
         },
         {
             TaskID: 'TSK-TCTTP-0602',
-            Title: 'UBND tỉnh ban hành QĐ phê duyệt dự án',
+            Title: 'Giám đốc Học viện ban hành QĐ phê duyệt dự án',
             Description: 'QĐ số 2810/QĐ-UBND ngày 11/11/2025 phê duyệt dự án',
             ProjectID: tranPhuProjectId,
             AssigneeID: 'NV1002',
@@ -2339,7 +2339,7 @@ const generateDefaultTasks = (): Task[] => {
         {
             TaskID: 'TSK-TCTTP-1502',
             Title: 'Phê duyệt KHLCNT',
-            Description: 'UBND tỉnh phê duyệt kế hoạch lựa chọn nhà thầu',
+            Description: 'Giám đốc Học viện phê duyệt kế hoạch lựa chọn nhà thầu',
             ProjectID: tranPhuProjectId,
             AssigneeID: 'NV1002',
             StartDate: '2026-03-21',

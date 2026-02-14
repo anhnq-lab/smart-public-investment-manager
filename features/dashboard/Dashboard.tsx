@@ -98,7 +98,7 @@ const Dashboard: React.FC = () => {
             {/* HEADER SECTION */}
             <div className="flex justify-between items-end">
                 <div>
-                    <h2 className="text-2xl font-black text-gray-800 tracking-tight uppercase">Trung tâm điều hành</h2>
+                    <h2 className="text-2xl font-black text-gray-800 tracking-tight uppercase">Trung tâm điều hành — Ban QLDA ĐTXD CN</h2>
                     <p className="text-sm font-medium text-gray-500 mt-1 flex items-center gap-2">
                         <Clock className="w-4 h-4" /> Cập nhật dữ liệu: {new Date().toLocaleDateString('vi-VN')}
                     </p>
@@ -123,7 +123,7 @@ const Dashboard: React.FC = () => {
                     trendUp={true}
                     bgIcon="bg-blue-50"
                     textIcon="text-blue-600"
-                    description="Tổng 35 dự án đang quản lý"
+                    description="Dự án đang quản lý"
                     loading={loadingMetrics}
                 />
                 <StatCard

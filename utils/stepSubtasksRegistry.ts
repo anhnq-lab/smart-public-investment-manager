@@ -8,7 +8,7 @@
  * - NĐ 140/2025/NĐ-CP (chính quyền 2 cấp)
  * - NĐ 144/2025/NĐ-CP (phân quyền, phân cấp)
  * - NĐ 175/2024/NĐ-CP
- * - Sổ tay ĐTC Hải Dương 2025
+ * - Sổ tay ĐTC Học viện CTQG HCM
  */
 
 import { ProjectGroup } from '@/types';
@@ -31,7 +31,7 @@ export interface SubTaskDef {
 const PREP_PREFEASIBILITY: SubTaskDef[] = [
     {
         code: 'PREFEAS_01', title: 'Giao đơn vị lập BC NCTKT',
-        responsible: 'Chủ tịch UBND tỉnh',
+        responsible: 'Giám đốc Học viện CTQG HCM',
         legalBasis: 'Đ25 Luật ĐTC 58',
     },
     {
@@ -86,7 +86,7 @@ const PREP_POLICY: SubTaskDef[] = [
     },
     {
         code: 'POLICY_05', title: 'Quyết định chủ trương đầu tư',
-        responsible: 'UBND tỉnh / HĐND',
+        responsible: 'Giám đốc Học viện CTQG / Ban Cán sự Đảng',
         legalBasis: 'K2 Đ25,27,28 Luật ĐTC 58',
         templatePath: 'mau-06-nghi-quyet-chu-truong-dt.md',
         templateLabel: 'Mẫu 06 – Nghị quyết CTrĐT',
@@ -232,7 +232,7 @@ const PREP_DECISION: SubTaskDef[] = [
     },
     {
         code: 'DEC_02', title: 'Phê duyệt dự án đầu tư XD',
-        responsible: 'Chủ tịch UBND tỉnh',
+        responsible: 'Giám đốc Học viện CTQG HCM',
         estimatedDays: 7,
         legalBasis: 'K1 Đ60 Luật XD 2014; K17 Đ1 Luật 62',
     },

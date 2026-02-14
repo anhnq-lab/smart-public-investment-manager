@@ -57,7 +57,7 @@ export const KHLCNTExportModal: React.FC<KHLCNTExportModalProps> = ({
                 investorName: project.InvestorName || prev.investorName,
                 investmentDecision: project.DecisionNumber || prev.investmentDecision,
                 investmentDecisionDate: project.DecisionDate || prev.investmentDecisionDate,
-                issuingAuthority: project.DecisionAuthority || prev.issuingAuthority || 'UBND TỈNH HẢI DƯƠNG',
+                issuingAuthority: project.DecisionAuthority || prev.issuingAuthority || 'HỌC VIỆN CTQG HỒ CHÍ MINH',
                 recipientAuthority: project.DecisionAuthority || prev.recipientAuthority,
             }));
         }
@@ -283,7 +283,7 @@ export const KHLCNTExportModal: React.FC<KHLCNTExportModalProps> = ({
                                         value={formData.issuingAuthority}
                                         onChange={e => handleChange('issuingAuthority', e.target.value)}
                                         className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-                                        placeholder="VD: UBND TỈNH HẢI DƯƠNG"
+                                        placeholder="VD: HỌC VIỆN CTQG HỒ CHÍ MINH"
                                     />
                                 </div>
                                 <div>

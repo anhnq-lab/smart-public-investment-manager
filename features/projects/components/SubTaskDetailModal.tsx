@@ -24,8 +24,8 @@ const RESPONSIBLE_UNITS = [
     'CĐT (Ban QLDA)',
     'Sở Xây dựng',
     'Sở Tài chính',
-    'UBND tỉnh',
-    'UBND xã',
+    'Giám đốc Học viện CTQG HCM',
+    'Vụ KH-TC Học viện',
     'Nhà thầu TVTK',
     'Nhà thầu TVGS',
     'Nhà thầu TV thẩm tra',
@@ -38,8 +38,8 @@ const RESPONSIBLE_UNITS = [
     'Hội đồng BT TĐC',
     'CQ chủ trì thẩm định',
     'Người QĐ đầu tư',
-    'Chủ tịch UBND tỉnh',
-    'HĐND',
+    'Giám đốc Học viện CTQG HCM',
+    'Ban Cán sự Đảng Học viện',
     'Đơn vị sử dụng',
 ];
 

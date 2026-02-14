@@ -87,7 +87,7 @@ export function getApprovalAuthority(group: ProjectGroup): string {
     const authorities: Record<ProjectGroup, string> = {
         [ProjectGroup.QN]: 'Quốc hội',
         [ProjectGroup.A]: 'Thủ tướng Chính phủ',
-        [ProjectGroup.B]: 'Bộ trưởng / Chủ tịch UBND tỉnh',
+        [ProjectGroup.B]: 'Bộ trưởng / Giám đốc Học viện CTQG HCM',
         [ProjectGroup.C]: 'UBND cấp huyện / Chủ đầu tư'
     };
     return authorities[group];

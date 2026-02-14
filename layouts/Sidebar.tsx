@@ -67,12 +67,12 @@ const Sidebar: React.FC<SidebarProps> = ({
                     ${isCollapsed ? 'justify-center' : ''}
                 `}>
           <div className="w-10 h-10 bg-gradient-to-br from-primary-500 to-primary-600 rounded-xl flex items-center justify-center shadow-lg shadow-primary-500/30 shrink-0">
-            <span className="text-white font-bold text-lg">QL</span>
+            <span className="text-white font-bold text-lg">HV</span>
           </div>
           {!isCollapsed && (
             <div className="animate-fade-in">
-              <h1 className="text-lg font-bold text-gray-800 leading-tight">Ban QLDA</h1>
-              <p className="text-xs text-gray-500 font-medium">Đầu tư công</p>
+              <h1 className="text-lg font-bold text-gray-800 leading-tight">Ban QLDA ĐTXD CN</h1>
+              <p className="text-xs text-gray-500 font-medium">Học viện CTQG HCM</p>
             </div>
           )}
         </div>

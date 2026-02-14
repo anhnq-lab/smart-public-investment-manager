@@ -348,7 +348,7 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ isOpen, 
                                 <div className="relative">
                                     <input
                                         type="text"
-                                        placeholder="VD: UBND tỉnh Hà Tĩnh"
+                                        placeholder="VD: Giám đốc Học viện CTQG HCM"
                                         className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none"
                                         value={formData.CompetentAuthority}
                                         onChange={e => updateField('CompetentAuthority', e.target.value)}
