@@ -1,126 +1,110 @@
-// Contractor Service - CRUD operations for Contractors
-import api from './api';
-import { mockContractors } from '../mockData';
+// Contractor Service - Supabase CRUD operations
+import { supabase } from '../lib/supabase';
+import { dbToContractor, contractorToDb } from '../lib/dbMappers';
 import { Contractor } from '../types';
 import type { QueryParams } from '../types/api';
-
-const CONTRACTORS_STORAGE_KEY = 'app_contractors';
-
-const loadContractorsFromStorage = (): Contractor[] => {
-    try {
-        const saved = localStorage.getItem(CONTRACTORS_STORAGE_KEY);
-        if (saved) return JSON.parse(saved);
-    } catch (e) {
-        console.error('Failed to load contractors from storage', e);
-    }
-    return mockContractors;
-};
-
-const saveContractorsToStorage = (contractors: Contractor[]): void => {
-    try {
-        localStorage.setItem(CONTRACTORS_STORAGE_KEY, JSON.stringify(contractors));
-    } catch (e) {
-        console.error('Failed to save contractors to storage', e);
-    }
-};
 
 export class ContractorService {
     /**
      * Get all contractors with optional filtering
      */
     static async getAll(params?: QueryParams): Promise<Contractor[]> {
-        return api.get('/contractors', () => {
-            let contractors = loadContractorsFromStorage();
+        let query = supabase.from('contractors').select('*');
 
-            if (params?.search) {
-                const searchLower = params.search.toLowerCase();
-                contractors = contractors.filter(c =>
-                    c.FullName.toLowerCase().includes(searchLower) ||
-                    c.ContractorID.toLowerCase().includes(searchLower) ||
-                    c.Address.toLowerCase().includes(searchLower)
-                );
-            }
+        if (params?.search) {
+            const s = params.search;
+            query = query.or(`full_name.ilike.%${s}%,contractor_id.ilike.%${s}%,address.ilike.%${s}%`);
+        }
 
-            if (params?.filters?.isForeign !== undefined) {
-                contractors = contractors.filter(c => c.IsForeign === params.filters!.isForeign);
-            }
+        if (params?.filters?.isForeign !== undefined) {
+            query = query.eq('is_foreign', params.filters.isForeign);
+        }
 
-            return contractors;
-        }, params);
+        const { data, error } = await query.order('created_at', { ascending: false });
+        if (error) throw new Error(`Failed to fetch contractors: ${error.message}`);
+        return (data || []).map(dbToContractor);
     }
 
     /**
      * Get a single contractor by ID
      */
     static async getById(id: string): Promise<Contractor | undefined> {
-        return api.get(`/contractors/${id}`, () => {
-            const contractors = loadContractorsFromStorage();
-            return contractors.find(c => c.ContractorID === id);
-        });
+        const { data, error } = await supabase
+            .from('contractors')
+            .select('*')
+            .eq('contractor_id', id)
+            .single();
+
+        if (error) {
+            if (error.code === 'PGRST116') return undefined;
+            throw new Error(`Failed to fetch contractor: ${error.message}`);
+        }
+        return data ? dbToContractor(data) : undefined;
     }
 
     /**
      * Get contractor name by ID (sync helper)
      */
     static getNameById(id: string): string {
-        const contractors = loadContractorsFromStorage();
-        const contractor = contractors.find(c => c.ContractorID === id);
-        return contractor?.FullName || id;
+        const cached = localStorage.getItem('cached_contractors');
+        if (cached) {
+            try {
+                const contractors: Contractor[] = JSON.parse(cached);
+                const found = contractors.find(c => c.ContractorID === id);
+                if (found) return found.FullName;
+            } catch { /* ignore */ }
+        }
+        return id || 'Unknown';
     }
 
     /**
      * Create a new contractor
      */
     static async create(contractorData: Partial<Contractor>): Promise<Contractor> {
-        return api.post('/contractors', contractorData, () => {
-            const contractors = loadContractorsFromStorage();
-
-            const newContractor: Contractor = {
-                ContractorID: contractorData.ContractorID || `NT${Date.now()}`,
-                CapCertCode: contractorData.CapCertCode || '',
-                FullName: contractorData.FullName || 'Nhà thầu mới',
-                IsForeign: contractorData.IsForeign || false,
-                Address: contractorData.Address || '',
-                ContactInfo: contractorData.ContactInfo || '',
-                ...contractorData,
-            };
-
-            const updatedContractors = [newContractor, ...contractors];
-            saveContractorsToStorage(updatedContractors);
-
-            return newContractor;
+        const insertData = contractorToDb({
+            ContractorID: contractorData.ContractorID || `NT${Date.now()}`,
+            FullName: contractorData.FullName || 'Nhà thầu mới',
+            IsForeign: contractorData.IsForeign || false,
+            ...contractorData,
         });
+
+        const { data, error } = await supabase
+            .from('contractors')
+            .insert(insertData)
+            .select()
+            .single();
+
+        if (error) throw new Error(`Failed to create contractor: ${error.message}`);
+        return dbToContractor(data);
     }
 
     /**
      * Update an existing contractor
      */
     static async update(id: string, data: Partial<Contractor>): Promise<Contractor> {
-        return api.put(`/contractors/${id}`, data, () => {
-            const contractors = loadContractorsFromStorage();
-            const index = contractors.findIndex(c => c.ContractorID === id);
+        const updateData = contractorToDb(data);
 
-            if (index === -1) {
-                throw new Error(`Contractor ${id} not found`);
-            }
+        const { data: updated, error } = await supabase
+            .from('contractors')
+            .update(updateData)
+            .eq('contractor_id', id)
+            .select()
+            .single();
 
-            const updatedContractor = { ...contractors[index], ...data };
-            contractors[index] = updatedContractor;
-            saveContractorsToStorage(contractors);
-
-            return updatedContractor;
-        });
+        if (error) throw new Error(`Failed to update contractor: ${error.message}`);
+        return dbToContractor(updated);
     }
 
     /**
      * Delete a contractor
      */
     static async delete(id: string): Promise<void> {
-        return api.delete(`/contractors/${id}`, () => {
-            const contractors = loadContractorsFromStorage();
-            const filtered = contractors.filter(c => c.ContractorID !== id);
-            saveContractorsToStorage(filtered);
-        });
+        const { error } = await supabase
+            .from('contractors')
+            .delete()
+            .eq('contractor_id', id);
+
+        if (error) throw new Error(`Failed to delete contractor: ${error.message}`);
     }
 
     /**
@@ -131,14 +115,16 @@ export class ContractorService {
         domestic: number;
         foreign: number;
     }> {
-        return api.get('/contractors/statistics', () => {
-            const contractors = loadContractorsFromStorage();
-            return {
-                total: contractors.length,
-                domestic: contractors.filter(c => !c.IsForeign).length,
-                foreign: contractors.filter(c => c.IsForeign).length,
-            };
-        });
+        const contractors = await this.getAll();
+
+        // Cache for getNameById sync fallback
+        localStorage.setItem('cached_contractors', JSON.stringify(contractors));
+
+        return {
+            total: contractors.length,
+            domestic: contractors.filter(c => !c.IsForeign).length,
+            foreign: contractors.filter(c => c.IsForeign).length,
+        };
     }
 }
 

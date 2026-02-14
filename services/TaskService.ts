@@ -1,85 +1,67 @@
+// Task Service - Supabase CRUD operations
+import { supabase } from '../lib/supabase';
+import { dbToTask, taskToDb } from '../lib/dbMappers';
 import { Task } from '../types';
-import { mockTasks } from '../mockData';
-
-const STORAGE_KEY = 'cic_tasks_data';
-
-// Helper to load
-const loadTasks = (): Task[] => {
-    try {
-        const data = localStorage.getItem(STORAGE_KEY);
-        // Fallback to mockTasks if empty to provide initial data demo
-        if (!data) return mockTasks;
-
-        const tasks = JSON.parse(data);
-        return Array.isArray(tasks) ? tasks : mockTasks;
-    } catch {
-        return mockTasks;
-    }
-};
-
-const saveToStorage = (tasks: Task[]) => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
-};
 
 export const TaskService = {
-    getAllTasks: (): Promise<Task[]> => {
-        return Promise.resolve(loadTasks());
+    getAllTasks: async (): Promise<Task[]> => {
+        const { data, error } = await supabase
+            .from('tasks')
+            .select('*')
+            .order('created_at', { ascending: false });
+
+        if (error) throw new Error(`Failed to fetch tasks: ${error.message}`);
+        return (data || []).map(dbToTask);
     },
 
-    getTasksByProject: (projectId: string): Promise<Task[]> => {
-        return new Promise((resolve) => {
-            const allTasks = loadTasks();
-            const projectTasks = allTasks.filter(t => t.ProjectID === projectId);
-            resolve(projectTasks);
-        });
+    getTasksByProject: async (projectId: string): Promise<Task[]> => {
+        const { data, error } = await supabase
+            .from('tasks')
+            .select('*')
+            .eq('project_id', projectId)
+            .order('created_at', { ascending: false });
+
+        if (error) throw new Error(`Failed to fetch tasks: ${error.message}`);
+        return (data || []).map(dbToTask);
     },
 
-    saveTasks: (tasks: Task[]): Promise<boolean> => {
-        return new Promise((resolve) => {
-            let allTasks = loadTasks();
+    saveTasks: async (tasks: Task[]): Promise<boolean> => {
+        // Upsert all tasks
+        const rows = tasks.map(t => taskToDb(t));
 
-            const newIds = new Set(tasks.map(t => t.TaskID));
-            // Remove conflicts tasks from existing list (update logic)
-            allTasks = allTasks.filter(t => !newIds.has(t.TaskID));
+        const { error } = await supabase
+            .from('tasks')
+            .upsert(rows, { onConflict: 'task_id' });
 
-            // Append new/updated tasks
-            allTasks = [...allTasks, ...tasks];
-
-            saveToStorage(allTasks);
-            resolve(true);
-        });
+        if (error) throw new Error(`Failed to save tasks: ${error.message}`);
+        return true;
     },
 
-    saveTask: (task: Task): Promise<Task> => {
-        return new Promise((resolve) => {
-            let allTasks = loadTasks();
-            const index = allTasks.findIndex(t => t.TaskID === task.TaskID);
+    saveTask: async (task: Task): Promise<Task> => {
+        const row = taskToDb(task);
 
-            if (index !== -1) {
-                allTasks[index] = task;
-            } else {
-                allTasks.push(task);
-            }
+        const { data, error } = await supabase
+            .from('tasks')
+            .upsert(row, { onConflict: 'task_id' })
+            .select()
+            .single();
 
-            saveToStorage(allTasks);
-            resolve(task);
-        });
+        if (error) throw new Error(`Failed to save task: ${error.message}`);
+        return dbToTask(data);
     },
 
-    updateTask: (task: Task): Promise<boolean> => {
-        return TaskService.saveTask(task).then(() => true);
+    updateTask: async (task: Task): Promise<boolean> => {
+        await TaskService.saveTask(task);
+        return true;
     },
 
-    deleteTask: (id: string): Promise<boolean> => {
-        return new Promise((resolve) => {
-            let allTasks = loadTasks();
-            const initialLen = allTasks.length;
-            allTasks = allTasks.filter(t => t.TaskID !== id);
+    deleteTask: async (id: string): Promise<boolean> => {
+        const { error } = await supabase
+            .from('tasks')
+            .delete()
+            .eq('task_id', id);
 
-            if (allTasks.length !== initialLen) {
-                saveToStorage(allTasks);
-            }
-            resolve(true);
-        });
+        if (error) throw new Error(`Failed to delete task: ${error.message}`);
+        return true;
     }
 };

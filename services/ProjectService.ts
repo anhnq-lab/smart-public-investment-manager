@@ -1,157 +1,125 @@
-// Project Service - CRUD operations for Projects
-import api from './api';
-import { mockProjects, mockBiddingPackages } from '../mockData';
-import { Project, ProjectStatus, ProjectGroup, BiddingPackage, PackageStatus, CapitalAllocation, Disbursement } from '../types';
+// Project Service - Supabase CRUD operations
+import { supabase } from '../lib/supabase';
+import { dbToProject, projectToDb, dbToBiddingPackage, dbToCapitalAllocation } from '../lib/dbMappers';
+import { Project, ProjectStatus, ProjectGroup, BiddingPackage, CapitalAllocation, Disbursement } from '../types';
 import type { QueryParams } from '../types/api';
-
-// Local storage key for persisted projects
-const PROJECTS_STORAGE_KEY = 'app_projects';
-
-// Load projects from localStorage or fallback to mock
-const loadProjectsFromStorage = (): Project[] => {
-    try {
-        const saved = localStorage.getItem(PROJECTS_STORAGE_KEY);
-        if (saved) {
-            const parsed = JSON.parse(saved);
-            // If we have saved data but it's empty, fallback to mockProjects to "restore" data
-            // This prevents "lost data" feeling if the user wiped storage or had a bug.
-            if (Array.isArray(parsed) && parsed.length > 0) {
-                return parsed;
-            }
-        }
-    } catch (e) {
-        console.error('Failed to load projects from storage', e);
-    }
-    return mockProjects;
-};
-
-// Save projects to localStorage
-const saveProjectsToStorage = (projects: Project[]): void => {
-    try {
-        localStorage.setItem(PROJECTS_STORAGE_KEY, JSON.stringify(projects));
-    } catch (e) {
-        console.error('Failed to save projects to storage', e);
-    }
-};
 
 export class ProjectService {
     /**
      * Get all projects with optional filtering
      */
     static async getAll(params?: QueryParams): Promise<Project[]> {
-        return api.get('/projects', () => {
-            let projects = loadProjectsFromStorage();
+        let query = supabase.from('projects').select('*');
 
-            // Apply search filter
-            if (params?.search) {
-                const searchLower = params.search.toLowerCase();
-                projects = projects.filter(p =>
-                    p.ProjectName.toLowerCase().includes(searchLower) ||
-                    p.ProjectID.toLowerCase().includes(searchLower)
-                );
-            }
+        if (params?.search) {
+            const s = params.search;
+            query = query.or(`project_name.ilike.%${s}%,project_id.ilike.%${s}%,investor_name.ilike.%${s}%`);
+        }
 
-            // Apply status filter
-            if (params?.filters?.status) {
-                projects = projects.filter(p => p.Status === params.filters!.status);
-            }
+        if (params?.filters?.status !== undefined) {
+            query = query.eq('status', params.filters.status);
+        }
 
-            // Apply group filter
-            if (params?.filters?.group) {
-                projects = projects.filter(p => p.GroupCode === params.filters!.group);
-            }
+        if (params?.filters?.group) {
+            query = query.eq('group_code', params.filters.group);
+        }
 
-            // Apply sorting
-            if (params?.sortBy) {
-                projects.sort((a, b) => {
-                    const aVal = (a as any)[params.sortBy!];
-                    const bVal = (b as any)[params.sortBy!];
-                    const order = params.sortOrder === 'desc' ? -1 : 1;
-                    if (typeof aVal === 'string') {
-                        return aVal.localeCompare(bVal) * order;
-                    }
-                    return ((aVal || 0) - (bVal || 0)) * order;
-                });
-            }
+        if (params?.filters?.investmentType) {
+            query = query.eq('investment_type', params.filters.investmentType);
+        }
 
-            return projects;
-        }, params);
+        if (params?.filters?.stage) {
+            query = query.eq('stage', params.filters.stage);
+        }
+
+        if (params?.filters?.sector) {
+            query = query.eq('sector', params.filters.sector);
+        }
+
+        const { data, error } = await query.order('created_at', { ascending: false });
+        if (error) throw new Error(`Failed to fetch projects: ${error.message}`);
+        return (data || []).map(dbToProject);
     }
 
     /**
      * Get a single project by ID (supports both ProjectID and ProjectNumber)
      */
     static async getById(id: string): Promise<Project | undefined> {
-        return api.get(`/projects/${id}`, () => {
-            const projects = loadProjectsFromStorage();
-            return projects.find(p =>
-                p.ProjectID === id ||
-                p.ProjectNumber === id ||
-                p.ProjectID === decodeURIComponent(id)
-            );
-        });
+        // Try by project_id first
+        let { data, error } = await supabase
+            .from('projects')
+            .select('*')
+            .eq('project_id', id)
+            .maybeSingle();
+
+        if (!data && !error) {
+            // Try by project_number
+            const result = await supabase
+                .from('projects')
+                .select('*')
+                .eq('project_number', id)
+                .maybeSingle();
+            data = result.data;
+            error = result.error;
+        }
+
+        if (error) {
+            throw new Error(`Failed to fetch project: ${error.message}`);
+        }
+        return data ? dbToProject(data) : undefined;
     }
 
     /**
      * Create a new project
      */
     static async create(projectData: Partial<Project>): Promise<Project> {
-        return api.post('/projects', projectData, () => {
-            const projects = loadProjectsFromStorage();
-
-            const newProject: Project = {
-                ProjectID: projectData.ProjectID || `PR${Date.now()}`,
-                ProjectName: projectData.ProjectName || 'Dự án mới',
-                GroupCode: projectData.GroupCode || ProjectGroup.C,
-                InvestmentType: projectData.InvestmentType || 1,
-                DecisionMakerID: projectData.DecisionMakerID || 100,
-                TotalInvestment: projectData.TotalInvestment || 0,
-                CapitalSource: projectData.CapitalSource || 'Ngân sách Tỉnh',
-                LocationCode: projectData.LocationCode || 'Hà Tĩnh',
-                ApprovalDate: projectData.ApprovalDate || new Date().toISOString().split('T')[0],
-                Status: projectData.Status || ProjectStatus.Preparation,
-                IsEmergency: projectData.IsEmergency || false,
-                Progress: 0,
-                PaymentProgress: 0,
-                ...projectData,
-            };
-
-            const updatedProjects = [newProject, ...projects];
-            saveProjectsToStorage(updatedProjects);
-
-            return newProject;
+        const insertData = projectToDb({
+            ProjectID: projectData.ProjectID || `DA-${Date.now()}`,
+            ProjectName: projectData.ProjectName || 'Dự án mới',
+            GroupCode: projectData.GroupCode || ProjectGroup.C,
+            Status: projectData.Status || ProjectStatus.Preparation,
+            TotalInvestment: projectData.TotalInvestment || 0,
+            IsEmergency: projectData.IsEmergency || false,
+            ...projectData,
         });
+
+        const { data, error } = await supabase
+            .from('projects')
+            .insert(insertData as any)
+            .select()
+            .single();
+
+        if (error) throw new Error(`Failed to create project: ${error.message}`);
+        return dbToProject(data);
     }
 
     /**
      * Update an existing project
      */
     static async update(id: string, data: Partial<Project>): Promise<Project> {
-        return api.put(`/projects/${id}`, data, () => {
-            const projects = loadProjectsFromStorage();
-            const index = projects.findIndex(p => p.ProjectID === id);
+        const updateData = projectToDb(data);
 
-            if (index === -1) {
-                throw new Error(`Project ${id} not found`);
-            }
+        const { data: updated, error } = await supabase
+            .from('projects')
+            .update(updateData)
+            .eq('project_id', id)
+            .select()
+            .single();
 
-            const updatedProject = { ...projects[index], ...data };
-            projects[index] = updatedProject;
-            saveProjectsToStorage(projects);
-
-            return updatedProject;
-        });
+        if (error) throw new Error(`Failed to update project: ${error.message}`);
+        return dbToProject(updated);
     }
 
     /**
      * Delete a project
      */
     static async delete(id: string): Promise<void> {
-        return api.delete(`/projects/${id}`, () => {
-            const projects = loadProjectsFromStorage();
-            const filtered = projects.filter(p => p.ProjectID !== id);
-            saveProjectsToStorage(filtered);
-        });
+        const { error } = await supabase
+            .from('projects')
+            .delete()
+            .eq('project_id', id);
+
+        if (error) throw new Error(`Failed to delete project: ${error.message}`);
     }
 
     /**
@@ -163,37 +131,34 @@ export class ProjectService {
         byGroup: Record<ProjectGroup, number>;
         totalInvestment: number;
     }> {
-        return api.get('/projects/statistics', () => {
-            const projects = loadProjectsFromStorage();
+        const projects = await this.getAll();
 
-            const byStatus = {
-                [ProjectStatus.Preparation]: 0,
-                [ProjectStatus.Execution]: 0,
-                [ProjectStatus.Completion]: 0,
-            };
+        const byStatus = {
+            [ProjectStatus.Preparation]: 0,
+            [ProjectStatus.Execution]: 0,
+            [ProjectStatus.Completion]: 0,
+        };
+        const byGroup = {
+            [ProjectGroup.QN]: 0,
+            [ProjectGroup.A]: 0,
+            [ProjectGroup.B]: 0,
+            [ProjectGroup.C]: 0,
+        };
 
-            const byGroup = {
-                [ProjectGroup.QN]: 0,
-                [ProjectGroup.A]: 0,
-                [ProjectGroup.B]: 0,
-                [ProjectGroup.C]: 0,
-            };
+        let totalInvestment = 0;
 
-            let totalInvestment = 0;
-
-            projects.forEach(p => {
-                byStatus[p.Status]++;
-                byGroup[p.GroupCode]++;
-                totalInvestment += p.TotalInvestment;
-            });
-
-            return {
-                total: projects.length,
-                byStatus,
-                byGroup,
-                totalInvestment,
-            };
+        projects.forEach(p => {
+            byStatus[p.Status]++;
+            byGroup[p.GroupCode]++;
+            totalInvestment += p.TotalInvestment;
         });
+
+        return {
+            total: projects.length,
+            byStatus,
+            byGroup,
+            totalInvestment,
+        };
     }
 
     /**
@@ -209,13 +174,19 @@ export class ProjectService {
     static async search(query: string): Promise<Project[]> {
         return this.getAll({ search: query });
     }
+
     /**
      * Get bidding packages for a project
      */
     static async getPackagesByProject(projectId: string): Promise<BiddingPackage[]> {
-        return api.get(`/projects/${projectId}/packages`, () => {
-            return mockBiddingPackages.filter(pkg => pkg.ProjectID === projectId);
-        });
+        const { data, error } = await supabase
+            .from('bidding_packages')
+            .select('*')
+            .eq('project_id', projectId)
+            .order('created_at', { ascending: false });
+
+        if (error) throw new Error(`Failed to fetch packages: ${error.message}`);
+        return (data || []).map(dbToBiddingPackage);
     }
 
     /**
@@ -237,211 +208,76 @@ export class ProjectService {
             yearlyDisbursed: number;
         }
     }> {
-        return api.get(`/projects/${projectId}/capital`, () => {
-            const allocations: CapitalAllocation[] = [
-                {
-                    AllocationID: 'AL-2023-01',
-                    ProjectID: projectId,
-                    Year: 2023,
-                    Amount: 8000000000,
-                    Source: 'NganSachTrungUong',
-                    DateAssigned: '2023-02-15',
-                    DecisionNumber: '112/QĐ-UBND'
-                },
-                {
-                    AllocationID: 'AL-2024-01',
-                    ProjectID: projectId,
-                    Year: 2024,
-                    Amount: 10000000000,
-                    Source: 'NganSachTrungUong',
-                    DateAssigned: '2024-01-15',
-                    DecisionNumber: 'QD-UBND-2024'
-                },
-                {
-                    AllocationID: 'AL-2025-01',
-                    ProjectID: projectId,
-                    Year: 2025,
-                    Amount: 5000000000,
-                    Source: 'NganSachDiaPhuong',
-                    DateAssigned: '2025-01-20',
-                    DecisionNumber: 'QD-UBND-2025'
-                }
-            ];
+        // Fetch allocations from capital_plans table
+        const { data: allocationRows } = await supabase
+            .from('capital_plans')
+            .select('*')
+            .eq('project_id', projectId);
 
-            const disbursements: Disbursement[] = [
-                // 2023 — Tạm ứng XL
-                {
-                    DisbursementID: 'DIS-001',
-                    ProjectID: projectId,
-                    AllocationID: 'AL-2023-01',
-                    Amount: 2400000000,
-                    Date: '2023-03-20',
-                    Status: 'Approved',
-                    Description: 'Tạm ứng hợp đồng XL-01 (30%)',
-                    Type: 'TamUng',
-                    ContractNumber: 'HĐ-XL-01/2023',
-                    FormType: '04a',
-                    TreasuryCode: 'KB-HT-23001',
-                    CumulativeBefore: 0,
-                },
-                // 2023 — TT KLHT đợt 1
-                {
-                    DisbursementID: 'DIS-002',
-                    ProjectID: projectId,
-                    AllocationID: 'AL-2023-01',
-                    Amount: 3200000000,
-                    Date: '2023-07-15',
-                    Status: 'Approved',
-                    Description: 'Thanh toán KLHT đợt 1 XL-01',
-                    Type: 'ThanhToanKLHT',
-                    ContractNumber: 'HĐ-XL-01/2023',
-                    FormType: '03a',
-                    TreasuryCode: 'KB-HT-23045',
-                    CumulativeBefore: 2400000000,
-                },
-                // 2023 — Thu hồi tạm ứng
-                {
-                    DisbursementID: 'DIS-003',
-                    ProjectID: projectId,
-                    AllocationID: 'AL-2023-01',
-                    Amount: 960000000,
-                    Date: '2023-07-15',
-                    Status: 'Approved',
-                    Description: 'Thu hồi tạm ứng đợt 1 XL-01',
-                    Type: 'ThuHoiTamUng',
-                    ContractNumber: 'HĐ-XL-01/2023',
-                    FormType: '04b',
-                    TreasuryCode: 'KB-HT-23046',
-                    CumulativeBefore: 5600000000,
-                },
-                // 2024 — Tạm ứng TV
-                {
-                    DisbursementID: 'DIS-004',
-                    ProjectID: projectId,
-                    AllocationID: 'AL-2024-01',
-                    Amount: 500000000,
-                    Date: '2024-02-10',
-                    Status: 'Approved',
-                    Description: 'Tạm ứng hợp đồng TV-01 (20%)',
-                    Type: 'TamUng',
-                    ContractNumber: 'HĐ-TV-01/2024',
-                    FormType: '04a',
-                    TreasuryCode: 'KB-HT-24012',
-                    CumulativeBefore: 0,
-                },
-                // 2024 — TT KLHT đợt 2 XL
-                {
-                    DisbursementID: 'DIS-005',
-                    ProjectID: projectId,
-                    AllocationID: 'AL-2024-01',
-                    Amount: 2800000000,
-                    Date: '2024-05-20',
-                    Status: 'Approved',
-                    Description: 'Thanh toán KLHT đợt 2 XL-01',
-                    Type: 'ThanhToanKLHT',
-                    ContractNumber: 'HĐ-XL-01/2023',
-                    FormType: '03a',
-                    TreasuryCode: 'KB-HT-24056',
-                    CumulativeBefore: 5600000000,
-                },
-                // 2024 — Thu hồi tạm ứng TV
-                {
-                    DisbursementID: 'DIS-006',
-                    ProjectID: projectId,
-                    AllocationID: 'AL-2024-01',
-                    Amount: 250000000,
-                    Date: '2024-06-15',
-                    Status: 'Approved',
-                    Description: 'Thu hồi tạm ứng TV-01',
-                    Type: 'ThuHoiTamUng',
-                    ContractNumber: 'HĐ-TV-01/2024',
-                    FormType: '04b',
-                    TreasuryCode: 'KB-HT-24067',
-                    CumulativeBefore: 8900000000,
-                },
-                // 2024 — TT KLHT đợt 3 XL
-                {
-                    DisbursementID: 'DIS-007',
-                    ProjectID: projectId,
-                    AllocationID: 'AL-2024-01',
-                    Amount: 2500000000,
-                    Date: '2024-09-10',
-                    Status: 'Approved',
-                    Description: 'Thanh toán KLHT đợt 3 XL-01',
-                    Type: 'ThanhToanKLHT',
-                    ContractNumber: 'HĐ-XL-01/2023',
-                    FormType: '03a',
-                    TreasuryCode: 'KB-HT-24089',
-                    CumulativeBefore: 8400000000,
-                },
-                // 2025 — Tạm ứng TB
-                {
-                    DisbursementID: 'DIS-008',
-                    ProjectID: projectId,
-                    AllocationID: 'AL-2025-01',
-                    Amount: 1200000000,
-                    Date: '2025-01-25',
-                    Status: 'Approved',
-                    Description: 'Tạm ứng hợp đồng TB-01 (30%)',
-                    Type: 'TamUng',
-                    ContractNumber: 'HĐ-TB-01/2025',
-                    FormType: '04a',
-                    TreasuryCode: 'KB-HT-25003',
-                    CumulativeBefore: 0,
-                },
-                // 2025 — Chờ duyệt
-                {
-                    DisbursementID: 'DIS-009',
-                    ProjectID: projectId,
-                    AllocationID: 'AL-2025-01',
-                    Amount: 800000000,
-                    Date: '2025-02-05',
-                    Status: 'Pending',
-                    Description: 'Thanh toán KLHT TV-01',
-                    Type: 'ThanhToanKLHT',
-                    ContractNumber: 'HĐ-TV-01/2024',
-                    FormType: '03a',
-                    CumulativeBefore: 500000000,
-                },
-            ];
+        const allocations: CapitalAllocation[] = (allocationRows || []).map(dbToCapitalAllocation);
 
-            // Tính toán summary
-            const totalAdvance = disbursements
-                .filter(d => d.Type === 'TamUng' && d.Status === 'Approved')
-                .reduce((s, d) => s + d.Amount, 0);
-            const advanceRecovered = disbursements
-                .filter(d => d.Type === 'ThuHoiTamUng' && d.Status === 'Approved')
-                .reduce((s, d) => s + d.Amount, 0);
-            const completionPayment = disbursements
-                .filter(d => d.Type === 'ThanhToanKLHT' && d.Status === 'Approved')
-                .reduce((s, d) => s + d.Amount, 0);
-            const totalDisbursed = totalAdvance + completionPayment - advanceRecovered;
-            const totalAllocated = allocations.reduce((s, a) => s + a.Amount, 0);
-            const currentYear = new Date().getFullYear();
-            const yearlyTarget = allocations
-                .filter(a => a.Year === currentYear)
-                .reduce((s, a) => s + a.Amount, 0);
-            const yearlyDisbursed = disbursements
-                .filter(d => new Date(d.Date).getFullYear() === currentYear && d.Status === 'Approved')
-                .reduce((s, d) => s + d.Amount, 0);
+        // Fetch disbursements
+        const { data: disbursementRows } = await supabase
+            .from('disbursements')
+            .select('*')
+            .eq('project_id', projectId)
+            .order('date', { ascending: true });
 
-            return {
-                allocations,
-                disbursements,
-                summary: {
-                    totalInvestment: 25000000000,
-                    totalAllocated,
-                    totalDisbursed,
-                    totalAdvance,
-                    advanceRecovered,
-                    advanceBalance: totalAdvance - advanceRecovered,
-                    completionPayment,
-                    disbursementRate: totalAllocated > 0 ? Math.round((totalDisbursed / totalAllocated) * 100) : 0,
-                    yearlyTarget,
-                    yearlyDisbursed: 2000000000, // Hardcode for demo
-                }
-            };
-        });
+        const disbursements: Disbursement[] = (disbursementRows || []).map((row: any) => ({
+            DisbursementID: row.disbursement_id,
+            ProjectID: row.project_id,
+            CapitalPlanID: row.capital_plan_id || undefined,
+            AllocationID: row.capital_plan_id || undefined,
+            PaymentID: row.payment_id || undefined,
+            Amount: Number(row.amount) || 0,
+            Date: row.date,
+            TreasuryCode: row.treasury_code || '',
+            FormType: row.form_type || '',
+            Description: '',
+            Status: row.status as 'Pending' | 'Approved' | 'Rejected',
+        }));
+
+        // Get project total investment
+        const project = await this.getById(projectId);
+        const totalInvestment = project?.TotalInvestment || 0;
+
+        // Compute summary
+        const totalAdvance = disbursements
+            .filter(d => d.Type === 'TamUng' && d.Status === 'Approved')
+            .reduce((s, d) => s + d.Amount, 0);
+        const advanceRecovered = disbursements
+            .filter(d => d.Type === 'ThuHoiTamUng' && d.Status === 'Approved')
+            .reduce((s, d) => s + d.Amount, 0);
+        const completionPayment = disbursements
+            .filter(d => d.Type === 'ThanhToanKLHT' && d.Status === 'Approved')
+            .reduce((s, d) => s + d.Amount, 0);
+        const totalDisbursed = totalAdvance + completionPayment - advanceRecovered;
+        const totalAllocated = allocations.reduce((s, a) => s + a.Amount, 0);
+
+        const currentYear = new Date().getFullYear();
+        const yearlyTarget = allocations
+            .filter(a => a.Year === currentYear)
+            .reduce((s, a) => s + a.Amount, 0);
+        const yearlyDisbursed = disbursements
+            .filter(d => new Date(d.Date).getFullYear() === currentYear && d.Status === 'Approved')
+            .reduce((s, d) => s + d.Amount, 0);
+
+        return {
+            allocations,
+            disbursements,
+            summary: {
+                totalInvestment,
+                totalAllocated,
+                totalDisbursed,
+                totalAdvance,
+                advanceRecovered,
+                advanceBalance: totalAdvance - advanceRecovered,
+                completionPayment,
+                disbursementRate: totalAllocated > 0 ? Math.round((totalDisbursed / totalAllocated) * 100) : 0,
+                yearlyTarget,
+                yearlyDisbursed,
+            }
+        };
     }
 }
 

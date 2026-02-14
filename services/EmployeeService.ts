@@ -1,70 +1,54 @@
-// Employee Service - CRUD operations for Employees
-import api from './api';
-import { mockEmployees } from '../mockData';
+// Employee Service - Supabase CRUD operations
+import { supabase } from '../lib/supabase';
+import { dbToEmployee, employeeToDb } from '../lib/dbMappers';
 import { Employee, EmployeeStatus, Role } from '../types';
 import type { QueryParams } from '../types/api';
-
-const EMPLOYEES_STORAGE_KEY = 'app_employees';
-
-const loadEmployeesFromStorage = (): Employee[] => {
-    try {
-        const saved = localStorage.getItem(EMPLOYEES_STORAGE_KEY);
-        if (saved) return JSON.parse(saved);
-    } catch (e) {
-        console.error('Failed to load employees from storage', e);
-    }
-    return mockEmployees;
-};
-
-const saveEmployeesToStorage = (employees: Employee[]): void => {
-    try {
-        localStorage.setItem(EMPLOYEES_STORAGE_KEY, JSON.stringify(employees));
-    } catch (e) {
-        console.error('Failed to save employees to storage', e);
-    }
-};
 
 export class EmployeeService {
     /**
      * Get all employees with optional filtering
      */
     static async getAll(params?: QueryParams): Promise<Employee[]> {
-        return api.get('/employees', () => {
-            let employees = loadEmployeesFromStorage();
+        let query = supabase.from('employees').select('*');
 
-            if (params?.search) {
-                const searchLower = params.search.toLowerCase();
-                employees = employees.filter(e =>
-                    e.FullName.toLowerCase().includes(searchLower) ||
-                    e.Department.toLowerCase().includes(searchLower) ||
-                    e.Email.toLowerCase().includes(searchLower)
-                );
-            }
+        if (params?.search) {
+            const s = params.search;
+            query = query.or(`full_name.ilike.%${s}%,department.ilike.%${s}%,email.ilike.%${s}%`);
+        }
 
-            if (params?.filters?.department) {
-                employees = employees.filter(e => e.Department === params.filters!.department);
-            }
+        if (params?.filters?.department) {
+            query = query.eq('department', params.filters.department);
+        }
 
-            if (params?.filters?.status !== undefined) {
-                employees = employees.filter(e => e.Status === params.filters!.status);
-            }
+        if (params?.filters?.status !== undefined) {
+            query = query.eq('status', params.filters.status);
+        }
 
-            if (params?.filters?.role) {
-                employees = employees.filter(e => e.Role === params.filters!.role);
-            }
+        if (params?.filters?.role) {
+            query = query.eq('role', params.filters.role);
+        }
 
-            return employees;
-        }, params);
+        const { data, error } = await query.order('created_at', { ascending: false });
+
+        if (error) throw new Error(`Failed to fetch employees: ${error.message}`);
+        return (data || []).map(dbToEmployee);
     }
 
     /**
      * Get a single employee by ID
      */
     static async getById(id: string): Promise<Employee | undefined> {
-        return api.get(`/employees/${id}`, () => {
-            const employees = loadEmployeesFromStorage();
-            return employees.find(e => e.EmployeeID === id);
-        });
+        const { data, error } = await supabase
+            .from('employees')
+            .select('*')
+            .eq('employee_id', id)
+            .single();
+
+        if (error) {
+            if (error.code === 'PGRST116') return undefined; // Not found
+            throw new Error(`Failed to fetch employee: ${error.message}`);
+        }
+        return data ? dbToEmployee(data) : undefined;
     }
 
     /**
@@ -75,86 +59,88 @@ export class EmployeeService {
     }
 
     /**
-     * Get employee name by ID (sync helper)
+     * Get employee name by ID (async version for Supabase)
      */
     static getNameById(id: string): string {
-        const employees = loadEmployeesFromStorage();
-        const employee = employees.find(e => e.EmployeeID === id);
-        return employee?.FullName || 'Unknown';
+        // Keep sync fallback for UI compatibility — use cached data
+        const cached = localStorage.getItem('cached_employees');
+        if (cached) {
+            try {
+                const employees: Employee[] = JSON.parse(cached);
+                const found = employees.find(e => e.EmployeeID === id);
+                if (found) return found.FullName;
+            } catch { /* ignore */ }
+        }
+        return id || 'Unknown';
     }
 
     /**
      * Create a new employee
      */
     static async create(employeeData: Partial<Employee>): Promise<Employee> {
-        return api.post('/employees', employeeData, () => {
-            const employees = loadEmployeesFromStorage();
+        // Generate new ID
+        const { count } = await supabase.from('employees').select('*', { count: 'exact', head: true });
+        const newId = employeeData.EmployeeID || `NV${(count || 0) + 1}`;
 
-            // Generate new ID
-            const maxId = Math.max(...employees.map(e => parseInt(e.EmployeeID.replace('NV', ''))));
-            const newId = `NV${maxId + 1}`;
-
-            const newEmployee: Employee = {
-                EmployeeID: newId,
-                FullName: employeeData.FullName || 'Nhân viên mới',
-                Department: employeeData.Department || 'Phòng Hành chính - Tổng hợp',
-                Position: employeeData.Position || 'Nhân viên',
-                Email: employeeData.Email || '',
-                Phone: employeeData.Phone || '',
-                AvatarUrl: employeeData.AvatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(employeeData.FullName || 'NV')}&background=random&color=fff`,
-                Status: employeeData.Status ?? EmployeeStatus.Active,
-                JoinDate: employeeData.JoinDate || new Date().toISOString().split('T')[0],
-                Username: employeeData.Username || newId,
-                Password: employeeData.Password || '123456',
-                Role: employeeData.Role || Role.Staff,
-                ...employeeData,
-            };
-
-            const updatedEmployees = [newEmployee, ...employees];
-            saveEmployeesToStorage(updatedEmployees);
-
-            return newEmployee;
+        const insertData = employeeToDb({
+            ...employeeData,
+            EmployeeID: newId,
+            AvatarUrl: employeeData.AvatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(employeeData.FullName || 'NV')}&background=random&color=fff`,
+            Status: employeeData.Status ?? EmployeeStatus.Active,
+            JoinDate: employeeData.JoinDate || new Date().toISOString().split('T')[0],
         });
+
+        const { data, error } = await supabase
+            .from('employees')
+            .insert(insertData)
+            .select()
+            .single();
+
+        if (error) throw new Error(`Failed to create employee: ${error.message}`);
+        return dbToEmployee(data);
     }
 
     /**
      * Update an existing employee
      */
     static async update(id: string, data: Partial<Employee>): Promise<Employee> {
-        return api.put(`/employees/${id}`, data, () => {
-            const employees = loadEmployeesFromStorage();
-            const index = employees.findIndex(e => e.EmployeeID === id);
+        const updateData = employeeToDb(data);
 
-            if (index === -1) {
-                throw new Error(`Employee ${id} not found`);
-            }
+        const { data: updated, error } = await supabase
+            .from('employees')
+            .update(updateData)
+            .eq('employee_id', id)
+            .select()
+            .single();
 
-            const updatedEmployee = { ...employees[index], ...data };
-            employees[index] = updatedEmployee;
-            saveEmployeesToStorage(employees);
+        if (error) throw new Error(`Failed to update employee: ${error.message}`);
 
-            // Update current user in localStorage if it's the same user
-            const currentUser = localStorage.getItem('currentUser');
-            if (currentUser) {
+        const employee = dbToEmployee(updated);
+
+        // Update current user in localStorage if it's the same user
+        const currentUser = localStorage.getItem('currentUser');
+        if (currentUser) {
+            try {
                 const parsed = JSON.parse(currentUser);
                 if (parsed.EmployeeID === id) {
-                    localStorage.setItem('currentUser', JSON.stringify(updatedEmployee));
+                    localStorage.setItem('currentUser', JSON.stringify(employee));
                 }
-            }
+            } catch { /* ignore */ }
+        }
 
-            return updatedEmployee;
-        });
+        return employee;
     }
 
     /**
      * Delete an employee
      */
     static async delete(id: string): Promise<void> {
-        return api.delete(`/employees/${id}`, () => {
-            const employees = loadEmployeesFromStorage();
-            const filtered = employees.filter(e => e.EmployeeID !== id);
-            saveEmployeesToStorage(filtered);
-        });
+        const { error } = await supabase
+            .from('employees')
+            .delete()
+            .eq('employee_id', id);
+
+        if (error) throw new Error(`Failed to delete employee: ${error.message}`);
     }
 
     /**
@@ -166,7 +152,7 @@ export class EmployeeService {
     }
 
     /**
-     * Get employee count by department
+     * Get employee statistics
      */
     static async getStatistics(): Promise<{
         total: number;
@@ -174,31 +160,32 @@ export class EmployeeService {
         byDepartment: Record<string, number>;
         byRole: Record<Role, number>;
     }> {
-        return api.get('/employees/statistics', () => {
-            const employees = loadEmployeesFromStorage();
+        const employees = await this.getAll();
 
-            const byDepartment: Record<string, number> = {};
-            const byRole = {
-                [Role.Admin]: 0,
-                [Role.Manager]: 0,
-                [Role.Staff]: 0,
-            };
+        const byDepartment: Record<string, number> = {};
+        const byRole = {
+            [Role.Admin]: 0,
+            [Role.Manager]: 0,
+            [Role.Staff]: 0,
+        };
 
-            let active = 0;
+        let active = 0;
 
-            employees.forEach(e => {
-                if (e.Status === EmployeeStatus.Active) active++;
-                byDepartment[e.Department] = (byDepartment[e.Department] || 0) + 1;
-                byRole[e.Role]++;
-            });
-
-            return {
-                total: employees.length,
-                active,
-                byDepartment,
-                byRole,
-            };
+        employees.forEach(e => {
+            if (e.Status === EmployeeStatus.Active) active++;
+            byDepartment[e.Department] = (byDepartment[e.Department] || 0) + 1;
+            byRole[e.Role]++;
         });
+
+        // Cache employees for getNameById sync fallback
+        localStorage.setItem('cached_employees', JSON.stringify(employees));
+
+        return {
+            total: employees.length,
+            active,
+            byDepartment,
+            byRole,
+        };
     }
 }
 

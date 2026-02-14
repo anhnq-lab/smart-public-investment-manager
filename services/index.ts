@@ -7,4 +7,4 @@ export { ContractorService } from './ContractorService';
 export { DocumentService } from './DocumentService';
 export { PaymentService } from './PaymentService';
 export { AuthService } from './AuthService';
-export { TaskService } from './taskService';
+export { TaskService } from './TaskService';

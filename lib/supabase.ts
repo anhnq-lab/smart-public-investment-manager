@@ -1,14 +1,19 @@
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
+import type { Database } from '../types/database';
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-let supabase: SupabaseClient | null = null;
-
-if (supabaseUrl && supabaseKey) {
-    supabase = createClient(supabaseUrl, supabaseKey);
-} else {
-    console.warn('Supabase environment variables not set. BIM Storage features will be unavailable.');
+if (!supabaseUrl || !supabaseKey) {
+    console.warn('⚠️ Supabase environment variables not set. Backend features will be unavailable.');
 }
 
-export { supabase };
+export const supabase: SupabaseClient<Database> = createClient<Database>(
+    supabaseUrl || 'https://placeholder.supabase.co',
+    supabaseKey || 'placeholder-key'
+);
+
+/** Check if Supabase is properly configured */
+export const isSupabaseConfigured = (): boolean => {
+    return !!(supabaseUrl && supabaseKey);
+};
