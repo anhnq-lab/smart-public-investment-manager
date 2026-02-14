@@ -1678,6 +1678,818 @@ const generateDefaultTasks = (): Task[] => {
     );
 
     // ============================================================
+    // COMPREHENSIVE TASK DATA FOR NHÀ Ở HỌC VIÊN
+    // Project: DA-NOHV-8567 - Xây dựng tòa nhà ở học viên
+    // Nhóm B, 597 tỷ, 2021-2025, ĐÃ HOÀN THÀNH
+    // 16 tầng + 2 tầng hầm, 135 Nguyễn Phong Sắc, Cầu Giấy, HN
+    // ============================================================
+    const nohvProjectId = 'DA-NOHV-8567';
+
+    // PHASE 1: GIAI ĐOẠN CHUẨN BỊ DỰ ÁN (All completed, 2021)
+    tasks.push(
+        // 1.1 Báo cáo đề xuất chủ trương đầu tư (Nhóm B)
+        {
+            TaskID: 'TSK-NOHV-0101',
+            Title: 'Lập Báo cáo đề xuất chủ trương đầu tư',
+            Description: 'Lập BC đề xuất CTĐT dự án xây dựng tòa nhà ở học viên 16 tầng, trình Giám đốc Học viện',
+            ProjectID: nohvProjectId,
+            AssigneeID: 'NV1001',
+            StartDate: '2021-01-10',
+            DueDate: '2021-02-15',
+            Status: TaskStatus.Done,
+            Priority: TaskPriority.High,
+            TimelineStep: 'PREP_POLICY',
+            ProgressPercent: 100,
+            IsCritical: true,
+            OutputDocument: 'Báo cáo đề xuất chủ trương ĐT',
+            LegalBasis: 'Đ34-35 Luật ĐTC 2019',
+            DurationDays: 36
+        },
+        {
+            TaskID: 'TSK-NOHV-0102',
+            Title: 'Thẩm định Báo cáo đề xuất chủ trương đầu tư',
+            Description: 'Sở KHĐT Hà Nội thẩm định BC đề xuất chủ trương ĐT',
+            ProjectID: nohvProjectId,
+            AssigneeID: 'NV1002',
+            StartDate: '2021-02-20',
+            DueDate: '2021-03-25',
+            Status: TaskStatus.Done,
+            Priority: TaskPriority.Urgent,
+            TimelineStep: 'PREP_POLICY',
+            ProgressPercent: 100,
+            Dependencies: [{ TaskID: 'TSK-NOHV-0101', Type: 'FS' as const, LagDays: 3 }],
+            DurationDays: 33
+        },
+        {
+            TaskID: 'TSK-NOHV-0103',
+            Title: 'Quyết định chủ trương đầu tư',
+            Description: 'Giám đốc Học viện CTQG HCM ban hành QĐ phê duyệt chủ trương ĐT',
+            ProjectID: nohvProjectId,
+            AssigneeID: 'NV1001',
+            StartDate: '2021-03-28',
+            DueDate: '2021-04-05',
+            Status: TaskStatus.Done,
+            Priority: TaskPriority.Urgent,
+            TimelineStep: 'PREP_POLICY',
+            ProgressPercent: 100,
+            IsCritical: true,
+            Dependencies: [{ TaskID: 'TSK-NOHV-0102', Type: 'FS' as const, LagDays: 2 }],
+            OutputDocument: 'QĐ phê duyệt chủ trương ĐT'
+        },
+
+        // 1.2 Khảo sát xây dựng phục vụ lập dự án
+        {
+            TaskID: 'TSK-NOHV-0201',
+            Title: 'Khảo sát địa hình khu đất 135 Nguyễn Phong Sắc',
+            Description: 'Khảo sát địa hình 1/500, xác định ranh giới khu đất 7.543 m²',
+            ProjectID: nohvProjectId,
+            AssigneeID: 'NV1033',
+            StartDate: '2021-03-15',
+            DueDate: '2021-04-15',
+            Status: TaskStatus.Done,
+            Priority: TaskPriority.Medium,
+            TimelineStep: 'PREP_SURVEY',
+            ProgressPercent: 100,
+            Dependencies: [{ TaskID: 'TSK-NOHV-0101', Type: 'SS' as const, LagDays: 45 }],
+            Assignees: [
+                { EmployeeID: 'NV1033', AllocationPercent: 50, Role: 'Lead' },
+                { EmployeeID: 'NV1034', AllocationPercent: 40, Role: 'Support' }
+            ]
+        },
+        {
+            TaskID: 'TSK-NOHV-0202',
+            Title: 'Khảo sát địa chất công trình',
+            Description: 'Khoan thăm dò 20 hố khoan, thí nghiệm đất nền cho tòa nhà 16 tầng + 2 hầm',
+            ProjectID: nohvProjectId,
+            AssigneeID: 'NV1034',
+            StartDate: '2021-04-01',
+            DueDate: '2021-05-20',
+            Status: TaskStatus.Done,
+            Priority: TaskPriority.High,
+            TimelineStep: 'PREP_SURVEY',
+            ProgressPercent: 100,
+            Dependencies: [{ TaskID: 'TSK-NOHV-0201', Type: 'SS' as const, LagDays: 17 }],
+            EstimatedCost: 850000000,
+            DurationDays: 49
+        },
+
+        // 1.3 Quy hoạch xây dựng
+        {
+            TaskID: 'TSK-NOHV-0301',
+            Title: 'Rà soát quy hoạch chi tiết khu vực Cầu Giấy',
+            Description: 'Kiểm tra phù hợp QH phân khu, QH chi tiết 1/500 khu vực Nghĩa Tân',
+            ProjectID: nohvProjectId,
+            AssigneeID: 'NV1002',
+            StartDate: '2021-04-20',
+            DueDate: '2021-05-10',
+            Status: TaskStatus.Done,
+            Priority: TaskPriority.Medium,
+            TimelineStep: 'PREP_PLANNING',
+            ProgressPercent: 100,
+            OutputDocument: 'Văn bản xác nhận phù hợp QH'
+        },
+
+        // 1.4 Lập, thẩm định BC NCKT (Nhóm B)
+        {
+            TaskID: 'TSK-NOHV-0401',
+            Title: 'Lập Báo cáo nghiên cứu khả thi + Thiết kế cơ sở',
+            Description: 'Lập BCNCKT và TKCS tòa nhà 16 tầng, 2 hầm; 606 phòng ở; diện tích sàn 35.119 m²',
+            ProjectID: nohvProjectId,
+            AssigneeID: 'NV1027',
+            StartDate: '2021-05-15',
+            DueDate: '2021-08-30',
+            Status: TaskStatus.Done,
+            Priority: TaskPriority.High,
+            TimelineStep: 'PREP_FEASIBILITY',
+            ProgressPercent: 100,
+            IsCritical: true,
+            Dependencies: [
+                { TaskID: 'TSK-NOHV-0202', Type: 'FS' as const, LagDays: 0 },
+                { TaskID: 'TSK-NOHV-0301', Type: 'FS' as const, LagDays: 5 }
+            ],
+            Assignees: [
+                { EmployeeID: 'NV1027', AllocationPercent: 40, Role: 'Lead' },
+                { EmployeeID: 'NV1033', AllocationPercent: 30, Role: 'Support' },
+                { EmployeeID: 'NV1034', AllocationPercent: 20, Role: 'Support' }
+            ],
+            EstimatedCost: 3500000000,
+            DurationDays: 107,
+            LegalBasis: 'Đ14 NĐ 175'
+        },
+        {
+            TaskID: 'TSK-NOHV-0402',
+            Title: 'Thẩm định BCNCKT tại Sở Xây dựng Hà Nội',
+            Description: 'Sở XD thẩm định TKCS, Bộ XD thẩm tra PCCC, thẩm duyệt môi trường',
+            ProjectID: nohvProjectId,
+            AssigneeID: 'NV1005',
+            StartDate: '2021-09-05',
+            DueDate: '2021-10-15',
+            Status: TaskStatus.Done,
+            Priority: TaskPriority.Urgent,
+            TimelineStep: 'PREP_FEASIBILITY',
+            ProgressPercent: 100,
+            Dependencies: [{ TaskID: 'TSK-NOHV-0401', Type: 'FS' as const, LagDays: 5 }],
+            DurationDays: 40,
+            LegalBasis: 'K1 Đ22 NĐ 175'
+        },
+        {
+            TaskID: 'TSK-NOHV-0403',
+            Title: 'Hoàn thiện hồ sơ BCNCKT theo ý kiến thẩm định',
+            Description: 'Chỉnh sửa thiết kế PCCC, bổ sung giải pháp chống ngập tầng hầm',
+            ProjectID: nohvProjectId,
+            AssigneeID: 'NV1027',
+            StartDate: '2021-10-18',
+            DueDate: '2021-11-05',
+            Status: TaskStatus.Done,
+            Priority: TaskPriority.High,
+            TimelineStep: 'PREP_FEASIBILITY',
+            ProgressPercent: 100,
+            Dependencies: [{ TaskID: 'TSK-NOHV-0402', Type: 'FS' as const, LagDays: 2 }]
+        },
+
+        // 1.5 QĐ phê duyệt dự án
+        {
+            TaskID: 'TSK-NOHV-0501',
+            Title: 'Trình phê duyệt dự án đầu tư xây dựng',
+            Description: 'Trình Giám đốc Học viện phê duyệt DA với tổng mức ĐT 597 tỷ đồng',
+            ProjectID: nohvProjectId,
+            AssigneeID: 'NV1001',
+            StartDate: '2021-11-10',
+            DueDate: '2021-11-25',
+            Status: TaskStatus.Done,
+            Priority: TaskPriority.Urgent,
+            TimelineStep: 'PREP_DECISION',
+            ProgressPercent: 100,
+            Dependencies: [{ TaskID: 'TSK-NOHV-0403', Type: 'FS' as const, LagDays: 4 }],
+            OutputDocument: 'QĐ 8567-QĐ/HVCTQG phê duyệt DAXD',
+            IsCritical: true
+        }
+    );
+
+    // PHASE 2: GIAI ĐOẠN THỰC HIỆN DỰ ÁN (2022-2025)
+    tasks.push(
+        // 2.1 Chuẩn bị mặt bằng xây dựng
+        {
+            TaskID: 'TSK-NOHV-0601',
+            Title: 'Phá dỡ công trình cũ trên khu đất',
+            Description: 'Phá dỡ nhà cấp 4 và công trình phụ trợ cũ trong khu đất 7.543 m²',
+            ProjectID: nohvProjectId,
+            AssigneeID: 'NV1033',
+            StartDate: '2022-01-10',
+            DueDate: '2022-02-28',
+            Status: TaskStatus.Done,
+            Priority: TaskPriority.High,
+            TimelineStep: 'IMPL_SITE',
+            ProgressPercent: 100,
+            Dependencies: [{ TaskID: 'TSK-NOHV-0501', Type: 'FS' as const, LagDays: 45 }],
+            EstimatedCost: 1200000000,
+            DurationDays: 49
+        },
+        {
+            TaskID: 'TSK-NOHV-0602',
+            Title: 'San nền, gia cố mặt bằng thi công',
+            Description: 'Đào đất, san lấp, gia cố nền đất yếu khu vực tầng hầm',
+            ProjectID: nohvProjectId,
+            AssigneeID: 'NV1034',
+            StartDate: '2022-03-01',
+            DueDate: '2022-03-31',
+            Status: TaskStatus.Done,
+            Priority: TaskPriority.High,
+            TimelineStep: 'IMPL_SITE',
+            ProgressPercent: 100,
+            Dependencies: [{ TaskID: 'TSK-NOHV-0601', Type: 'FS' as const, LagDays: 1 }]
+        },
+        {
+            TaskID: 'TSK-NOHV-0603',
+            Title: 'Bàn giao mặt bằng sạch cho thi công',
+            Description: 'Nghiệm thu và bàn giao mặt bằng sạch 4.179 m² cho nhà thầu',
+            ProjectID: nohvProjectId,
+            AssigneeID: 'NV1001',
+            StartDate: '2022-04-01',
+            DueDate: '2022-04-10',
+            Status: TaskStatus.Done,
+            Priority: TaskPriority.Urgent,
+            TimelineStep: 'IMPL_SITE',
+            ProgressPercent: 100,
+            IsCritical: true,
+            Dependencies: [{ TaskID: 'TSK-NOHV-0602', Type: 'FS' as const, LagDays: 1 }]
+        },
+
+        // 2.2 Khảo sát xây dựng phục vụ thiết kế
+        {
+            TaskID: 'TSK-NOHV-0701',
+            Title: 'Khảo sát bổ sung địa chất phục vụ TKBVTC',
+            Description: 'Khảo sát bổ sung vị trí móng cọc khoan nhồi, thí nghiệm SPT',
+            ProjectID: nohvProjectId,
+            AssigneeID: 'NV1034',
+            StartDate: '2022-01-15',
+            DueDate: '2022-02-20',
+            Status: TaskStatus.Done,
+            Priority: TaskPriority.Medium,
+            TimelineStep: 'IMPL_SURVEY',
+            ProgressPercent: 100,
+            Dependencies: [{ TaskID: 'TSK-NOHV-0501', Type: 'FS' as const, LagDays: 50 }]
+        },
+
+        // 2.3 Thiết kế xây dựng & Dự toán (Nhóm B: TKXD triển khai sau TKCS)
+        {
+            TaskID: 'TSK-NOHV-0801',
+            Title: 'Lập hồ sơ thiết kế xây dựng triển khai',
+            Description: 'Thiết kế kỹ thuật + BVTC: kết cấu khung BTCT, 2 hầm + 16 tầng, 606 phòng ở',
+            ProjectID: nohvProjectId,
+            AssigneeID: 'NV1027',
+            StartDate: '2022-01-20',
+            DueDate: '2022-04-30',
+            Status: TaskStatus.Done,
+            Priority: TaskPriority.High,
+            TimelineStep: 'IMPL_DESIGN',
+            ProgressPercent: 100,
+            IsCritical: true,
+            Dependencies: [
+                { TaskID: 'TSK-NOHV-0501', Type: 'FS' as const, LagDays: 55 },
+                { TaskID: 'TSK-NOHV-0701', Type: 'SS' as const, LagDays: 5 }
+            ],
+            Assignees: [
+                { EmployeeID: 'NV1027', AllocationPercent: 40, Role: 'Lead' },
+                { EmployeeID: 'NV1033', AllocationPercent: 30, Role: 'Support' }
+            ],
+            EstimatedCost: 5200000000,
+            DurationDays: 100,
+            LegalBasis: 'Đ79-83 Luật XD 2014'
+        },
+        {
+            TaskID: 'TSK-NOHV-0802',
+            Title: 'Thẩm định TKXD tại Sở Xây dựng Hà Nội',
+            Description: 'Sở XD thẩm định TKKT, PCCC, điện nước, thang máy',
+            ProjectID: nohvProjectId,
+            AssigneeID: 'NV1005',
+            StartDate: '2022-05-05',
+            DueDate: '2022-06-15',
+            Status: TaskStatus.Done,
+            Priority: TaskPriority.High,
+            TimelineStep: 'IMPL_DESIGN',
+            ProgressPercent: 100,
+            Dependencies: [{ TaskID: 'TSK-NOHV-0801', Type: 'FS' as const, LagDays: 4 }],
+            DurationDays: 41
+        },
+        {
+            TaskID: 'TSK-NOHV-0803',
+            Title: 'Phê duyệt thiết kế XD và dự toán',
+            Description: 'CĐT phê duyệt TKXD toàn bộ 17 gói thầu, tổng dự toán 429,6 tỷ phần XD',
+            ProjectID: nohvProjectId,
+            AssigneeID: 'NV1001',
+            StartDate: '2022-06-20',
+            DueDate: '2022-07-05',
+            Status: TaskStatus.Done,
+            Priority: TaskPriority.Urgent,
+            TimelineStep: 'IMPL_DESIGN',
+            ProgressPercent: 100,
+            IsCritical: true,
+            Dependencies: [{ TaskID: 'TSK-NOHV-0802', Type: 'FS' as const, LagDays: 4 }],
+            OutputDocument: 'QĐ phê duyệt TKXD & Dự toán'
+        },
+
+        // 2.4 Cấp Giấy phép xây dựng
+        {
+            TaskID: 'TSK-NOHV-0901',
+            Title: 'Xin cấp Giấy phép xây dựng tại Sở XD HN',
+            Description: 'Nộp hồ sơ xin GPXD công trình 16 tầng + 2 hầm tại Sở XD Hà Nội',
+            ProjectID: nohvProjectId,
+            AssigneeID: 'NV1005',
+            StartDate: '2022-07-10',
+            DueDate: '2022-08-15',
+            Status: TaskStatus.Done,
+            Priority: TaskPriority.High,
+            TimelineStep: 'IMPL_PERMIT',
+            ProgressPercent: 100,
+            Dependencies: [{ TaskID: 'TSK-NOHV-0803', Type: 'FS' as const, LagDays: 5 }],
+            OutputDocument: 'Giấy phép xây dựng số 789/GPXD',
+            DurationDays: 36
+        },
+
+        // 2.5 Lựa chọn nhà thầu và ký kết hợp đồng
+        {
+            TaskID: 'TSK-NOHV-1001',
+            Title: 'Lập Kế hoạch lựa chọn nhà thầu (KHLCNT)',
+            Description: 'Lập KHLCNT cho toàn bộ 17 gói thầu, trình Giám đốc Học viện phê duyệt',
+            ProjectID: nohvProjectId,
+            AssigneeID: 'NV1002',
+            StartDate: '2022-07-15',
+            DueDate: '2022-08-10',
+            Status: TaskStatus.Done,
+            Priority: TaskPriority.High,
+            TimelineStep: 'IMPL_BIDDING',
+            ProgressPercent: 100,
+            Dependencies: [{ TaskID: 'TSK-NOHV-0803', Type: 'FS' as const, LagDays: 10 }],
+            OutputDocument: 'QĐ phê duyệt KHLCNT toàn dự án',
+            LegalBasis: 'Đ36-39 Luật Đấu thầu 2023'
+        },
+        {
+            TaskID: 'TSK-NOHV-1002',
+            Title: 'Tổ chức đấu thầu gói XL-01 (Xây thô + hoàn thiện)',
+            Description: 'Đấu thầu rộng rãi, 1 giai đoạn 1 túi hồ sơ, giá gói 169,8 tỷ',
+            ProjectID: nohvProjectId,
+            AssigneeID: 'NV1002',
+            StartDate: '2022-08-15',
+            DueDate: '2022-10-15',
+            Status: TaskStatus.Done,
+            Priority: TaskPriority.Urgent,
+            TimelineStep: 'IMPL_BIDDING',
+            ProgressPercent: 100,
+            IsCritical: true,
+            Dependencies: [{ TaskID: 'TSK-NOHV-1001', Type: 'FS' as const, LagDays: 5 }],
+            DurationDays: 61
+        },
+        {
+            TaskID: 'TSK-NOHV-1003',
+            Title: 'Tổ chức đấu thầu gói XL-02 (Cơ điện + PCCC)',
+            Description: 'Đấu thầu gói cơ điện, thang máy, PCCC, điều hòa, giá gói 89,3 tỷ',
+            ProjectID: nohvProjectId,
+            AssigneeID: 'NV1015',
+            StartDate: '2022-09-01',
+            DueDate: '2022-11-10',
+            Status: TaskStatus.Done,
+            Priority: TaskPriority.High,
+            TimelineStep: 'IMPL_BIDDING',
+            ProgressPercent: 100,
+            Dependencies: [{ TaskID: 'TSK-NOHV-1001', Type: 'FS' as const, LagDays: 20 }],
+            DurationDays: 70
+        },
+        {
+            TaskID: 'TSK-NOHV-1004',
+            Title: 'Ký hợp đồng với nhà thầu chính (XL-01, XL-02)',
+            Description: 'Đàm phán và ký HĐ trọn gói với nhà thầu trúng thầu',
+            ProjectID: nohvProjectId,
+            AssigneeID: 'NV1001',
+            StartDate: '2022-10-20',
+            DueDate: '2022-11-15',
+            Status: TaskStatus.Done,
+            Priority: TaskPriority.Urgent,
+            TimelineStep: 'IMPL_BIDDING',
+            ProgressPercent: 100,
+            IsCritical: true,
+            Dependencies: [
+                { TaskID: 'TSK-NOHV-1002', Type: 'FS' as const, LagDays: 5 },
+                { TaskID: 'TSK-NOHV-1003', Type: 'FS' as const, LagDays: 5 }
+            ],
+            OutputDocument: 'Hợp đồng xây lắp XL-01, XL-02'
+        },
+        {
+            TaskID: 'TSK-NOHV-1005',
+            Title: 'Lựa chọn nhà thầu tư vấn giám sát',
+            Description: 'Chỉ định thầu TV giám sát thi công (theo Đ22 Luật ĐT)',
+            ProjectID: nohvProjectId,
+            AssigneeID: 'NV1002',
+            StartDate: '2022-09-15',
+            DueDate: '2022-10-15',
+            Status: TaskStatus.Done,
+            Priority: TaskPriority.Medium,
+            TimelineStep: 'IMPL_BIDDING',
+            ProgressPercent: 100,
+            Dependencies: [{ TaskID: 'TSK-NOHV-1001', Type: 'FS' as const, LagDays: 35 }]
+        },
+
+        // 2.6 Thi công xây dựng công trình
+        {
+            TaskID: 'TSK-NOHV-1101',
+            Title: 'Khởi công xây dựng tòa nhà ở học viên',
+            Description: 'Tổ chức lễ khởi công, triển khai thi công phần hầm',
+            ProjectID: nohvProjectId,
+            AssigneeID: 'NV1001',
+            StartDate: '2022-11-20',
+            DueDate: '2022-11-25',
+            Status: TaskStatus.Done,
+            Priority: TaskPriority.Urgent,
+            TimelineStep: 'IMPL_CONSTRUCTION',
+            ProgressPercent: 100,
+            IsCritical: true,
+            Dependencies: [
+                { TaskID: 'TSK-NOHV-1004', Type: 'FS' as const, LagDays: 5 },
+                { TaskID: 'TSK-NOHV-0603', Type: 'FS' as const, LagDays: 0 },
+                { TaskID: 'TSK-NOHV-0901', Type: 'FS' as const, LagDays: 0 }
+            ]
+        },
+        {
+            TaskID: 'TSK-NOHV-1102',
+            Title: 'Thi công tường vây, phần hầm (2 tầng hầm)',
+            Description: 'Thi công tường vây, đào đất hầm, đổ BT sàn hầm B2, B1 (8.579 m² sàn hầm)',
+            ProjectID: nohvProjectId,
+            AssigneeID: 'NV1033',
+            StartDate: '2022-11-25',
+            DueDate: '2023-04-30',
+            Status: TaskStatus.Done,
+            Priority: TaskPriority.High,
+            TimelineStep: 'IMPL_CONSTRUCTION',
+            ProgressPercent: 100,
+            IsCritical: true,
+            Dependencies: [{ TaskID: 'TSK-NOHV-1101', Type: 'FS' as const, LagDays: 0 }],
+            DurationDays: 156,
+            EstimatedCost: 45000000000
+        },
+        {
+            TaskID: 'TSK-NOHV-1103',
+            Title: 'Thi công phần thân (16 tầng nổi)',
+            Description: 'Thi công kết cấu khung BTCT, sàn, tường, cầu thang 16 tầng (cao 64,4m)',
+            ProjectID: nohvProjectId,
+            AssigneeID: 'NV1034',
+            StartDate: '2023-05-01',
+            DueDate: '2024-03-31',
+            Status: TaskStatus.Done,
+            Priority: TaskPriority.High,
+            TimelineStep: 'IMPL_CONSTRUCTION',
+            ProgressPercent: 100,
+            IsCritical: true,
+            Dependencies: [{ TaskID: 'TSK-NOHV-1102', Type: 'FS' as const, LagDays: 1 }],
+            DurationDays: 335,
+            EstimatedCost: 95000000000
+        },
+        {
+            TaskID: 'TSK-NOHV-1104',
+            Title: 'Thi công hoàn thiện kiến trúc (trát, sơn, ốp lát)',
+            Description: 'Hoàn thiện bên trong 606 phòng ở, hành lang, sảnh, tiện ích tầng 1',
+            ProjectID: nohvProjectId,
+            AssigneeID: 'NV1033',
+            StartDate: '2024-01-15',
+            DueDate: '2024-08-31',
+            Status: TaskStatus.Done,
+            Priority: TaskPriority.High,
+            TimelineStep: 'IMPL_CONSTRUCTION',
+            ProgressPercent: 100,
+            Dependencies: [{ TaskID: 'TSK-NOHV-1103', Type: 'SS' as const, LagDays: -75 }],
+            DurationDays: 229,
+            EstimatedCost: 35000000000
+        },
+        {
+            TaskID: 'TSK-NOHV-1105',
+            Title: 'Thi công hệ thống cơ điện, thang máy, PCCC',
+            Description: 'Lắp đặt 4 thang máy, hệ M&E, PCCC, điều hòa trung tâm',
+            ProjectID: nohvProjectId,
+            AssigneeID: 'NV1034',
+            StartDate: '2024-02-01',
+            DueDate: '2024-10-15',
+            Status: TaskStatus.Done,
+            Priority: TaskPriority.High,
+            TimelineStep: 'IMPL_CONSTRUCTION',
+            ProgressPercent: 100,
+            Dependencies: [{ TaskID: 'TSK-NOHV-1103', Type: 'SS' as const, LagDays: -60 }],
+            EstimatedCost: 85000000000
+        },
+        {
+            TaskID: 'TSK-NOHV-1106',
+            Title: 'Thi công hạ tầng kỹ thuật, sân vườn, cảnh quan',
+            Description: 'San nền, đường nội bộ, cây xanh, hệ thống thoát nước, chiếu sáng ngoài nhà',
+            ProjectID: nohvProjectId,
+            AssigneeID: 'NV1033',
+            StartDate: '2024-06-01',
+            DueDate: '2024-11-30',
+            Status: TaskStatus.Done,
+            Priority: TaskPriority.Medium,
+            TimelineStep: 'IMPL_CONSTRUCTION',
+            ProgressPercent: 100,
+            Dependencies: [{ TaskID: 'TSK-NOHV-1104', Type: 'SS' as const, LagDays: 0 }],
+            EstimatedCost: 15000000000
+        },
+
+        // 2.7 Giám sát thi công
+        {
+            TaskID: 'TSK-NOHV-1201',
+            Title: 'Triển khai giám sát thi công toàn dự án',
+            Description: 'TV giám sát hiện trường theo Điều 120 Luật XD, kiểm tra chất lượng hàng ngày',
+            ProjectID: nohvProjectId,
+            AssigneeID: 'NV1027',
+            StartDate: '2022-11-20',
+            DueDate: '2025-01-15',
+            Status: TaskStatus.Done,
+            Priority: TaskPriority.High,
+            TimelineStep: 'IMPL_SUPERVISION',
+            ProgressPercent: 100,
+            Dependencies: [{ TaskID: 'TSK-NOHV-1101', Type: 'SS' as const, LagDays: 0 }],
+            Assignees: [
+                { EmployeeID: 'NV1027', AllocationPercent: 30, Role: 'Lead' },
+                { EmployeeID: 'NV1033', AllocationPercent: 50, Role: 'Field' },
+                { EmployeeID: 'NV1034', AllocationPercent: 40, Role: 'Field' }
+            ],
+            LegalBasis: 'Đ120 Luật XD 2014'
+        },
+
+        // 2.8 Tạm ứng, thanh toán
+        {
+            TaskID: 'TSK-NOHV-1301',
+            Title: 'Tạm ứng hợp đồng XL-01 (15%)',
+            Description: 'Lập hồ sơ tạm ứng 15% giá trị HĐ XL-01 = 25,47 tỷ',
+            ProjectID: nohvProjectId,
+            AssigneeID: 'NV1015',
+            StartDate: '2022-12-01',
+            DueDate: '2022-12-20',
+            Status: TaskStatus.Done,
+            Priority: TaskPriority.Urgent,
+            TimelineStep: 'IMPL_PAYMENT',
+            ProgressPercent: 100,
+            Dependencies: [{ TaskID: 'TSK-NOHV-1004', Type: 'FS' as const, LagDays: 15 }],
+            EstimatedCost: 25470000000
+        },
+        {
+            TaskID: 'TSK-NOHV-1302',
+            Title: 'Thanh toán đợt 1 - Phần hầm hoàn thành',
+            Description: 'Nghiệm thu và thanh toán KLHT phần hầm 2 tầng',
+            ProjectID: nohvProjectId,
+            AssigneeID: 'NV1015',
+            StartDate: '2023-05-10',
+            DueDate: '2023-05-31',
+            Status: TaskStatus.Done,
+            Priority: TaskPriority.High,
+            TimelineStep: 'IMPL_PAYMENT',
+            ProgressPercent: 100,
+            Dependencies: [{ TaskID: 'TSK-NOHV-1102', Type: 'FS' as const, LagDays: 10 }],
+            EstimatedCost: 40000000000
+        },
+        {
+            TaskID: 'TSK-NOHV-1303',
+            Title: 'Thanh toán đợt 2 - Phần thân tầng 1-8',
+            Description: 'Thanh toán khối lượng thi công kết cấu tầng 1 đến tầng 8',
+            ProjectID: nohvProjectId,
+            AssigneeID: 'NV1015',
+            StartDate: '2023-11-15',
+            DueDate: '2023-12-10',
+            Status: TaskStatus.Done,
+            Priority: TaskPriority.High,
+            TimelineStep: 'IMPL_PAYMENT',
+            ProgressPercent: 100,
+            EstimatedCost: 55000000000
+        },
+        {
+            TaskID: 'TSK-NOHV-1304',
+            Title: 'Thanh toán đợt 3 - Toàn bộ phần thân + cơ điện',
+            Description: 'Thanh toán KLHT phần thân 16 tầng và hệ thống M&E',
+            ProjectID: nohvProjectId,
+            AssigneeID: 'NV1015',
+            StartDate: '2024-11-01',
+            DueDate: '2024-11-30',
+            Status: TaskStatus.Done,
+            Priority: TaskPriority.High,
+            TimelineStep: 'IMPL_PAYMENT',
+            ProgressPercent: 100,
+            EstimatedCost: 120000000000
+        },
+
+        // 2.9 Nghiệm thu hoàn thành
+        {
+            TaskID: 'TSK-NOHV-1401',
+            Title: 'Nghiệm thu hoàn thành hạng mục kết cấu',
+            Description: 'Hội đồng nghiệm thu kiểm tra chất lượng kết cấu BTCT 16 tầng',
+            ProjectID: nohvProjectId,
+            AssigneeID: 'NV1027',
+            StartDate: '2024-10-15',
+            DueDate: '2024-11-10',
+            Status: TaskStatus.Done,
+            Priority: TaskPriority.High,
+            TimelineStep: 'IMPL_ACCEPTANCE',
+            ProgressPercent: 100,
+            Dependencies: [{ TaskID: 'TSK-NOHV-1103', Type: 'FS' as const, LagDays: 197 }]
+        },
+        {
+            TaskID: 'TSK-NOHV-1402',
+            Title: 'Kiểm tra PCCC trước khi đưa vào sử dụng',
+            Description: 'Phòng Cảnh sát PC&CC Hà Nội kiểm tra và cấp GCN đủ điều kiện PCCC',
+            ProjectID: nohvProjectId,
+            AssigneeID: 'NV1005',
+            StartDate: '2024-12-01',
+            DueDate: '2024-12-20',
+            Status: TaskStatus.Done,
+            Priority: TaskPriority.Urgent,
+            TimelineStep: 'IMPL_ACCEPTANCE',
+            ProgressPercent: 100,
+            OutputDocument: 'GCN đủ điều kiện PCCC',
+            IsCritical: true
+        },
+        {
+            TaskID: 'TSK-NOHV-1403',
+            Title: 'Nghiệm thu hoàn thành công trình đưa vào sử dụng',
+            Description: 'Hội đồng nghiệm thu Nhà nước kiểm tra, nghiệm thu toàn bộ công trình',
+            ProjectID: nohvProjectId,
+            AssigneeID: 'NV1001',
+            StartDate: '2025-01-05',
+            DueDate: '2025-01-25',
+            Status: TaskStatus.Done,
+            Priority: TaskPriority.Urgent,
+            TimelineStep: 'IMPL_ACCEPTANCE',
+            ProgressPercent: 100,
+            IsCritical: true,
+            Dependencies: [
+                { TaskID: 'TSK-NOHV-1401', Type: 'FS' as const, LagDays: 55 },
+                { TaskID: 'TSK-NOHV-1402', Type: 'FS' as const, LagDays: 15 }
+            ],
+            OutputDocument: 'Biên bản NTHTTCTRĐVSD',
+            LegalBasis: 'Đ123-124 Luật XD 2014'
+        }
+    );
+
+    // PHASE 3: GIAI ĐOẠN KẾT THÚC XÂY DỰNG (2025)
+    tasks.push(
+        // 3.1 Quyết toán hợp đồng xây dựng
+        {
+            TaskID: 'TSK-NOHV-1501',
+            Title: 'Quyết toán hợp đồng XL-01 (Xây thô + hoàn thiện)',
+            Description: 'Lập hồ sơ quyết toán A-B, đối chiếu khối lượng, đơn giá HĐ XL-01',
+            ProjectID: nohvProjectId,
+            AssigneeID: 'NV1002',
+            StartDate: '2025-02-01',
+            DueDate: '2025-03-15',
+            Status: TaskStatus.Done,
+            Priority: TaskPriority.High,
+            TimelineStep: 'CLOSE_CONTRACT_SETTLEMENT',
+            ProgressPercent: 100,
+            Dependencies: [{ TaskID: 'TSK-NOHV-1403', Type: 'FS' as const, LagDays: 7 }],
+            DurationDays: 42
+        },
+        {
+            TaskID: 'TSK-NOHV-1502',
+            Title: 'Quyết toán hợp đồng XL-02 (Cơ điện, PCCC)',
+            Description: 'Quyết toán A-B gói cơ điện, thang máy, PCCC',
+            ProjectID: nohvProjectId,
+            AssigneeID: 'NV1015',
+            StartDate: '2025-02-15',
+            DueDate: '2025-03-31',
+            Status: TaskStatus.Done,
+            Priority: TaskPriority.High,
+            TimelineStep: 'CLOSE_CONTRACT_SETTLEMENT',
+            ProgressPercent: 100,
+            DurationDays: 44
+        },
+        {
+            TaskID: 'TSK-NOHV-1503',
+            Title: 'Thanh lý toàn bộ hợp đồng với nhà thầu',
+            Description: 'Ký biên bản thanh lý 17 hợp đồng, hoàn trả bảo lãnh thực hiện HĐ',
+            ProjectID: nohvProjectId,
+            AssigneeID: 'NV1001',
+            StartDate: '2025-04-01',
+            DueDate: '2025-04-30',
+            Status: TaskStatus.Done,
+            Priority: TaskPriority.High,
+            TimelineStep: 'CLOSE_CONTRACT_SETTLEMENT',
+            ProgressPercent: 100,
+            Dependencies: [
+                { TaskID: 'TSK-NOHV-1501', Type: 'FS' as const, LagDays: 17 },
+                { TaskID: 'TSK-NOHV-1502', Type: 'FS' as const, LagDays: 1 }
+            ]
+        },
+
+        // 3.2 Quyết toán vốn đầu tư dự án hoàn thành
+        {
+            TaskID: 'TSK-NOHV-1601',
+            Title: 'Lập Báo cáo quyết toán vốn đầu tư dự án hoàn thành',
+            Description: 'Tổng hợp toàn bộ chi phí dự án, lập BC quyết toán trình Giám đốc Học viện',
+            ProjectID: nohvProjectId,
+            AssigneeID: 'NV1002',
+            StartDate: '2025-05-01',
+            DueDate: '2025-06-30',
+            Status: TaskStatus.Done,
+            Priority: TaskPriority.Urgent,
+            TimelineStep: 'CLOSE_CAPITAL_SETTLEMENT',
+            ProgressPercent: 100,
+            IsCritical: true,
+            Dependencies: [{ TaskID: 'TSK-NOHV-1503', Type: 'FS' as const, LagDays: 1 }],
+            DurationDays: 60,
+            LegalBasis: 'TT 96/2021/TT-BTC',
+            EstimatedCost: 597000000000
+        },
+        {
+            TaskID: 'TSK-NOHV-1602',
+            Title: 'Kiểm toán Nhà nước quyết toán dự án',
+            Description: 'KTNN kiểm toán quyết toán dự án hoàn thành',
+            ProjectID: nohvProjectId,
+            AssigneeID: 'NV1005',
+            StartDate: '2025-07-01',
+            DueDate: '2025-08-31',
+            Status: TaskStatus.Done,
+            Priority: TaskPriority.Urgent,
+            TimelineStep: 'CLOSE_CAPITAL_SETTLEMENT',
+            ProgressPercent: 100,
+            Dependencies: [{ TaskID: 'TSK-NOHV-1601', Type: 'FS' as const, LagDays: 1 }],
+            DurationDays: 61
+        },
+        {
+            TaskID: 'TSK-NOHV-1603',
+            Title: 'Phê duyệt quyết toán vốn đầu tư hoàn thành',
+            Description: 'Giám đốc Học viện phê duyệt quyết toán dự án',
+            ProjectID: nohvProjectId,
+            AssigneeID: 'NV1001',
+            StartDate: '2025-09-05',
+            DueDate: '2025-09-20',
+            Status: TaskStatus.Done,
+            Priority: TaskPriority.Urgent,
+            TimelineStep: 'CLOSE_CAPITAL_SETTLEMENT',
+            ProgressPercent: 100,
+            IsCritical: true,
+            Dependencies: [{ TaskID: 'TSK-NOHV-1602', Type: 'FS' as const, LagDays: 4 }],
+            OutputDocument: 'QĐ phê duyệt quyết toán VĐTDA'
+        },
+
+        // 3.3 Bàn giao công trình đưa vào sử dụng
+        {
+            TaskID: 'TSK-NOHV-1701',
+            Title: 'Bàn giao công trình cho đơn vị quản lý vận hành',
+            Description: 'Bàn giao tòa nhà 16 tầng (606 phòng) cho Ban Quản lý KTX Học viện',
+            ProjectID: nohvProjectId,
+            AssigneeID: 'NV1001',
+            StartDate: '2025-02-01',
+            DueDate: '2025-02-15',
+            Status: TaskStatus.Done,
+            Priority: TaskPriority.Urgent,
+            TimelineStep: 'CLOSE_HANDOVER',
+            ProgressPercent: 100,
+            Dependencies: [{ TaskID: 'TSK-NOHV-1403', Type: 'FS' as const, LagDays: 7 }],
+            OutputDocument: 'Biên bản bàn giao công trình'
+        },
+
+        // 3.4 Bảo hành công trình
+        {
+            TaskID: 'TSK-NOHV-1801',
+            Title: 'Theo dõi bảo hành công trình (24 tháng)',
+            Description: 'Giám sát bảo hành kết cấu, chống thấm, thang máy, PCCC trong 24 tháng',
+            ProjectID: nohvProjectId,
+            AssigneeID: 'NV1027',
+            StartDate: '2025-02-16',
+            DueDate: '2025-12-31',
+            Status: TaskStatus.Done,
+            Priority: TaskPriority.Medium,
+            TimelineStep: 'CLOSE_WARRANTY',
+            ProgressPercent: 100,
+            Dependencies: [{ TaskID: 'TSK-NOHV-1701', Type: 'FS' as const, LagDays: 1 }]
+        },
+
+        // 3.5 Bàn giao hồ sơ lưu trữ
+        {
+            TaskID: 'TSK-NOHV-1901',
+            Title: 'Hoàn thiện hồ sơ hoàn công công trình',
+            Description: 'Tập hợp đầy đủ hồ sơ hoàn công, bản vẽ AS-BUILT, nhật ký thi công',
+            ProjectID: nohvProjectId,
+            AssigneeID: 'NV1033',
+            StartDate: '2025-02-01',
+            DueDate: '2025-03-30',
+            Status: TaskStatus.Done,
+            Priority: TaskPriority.High,
+            TimelineStep: 'CLOSE_ARCHIVE',
+            ProgressPercent: 100,
+            DurationDays: 57
+        },
+        {
+            TaskID: 'TSK-NOHV-1902',
+            Title: 'Bàn giao hồ sơ cho Kho lưu trữ Học viện',
+            Description: 'Nộp toàn bộ hồ sơ dự án cho Phòng Lưu trữ - Tổng hợp',
+            ProjectID: nohvProjectId,
+            AssigneeID: 'NV1002',
+            StartDate: '2025-10-01',
+            DueDate: '2025-10-20',
+            Status: TaskStatus.Done,
+            Priority: TaskPriority.Medium,
+            TimelineStep: 'CLOSE_ARCHIVE',
+            ProgressPercent: 100,
+            Dependencies: [{ TaskID: 'TSK-NOHV-1901', Type: 'FS' as const, LagDays: 185 }]
+        }
+    );
+
+    // ============================================================
     // COMPREHENSIVE SAMPLE DATA FOR TRƯỜNG CHÍNH TRỊ TRẦN PHÚ
     // Project: PR2500060068 - Đầu tư xây dựng Trường Chính trị Trần Phú
     // This provides full lifecycle tasks demonstrating the new features:
@@ -2281,7 +3093,7 @@ export const saveTasksToDB = (tasks: Task[]) => {
 };
 
 // Version number to force refresh when data structure changes
-const TASKS_DATA_VERSION = '2026-02-02-v1-tranphu';
+const TASKS_DATA_VERSION = '2026-02-14-v2-nohv';
 
 export const loadTasksFromStorage = (): Task[] => {
     if (typeof localStorage === 'undefined') {
