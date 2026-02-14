@@ -74,10 +74,10 @@ const OrgChart = () => {
                     <div className="absolute top-full left-1/2 w-px h-5 bg-gray-300 -translate-x-1/2"></div>
                 </div>
 
-                {/* Level 1: Quyền Trưởng Ban */}
+                {/* Level 1: Trưởng Ban */}
                 <div className="relative z-10 mb-8 group">
                     <div className="bg-orange-600 text-white px-8 py-3 rounded-xl shadow-lg border-2 border-white ring-1 ring-gray-200 text-center relative cursor-default hover:scale-105 transition-transform">
-                        <h4 className="font-black text-sm uppercase tracking-tight">QUYỀN TRƯỞNG BAN</h4>
+                        <h4 className="font-black text-sm uppercase tracking-tight">TRƯỞNG BAN</h4>
                         <p className="text-[10px] mt-0.5 opacity-80">ThS. Hoàng Văn Hùng</p>
                         <div className="w-2 h-2 bg-white rounded-full absolute -bottom-1 left-1/2 -translate-x-1/2"></div>
                     </div>
@@ -866,30 +866,30 @@ const regulationsData: Chapter[] = [
             {
                 id: "03.06",
                 code: "Điều 6",
-                title: "Quyền hạn, trách nhiệm của Giám đốc Ban QLDA",
+                title: "Quyền hạn, trách nhiệm của Trưởng Ban QLDA",
                 content: <ResponsibilityList items={[
                     "Là người đứng đầu, phụ trách chung, lãnh đạo, chỉ đạo, điều hành và quản lý toàn diện mọi hoạt động của Ban QLDA theo chức năng, nhiệm vụ, quyền hạn; chịu trách nhiệm trước Giám đốc Học viện CTQG HCM và trước pháp luật về toàn bộ hoạt động thuộc thẩm quyền của Ban.",
                     "Chỉ đạo tổ chức triển khai tất cả các dự án được cấp có thẩm quyền giao cho Ban QLDA làm Chủ đầu tư hoặc của các Chủ đầu tư khác thông qua hợp đồng tư vấn quản lý dự án.",
                     "Ban hành Quy chế làm việc, quy định cụ thể chức năng, nhiệm vụ, quyền hạn của các phòng trực thuộc, mối liên hệ công tác giữa các phòng và các quy chế khác đảm bảo công tác quản lý điều hành.",
-                    "Ban hành Đề án vị trí việc làm theo đúng quy định; phân công, bố trí, sắp xếp hợp lý đội ngũ viên chức đúng cơ cấu, đảm bảo tiêu chuẩn ngạch và khung năng lực theo từng vị trí việc làm đã phê duyệt; phân công công việc cho các Phó Giám đốc; ủy quyền cho một Phó Giám đốc điều hành hoạt động của Ban khi vắng mặt.",
+                    "Ban hành Đề án vị trí việc làm theo đúng quy định; phân công, bố trí, sắp xếp hợp lý đội ngũ cán bộ đúng cơ cấu, đảm bảo tiêu chuẩn; phân công công việc cho các cán bộ; ủy quyền cho một cán bộ điều hành hoạt động của Ban khi vắng mặt.",
                     "Chỉ đạo, kiểm tra, giám sát và đôn đốc tổ chức, cá nhân và các Phòng trực thuộc Ban QLDA trong việc thực hiện các nhiệm vụ đã phân công.",
                     "Phụ trách công tác quản lý tài chính; tổ chức bộ máy, nhân sự; đào tạo, thi đua - khen thưởng, kỷ luật; bảo vệ chính trị nội bộ; kế hoạch - đầu tư - đấu thầu; thanh tra, kiểm tra, kiểm toán; phòng chống tham nhũng, lãng phí; tiếp công dân và giải quyết khiếu nại, tố cáo; chiến lược phát triển chung.",
                     "Tổ chức, chủ trì các cuộc họp định kỳ và đột xuất của Ban Quản lý dự án, đôn đốc, kiểm tra, giám sát việc thực hiện nhiệm vụ công tác của các phòng và của các thành viên Ban QLDA.",
                     "Ký các văn bản trình Giám đốc Học viện, Ban Cán sự Đảng Học viện. Ký các văn bản, hợp đồng xây dựng, hồ sơ liên quan đến dự án; ký chứng từ thanh toán, tạm ứng; ký hợp đồng làm việc/lao động.",
-                    "Là người phát ngôn của Ban QLDA hoặc ủy quyền cho Phó Giám đốc phát ngôn, cung cấp thông tin của đơn vị cho báo chí và các cơ quan chức năng khi có yêu cầu.",
-                    "Trực tiếp giải quyết một số công việc đã phân công cho Phó Giám đốc phụ trách trong các trường hợp: cấp bách, quan trọng; Phó Giám đốc đi vắng; hoặc vấn đề có ý kiến khác nhau giữa các Phó Giám đốc.",
+                    "Là người phát ngôn của Ban QLDA hoặc ủy quyền cho cán bộ phát ngôn, cung cấp thông tin của đơn vị cho báo chí và các cơ quan chức năng khi có yêu cầu.",
+                    "Trực tiếp giải quyết một số công việc đã phân công cho cán bộ phụ trách trong các trường hợp: cấp bách, quan trọng; cán bộ đi vắng; hoặc vấn đề có ý kiến khác nhau.",
                     (
                         <div key="item-11">
-                            <strong>Những công việc cần thảo luận tập thể Lãnh đạo Ban QLDA trước khi Giám đốc quyết định:</strong>
+                            <strong>Những công việc cần thảo luận tập thể Lãnh đạo Ban QLDA trước khi Trưởng Ban quyết định:</strong>
                             <ul className="list-disc pl-5 mt-2 space-y-1 text-gray-600 font-medium">
                                 <li>Chiến lược, quy hoạch, kế hoạch phát triển Ban QLDA.</li>
                                 <li>Chương trình công tác, kế hoạch và dự thảo văn bản được Giám đốc Học viện giao chủ trì.</li>
                                 <li>Kế hoạch triển khai các chủ trương, chính sách quan trọng.</li>
                                 <li>Công tác tổ chức bộ máy và nhân sự theo quy định.</li>
                                 <li>Báo cáo hàng năm về tổng kết tình hình thực hiện kế hoạch và kiểm điểm chỉ đạo điều hành.</li>
-                                <li>Những vấn đề khác mà Giám đốc thấy cần thiết.</li>
+                                <li>Những vấn đề khác mà Trưởng Ban thấy cần thiết.</li>
                             </ul>
-                            <p className="mt-2 italic text-xs text-gray-500">Sau khi có ý kiến tập thể, Giám đốc là người đưa ra quyết định cuối cùng và chịu trách nhiệm.</p>
+                            <p className="mt-2 italic text-xs text-gray-500">Sau khi có ý kiến tập thể, Trưởng Ban là người đưa ra quyết định cuối cùng và chịu trách nhiệm.</p>
                         </div>
                     )
                 ]} />
@@ -897,17 +897,16 @@ const regulationsData: Chapter[] = [
             {
                 id: "03.07",
                 code: "Điều 7",
-                title: "Quyền hạn, trách nhiệm của Phó Giám đốc Ban QLDA",
+                title: "Nhiệm vụ của cán bộ Ban QLDA",
                 content: <ResponsibilityList items={[
                     "Tham mưu, giúp việc cho Trưởng Ban, được phân công phụ trách một số lĩnh vực; thay mặt Trưởng Ban giải quyết công việc trong phạm vi được giao và chịu trách nhiệm trước Trưởng Ban, Giám đốc Học viện và pháp luật về kết quả thực hiện.",
-                    "Chủ động phân công nhiệm vụ, bố trí nhân sự cho các phòng được giao phụ trách; tham mưu về việc điều chuyển, xử lý kỷ luật nhân sự thuộc lĩnh vực phụ trách khi có vi phạm.",
-                    "Khi được giao QLDA: Chủ trì, chỉ đạo các phòng QLDA đề xuất nhân sự Tổ thực hiện dự án và phòng Kế hoạch - Đấu thầu đề xuất Tổ chuyên gia đấu thầu trình Giám đốc thành lập.",
+                    "Chủ động phân công nhiệm vụ, bố trí nhân sự cho các bộ phận được giao phụ trách; tham mưu về việc điều chuyển, xử lý kỷ luật nhân sự thuộc lĩnh vực phụ trách khi có vi phạm.",
+                    "Khi được giao QLDA: Chủ trì, chỉ đạo đề xuất nhân sự Tổ thực hiện dự án và Tổ chuyên gia đấu thầu trình Trưởng Ban thành lập.",
                     "Tham gia các cuộc họp, đề xuất hoặc kiến nghị về các giải pháp, biện pháp cần thiết để thực hiện các nhiệm vụ của Ban Quản lý dự án.",
-                    "Giúp Giám đốc chỉ đạo, điều hành, hướng dẫn, đôn đốc, kiểm tra và xử lý công việc theo sự phân công, ủy quyền; chịu trách nhiệm về việc thực hiện nhiệm vụ được giao.",
-                    "Đối với vấn đề chủ trương, nguyên tắc chưa có quy định hoặc nhạy cảm, quan trọng thì phải xin ý kiến Giám đốc trước khi quyết định.",
-                    "Được duyệt, ký văn bản thuộc lĩnh vực được phân công (trừ văn bản thuộc thẩm quyền Giám đốc); ký các văn bản, hợp đồng xây dựng, hồ sơ dự án khi được Giám đốc ủy quyền.",
-                    "Khi vắng mặt, Giám đốc trực tiếp hoặc phân công Phó Giám đốc khác giải quyết công việc thay thế và thông báo lại.",
-                    "Chủ động giải quyết công việc và phối hợp với các Phó Giám đốc khác; trường hợp còn ý kiến khác nhau hoặc nội dung quan trọng thì báo cáo Giám đốc quyết định.",
+                    "Giúp Trưởng Ban chỉ đạo, điều hành, hướng dẫn, đôn đốc, kiểm tra và xử lý công việc theo sự phân công; chịu trách nhiệm về việc thực hiện nhiệm vụ được giao.",
+                    "Đối với vấn đề chủ trương, nguyên tắc chưa có quy định hoặc nhạy cảm, quan trọng thì phải xin ý kiến Trưởng Ban trước khi quyết định.",
+                    "Được duyệt, ký văn bản thuộc lĩnh vực được phân công (trừ văn bản thuộc thẩm quyền Trưởng Ban); ký các văn bản, hợp đồng xây dựng, hồ sơ dự án khi được Trưởng Ban ủy quyền.",
+                    "Chủ động giải quyết công việc và phối hợp với các cán bộ khác; trường hợp còn ý kiến khác nhau hoặc nội dung quan trọng thì báo cáo Trưởng Ban quyết định.",
                     "Thực hiện các nhiệm vụ khác khi được Giám đốc Học viện giao, Trưởng Ban giao."
                 ]} />
             },
@@ -992,8 +991,8 @@ const regulationsData: Chapter[] = [
                 code: "Điều 12",
                 title: "Cách thức giải quyết công việc",
                 content: <ResponsibilityList items={[
-                    "Giám đốc và các Phó Giám đốc điều hành công việc trên cơ sở chương trình, kế hoạch công tác của Ban QLDA; tình hình thực tế; yêu cầu chỉ đạo của UBND tỉnh, các sở, ban, ngành; và các nhiệm vụ đột xuất.",
-                    "Giám đốc, Phó Giám đốc chủ trì họp, làm việc với lãnh đạo các cơ quan, tổ chức có liên quan để tham khảo ý kiến trước khi quyết định những vấn đề quan trọng hoặc còn vướng mắc chưa xử lý được ngay.",
+                    "Lãnh đạo Ban điều hành công việc trên cơ sở chương trình, kế hoạch công tác của Ban QLDA; tình hình thực tế; yêu cầu chỉ đạo của Giám đốc Học viện và các nhiệm vụ đột xuất.",
+                    "Trưởng Ban chủ trì họp, làm việc với lãnh đạo các cơ quan, tổ chức có liên quan để tham khảo ý kiến trước khi quyết định những vấn đề quan trọng hoặc còn vướng mắc chưa xử lý được ngay.",
                     "Khi trình hồ sơ giải quyết công việc cho Lãnh đạo Ban, cán bộ thụ lý hồ sơ phải có Tờ trình/Văn bản và đầy đủ hồ sơ kèm theo; đồng thời thực hiện xử lý công việc thông qua phần mềm hồ sơ quản lý công việc (TDO).",
                     "Lãnh đạo phòng, viên chức, người lao động chỉ được xử lý công việc sau khi lãnh đạo Ban QLDA đã có ý kiến chỉ đạo cụ thể trên phiếu trình hoặc thông qua phần mềm hồ sơ quản lý công việc."
                 ]} />
@@ -1006,7 +1005,7 @@ const regulationsData: Chapter[] = [
                     <div className="space-y-4">
                         {/* CHART HERE */}
                         <SubmissionProcessChart />
-                        <p className="text-sm font-medium text-gray-700 italic">Các phòng trực thuộc chỉ trình Giám đốc, Phó Giám đốc những vấn đề thuộc phạm vi giải quyết của Giám đốc, Phó Giám đốc khi có đủ các hồ sơ theo quy định.</p>
+                        <p className="text-sm font-medium text-gray-700 italic">Các bộ phận chỉ trình Lãnh đạo Ban những vấn đề thuộc phạm vi giải quyết của Lãnh đạo Ban khi có đủ các hồ sơ theo quy định.</p>
                         <ResponsibilityList items={[
                             (
                                 <div key="item-2">
@@ -1152,8 +1151,8 @@ const regulationsData: Chapter[] = [
                 code: "Điều 22",
                 title: "Quan hệ giữa Lãnh đạo Ban với các Phòng",
                 content: <ResponsibilityList items={[
-                    "Giám đốc, Phó Giám đốc định kỳ hoặc đột xuất họp/làm việc với lãnh đạo các phòng để chỉ đạo thực hiện chương trình công tác.",
-                    "Trưởng/phụ trách các phòng có trách nhiệm báo cáo kết quả thực hiện, kiến nghị giải quyết khó khăn vướng mắc và đề xuất điều chỉnh cơ chế chính sách với Ban Giám đốc."
+                    "Lãnh đạo Ban định kỳ hoặc đột xuất họp/làm việc với các bộ phận để chỉ đạo thực hiện chương trình công tác.",
+                    "Các cán bộ có trách nhiệm báo cáo kết quả thực hiện, kiến nghị giải quyết khó khăn vướng mắc và đề xuất điều chỉnh cơ chế chính sách với Lãnh đạo Ban."
                 ]} />
             },
             {
@@ -1163,7 +1162,7 @@ const regulationsData: Chapter[] = [
                 content: <ResponsibilityList items={[
                     "Phòng chủ trì giải quyết vấn đề liên quan phải trao đổi ý kiến với các phòng khác. Phòng được xin ý kiến có trách nhiệm trả lời đúng yêu cầu.",
                     "Các phòng có trách nhiệm phối hợp thực hiện dự án chung. Vấn đề vượt thẩm quyền hoặc không đủ điều kiện thì phòng chủ trì báo cáo Lãnh đạo Ban quyết định.",
-                    "Nguyên tắc: Việc thuộc chức năng phòng nào phòng đó chủ trì; chủ động phối hợp để thực hiện nhiệm vụ. Nếu có ý kiến khác nhau, phòng chủ trì báo cáo Ban Giám đốc.",
+                    "Nguyên tắc: Việc thuộc chức năng bộ phận nào bộ phận đó chủ trì; chủ động phối hợp để thực hiện nhiệm vụ. Nếu có ý kiến khác nhau, bộ phận chủ trì báo cáo Lãnh đạo Ban.",
                     "Tuân thủ Quy chế làm việc; phối hợp bằng văn bản hoặc trực tiếp đảm bảo chuyên môn, chất lượng và tiến độ.",
                     "Bảo đảm kỷ luật, kỷ cương trong phối hợp, đề cao trách nhiệm cá nhân."
                 ]} />
@@ -1181,12 +1180,12 @@ const regulationsData: Chapter[] = [
                 code: "Điều 25",
                 title: "Chế độ hội họp",
                 content: <ResponsibilityList items={[
-                    "Chế độ họp với UBND tỉnh, các cơ quan liên quan: Thực hiện theo quy định chung và khi cần thiết.",
+                    "Chế độ họp với Giám đốc Học viện, các Vụ và cơ quan liên quan: Thực hiện theo quy định chung và khi cần thiết.",
                     "Họp với đối tác (nhà thầu, tư vấn...): Tổ chức thường xuyên (ký HĐ, tiến độ, nghiệm thu, giải quyết vướng mắc...).",
-                    "Giao ban nội bộ: Định kỳ hàng tuần, tháng, quý hoặc đột xuất do Giám đốc (hoặc PGĐ được ủy quyền) chủ trì.",
-                    "Hội nghị sơ kết, tổng kết: Do Giám đốc quyết định nội dung, thành phần, thời gian.",
-                    "PGĐ triệu tập họp chuyên môn với các phòng theo kế hoạch được Giám đốc đồng ý và báo cáo kết quả.",
-                    "Phòng HC-TH: Thông báo triệu tập, chuẩn bị phòng họp, ghi biên bản và thông báo kết luận."
+                    "Giao ban nội bộ: Định kỳ hàng tuần, tháng, quý hoặc đột xuất do Trưởng Ban (hoặc người được ủy quyền) chủ trì.",
+                    "Hội nghị sơ kết, tổng kết: Do Trưởng Ban quyết định nội dung, thành phần, thời gian.",
+                    "Cán bộ triệu tập họp chuyên môn với các bộ phận theo kế hoạch được Trưởng Ban đồng ý và báo cáo kết quả.",
+                    "Bộ phận HC-TH: Thông báo triệu tập, chuẩn bị phòng họp, ghi biên bản và thông báo kết luận."
                 ]} />
             },
             {
@@ -1196,14 +1195,14 @@ const regulationsData: Chapter[] = [
                 content: (
                     <div className="space-y-4">
                         <ResponsibilityList items={[
-                            "Thực hiện báo cáo định kỳ/đột xuất với UBND tỉnh và cơ quan thẩm quyền.",
+                            "Thực hiện báo cáo định kỳ/đột xuất với Giám đốc Học viện và cơ quan thẩm quyền.",
                             (
                                 <div key="internal-report">
                                     <strong>Báo cáo nội bộ:</strong>
                                     <ul className="list-disc pl-5 mt-1 space-y-1 text-gray-600">
-                                        <li>PGĐ báo cáo Giám đốc: Tình hình công việc phụ trách, việc vượt thẩm quyền, kết quả họp/công tác được ủy quyền.</li>
-                                        <li>Trưởng phòng báo cáo Ban Giám đốc: Báo cáo tháng, 6 tháng, năm, chuyên đề, đột xuất.</li>
-                                        <li>Phòng Kế hoạch - Đấu thầu: Tổng hợp báo cáo giao ban, số liệu hoạt động; theo dõi đôn đốc chế độ báo cáo.</li>
+                                        <li>Cán bộ báo cáo Trưởng Ban: Tình hình công việc phụ trách, việc vượt thẩm quyền, kết quả họp/công tác được ủy quyền.</li>
+                                        <li>Các bộ phận báo cáo Lãnh đạo Ban: Báo cáo tháng, 6 tháng, năm, chuyên đề, đột xuất.</li>
+                                        <li>Bộ phận KH-TC: Tổng hợp báo cáo giao ban, số liệu hoạt động; theo dõi đôn đốc chế độ báo cáo.</li>
                                         <li>Cán bộ đi họp thay Lãnh đạo: Phải báo cáo kết quả làm việc.</li>
                                     </ul>
                                 </div>
@@ -1255,7 +1254,7 @@ const regulationsData: Chapter[] = [
                     "Thực hiện nghiêm túc giờ hành chính (8h/ngày) theo quy định. Giữ gìn vệ sinh, bảo quản tài sản công.",
                     "Tập trung nghiên cứu, thực hiện công việc đảm bảo tiến độ, chất lượng khi ở cơ quan.",
                     "Chế độ nghỉ phép thực hiện theo quy định pháp luật.",
-                    "Nghỉ việc riêng: Trừ vào phép năm (trừ các ngày nghỉ riêng được hưởng nguyên lương theo Luật Lao động). Trường hợp đặc biệt do Giám đốc quyết định."
+                    "Nghỉ việc riêng: Trừ vào phép năm (trừ các ngày nghỉ riêng được hưởng nguyên lương theo Luật Lao động). Trường hợp đặc biệt do Trưởng Ban quyết định."
                 ]} />
             },
             {
@@ -1263,10 +1262,10 @@ const regulationsData: Chapter[] = [
                 code: "Điều 30",
                 title: "Đi công tác trong và ngoài nước",
                 content: <ResponsibilityList items={[
-                    "Lãnh đạo Ban đi công tác: Các phòng chuẩn bị nội dung; Phòng HC-TH chuẩn bị hậu cần.",
-                    "Cán bộ đi công tác: Phải có chương trình, kế hoạch (nội dung, địa điểm, thời gian) trình Trưởng phòng báo cáo Giám đốc quyết định.",
-                    "Cử cán bộ tham gia đoàn công tác liên ngành/tỉnh: Phải đúng thành phần yêu cầu.",
-                    "Đi công tác nước ngoài: Thực hiện theo quy định pháp luật và quy chế đối ngoại của tỉnh.",
+                    "Lãnh đạo Ban đi công tác: Các bộ phận chuẩn bị nội dung; Bộ phận HC-TH chuẩn bị hậu cần.",
+                    "Cán bộ đi công tác: Phải có chương trình, kế hoạch (nội dung, địa điểm, thời gian) trình Trưởng Ban quyết định.",
+                    "Cử cán bộ tham gia đoàn công tác liên ngành: Phải đúng thành phần yêu cầu.",
+                    "Đi công tác nước ngoài: Thực hiện theo quy định pháp luật và quy chế đối ngoại của Học viện.",
                     "Chế độ công tác phí: Theo Quy chế chi tiêu nội bộ và quy định hiện hành."
                 ]} />
             },
@@ -1300,8 +1299,8 @@ const regulationsData: Chapter[] = [
                             Quy chế này có hiệu lực kể từ ngày ban hành và được phổ biến đến toàn thể cán bộ, viên chức, người lao động.
                         </div>
                         <ResponsibilityList items={[
-                            "Giám đốc, Phó Giám đốc, các phòng và toàn thể viên chức, NLĐ có trách nhiệm thực hiện Quy chế này.",
-                            "Giám đốc phân công nhiệm vụ cụ thể phù hợp với thực tiễn và quy định pháp luật.",
+                            "Trưởng Ban, các bộ phận và toàn thể cán bộ, công chức, viên chức, NLĐ có trách nhiệm thực hiện Quy chế này.",
+                            "Trưởng Ban phân công nhiệm vụ cụ thể phù hợp với thực tiễn và quy định pháp luật.",
                             "Trong quá trình thực hiện, nếu văn bản pháp luật mới làm thay đổi nội dung Quy chế, thì thực hiện theo văn bản mới.",
                             "Mọi vướng mắc cần được báo cáo kịp thời cho Lãnh đạo Ban (qua Phòng HC-TH) để nghiên cứu sửa đổi, bổ sung."
                         ]} />
