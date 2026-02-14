@@ -1,4 +1,4 @@
-
+﻿
 import {
     Project, ProjectGroup, InvestmentType, ProjectStatus, ProjectStage, ProjectSector,
     Contractor, Contract, ContractStatus, Payment, PaymentType, PaymentStatus, Document, DocCategory,
@@ -419,392 +419,317 @@ mockContractors.push(
     }
 );
 
-// MAPPING: Project ID -> List of specific contracts
-const specificContracts = [
-    // DA7946312: BV Cẩm Xuyên
-    { pid: "DA7946312", code: "20/2023/HĐTV-TVMT", val: 263000000, cName: "Công ty CP Tư vấn thiết kế Hà Tĩnh", type: "TV", date: "07/12/2023", name: "Tư vấn môi trường" },
-    { pid: "DA7946312", code: "19/2023/HĐTV-TVQH", val: 24348000, cName: "Công ty CP Tư vấn thiết kế Hà Tĩnh", type: "TV", date: "07/12/2023", name: "Tư vấn quy hoạch" },
-    { pid: "DA7946312", code: "18/2023/HĐTV-TVNCKT", val: 605869000, cName: "Công ty CP Tư vấn thiết kế Hà Tĩnh", type: "TV", date: "07/12/2023", name: "Lập Báo cáo NCKT" },
-
-    // DA7544621: BIIG2
-    { pid: "DA7544621", code: "25/2020/HĐXL-DDCN", val: 48028754750, cName: "Công ty CP Bơm Châu Âu", type: "XL", date: "28/04/2020", name: "Thi công Gói thầu số 07" },
-    { pid: "DA7544621", code: "195/2020/HĐXL-DDCN", val: 117675700920, cName: "Công ty CP Hà Huy", type: "XL", date: "14/12/2020", name: "Thi công Gói thầu số 08" },
-
-    // DA7333066: BĐKH
-    { pid: "DA7333066", code: "150/HĐTRNM-IWMC", val: 1590036756, cName: "Công ty cổ phần tư vấn và xây dựng Thái Hà", type: "XL", date: "06/11/2018", name: "Thi công trồng rừng ngập mặn" },
-
-    // DA007: 19 TYT (Finished Project - Detailed Data)
-    { pid: "DA007", code: "14/2023/TVTK", val: 594422460, cName: "Liên danh 3001650743 - 2901407806", type: "TV", date: "10/05/2023", name: "Tư vấn thiết kế BVTC" },
-    { pid: "DA007", code: "36/2023/HĐXL", val: 7205990780, cName: "Liên danh 3001650743 - 2901407806", type: "XL", date: "23/01/2023", name: "Thi công xây dựng cụm 1 (Cẩm Xuyên)" },
-    { pid: "DA007", code: "48/2023/HĐXL", val: 3019463578, cName: "Liên danh 3001806687 - 3000353064", type: "XL", date: "14/09/2023", name: "Thi công xây dựng cụm 2 (Thạch Hà)" },
-    { pid: "DA007", code: "43/2023/HĐXL", val: 11966889000, cName: "Liên danh 3000296112", type: "XL", date: "08/09/2023", name: "Thi công xây dựng cụm 3 (Can Lộc)" },
-    { pid: "DA007", code: "45/2023/HĐXL", val: 8587405926, cName: "Liên danh 3001313321 - 3002103239", type: "XL", date: "19/09/2023", name: "Thi công xây dựng cụm 4 (Hương Khê)" },
-    { pid: "DA007", code: "49/2023/TVGS", val: 289310000, cName: "Công ty CP Tư vấn thiết kế Hà Tĩnh", type: "TV", date: "22/09/2023", name: "Tư vấn giám sát thi công" },
-    { pid: "DA007", code: "3472/23/HD-BH", val: 2102807000, cName: "Công ty CP 3001279984", type: "K", date: "23/01/2024", name: "Bảo hiểm công trình" },
-
-    // DA7987973: Trường nghề
-    { pid: "DA7987973", code: "91/2023/HĐXLT", val: 33120487000, cName: "Liên danh 3001937697 - 3000645726", type: "XL", date: "27/12/2023", name: "Xây dựng nhà học 05 tầng" },
-    { pid: "DA7987973", code: "56/2023/TV/TKBVTC", val: 946492000, cName: "Công ty CP 3001279984", type: "TV", date: "10/10/2023", name: "Tư vấn thiết kế BVTC" },
-    { pid: "DA7987973", code: "120/2022/HĐ-TVTT", val: 50422000, cName: "Công ty CP Tư vấn thiết kế Hà Tĩnh", type: "TV", date: "12/12/2022", name: "Thẩm tra BC NCKT" },
-
-    // DA7632186: Nguyễn Du
-    { pid: "DA7632186", code: "24/2020/HĐXL-DDCN", val: 10823076000, cName: "Công ty CP 484", type: "XL", date: "29/04/2022", name: "Tu bổ tôn tạo di tích" },
-
-    // DA7535585: TTYT Kỳ Anh
-    { pid: "DA7535585", code: "52/2023/HĐXL", val: 713824000, cName: "Công ty 3000426153", type: "XL", date: "29/09/2023", name: "Xây dựng nhà để xe" },
-
-    // DA009: BVĐK
-    { pid: "DA009", code: "10/2023/TVTK", val: 1052411520, cName: "Liên danh 3001313321 - 3002103239", type: "TV", date: "07/12/2023", name: "Thiết kế BVTC 4 bệnh viện" },
-    { pid: "DA009", code: "114/2022/HĐTV", val: 272969000, cName: "Liên danh 3001313321 - 3002103239", type: "TV", date: "02/12/2022", name: "Lập BCNCKT" }
-];
-
 // ═══════════════════════════════════════════════════════════════════════════════
-// SAMPLE DATA: 2 Complete Packages - 1 Tư vấn (Consultancy), 1 Xây lắp (Construction)
-// With full lifecycle data: Contractors, Contracts, Payments, Settlement
+// GÓI THẦU DỰ ÁN NHÀ Ở HỌC VIÊN (DA-NOHV-8567)
+// 17 gói thầu theo KHLCNT được phê duyệt
 // ═══════════════════════════════════════════════════════════════════════════════
+
 
 export const mockBiddingPackages: BiddingPackage[] = [
     // ═══════════════════════════════════════════════════════════════
-    // PACKAGE 1: TƯ VẤN - Thiết kế BVTC (Consultancy - Completed)
-    // Lifecycle: KHLCNT → TBMT → Mời thầu → Đánh giá → Hợp đồng → Thực hiện → Quyết toán
-    // NO Nghiệm thu/Bảo hành for consultancy packages
+    // 17 GÓI THẦU DỰ ÁN NHÀ Ở HỌC VIÊN (DA-NOHV-8567)
+    // Nguồn: KHLCNT dự án Xây dựng tòa nhà ở học viên - HVCTQG HCM
     // ═══════════════════════════════════════════════════════════════
     {
-        PackageID: 'PKG-TV-DEMO-001',
-        ProjectID: 'DA007', // 19 Trạm Y tế
-        PackageNumber: 'TV-01',
-        PackageName: 'Tư vấn lập Báo cáo NCKT và Thiết kế BVTC',
-        Price: 650_000_000,
+        PackageID: "PKG-NOHV-01",
+        ProjectID: "DA-NOHV-8567",
+        PackageNumber: "01",
+        PackageName: "Tư vấn thiết kế nội thất",
+        Price: 912_752_000,
         Field: 'Consultancy',
-        SelectionMethod: 'Appointed', // Chỉ định thầu rút gọn
-        SelectionProcedure: 'Reduced',
-        BidType: 'Online',
-        ContractType: 'LumpSum',
-        Status: PackageStatus.Awarded,
-
-        // KHLCNT Info
-        KHLCNTCode: 'PL20240001-TV',
-        DecisionNumber: 'QĐ-156/2024/KHLCNT',
-        DecisionDate: '2024-01-15',
-        FundingSource: 'Ngân sách tỉnh',
-        Description: 'Tư vấn lập Báo cáo nghiên cứu khả thi và Thiết kế bản vẽ thi công cho 19 Trạm Y tế xã trên địa bàn tỉnh.',
-        SelectionDuration: '30 ngày',
-        SelectionStartDate: 'Tháng 02/2024',
-
-        // TBMT Info
-        NotificationCode: 'IB2024001234',
-        PostingDate: '2024-02-01',
-        BidClosingDate: '2024-02-20',
-        BidOpeningDate: '2024-02-20',
-
-        // Result
-        WinningContractorID: 'MST-TV-VINAXIM',
-        WinningPrice: 594_422_460,
-        ApprovalDate_Result: '2024-03-10',
-
-        // Execution
-        Duration: '120 ngày',
-        ContractID: 'CTR-TV-DEMO-001',
-    },
-
-    // ═══════════════════════════════════════════════════════════════
-    // PACKAGE 2: XÂY LẮP - Thi công xây dựng (Construction - Completed)
-    // Lifecycle: KHLCNT → TBMT → Mời thầu → Đánh giá → Hợp đồng → Thực hiện → Nghiệm thu → Bảo hành → Quyết toán
-    // HAS Nghiệm thu/Bảo hành stages
-    // ═══════════════════════════════════════════════════════════════
-    {
-        PackageID: 'PKG-XL-DEMO-001',
-        ProjectID: 'DA007', // 19 Trạm Y tế
-        PackageNumber: 'XL-00',
-        PackageName: 'Thi công xây dựng phần thân và hoàn thiện công trình nhà học 5 tầng',
-        Price: 28_500_000_000,
-        Field: 'Construction',
-        SelectionMethod: 'OpenBidding', // Đấu thầu rộng rãi
+        SelectionMethod: 'OpenBidding',
         SelectionProcedure: 'OneStageTwoEnvelope',
         BidType: 'Online',
         ContractType: 'LumpSum',
         Status: PackageStatus.Awarded,
-
-        // KHLCNT Info
-        KHLCNTCode: 'PL20240002-XL',
-        DecisionNumber: 'QĐ-289/2024/KHLCNT',
-        DecisionDate: '2024-01-20',
-        FundingSource: 'Ngân sách tỉnh và ngân sách trung ương',
-        Description: 'Thi công xây dựng phần thân và hoàn thiện công trình nhà học 5 tầng, bao gồm: Móng cọc, kết cấu bê tông cốt thép, xây trát hoàn thiện, M&E.',
-        SelectionDuration: '45 ngày',
-        SelectionStartDate: 'Tháng 02/2024',
-
-        // TBMT Info
-        NotificationCode: 'IB2024005678',
-        PostingDate: '2024-02-10',
-        BidClosingDate: '2024-03-25',
-        BidOpeningDate: '2024-03-25',
-
-        // Result
-        WinningContractorID: 'MST-XL-THANHLOI',
-        WinningPrice: 27_800_000_000,
-        ApprovalDate_Result: '2024-04-05',
-
-        // Execution
-        Duration: '540 ngày',
-        ContractID: 'CTR-XL-DEMO-001',
-    }
+        FundingSource: 'Vốn ngân sách Nhà nước chi đầu tư phát triển ngành Giáo dục - Đào tạo',
+        Duration: '60 ngày',
+        SelectionStartDate: 'Quý II, 2023',
+        HasOption: false,
+    },
+    {
+        PackageID: "PKG-NOHV-02",
+        ProjectID: "DA-NOHV-8567",
+        PackageNumber: "02",
+        PackageName: "Tư vấn thẩm tra thiết kế và dự toán nội thất",
+        Price: 113_204_000,
+        Field: 'Consultancy',
+        SelectionMethod: 'Appointed',
+        SelectionProcedure: 'Reduced',
+        BidType: 'Offline',
+        ContractType: 'LumpSum',
+        Status: PackageStatus.Awarded,
+        FundingSource: 'Vốn ngân sách Nhà nước chi đầu tư phát triển ngành Giáo dục - Đào tạo',
+        Duration: '30 ngày',
+        SelectionStartDate: 'Quý II, 2023',
+        HasOption: false,
+    },
+    {
+        PackageID: "PKG-NOHV-03",
+        ProjectID: "DA-NOHV-8567",
+        PackageNumber: "03",
+        PackageName: "Tư vấn thẩm định giá nội thất",
+        Price: 50_000_000,
+        Field: 'Consultancy',
+        SelectionMethod: 'Appointed',
+        SelectionProcedure: 'Reduced',
+        BidType: 'Offline',
+        ContractType: 'LumpSum',
+        Status: PackageStatus.Awarded,
+        FundingSource: 'Vốn ngân sách Nhà nước chi đầu tư phát triển ngành Giáo dục - Đào tạo',
+        Duration: '20 ngày',
+        SelectionStartDate: 'Quý II, 2023',
+        HasOption: false,
+    },
+    {
+        PackageID: "PKG-NOHV-04",
+        ProjectID: "DA-NOHV-8567",
+        PackageNumber: "04",
+        PackageName: "Tư vấn lập hồ sơ mời thầu, đánh giá hồ sơ dự thầu các gói thầu",
+        Price: 470_177_000,
+        Field: 'Consultancy',
+        SelectionMethod: 'Appointed',
+        SelectionProcedure: 'Reduced',
+        BidType: 'Offline',
+        ContractType: 'LumpSum',
+        Status: PackageStatus.Awarded,
+        FundingSource: 'Vốn ngân sách Nhà nước chi đầu tư phát triển ngành Giáo dục - Đào tạo',
+        Duration: '340 ngày',
+        SelectionStartDate: 'Quý IV, 2022',
+        HasOption: false,
+    },
+    {
+        PackageID: "PKG-NOHV-05",
+        ProjectID: "DA-NOHV-8567",
+        PackageNumber: "05",
+        PackageName: "Tư vấn thẩm định hồ sơ mời thầu, thẩm định kết quả lựa chọn nhà thầu các gói thầu",
+        Price: 217_024_000,
+        Field: 'Consultancy',
+        SelectionMethod: 'Appointed',
+        SelectionProcedure: 'Reduced',
+        BidType: 'Offline',
+        ContractType: 'LumpSum',
+        Status: PackageStatus.Awarded,
+        FundingSource: 'Vốn ngân sách Nhà nước chi đầu tư phát triển ngành Giáo dục - Đào tạo',
+        Duration: '260 ngày',
+        SelectionStartDate: 'Quý IV, 2022',
+        HasOption: false,
+    },
+    {
+        PackageID: "PKG-NOHV-06",
+        ProjectID: "DA-NOHV-8567",
+        PackageNumber: "06",
+        PackageName: "Giám sát thi công xây dựng, lắp đặt thiết bị và nội thất",
+        Price: 6_073_498_000,
+        Field: 'Consultancy',
+        SelectionMethod: 'OpenBidding',
+        SelectionProcedure: 'OneStageTwoEnvelope',
+        BidType: 'Online',
+        ContractType: 'LumpSum',
+        Status: PackageStatus.Awarded,
+        FundingSource: 'Vốn ngân sách Nhà nước chi đầu tư phát triển ngành Giáo dục - Đào tạo',
+        Duration: '720 ngày',
+        SelectionStartDate: 'Quý IV, 2022',
+        HasOption: false,
+    },
+    {
+        PackageID: "PKG-NOHV-07",
+        ProjectID: "DA-NOHV-8567",
+        PackageNumber: "07",
+        PackageName: "Quan trắc lún",
+        Price: 719_505_000,
+        Field: 'Consultancy',
+        SelectionMethod: 'OpenBidding',
+        SelectionProcedure: 'OneStageTwoEnvelope',
+        BidType: 'Online',
+        ContractType: 'LumpSum',
+        Status: PackageStatus.Awarded,
+        FundingSource: 'Vốn ngân sách Nhà nước chi đầu tư phát triển ngành Giáo dục - Đào tạo',
+        Duration: '720 ngày',
+        SelectionStartDate: 'Quý I, 2023',
+        HasOption: false,
+    },
+    {
+        PackageID: "PKG-NOHV-08",
+        ProjectID: "DA-NOHV-8567",
+        PackageNumber: "08",
+        PackageName: "Kiểm toán công trình",
+        Price: 1_195_194_000,
+        Field: 'Consultancy',
+        SelectionMethod: 'OpenBidding',
+        SelectionProcedure: 'OneStageTwoEnvelope',
+        BidType: 'Online',
+        ContractType: 'LumpSum',
+        Status: PackageStatus.Awarded,
+        FundingSource: 'Vốn ngân sách Nhà nước chi đầu tư phát triển ngành Giáo dục - Đào tạo',
+        Duration: '360 ngày',
+        SelectionStartDate: 'Quý III, 2023',
+        HasOption: false,
+    },
+    {
+        PackageID: "PKG-NOHV-09",
+        ProjectID: "DA-NOHV-8567",
+        PackageNumber: "09",
+        PackageName: "Thí nghiệm cọc",
+        Price: 1_218_805_000,
+        Field: 'Consultancy',
+        SelectionMethod: 'OpenBidding',
+        SelectionProcedure: 'OneStageTwoEnvelope',
+        BidType: 'Online',
+        ContractType: 'LumpSum',
+        Status: PackageStatus.Awarded,
+        FundingSource: 'Vốn ngân sách Nhà nước chi đầu tư phát triển ngành Giáo dục - Đào tạo',
+        Duration: '60 ngày',
+        SelectionStartDate: 'Quý IV, 2022',
+        HasOption: false,
+    },
+    {
+        PackageID: "PKG-NOHV-10",
+        ProjectID: "DA-NOHV-8567",
+        PackageNumber: "10",
+        PackageName: "Bảo hiểm công trình xây dựng và thiết bị",
+        Price: 643_493_000,
+        Field: 'NonConsultancy',
+        SelectionMethod: 'OpenBidding',
+        SelectionProcedure: 'OneStageOneEnvelope',
+        BidType: 'Online',
+        ContractType: 'LumpSum',
+        Status: PackageStatus.Awarded,
+        FundingSource: 'Vốn ngân sách Nhà nước chi đầu tư phát triển ngành Giáo dục - Đào tạo',
+        Duration: '720 ngày',
+        SelectionStartDate: 'Quý IV, 2022',
+        HasOption: false,
+    },
+    {
+        PackageID: "PKG-NOHV-11",
+        ProjectID: "DA-NOHV-8567",
+        PackageNumber: "11",
+        PackageName: "Phòng chống mối",
+        Price: 462_486_000,
+        Field: 'Construction',
+        SelectionMethod: 'Appointed',
+        SelectionProcedure: 'Reduced',
+        BidType: 'Offline',
+        ContractType: 'LumpSum',
+        Status: PackageStatus.Awarded,
+        FundingSource: 'Vốn ngân sách Nhà nước chi đầu tư phát triển ngành Giáo dục - Đào tạo',
+        Duration: '180 ngày',
+        SelectionStartDate: 'Quý II, 2023',
+        HasOption: false,
+    },
+    {
+        PackageID: "PKG-NOHV-12",
+        ProjectID: "DA-NOHV-8567",
+        PackageNumber: "12",
+        PackageName: "Thi công xây dựng công trình",
+        Price: 428_692_341_000,
+        Field: 'Construction',
+        SelectionMethod: 'OpenBidding',
+        SelectionProcedure: 'OneStageTwoEnvelope',
+        BidType: 'Online',
+        ContractType: 'UnitPrice',
+        Status: PackageStatus.Awarded,
+        FundingSource: 'Vốn ngân sách Nhà nước chi đầu tư phát triển ngành Giáo dục - Đào tạo',
+        Duration: '720 ngày',
+        SelectionStartDate: 'Quý IV, 2022',
+        HasOption: false,
+    },
+    {
+        PackageID: "PKG-NOHV-13",
+        ProjectID: "DA-NOHV-8567",
+        PackageNumber: "13",
+        PackageName: "Cung cấp lắp đặt thiết bị điều hòa không khí",
+        Price: 28_288_678_000,
+        Field: 'Goods',
+        SelectionMethod: 'OpenBidding',
+        SelectionProcedure: 'OneStageTwoEnvelope',
+        BidType: 'Online',
+        ContractType: 'LumpSum',
+        Status: PackageStatus.Awarded,
+        FundingSource: 'Vốn ngân sách Nhà nước chi đầu tư phát triển ngành Giáo dục - Đào tạo',
+        Duration: '360 ngày',
+        SelectionStartDate: 'Quý II, 2023',
+        HasOption: false,
+    },
+    {
+        PackageID: "PKG-NOHV-14",
+        ProjectID: "DA-NOHV-8567",
+        PackageNumber: "14",
+        PackageName: "Cung cấp, lắp đặt thiết bị hệ thống thang máy, thang cuốn",
+        Price: 30_416_440_000,
+        Field: 'Goods',
+        SelectionMethod: 'OpenBidding',
+        SelectionProcedure: 'OneStageTwoEnvelope',
+        BidType: 'Online',
+        ContractType: 'LumpSum',
+        Status: PackageStatus.Awarded,
+        FundingSource: 'Vốn ngân sách Nhà nước chi đầu tư phát triển ngành Giáo dục - Đào tạo',
+        Duration: '360 ngày',
+        SelectionStartDate: 'Quý III, 2023',
+        HasOption: false,
+    },
+    {
+        PackageID: "PKG-NOHV-15",
+        ProjectID: "DA-NOHV-8567",
+        PackageNumber: "15",
+        PackageName: "Cung cấp, lắp đặt thiết bị hệ thống điện nhẹ, âm thanh, camera giám sát",
+        Description: "Cung cấp, lắp đặt: thiết bị hệ thống điện nhẹ đồng bộ cho dự án theo thiết kế được duyệt; hệ thống thông tin (mạng, thoại, truyền hình); hệ thống âm thanh đầy đủ hoạt động điều khiển trung tâm; hệ thống quản lý và kiểm soát xe ra vào; hệ camera thống giám sát tòa nhà (thiết kế theo hệ thống camera IP)",
+        Price: 8_157_768_000,
+        Field: 'Goods',
+        SelectionMethod: 'OpenBidding',
+        SelectionProcedure: 'OneStageOneEnvelope',
+        BidType: 'Online',
+        ContractType: 'LumpSum',
+        Status: PackageStatus.Bidding,
+        FundingSource: 'Vốn ngân sách Nhà nước chi đầu tư phát triển ngành Giáo dục - Đào tạo',
+        Duration: '90 ngày',
+        SelectionDuration: '60 ngày',
+        SelectionStartDate: 'Quý II, 2025',
+        HasOption: false,
+        DecisionAgency: 'Ban quản lý dự án Đầu tư xây dựng chuyên ngành - Học viện Chính trị quốc gia Hồ Chí Minh',
+    },
+    {
+        PackageID: "PKG-NOHV-16",
+        ProjectID: "DA-NOHV-8567",
+        PackageNumber: "16",
+        PackageName: "Cung cấp, lắp đặt thiết bị hệ thống máy phát điện, trạm biến áp",
+        Price: 15_991_945_000,
+        Field: 'Goods',
+        SelectionMethod: 'OpenBidding',
+        SelectionProcedure: 'OneStageTwoEnvelope',
+        BidType: 'Online',
+        ContractType: 'LumpSum',
+        Status: PackageStatus.Awarded,
+        FundingSource: 'Vốn ngân sách Nhà nước chi đầu tư phát triển ngành Giáo dục - Đào tạo',
+        Duration: '180 ngày',
+        SelectionStartDate: 'Quý IV, 2023',
+        HasOption: false,
+    },
+    {
+        PackageID: "PKG-NOHV-17",
+        ProjectID: "DA-NOHV-8567",
+        PackageNumber: "17",
+        PackageName: "Cung cấp, lắp đặt hệ thống trang thiết bị nội thất (Bao gồm: trang thiết bị nội thất phòng ở, doanh cụ phòng ăn, thiết bị bếp)",
+        Description: "Cung cấp, lắp đặt trang thiết bị nội thất sinh hoạt cho toàn bộ khu nhà ở học viên 380 phòng (bao gồm: giường ngủ, tủ quần áo, bàn ghế làm việc, bàn ghế uống nước, quạt, ti vi, chăn ga gối đệm...); khu sảnh, lễ tân (bàn quầy, vách ngăn); khu nhà bếp (bao gồm 48 bộ bàn ghế phòng ăn và toàn bộ doanh cụ, thiết bị bếp)",
+        Price: 27_292_979_000,
+        Field: 'Goods',
+        SelectionMethod: 'OpenBidding',
+        SelectionProcedure: 'OneStageOneEnvelope',
+        BidType: 'Online',
+        ContractType: 'LumpSum',
+        Status: PackageStatus.Bidding,
+        FundingSource: 'Vốn ngân sách Nhà nước chi đầu tư phát triển ngành Giáo dục - Đào tạo',
+        Duration: '45 ngày',
+        SelectionDuration: '60 ngày',
+        SelectionStartDate: 'Quý II, 2025',
+        HasOption: false,
+        DecisionAgency: 'Ban quản lý dự án Đầu tư xây dựng chuyên ngành - Học viện Chính trị quốc gia Hồ Chí Minh',
+    },
 ];
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// CONTRACTORS for Demo Packages
+// GÓI THẦU DỰ ÁN TRƯỜNG CHÍNH TRỊ TRẦN PHÚ (PR2500060068)
 // ═══════════════════════════════════════════════════════════════════════════════
-mockContractors.push(
-    {
-        ContractorID: 'MST-TV-VINAXIM',
-        CapCertCode: 'TVXD-2024-001',
-        FullName: 'Công ty CP Tư vấn Thiết kế Xây dựng VINAXIM',
-        IsForeign: false,
-        Address: 'Số 123 Đường Nguyễn Trãi, Quận Thanh Xuân, Hà Nội',
-        ContactInfo: 'Tel: 024.3568.9999 | Email: vinaxim@tvxd.vn',
-    },
-    {
-        ContractorID: 'MST-XL-THANHLOI',
-        CapCertCode: 'XLDG-2024-002',
-        FullName: 'Công ty TNHH Xây dựng Thành Lợi',
-        IsForeign: false,
-        Address: '456 Đường Lê Duẩn, TP. Hà Tĩnh, Tỉnh Hà Tĩnh',
-        ContactInfo: 'Tel: 039.384.5678 | Email: thanhloi@xaydung.vn',
-    }
-);
-
-// ═══════════════════════════════════════════════════════════════════════════════
-// CONTRACTS for Demo Packages
-// ═══════════════════════════════════════════════════════════════════════════════
-export const mockContracts: Contract[] = [
-    // Contract for Tư vấn Package (COMPLETED/LIQUIDATED)
-    {
-        ContractID: 'CTR-TV-DEMO-001',
-        PackageID: 'PKG-TV-DEMO-001',
-        ContractorID: 'MST-TV-VINAXIM',
-        SignDate: '2024-03-15',
-        Value: 594_422_460,
-        AdvanceRate: 30, // Tư vấn có tỷ lệ tạm ứng cao hơn
-        Warranty: 0, // NO WARRANTY for consultancy
-        Status: ContractStatus.Liquidated, // Đã quyết toán xong
-    },
-    // Contract for Xây lắp Package (EXECUTING - In Warranty Period)
-    {
-        ContractID: 'CTR-XL-DEMO-001',
-        PackageID: 'PKG-XL-DEMO-001',
-        ContractorID: 'MST-XL-THANHLOI',
-        SignDate: '2024-04-15',
-        Value: 27_800_000_000,
-        AdvanceRate: 15,
-        Warranty: 24, // 24 tháng bảo hành
-        Status: ContractStatus.Executing, // Đang trong giai đoạn bảo hành
-    }
-];
-
-// ═══════════════════════════════════════════════════════════════════════════════
-// PAYMENTS for Demo Packages
-// ═══════════════════════════════════════════════════════════════════════════════
-export const mockPayments: Payment[] = [
-    // ═══════════════════════════════════════════════════════════════
-    // PAYMENTS FOR TƯ VẤN PACKAGE (CTR-TV-DEMO-001)
-    // Consultancy: Tạm ứng → Thanh toán đợt 1 → Quyết toán (100%)
-    // ═══════════════════════════════════════════════════════════════
-    {
-        PaymentID: 101,
-        ContractID: 'CTR-TV-DEMO-001',
-        BatchNo: 1,
-        Type: PaymentType.Advance,
-        Amount: 178_326_738, // 30% của 594,422,460
-        TreasuryRef: 'KB-TV-2024-001',
-        Status: PaymentStatus.Transferred,
-    },
-    {
-        PaymentID: 102,
-        ContractID: 'CTR-TV-DEMO-001',
-        BatchNo: 2,
-        Type: PaymentType.Volume,
-        Amount: 237_768_984, // 40% - Sau khi hoàn thành 50% khối lượng
-        TreasuryRef: 'KB-TV-2024-002',
-        Status: PaymentStatus.Transferred,
-    },
-    {
-        PaymentID: 103,
-        ContractID: 'CTR-TV-DEMO-001',
-        BatchNo: 3,
-        Type: PaymentType.Volume,
-        Amount: 178_326_738, // 30% còn lại - Quyết toán
-        TreasuryRef: 'KB-TV-2024-003',
-        Status: PaymentStatus.Transferred, // Đã thanh toán 100%
-    },
-
-    // ═══════════════════════════════════════════════════════════════
-    // PAYMENTS FOR XÂY LẮP PACKAGE (CTR-XL-DEMO-001)
-    // Construction: Tạm ứng → Thanh toán đợt 1-5 → Giữ lại 5% bảo hành
-    // ═══════════════════════════════════════════════════════════════
-    {
-        PaymentID: 201,
-        ContractID: 'CTR-XL-DEMO-001',
-        BatchNo: 1,
-        Type: PaymentType.Advance,
-        Amount: 4_170_000_000, // 15% của 27.8 tỷ
-        TreasuryRef: 'KB-XL-2024-001',
-        Status: PaymentStatus.Transferred,
-    },
-    {
-        PaymentID: 202,
-        ContractID: 'CTR-XL-DEMO-001',
-        BatchNo: 2,
-        Type: PaymentType.Volume,
-        Amount: 5_560_000_000, // ~20% - Hoàn thành móng
-        TreasuryRef: 'KB-XL-2024-002',
-        Status: PaymentStatus.Transferred,
-    },
-    {
-        PaymentID: 203,
-        ContractID: 'CTR-XL-DEMO-001',
-        BatchNo: 3,
-        Type: PaymentType.Volume,
-        Amount: 6_950_000_000, // ~25% - Hoàn thành kết cấu
-        TreasuryRef: 'KB-XL-2024-003',
-        Status: PaymentStatus.Transferred,
-    },
-    {
-        PaymentID: 204,
-        ContractID: 'CTR-XL-DEMO-001',
-        BatchNo: 4,
-        Type: PaymentType.Volume,
-        Amount: 5_560_000_000, // ~20% - Hoàn thiện thô
-        TreasuryRef: 'KB-XL-2025-001',
-        Status: PaymentStatus.Transferred,
-    },
-    {
-        PaymentID: 205,
-        ContractID: 'CTR-XL-DEMO-001',
-        BatchNo: 5,
-        Type: PaymentType.Volume,
-        Amount: 4_170_000_000, // ~15% - Hoàn thiện tinh (trừ 5% bảo hành)
-        TreasuryRef: 'KB-XL-2025-002',
-        Status: PaymentStatus.Pending, // Đang chờ duyệt
-    },
-    // 5% giữ lại bảo hành = 1,390,000,000 sẽ thanh toán sau khi hết bảo hành
-];
-
-// GENERATE DATA: Project -> Package (1) -> Contract (1)
-mockProjects.forEach((project, index) => {
-    // 1. Find specific contracts for this project
-    const projectSpecificContracts = specificContracts.filter(c => c.pid === project.ProjectID);
-
-    if (projectSpecificContracts.length > 0) {
-        // Create 1 Package and 1 Contract for EACH specific contract found
-        projectSpecificContracts.forEach((sc, i) => {
-            const pkgId = `PKG-${project.ProjectID}-${sc.type}-${i + 1}`;
-
-            // Find or create contractor
-            let contractorID = mockContractors.find(c => c.FullName === sc.cName)?.ContractorID;
-            if (!contractorID) {
-                // If not found in mock list, assign a random one for visual purposes
-                contractorID = mockContractors[i % mockContractors.length].ContractorID;
-            }
-
-            // Create Package
-            mockBiddingPackages.push({
-                PackageID: pkgId,
-                ProjectID: project.ProjectID,
-                PackageNumber: `${sc.type}-0${i + 1}`,
-                PackageName: sc.name || `Gói thầu số ${i + 1} - ${sc.type}`,
-                Price: sc.val * 1.05, // Estimate slightly higher than contract
-                SelectionMethod: sc.val > 1000000000 ? 'OpenBidding' : 'Appointed',
-                BidType: 'Online',
-                ContractType: 'LumpSum',
-                Status: PackageStatus.Awarded,
-                WinningContractorID: contractorID,
-                WinningPrice: sc.val,
-                PostingDate: "2023-01-15",
-                BidClosingDate: "2023-02-15"
-            });
-
-            // Create Contract (Linked 1-1 to Package)
-            const contract: Contract = {
-                ContractID: sc.code,
-                PackageID: pkgId,
-                ContractorID: contractorID,
-                SignDate: sc.date,
-                Value: sc.val,
-                AdvanceRate: 15,
-                Warranty: 12,
-                Status: project.Status === ProjectStatus.Completion ? ContractStatus.Liquidated : ContractStatus.Executing
-            };
-            mockContracts.push(contract);
-
-            // Create Initial Payment (Advance)
-            mockPayments.push({
-                PaymentID: 10000 + mockPayments.length,
-                ContractID: contract.ContractID,
-                BatchNo: 1,
-                Type: PaymentType.Advance,
-                Amount: contract.Value * 0.15,
-                TreasuryRef: `KB-${contract.ContractID.split('/')[0]}-01`,
-                Status: PaymentStatus.Transferred
-            });
-        });
-    } else if (project.ProjectID !== 'PR2500060068' && project.ProjectID !== 'PR2400031160' && project.ProjectID !== 'PR2500062685' && project.ProjectID !== 'PR2500044101') {
-        // 2. Fallback: Create 1 Default Package & Contract if no specific data exists
-        // This ensures the UI is not empty for other projects
-        // SKIP FOR Truong Chinh Tri (PR2500060068) as we manually add specific packages later
-        // SKIP FOR ODA Health Stations (PR2400031160) to avoid auto-generation
-        let pkgStatus = PackageStatus.Planning;
-        if (project.Status === ProjectStatus.Execution) pkgStatus = PackageStatus.Awarded;
-        else if (project.Status === ProjectStatus.Completion) pkgStatus = PackageStatus.Awarded;
-        else if (project.Status === ProjectStatus.Preparation) pkgStatus = PackageStatus.Planning;
-
-        const pkgId = `PKG-${project.ProjectID}-XL01`;
-        const contractorID = mockContractors[index % mockContractors.length].ContractorID;
-
-        // XL Package
-        const xlPkg: BiddingPackage = {
-            PackageID: pkgId,
-            ProjectID: project.ProjectID,
-            PackageNumber: "XL-01",
-            PackageName: `Thi công xây dựng công trình chính`,
-            Price: project.TotalInvestment * 0.8,
-            SelectionMethod: 'OpenBidding',
-            BidType: 'Online',
-            ContractType: 'AdjustableUnitPrice',
-            Status: pkgStatus,
-            WinningContractorID: pkgStatus === PackageStatus.Awarded ? contractorID : undefined,
-            WinningPrice: pkgStatus === PackageStatus.Awarded ? project.TotalInvestment * 0.78 : undefined
-        };
-        mockBiddingPackages.push(xlPkg);
-
-        // Contract (Only if Awarded)
-        if (pkgStatus === PackageStatus.Awarded) {
-            const contract: Contract = {
-                ContractID: `HD-${project.ProjectID}/XL01`,
-                PackageID: xlPkg.PackageID,
-                ContractorID: xlPkg.WinningContractorID!,
-                SignDate: "2024-01-15",
-                Value: xlPkg.WinningPrice!,
-                AdvanceRate: 20,
-                Warranty: 24,
-                Status: project.Status === ProjectStatus.Completion ? ContractStatus.Liquidated : ContractStatus.Executing
-            };
-            mockContracts.push(contract);
-
-            // Payments
-            mockPayments.push({
-                PaymentID: 20000 + index,
-                ContractID: contract.ContractID,
-                BatchNo: 1,
-                Type: PaymentType.Advance,
-                Amount: contract.Value * 0.2,
-                TreasuryRef: `KB-${project.ProjectID}-01`,
-                Status: PaymentStatus.Transferred
-            });
-        }
-    }
-});
-
-// ADD SPECIFIC PACKAGES FOR Truong Chinh Tri (Since they are not contracts yet, just packages)
 const truongChinhTriPackages: BiddingPackage[] = [
     {
         PackageID: "PKG-PR2500060068-01",
@@ -825,7 +750,7 @@ const truongChinhTriPackages: BiddingPackage[] = [
         BidFee: 330000,
         DecisionNumber: "241",
         DecisionDate: "20/11/2025",
-        DecisionAgency: "Ban Quản lý dự án đầu tư xây dựng công trình Dân dụng và Hạ tầng khu vực tỉnh Hà Tĩnh",
+        DecisionAgency: "Ban Quản lý dự án đầu tư xây dựng chuyên ngành - Học viện Chính trị quốc gia Hồ Chí Minh",
         DecisionFile: "IB2500519537_QuyetDinhPheDuyetHSMT_20_11_2025.pdf"
     },
     {
@@ -838,7 +763,7 @@ const truongChinhTriPackages: BiddingPackage[] = [
         BidType: 'Offline',
         ContractType: 'LumpSum',
         Status: PackageStatus.Planning,
-        PostingDate: "2025-11-20"
+        Field: 'Consultancy',
     },
     {
         PackageID: "PKG-PR2500060068-03",
@@ -850,320 +775,154 @@ const truongChinhTriPackages: BiddingPackage[] = [
         BidType: 'Offline',
         ContractType: 'LumpSum',
         Status: PackageStatus.Planning,
-        PostingDate: "2025-11-20"
+        Field: 'Consultancy',
     }
 ];
-// Append to the generated packages
 mockBiddingPackages.push(...truongChinhTriPackages);
 
-// ADD SPECIFIC PACKAGES FOR Tram Y Te (PR2400031160)
-const tramYTePackages: BiddingPackage[] = [
+// ═══════════════════════════════════════════════════════════════════════════════
+// HỢP ĐỒNG & THANH TOÁN
+// ═══════════════════════════════════════════════════════════════════════════════
+export const mockContracts: Contract[] = [
+    // Gói 12: Thi công xây dựng công trình (gói lớn nhất)
     {
-        PackageID: "PKG-PR2400031160-01",
-        ProjectID: "PR2400031160",
-        PackageNumber: "01.4/TV-KS-TKBVTC",
-        PackageName: "01.4/TV-KS-TKBVTC: Tư vấn Khảo sát, lập thiết kế bản vẽ thi công và dự toán dự án đầu tư xây dựng, cải tạo và nâng cấp cơ sở hạ tầng, cung cấp trang thiết bị cho các trạm y tế xã trên địa bàn tỉnh Hà Tĩnh",
-        Price: 2944652402,
-        WinningPrice: 2885758000,
-        WinningContractorID: "3001328159", // Vinaxim
-        SelectionMethod: 'OpenBidding',
-        BidType: 'Online',
-        ContractType: 'LumpSum',
-        Status: PackageStatus.Awarded,
-        NotificationCode: "IB2400183847",
-        PostingDate: "23/07/2024 07:38",
-        DecisionNumber: "145",
-        DecisionDate: "16/07/2024",
-        DecisionAgency: "Ban quản lý dự án đầu tư xây dựng công trình dân dụng và công nghiệp tỉnh Hà Tĩnh",
-        Field: 'Consultancy',
-        Duration: "30 ngày"
-    },
-    {
-        PackageID: "PKG-PR2400031160-02",
-        ProjectID: "PR2400031160",
-        PackageNumber: "01.5/TV-TT",
-        PackageName: "01.5/TV-TT: Tư vấn thẩm tra thiết kế, dự toán",
-        Price: 341527205,
-        SelectionMethod: 'Appointed',
-        BidType: 'Offline',
-        ContractType: 'LumpSum',
-        Status: PackageStatus.Planning,
-        Duration: "14 ngày"
-    },
-    {
-        PackageID: "PKG-PR2400031160-03",
-        ProjectID: "PR2400031160",
-        PackageNumber: "01.6/TV-CHTB",
-        PackageName: "01.6/TV-CHTB: Tư vấn lập cấu hình, tính năng kỹ thuật trang thiết bị y tế",
-        Price: 57750000,
-        SelectionMethod: 'Appointed',
-        BidType: 'Offline',
-        ContractType: 'LumpSum',
-        Status: PackageStatus.Planning,
-        Duration: "20 ngày"
-    },
-    {
-        PackageID: "PKG-PR2400031160-04",
-        ProjectID: "PR2400031160",
-        PackageNumber: "01.7/TV-TĐG",
-        PackageName: "01.7/TV-TĐG: Tư vấn thẩm định giá",
-        Price: 138600000,
-        SelectionMethod: 'Appointed',
-        BidType: 'Offline',
-        ContractType: 'LumpSum',
-        Status: PackageStatus.Planning,
-        Duration: "20 ngày"
-    }
-];
-mockBiddingPackages.push(...tramYTePackages);
-
-// ADD SPECIFIC PACKAGES FOR Kim Anh Project (PR2500044101)
-const kimAnhPackages: BiddingPackage[] = [
-    {
-        PackageID: "PKG-PR2500044101-01",
-        ProjectID: "PR2500044101",
-        PackageNumber: "PL2500186419", // Using KHLCNT number as proxy if needed, or mapping it to KHLCNTCode
-        PackageName: "Điều chỉnh nguồn vốn và phê duyệt kế hoạch lựa chọn nhà thầu bổ sung dự án Xây dựng đường nối từ đường Quốc lộ 2 - Minh Trí - Xuân Hòa đi Khu công nghiệp sạch Sóc Sơn với đường Nội Bài - 35 - Minh Phú",
-        Price: 52267727,
-        SelectionMethod: 'OpenBidding',
-        BidType: 'Online',
-        ContractType: 'LumpSum',
-        Status: PackageStatus.Planning,
-        KHLCNTCode: "PL2500186419",
-        Field: 'Mixed', // Inferring
-        Duration: "—",
-        DecisionNumber: "1032/QĐ-UBND",
-        DecisionDate: "28/02/2025",
-        DecisionAgency: "UBND huyện Sóc Sơn"
-    },
-    {
-        PackageID: "PKG-PR2500044101-02",
-        ProjectID: "PR2500044101",
-        PackageNumber: "PL2500138388",
-        PackageName: "Kế hoạch lựa chọn nhà thầu dự án: Xây dựng đường nối Quốc lộ 2 - Minh Trí - Xuân Hòa đi Khu công nghiệp sạch Sóc Sơn với đường Nội Bài - 35 - Minh Phú",
-        Price: 27570010110,
-        SelectionMethod: 'OpenBidding',
-        BidType: 'Online',
-        ContractType: 'AdjustableUnitPrice',
-        Status: PackageStatus.Awarded, // "KHLCNT đã thực hiện xong"
-        KHLCNTCode: "PL2500138388",
-        Field: 'Construction',
-        Duration: "—"
-    }
-];
-mockBiddingPackages.push(...kimAnhPackages);
-
-// ADD SPECIFIC PACKAGES FOR Vu Ban Project (PR2500062685)
-const vuBanPackages: BiddingPackage[] = [
-    {
-        PackageID: "PKG-PR2500062685-04",
-        ProjectID: "PR2500062685",
-        PackageNumber: "4",
-        PackageName: "Gói thầu số 4: Tư vấn lập thiết kế bản vẽ thi công và dự toán",
-        Price: 669709097,
-        SelectionMethod: 'Appointed',
-        BidType: 'Offline',
-        ContractType: 'LumpSum',
-        Duration: "30 ngày",
-        DecisionAgency: "Ban Quản lý dự án đầu tư - Hạ tầng xã Kim Anh",
-        WinningContractorID: "vn0107740913",
-        WinningPrice: 657532000,
-        DecisionNumber: "103/QĐ-QLDA",
-        DecisionDate: "22/11/2025",
-        DecisionFile: "QĐ 103_0001.pdf",
-        Status: PackageStatus.Awarded
-    },
-    {
-        PackageID: "PKG-PR2500062685-05",
-        ProjectID: "PR2500062685",
-        PackageNumber: "5",
-        PackageName: "Gói thầu số 5: Tư vấn thẩm tra thiết kế bản vẽ thi công và dự toán",
-        Price: 83393476,
-        SelectionMethod: 'Appointed',
-        BidType: 'Offline',
-        ContractType: 'LumpSum',
-        Duration: "30 ngày",
-        DecisionAgency: "Ban Quản lý dự án đầu tư - Hạ tầng xã Kim Anh",
-        WinningContractorID: "vn0108622278",
-        WinningPrice: 81963000,
-        DecisionNumber: "103/QĐ-QLDA",
-        DecisionDate: "22/11/2025",
-        DecisionFile: "QĐ 103_0001.pdf",
-        Status: PackageStatus.Awarded
-    },
-    {
-        PackageID: "PKG-PR2500062685-06",
-        ProjectID: "PR2500062685",
-        PackageNumber: "6",
-        PackageName: "Gói thầu số 6: Tư vấn lập hồ sơ mời thầu, đánh giá hồ sơ dự thầu gói thầu 7",
-        Price: 67614740,
-        SelectionMethod: 'Appointed',
-        BidType: 'Offline',
-        ContractType: 'LumpSum',
-        Duration: "30 ngày",
-        DecisionAgency: "Ban Quản lý dự án đầu tư - Hạ tầng xã Kim Anh",
-        WinningContractorID: "vn0107128531",
-        WinningPrice: 67767000,
-        DecisionNumber: "Đang cập nhật",
-        DecisionDate: "15/12/2025",
-        DecisionFile: "QĐ phê duyệt TKBVTC và dự toán gói thầu.pdf",
-        Status: PackageStatus.Awarded
-    },
-    {
-        PackageID: "PKG-PR2500062685-07",
-        ProjectID: "PR2500062685",
-        PackageNumber: "7",
-        PackageName: "Gói thầu số 7: Toàn bộ phần xây dựng",
-        Price: 18548389278,
-        SelectionMethod: 'OpenBidding',
-        BidType: 'Online',
-        ContractType: 'UnitPrice',
-        Status: PackageStatus.Awarded,
-        Field: 'Construction',
-        Duration: "360 ngày",
-        NotificationCode: "IB2500605959",
-        PostingDate: "29/12/2025 18:01",
-        EstimatePrice: 18690734349,
-        WinningContractorID: "LD-PR2500062685-07",
-        WinningPrice: 18507185000,
-        DecisionNumber: "194/QĐ-QLDA",
-        DecisionDate: "29/12/2025",
-        DecisionAgency: "Ban Quản lý dự án đầu tư - Hạ tầng xã Kim Anh",
-        DecisionFile: "IB2500605959_QuyetDinhPheDuyetKQLCNT_29_12_2025.pdf"
-    },
-    {
-        PackageID: "PKG-PR2500062685-08",
-        ProjectID: "PR2500062685",
-        PackageNumber: "8",
-        PackageName: "Gói thầu số 8: Tư vấn giám sát thi công xây dựng",
-        Price: 538963519,
-        SelectionMethod: 'Appointed',
-        BidType: 'Offline',
-        ContractType: 'LumpSum',
-        Status: PackageStatus.Awarded,
-        Field: 'Consultancy',
-        Duration: "360 ngày",
-        EstimatePrice: 552663414,
-        WinningContractorID: "vn0104426593",
-        WinningPrice: 552663000,
-        DecisionNumber: "196/QĐ-QLDA",
-        DecisionDate: "29/12/2025",
-        PostingDate: "07/01/2026",
-        DecisionFile: "13. QĐ phê duyệt KQLCNT gói thầu GS, bảo hiểm.pdf",
-        DecisionAgency: "Ban Quản lý dự án đầu tư - Hạ tầng xã Kim Anh"
-    },
-    {
-        PackageID: "PKG-PR2500062685-09",
-        ProjectID: "PR2500062685",
-        PackageNumber: "9",
-        PackageName: "Gói thầu số 9: Bảo hiểm công trình",
-        Price: 14300856,
-        SelectionMethod: 'Appointed',
-        BidType: 'Offline',
-        ContractType: 'Percentage', // Mapped roughly to logic or kept as string if type allows
-        Status: PackageStatus.Awarded,
-        Field: 'NonConsultancy', // Keeping as Tu van per request table usually, or Non-Consulting. User said Tu van in table column 4
-        Duration: "360 ngày",
-        EstimatePrice: 14780061,
-        WinningContractorID: "vn0304422444",
-        WinningPrice: 14780000,
-        DecisionNumber: "196/QĐ-QLDA",
-        DecisionDate: "29/12/2025",
-        PostingDate: "07/01/2026",
-        DecisionFile: "13. QĐ phê duyệt KQLCNT gói thầu GS, bảo hiểm.pdf",
-        DecisionAgency: "Ban Quản lý dự án đầu tư - Hạ tầng xã Kim Anh"
-    }
-];
-mockBiddingPackages.push(...vuBanPackages);
-
-// --- VU BAN PROJECT CONTRACTS & PAYMENTS ---
-const vuBanContracts: Contract[] = [
-    {
-        ContractID: "103/2025/HĐ-TVTK", // Based on decision 103/QĐ-QLDA
-        PackageID: "PKG-PR2500062685-04",
-        ContractorID: "vn0107740913", // Trung Hung
-        SignDate: "25/11/2025",
-        Value: 657532000,
+        ContractID: 'HD-NOHV-12/XL',
+        PackageID: 'PKG-NOHV-12',
+        ContractorID: mockContractors[0]?.ContractorID || 'CTR-001',
+        SignDate: '2023-03-15',
+        Value: 420_000_000_000,
         AdvanceRate: 15,
-        Warranty: 0,
-        Status: ContractStatus.Executing
+        Warranty: 24,
+        Status: ContractStatus.Executing,
     },
+    // Gói 06: Giám sát thi công
     {
-        ContractID: "104/2025/HĐ-TVTT", // Guessing next number
-        PackageID: "PKG-PR2500062685-05",
-        ContractorID: "vn0108622278", // Tu Bo Ton Tao
-        SignDate: "25/11/2025",
-        Value: 81963000,
-        AdvanceRate: 0,
+        ContractID: 'HD-NOHV-06/TV',
+        PackageID: 'PKG-NOHV-06',
+        ContractorID: mockContractors[1]?.ContractorID || 'CTR-002',
+        SignDate: '2023-04-01',
+        Value: 5_900_000_000,
+        AdvanceRate: 30,
         Warranty: 0,
-        Status: ContractStatus.Executing
+        Status: ContractStatus.Executing,
     },
+    // Gói 13: Điều hòa không khí
     {
-        ContractID: "105/2025/HĐ-TVHSMT",
-        PackageID: "PKG-PR2500062685-06",
-        ContractorID: "vn0107128531", // CNS1
-        SignDate: "18/12/2025",
-        Value: 67767000,
-        AdvanceRate: 0,
-        Warranty: 0,
-        Status: ContractStatus.Executing
-    },
-    {
-        ContractID: "194/2025/HĐ-XL07", // Based on decision 194/QĐ-QLDA
-        PackageID: "PKG-PR2500062685-07",
-        ContractorID: "LD-PR2500062685-07", // Lien Danh
-        SignDate: "30/12/2025",
-        Value: 18507185000,
-        AdvanceRate: 20,
+        ContractID: 'HD-NOHV-13/HH',
+        PackageID: 'PKG-NOHV-13',
+        ContractorID: mockContractors[2]?.ContractorID || 'CTR-003',
+        SignDate: '2023-09-20',
+        Value: 27_500_000_000,
+        AdvanceRate: 15,
         Warranty: 12,
-        Status: ContractStatus.Executing
+        Status: ContractStatus.Executing,
     },
+    // Gói 14: Thang máy, thang cuốn
     {
-        ContractID: "196/2025/HĐ-TVGS", // Based on decision 196/QĐ-QLDA
-        PackageID: "PKG-PR2500062685-08",
-        ContractorID: "vn0104426593", // Me Linh
-        SignDate: "08/01/2026",
-        Value: 552663000,
-        AdvanceRate: 10,
-        Warranty: 0,
-        Status: ContractStatus.Executing
+        ContractID: 'HD-NOHV-14/HH',
+        PackageID: 'PKG-NOHV-14',
+        ContractorID: mockContractors[3]?.ContractorID || 'CTR-004',
+        SignDate: '2024-01-10',
+        Value: 29_800_000_000,
+        AdvanceRate: 15,
+        Warranty: 24,
+        Status: ContractStatus.Executing,
     },
+    // Gói 16: Máy phát điện, trạm biến áp
     {
-        ContractID: "197/2025/HĐ-BH",
-        PackageID: "PKG-PR2500062685-09",
-        ContractorID: "vn0304422444", // Bao Hiem Toan Cau
-        SignDate: "08/01/2026",
-        Value: 14780000,
-        AdvanceRate: 0,
-        Warranty: 0,
-        Status: ContractStatus.Executing
-    }
+        ContractID: 'HD-NOHV-16/HH',
+        PackageID: 'PKG-NOHV-16',
+        ContractorID: mockContractors[4]?.ContractorID || 'CTR-005',
+        SignDate: '2024-03-15',
+        Value: 15_500_000_000,
+        AdvanceRate: 15,
+        Warranty: 12,
+        Status: ContractStatus.Executing,
+    },
 ];
-mockContracts.push(...vuBanContracts);
 
-const vuBanPayments: Payment[] = [
-    // Payment for Package 4 (TVTK) - Advance
+export const mockPayments: Payment[] = [
+    // Gói 12: Thi công XD - Tạm ứng
     {
-        PaymentID: 30001,
-        ContractID: "103/2025/HĐ-TVTK",
+        PaymentID: 101,
+        ContractID: 'HD-NOHV-12/XL',
         BatchNo: 1,
         Type: PaymentType.Advance,
-        Amount: 657532000 * 0.15, // 15%
+        Amount: 63_000_000_000, // 15%
+        TreasuryRef: 'KB-NOHV-12-001',
         Status: PaymentStatus.Transferred,
-        TreasuryRef: "KB-KA-25-001"
     },
-    // Payment for Package 7 (Construction) - Advance
+    // Gói 12: Thi công XD - Thanh toán đợt 1 (Móng + Tầng hầm)
     {
-        PaymentID: 30002,
-        ContractID: "194/2025/HĐ-XL07",
+        PaymentID: 102,
+        ContractID: 'HD-NOHV-12/XL',
+        BatchNo: 2,
+        Type: PaymentType.Volume,
+        Amount: 84_000_000_000, // ~20%
+        TreasuryRef: 'KB-NOHV-12-002',
+        Status: PaymentStatus.Transferred,
+    },
+    // Gói 12: Thi công XD - Thanh toán đợt 2 (Kết cấu tầng 1-8)
+    {
+        PaymentID: 103,
+        ContractID: 'HD-NOHV-12/XL',
+        BatchNo: 3,
+        Type: PaymentType.Volume,
+        Amount: 105_000_000_000, // ~25%
+        TreasuryRef: 'KB-NOHV-12-003',
+        Status: PaymentStatus.Transferred,
+    },
+    // Gói 12: Thi công XD - Thanh toán đợt 3 (Kết cấu tầng 9-16 + Hoàn thiện)
+    {
+        PaymentID: 104,
+        ContractID: 'HD-NOHV-12/XL',
+        BatchNo: 4,
+        Type: PaymentType.Volume,
+        Amount: 84_000_000_000, // ~20%
+        TreasuryRef: 'KB-NOHV-12-004',
+        Status: PaymentStatus.Pending,
+    },
+    // Gói 06: Giám sát - Tạm ứng
+    {
+        PaymentID: 201,
+        ContractID: 'HD-NOHV-06/TV',
         BatchNo: 1,
         Type: PaymentType.Advance,
-        Amount: 18507185000 * 0.20, // 20%
-        Status: PaymentStatus.Pending,
-        TreasuryRef: "KB-KA-26-001"
-    }
+        Amount: 1_770_000_000, // 30%
+        TreasuryRef: 'KB-NOHV-06-001',
+        Status: PaymentStatus.Transferred,
+    },
+    // Gói 13: Điều hòa - Tạm ứng
+    {
+        PaymentID: 301,
+        ContractID: 'HD-NOHV-13/HH',
+        BatchNo: 1,
+        Type: PaymentType.Advance,
+        Amount: 4_125_000_000, // 15%
+        TreasuryRef: 'KB-NOHV-13-001',
+        Status: PaymentStatus.Transferred,
+    },
+    // Gói 14: Thang máy - Tạm ứng
+    {
+        PaymentID: 401,
+        ContractID: 'HD-NOHV-14/HH',
+        BatchNo: 1,
+        Type: PaymentType.Advance,
+        Amount: 4_470_000_000, // 15%
+        TreasuryRef: 'KB-NOHV-14-001',
+        Status: PaymentStatus.Transferred,
+    },
+    // Gói 16: Máy phát điện - Tạm ứng
+    {
+        PaymentID: 501,
+        ContractID: 'HD-NOHV-16/HH',
+        BatchNo: 1,
+        Type: PaymentType.Advance,
+        Amount: 2_325_000_000, // 15%
+        TreasuryRef: 'KB-NOHV-16-001',
+        Status: PaymentStatus.Transferred,
+    },
 ];
-mockPayments.push(...vuBanPayments);
 
 // 5. Documents
 // 5. Documents
