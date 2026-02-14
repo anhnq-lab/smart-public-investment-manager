@@ -1,6 +1,6 @@
 // Project Service - CRUD operations for Projects
 import api from './api';
-import { mockProjects } from '../mockData';
+import { mockProjects, mockBiddingPackages } from '../mockData';
 import { Project, ProjectStatus, ProjectGroup, BiddingPackage, PackageStatus, CapitalAllocation, Disbursement } from '../types';
 import type { QueryParams } from '../types/api';
 
@@ -213,144 +213,8 @@ export class ProjectService {
      * Get bidding packages for a project
      */
     static async getPackagesByProject(projectId: string): Promise<BiddingPackage[]> {
-        // Mock data
         return api.get(`/projects/${projectId}/packages`, () => {
-            return [
-                // === PKG-000: COMPLETE LIFECYCLE PACKAGE (All stages filled) ===
-                {
-                    PackageID: 'PKG-000',
-                    ProjectID: projectId,
-                    PackageNumber: 'XL-00',
-                    PackageName: 'Thi công xây dựng phần thân và hoàn thiện công trình nhà học 5 tầng',
-                    Price: 28500000000, // 28.5 tỷ dự toán
-                    SelectionMethod: 'OpenBidding',
-                    SelectionProcedure: 'OneStageTwoEnvelope',
-                    BidType: 'Online',
-                    ContractType: 'LumpSum',
-                    Status: PackageStatus.Awarded,
-                    Field: 'Construction',
-
-                    // KHLCNT Info
-                    KHLCNTCode: 'PL2400098765',
-                    DecisionNumber: '1234/QĐ-UBND',
-                    DecisionDate: '2024-01-15',
-                    FundingSource: 'Ngân sách tỉnh và ngân sách trung ương',
-                    Description: 'Thi công xây dựng phần thân, hoàn thiện kiến trúc, PCCC, điện nước nội thất công trình nhà học 5 tầng theo thiết kế được duyệt.',
-                    SelectionDuration: '45 ngày',
-                    SelectionStartDate: 'Tháng 2/2024',
-                    HasOption: false,
-
-                    // TBMT Info  
-                    NotificationCode: 'IB2400098765',
-                    PostingDate: '2024-02-01',
-                    BidClosingDate: '2024-03-15T09:00:00',
-                    BidOpeningDate: '2024-03-15T09:30:00',
-
-                    // Result Info
-                    WinningContractorID: 'CT-COMPLETE',
-                    WinningPrice: 27800000000, // Tiết kiệm 700 triệu (2.5%)
-                    ApprovalDate_Result: '2024-04-01',
-
-                    // Contract Info
-                    ContractID: 'CTR-PKG-000',
-                    Duration: '540 ngày, kể từ ngày ký hợp đồng',
-                },
-                // === PKG-001: Awarded but not Completed ===
-                {
-                    PackageID: 'PKG-001',
-                    ProjectID: projectId,
-                    PackageNumber: 'XL-01',
-                    PackageName: 'Thi công xây dựng hạng mục chung',
-                    Price: 15000000000,
-                    SelectionMethod: 'OpenBidding',
-                    SelectionProcedure: 'OneStageOneEnvelope',
-                    BidType: 'Online',
-                    ContractType: 'LumpSum',
-                    Status: PackageStatus.Awarded,
-                    WinningContractorID: 'CT-001',
-                    NotificationCode: 'IB2400012345',
-                    KHLCNTCode: 'PL2400056789',
-                    PostingDate: '2024-02-15',
-                    BidClosingDate: '2024-03-05',
-                    BidOpeningDate: '2024-03-05',
-                    WinningPrice: 14850000000,
-                    Duration: '360 ngày',
-                    Field: 'Construction',
-                    FundingSource: 'Ngân sách Nhà nước',
-                    Description: 'Thi công các hạng mục xây lắp chung bao gồm: san nền, móng, kết cấu, hoàn thiện kiến trúc.',
-                    DecisionNumber: '567/QĐ-UBND',
-                    DecisionDate: '2024-01-10',
-                    ApprovalDate_Result: '2024-03-20',
-                    ContractID: 'CTR-PKG-001',
-                },
-                // === PKG-002: In Bidding phase ===
-                {
-                    PackageID: 'PKG-002',
-                    ProjectID: projectId,
-                    PackageNumber: 'TV-01',
-                    PackageName: 'Tư vấn giám sát thi công',
-                    Price: 500000000,
-                    SelectionMethod: 'Appointed',
-                    SelectionProcedure: 'Reduced',
-                    BidType: 'Offline',
-                    ContractType: 'TimeBased',
-                    Status: PackageStatus.Bidding,
-                    Duration: '360 ngày',
-                    Field: 'Consultancy',
-                    KHLCNTCode: 'PL2400056789',
-                    FundingSource: 'Ngân sách tỉnh',
-                    Description: 'Tư vấn giám sát quá trình thi công các gói thầu xây lắp thuộc dự án.',
-                    DecisionNumber: '567/QĐ-UBND',
-                    DecisionDate: '2024-01-10',
-                    NotificationCode: 'IB2400012399',
-                    PostingDate: '2024-06-01',
-                    BidClosingDate: '2024-06-20',
-                },
-                // === PKG-003: In Planning phase ===
-                {
-                    PackageID: 'PKG-003',
-                    ProjectID: projectId,
-                    PackageNumber: 'XL-02',
-                    PackageName: 'Thi công hệ thống điện nhẹ',
-                    Price: 2000000000,
-                    SelectionMethod: 'OpenBidding',
-                    SelectionProcedure: 'OneStageOneEnvelope',
-                    BidType: 'Online',
-                    ContractType: 'LumpSum',
-                    Status: PackageStatus.Planning,
-                    Duration: '90 ngày',
-                    Field: 'Construction',
-                    KHLCNTCode: 'PL2400056789',
-                    FundingSource: 'Ngân sách Nhà nước',
-                    Description: 'Cung cấp, lắp đặt hệ thống điện nhẹ bao gồm: LAN, điện thoại, camera, báo cháy.',
-                    DecisionNumber: '567/QĐ-UBND',
-                    DecisionDate: '2024-01-10',
-                },
-                // === PKG-004: Evaluating phase ===
-                {
-                    PackageID: 'PKG-004',
-                    ProjectID: projectId,
-                    PackageNumber: 'HH-01',
-                    PackageName: 'Mua sắm thiết bị nội thất văn phòng',
-                    Price: 1200000000,
-                    SelectionMethod: 'CompetitiveShopping',
-                    SelectionProcedure: 'Normal',
-                    BidType: 'Online',
-                    ContractType: 'LumpSum',
-                    Status: PackageStatus.Evaluating,
-                    Duration: '60 ngày',
-                    Field: 'Goods',
-                    KHLCNTCode: 'PL2400056789',
-                    FundingSource: 'Ngân sách tỉnh',
-                    Description: 'Mua sắm bàn ghế, tủ hồ sơ, thiết bị văn phòng cho các phòng làm việc.',
-                    DecisionNumber: '567/QĐ-UBND',
-                    DecisionDate: '2024-01-10',
-                    NotificationCode: 'IB2400013456',
-                    PostingDate: '2024-05-15',
-                    BidClosingDate: '2024-06-01',
-                    BidOpeningDate: '2024-06-01',
-                }
-            ] as unknown as BiddingPackage[];
+            return mockBiddingPackages.filter(pkg => pkg.ProjectID === projectId);
         });
     }
 
