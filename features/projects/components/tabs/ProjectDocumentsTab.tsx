@@ -14,6 +14,7 @@ import { DocumentService } from '@/services/DocumentService';
 import { useFolders, useDocuments } from '@/hooks/useDocuments';
 import FilePreviewModal from '../FilePreviewModal';
 import { supabase } from '@/lib/supabase';
+import { DOC_CROSS_REFS } from '@/utils/docStepMapping';
 
 interface ProjectDocumentsTabProps {
     projectID: string;
@@ -284,12 +285,32 @@ export const ProjectDocumentsTab: React.FC<ProjectDocumentsTabProps> = ({
         return documents.filter(d => d.DocName.toLowerCase().includes(q));
     }, [documents, searchQuery]);
 
-    // Match documents to legal categories
-    const matchDocToCategory = useCallback((keywords: string[]): Document | undefined => {
-        return projectDocuments.find(doc => {
+    // Match documents to legal categories — enhanced with cross-ref mapping
+    const matchDocToCategory = useCallback((keywords: string[]): (Document & { source?: string }) | undefined => {
+        // 1. Try direct keyword match in doc names (covers all sources)
+        const byKeyword = projectDocuments.find(doc => {
             const name = doc.DocName.toLowerCase();
             return keywords.some(kw => name.includes(kw.toLowerCase()));
         });
+        if (byKeyword) return byKeyword as any;
+
+        // 2. Try cross-ref mapping: find the mapping entry for these keywords,
+        //    then look for docs with matching tt24_field
+        const crossRef = DOC_CROSS_REFS.find(ref =>
+            ref.legalKeywords.some(kw =>
+                keywords.some(k => k.toLowerCase().includes(kw.toLowerCase()) || kw.toLowerCase().includes(k.toLowerCase()))
+            )
+        );
+        if (crossRef) {
+            // Check if any DB doc has a tt24_field that matches this cross-ref
+            const tt24Key = `doc_${crossRef.tt24Stt}_${crossRef.tt24Label}`;
+            const byTT24 = projectDocuments.find((doc: any) =>
+                doc.tt24_field === tt24Key
+            );
+            if (byTT24) return byTT24 as any;
+        }
+
+        return undefined;
     }, [projectDocuments]);
 
     // Toggle category expansion
@@ -309,29 +330,55 @@ export const ProjectDocumentsTab: React.FC<ProjectDocumentsTabProps> = ({
         return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(value);
     };
 
-    // Upload handler
+    // Upload handler — saves to Supabase Storage + documents table
     const handleUpload = () => fileInputRef.current?.click();
-    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const files = e.target.files;
         if (!files || files.length === 0) return;
-        Array.from(files).forEach(file => {
-            const newDoc: Document = {
-                DocID: Math.floor(Math.random() * 100000),
-                ReferenceID: projectID,
-                ProjectID: projectID,
-                Category: DocCategory.Legal,
-                DocName: file.name,
-                StoragePath: `/uploads/${file.name}`,
-                IsDigitized: true,
-                UploadDate: new Date().toISOString().split('T')[0],
-                Version: 'P01.01',
-                Size: `${(file.size / 1024 / 1024).toFixed(1)} MB`,
-                ISOStatus: ISO19650Status.S0,
-                isLocal: true,
-                fileObj: file,
-            };
-            setUploadedDocs(prev => [newDoc, ...prev]);
-        });
+        for (const file of Array.from(files)) {
+            try {
+                const ext = file.name.split('.').pop();
+                const path = `${projectID}/docs/${Date.now()}.${ext}`;
+                const { error: uploadError } = await supabase.storage
+                    .from('task-attachments')
+                    .upload(path, file);
+                if (uploadError) throw uploadError;
+
+                const { data: urlData } = supabase.storage
+                    .from('task-attachments')
+                    .getPublicUrl(path);
+
+                await (supabase.from('documents') as any).insert({
+                    project_id: projectID,
+                    doc_name: file.name,
+                    storage_path: urlData.publicUrl,
+                    size: `${(file.size / 1024).toFixed(0)} KB`,
+                    category: 0,
+                    source: 'manual',
+                    is_digitized: true,
+                });
+
+                // Also add to local state for immediate display
+                const newDoc: Document = {
+                    DocID: Math.floor(Math.random() * 100000),
+                    ReferenceID: projectID,
+                    ProjectID: projectID,
+                    Category: DocCategory.Legal,
+                    DocName: file.name,
+                    StoragePath: urlData.publicUrl,
+                    IsDigitized: true,
+                    UploadDate: new Date().toLocaleDateString('vi-VN'),
+                    Version: 'P01.01',
+                    Size: `${(file.size / 1024).toFixed(0)} KB`,
+                    ISOStatus: ISO19650Status.S0,
+                    isLocal: true,
+                    fileObj: file,
+                };
+                setUploadedDocs(prev => [newDoc, ...prev]);
+            } catch (err) {
+                console.error('Upload failed:', err);
+            }
+        }
         e.target.value = '';
     };
 
@@ -633,6 +680,19 @@ export const ProjectDocumentsTab: React.FC<ProjectDocumentsTabProps> = ({
                                                     <div className="flex items-center gap-2 shrink-0">
                                                         {hasDoc ? (
                                                             <>
+                                                                {/* Source badge */}
+                                                                {(matchedDoc as any)?.source && (
+                                                                    <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold ${(matchedDoc as any).source === 'task'
+                                                                            ? 'bg-violet-100 dark:bg-violet-900/30 text-violet-700 dark:text-violet-300'
+                                                                            : (matchedDoc as any).source === 'tt24'
+                                                                                ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300'
+                                                                                : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300'
+                                                                        }`}>
+                                                                        {(matchedDoc as any).source === 'task' ? '📋 Công việc'
+                                                                            : (matchedDoc as any).source === 'tt24' ? '📄 TT24'
+                                                                                : (matchedDoc as any).source === 'manual' ? '📤 Tải lên' : ''}
+                                                                    </span>
+                                                                )}
                                                                 <span className="text-xs px-2.5 py-1 bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 rounded-lg font-bold flex items-center gap-1">
                                                                     <CheckCircle2 className="w-3 h-3" /> Đã có
                                                                 </span>

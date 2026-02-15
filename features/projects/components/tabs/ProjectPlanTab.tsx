@@ -19,6 +19,7 @@ import { getSubTasksForStep, hasSubTasks, SubTaskDef } from '@/utils/stepSubtask
 import { SubTaskDetailModal } from '../SubTaskDetailModal';
 import { TaskService } from '@/services/TaskService';
 import { supabase } from '@/lib/supabase';
+import { findByStepCode, buildTT24Key } from '@/utils/docStepMapping';
 
 interface ProjectPlanTabProps {
     tasks: Task[];
@@ -217,7 +218,7 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({
         loadCounts();
     }, [tasks, projectID]);
 
-    // Handle file upload for task → saves to documents table
+    // Handle file upload for task → saves to documents table with cross-reference
     const handleFileUpload = async (taskId: string, file: File) => {
         setUploadingTaskId(taskId);
         try {
@@ -232,16 +233,32 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({
                 .from('task-attachments')
                 .getPublicUrl(path);
 
-            // Insert into unified documents table
+            // Find the task to get step_code and title for cross-referencing
+            const task = tasks.find(t => t.TaskID === taskId);
+            const stepCode = (task as any)?.StepCode || (task as any)?.step_code || task?.TimelineStep || '';
+            const crossRef = stepCode ? findByStepCode(stepCode) : undefined;
+
+            // Build enriched doc name for keyword matching in Hồ sơ tab
+            const docName = task?.Title
+                ? `${task.Title} - ${file.name}`
+                : file.name;
+
+            // Build tt24_field for TT24 cross-reference
+            const tt24Field = crossRef?.tt24Stt
+                ? buildTT24Key(crossRef.tt24Stt, crossRef.tt24Label)
+                : undefined;
+
+            // Insert into unified documents table with cross-reference fields
             await (supabase.from('documents') as any).insert({
                 project_id: projectID,
                 task_id: taskId,
-                doc_name: file.name,
+                doc_name: docName,
                 storage_path: urlData.publicUrl,
                 size: `${(file.size / 1024).toFixed(0)} KB`,
                 category: 0,
                 source: 'task',
                 is_digitized: true,
+                ...(tt24Field && { tt24_field: tt24Field }),
             });
 
             setAttachmentCounts(prev => ({ ...prev, [taskId]: (prev[taskId] || 0) + 1 }));

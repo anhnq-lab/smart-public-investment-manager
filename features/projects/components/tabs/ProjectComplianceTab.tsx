@@ -444,21 +444,24 @@ export const ProjectComplianceTab: React.FC<ProjectComplianceTabProps> = ({ proj
     const [uploads, setUploads] = useState<Record<string, UploadState>>({});
     const fileInputRefs = useRef<Record<string, HTMLInputElement | null>>({});
 
-    // Load existing TT24 uploads from documents table
+    // Load existing TT24 uploads + task-uploaded docs with tt24_field from documents table
     useEffect(() => {
         const loadExisting = async () => {
+            // Load ALL docs for this project that have a tt24_field (from any source)
             const { data } = await supabase
                 .from('documents')
                 .select('*')
-                .eq('project_id', project.ProjectID)
-                .eq('source' as any, 'tt24') as any;
+                .eq('project_id', project.ProjectID) as any;
             if (data && (data as any[]).length > 0) {
                 const existing: Record<string, UploadState> = {};
                 (data as any[]).forEach((row: any) => {
                     if (row.tt24_field) {
+                        const source = row.source || 'unknown';
                         existing[row.tt24_field] = {
                             file: null as any,
-                            fileName: row.doc_name?.replace('[TT24] ', '').split(' - ').pop() || row.doc_name,
+                            fileName: source === 'task'
+                                ? `📋 ${row.doc_name}` // Show task origin
+                                : row.doc_name?.replace('[TT24] ', '').split(' - ').pop() || row.doc_name,
                             status: 'done',
                         };
                     }
