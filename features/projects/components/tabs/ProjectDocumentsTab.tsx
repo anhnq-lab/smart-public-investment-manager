@@ -101,20 +101,20 @@ const DocActionMenu: React.FC<{
         <div className="relative" ref={ref}>
             <button
                 onClick={(e) => { e.stopPropagation(); setOpen(!open); }}
-                className="p-1.5 hover:bg-gray-100 rounded-lg text-gray-400 hover:text-gray-600 transition-colors"
+                className="p-1.5 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-lg text-gray-400 hover:text-gray-600 dark:hover:text-slate-300 transition-colors"
             >
                 <MoreVertical className="w-4 h-4" />
             </button>
             {open && (
-                <div className="absolute right-0 top-full mt-1 w-48 bg-white rounded-xl shadow-xl border border-gray-100 py-1 z-50 animate-in fade-in slide-in-from-top-2 duration-200">
-                    <button onClick={() => { onView(); setOpen(false); }} className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition-colors">
+                <div className="absolute right-0 top-full mt-1 w-48 bg-white dark:bg-slate-800 rounded-xl shadow-xl border border-gray-100 dark:border-slate-600 py-1 z-50 animate-in fade-in slide-in-from-top-2 duration-200">
+                    <button onClick={() => { onView(); setOpen(false); }} className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-slate-300 hover:bg-blue-50 dark:hover:bg-slate-700 hover:text-blue-700 dark:hover:text-blue-400 transition-colors">
                         <Eye className="w-4 h-4" /> Xem tài liệu
                     </button>
-                    <button onClick={() => { onDownload(); setOpen(false); }} className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
+                    <button onClick={() => { onDownload(); setOpen(false); }} className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-slate-300 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors">
                         <Download className="w-4 h-4" /> Tải xuống
                     </button>
-                    <div className="border-t border-gray-100 my-1" />
-                    <button onClick={() => { onHistory(); setOpen(false); }} className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-amber-50 hover:text-amber-700 transition-colors">
+                    <div className="border-t border-gray-100 dark:border-slate-700 my-1" />
+                    <button onClick={() => { onHistory(); setOpen(false); }} className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-slate-300 hover:bg-amber-50 dark:hover:bg-slate-700 hover:text-amber-700 dark:hover:text-amber-400 transition-colors">
                         <History className="w-4 h-4" /> Lịch sử phiên bản
                     </button>
                 </div>
@@ -147,30 +147,30 @@ const VersionHistoryModal: React.FC<{ doc: Document; onClose: () => void }> = ({
 
     return (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
-            <div className="bg-white w-full max-w-2xl rounded-2xl shadow-2xl overflow-hidden">
-                <div className="p-5 border-b border-gray-100 flex justify-between items-center bg-gradient-to-r from-gray-50 to-white">
+            <div className="bg-white dark:bg-slate-800 w-full max-w-2xl rounded-2xl shadow-2xl overflow-hidden">
+                <div className="p-5 border-b border-gray-100 dark:border-slate-700 flex justify-between items-center bg-gradient-to-r from-gray-50 to-white dark:from-slate-700 dark:to-slate-800">
                     <div className="min-w-0">
-                        <h3 className="text-base font-bold text-gray-800 flex items-center gap-2">
+                        <h3 className="text-base font-bold text-gray-800 dark:text-slate-100 flex items-center gap-2">
                             <History className="w-5 h-5 text-amber-500" /> Lịch sử phiên bản
                         </h3>
-                        <p className="text-xs text-gray-500 mt-0.5 truncate">{doc.DocName}</p>
+                        <p className="text-xs text-gray-500 dark:text-slate-400 mt-0.5 truncate">{doc.DocName}</p>
                     </div>
-                    <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-xl text-gray-400 hover:text-gray-600 transition-colors">
+                    <button onClick={onClose} className="p-2 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-xl text-gray-400 hover:text-gray-600 dark:hover:text-slate-300 transition-colors">
                         <X className="w-5 h-5" />
                     </button>
                 </div>
                 <div className="max-h-[400px] overflow-y-auto">
                     <table className="w-full text-left text-sm">
-                        <thead className="bg-gray-50 text-xs uppercase font-bold text-gray-500 sticky top-0">
+                        <thead className="bg-gray-50 dark:bg-slate-700 text-xs uppercase font-bold text-gray-500 dark:text-slate-400 sticky top-0">
                             <tr>
                                 <th className="px-5 py-3">Phiên bản</th>
                                 <th className="px-5 py-3">Ngày</th>
                                 <th className="px-5 py-3">Người cập nhật</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-gray-50">
+                        <tbody className="divide-y divide-gray-50 dark:divide-slate-700">
                             {history.map((h, idx) => (
-                                <tr key={idx} className="hover:bg-gray-50/50">
+                                <tr key={idx} className="hover:bg-gray-50/50 dark:hover:bg-slate-700">
                                     <td className="px-5 py-3">
                                         <div className="flex items-center gap-2">
                                             <span className={`px-2 py-0.5 rounded text-xs font-bold font-mono ${h.isCurrent ? 'bg-emerald-100 text-emerald-700' : 'bg-gray-100 text-gray-600'}`}>
@@ -179,20 +179,20 @@ const VersionHistoryModal: React.FC<{ doc: Document; onClose: () => void }> = ({
                                             {h.isCurrent && <span className="text-[10px] uppercase font-bold text-emerald-600">Hiện tại</span>}
                                         </div>
                                     </td>
-                                    <td className="px-5 py-3 text-gray-600 text-xs">{h.date}</td>
-                                    <td className="px-5 py-3 text-gray-700 font-medium text-xs">{h.user}</td>
+                                    <td className="px-5 py-3 text-gray-600 dark:text-slate-400 text-xs">{h.date}</td>
+                                    <td className="px-5 py-3 text-gray-700 dark:text-slate-300 font-medium text-xs">{h.user}</td>
                                 </tr>
                             ))}
                         </tbody>
                     </table>
                     {history.length <= 1 && (
-                        <div className="p-8 text-center text-gray-400 text-sm">
+                        <div className="p-8 text-center text-gray-400 dark:text-slate-500 text-sm">
                             Tài liệu này chưa có bản cập nhật nào.
                         </div>
                     )}
                 </div>
-                <div className="p-4 bg-gray-50 border-t border-gray-100 text-right">
-                    <button onClick={onClose} className="px-4 py-2 bg-white border border-gray-200 rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors">
+                <div className="p-4 bg-gray-50 dark:bg-slate-700 border-t border-gray-100 dark:border-slate-600 text-right">
+                    <button onClick={onClose} className="px-4 py-2 bg-white dark:bg-slate-600 border border-gray-200 dark:border-slate-500 rounded-lg text-sm font-medium hover:bg-gray-50 dark:hover:bg-slate-500 transition-colors dark:text-slate-200">
                         Đóng
                     </button>
                 </div>
@@ -390,14 +390,14 @@ export const ProjectDocumentsTab: React.FC<ProjectDocumentsTabProps> = ({
             />
 
             {/* Header with View Toggle */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 mb-6 overflow-hidden">
-                <div className="px-5 py-3 flex justify-between items-center border-b border-gray-100">
+            <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 mb-6 overflow-hidden">
+                <div className="px-5 py-3 flex justify-between items-center border-b border-gray-100 dark:border-slate-700">
                     <div className="flex gap-2">
                         <button
                             onClick={() => setActiveView('legal')}
                             className={`px-4 py-2 rounded-lg text-sm font-bold transition-all flex items-center gap-2 ${activeView === 'legal'
-                                ? 'bg-blue-600 text-white shadow-lg shadow-blue-200'
-                                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                                ? 'bg-blue-600 text-white shadow-lg shadow-blue-200 dark:shadow-blue-900'
+                                : 'bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-slate-300 hover:bg-gray-200 dark:hover:bg-slate-600'
                                 }`}
                         >
                             <FileText className="w-4 h-4" />
@@ -406,8 +406,8 @@ export const ProjectDocumentsTab: React.FC<ProjectDocumentsTabProps> = ({
                         <button
                             onClick={() => setActiveView('cde')}
                             className={`px-4 py-2 rounded-lg text-sm font-bold transition-all flex items-center gap-2 ${activeView === 'cde'
-                                ? 'bg-blue-600 text-white shadow-lg shadow-blue-200'
-                                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                                ? 'bg-blue-600 text-white shadow-lg shadow-blue-200 dark:shadow-blue-900'
+                                : 'bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-slate-300 hover:bg-gray-200 dark:hover:bg-slate-600'
                                 }`}
                         >
                             <FolderOpen className="w-4 h-4" />
@@ -422,7 +422,7 @@ export const ProjectDocumentsTab: React.FC<ProjectDocumentsTabProps> = ({
                                 placeholder="Tìm kiếm..."
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
-                                className="pl-9 pr-8 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm w-64 focus:ring-2 focus:ring-blue-100 focus:border-blue-300 transition-all"
+                                className="pl-9 pr-8 py-2 bg-gray-50 dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-lg text-sm w-64 focus:ring-2 focus:ring-blue-100 focus:border-blue-300 transition-all dark:text-slate-200 dark:placeholder-slate-400"
                             />
                             {searchQuery && (
                                 <button onClick={() => setSearchQuery('')} className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
@@ -449,11 +449,11 @@ export const ProjectDocumentsTab: React.FC<ProjectDocumentsTabProps> = ({
                         {statCards.map((stat, idx) => {
                             const colors = getStageColor(stat.color);
                             return (
-                                <div key={idx} className="bg-white rounded-xl p-4 border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
+                                <div key={idx} className="bg-white dark:bg-slate-800 rounded-xl p-4 border border-gray-100 dark:border-slate-700 shadow-sm hover:shadow-md transition-shadow">
                                     <div className="flex items-center justify-between">
                                         <div>
-                                            <p className="text-xs text-gray-500 mb-1 font-medium">{stat.label}</p>
-                                            <p className="text-2xl font-black text-gray-800">{stat.value}</p>
+                                            <p className="text-xs text-gray-500 dark:text-slate-400 mb-1 font-medium">{stat.label}</p>
+                                            <p className="text-2xl font-black text-gray-800 dark:text-slate-100">{stat.value}</p>
                                         </div>
                                         <div className={`w-10 h-10 rounded-xl ${colors.iconBg} flex items-center justify-center`}>
                                             <stat.icon className={`w-5 h-5 ${colors.text}`} />
@@ -477,7 +477,7 @@ export const ProjectDocumentsTab: React.FC<ProjectDocumentsTabProps> = ({
                         const progressPercent = totalCount > 0 ? Math.round((matchedCount / totalCount) * 100) : 0;
 
                         return (
-                            <div key={category.stage} className={`bg-white rounded-xl border overflow-hidden shadow-sm transition-all ${isCurrent ? 'ring-2 ring-blue-200' : 'border-gray-100 hover:border-gray-200'}`}>
+                            <div key={category.stage} className={`bg-white dark:bg-slate-800 rounded-xl border overflow-hidden shadow-sm transition-all ${isCurrent ? 'ring-2 ring-blue-200 dark:ring-blue-700' : 'border-gray-100 dark:border-slate-700 hover:border-gray-200 dark:hover:border-slate-600'}`}>
                                 <button
                                     onClick={() => toggleCategory(category.stage)}
                                     className={`w-full px-5 py-4 flex items-center justify-between hover:bg-gray-50/50 transition-colors ${colors.bg}`}
@@ -500,14 +500,14 @@ export const ProjectDocumentsTab: React.FC<ProjectDocumentsTabProps> = ({
                                                     </span>
                                                 )}
                                             </div>
-                                            <p className="text-xs text-gray-500 mt-0.5">{totalCount} loại văn bản</p>
+                                            <p className="text-xs text-gray-500 dark:text-slate-400 mt-0.5">{totalCount} loại văn bản</p>
                                         </div>
                                     </div>
                                     <div className="flex items-center gap-3">
                                         <span className={`text-xs font-bold ${matchedCount === totalCount ? 'text-emerald-600' : 'text-gray-500'}`}>
                                             {matchedCount}/{totalCount}
                                         </span>
-                                        <div className="w-24 h-2 bg-gray-200 rounded-full overflow-hidden">
+                                        <div className="w-24 h-2 bg-gray-200 dark:bg-slate-600 rounded-full overflow-hidden">
                                             <div
                                                 className={`h-full rounded-full transition-all duration-500 ${matchedCount === totalCount
                                                     ? 'bg-emerald-500'
@@ -520,7 +520,7 @@ export const ProjectDocumentsTab: React.FC<ProjectDocumentsTabProps> = ({
                                 </button>
 
                                 {isExpanded && (
-                                    <div className="px-5 py-4 border-t border-gray-100 space-y-2">
+                                    <div className="px-5 py-4 border-t border-gray-100 dark:border-slate-700 space-y-2">
                                         {/* Investment Policy - if available */}
                                         {category.stage === ProjectStage.Preparation && investmentPolicy && (
                                             <div className="bg-blue-50/80 rounded-lg p-4 border border-blue-100 mb-3">
@@ -571,8 +571,8 @@ export const ProjectDocumentsTab: React.FC<ProjectDocumentsTabProps> = ({
                                                 <div
                                                     key={idx}
                                                     className={`flex items-center justify-between py-2.5 px-3 rounded-lg transition-all ${hasDoc
-                                                        ? 'hover:bg-blue-50/50 cursor-pointer'
-                                                        : 'hover:bg-gray-50'
+                                                        ? 'hover:bg-blue-50/50 dark:hover:bg-slate-700 cursor-pointer'
+                                                        : 'hover:bg-gray-50 dark:hover:bg-slate-700/50'
                                                         }`}
                                                     onClick={() => hasDoc && setPreviewFile(matchedDoc)}
                                                 >
@@ -587,7 +587,7 @@ export const ProjectDocumentsTab: React.FC<ProjectDocumentsTabProps> = ({
                                                             </div>
                                                         )}
                                                         <div className="min-w-0">
-                                                            <span className={`text-sm ${hasDoc ? 'text-gray-800 font-medium' : 'text-gray-500'}`}>{docType.name}</span>
+                                                            <span className={`text-sm ${hasDoc ? 'text-gray-800 dark:text-slate-100 font-medium' : 'text-gray-500 dark:text-slate-400'}`}>{docType.name}</span>
                                                             {hasDoc && (
                                                                 <p className="text-[11px] text-gray-400 truncate mt-0.5">
                                                                     {matchedDoc!.DocName} • {matchedDoc!.UploadDate}
@@ -636,22 +636,22 @@ export const ProjectDocumentsTab: React.FC<ProjectDocumentsTabProps> = ({
 
                     {/* Recently uploaded docs */}
                     {uploadedDocs.length > 0 && (
-                        <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
-                            <div className="px-5 py-3 bg-gradient-to-r from-emerald-50 to-white border-b border-emerald-100 flex items-center gap-2">
+                        <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-100 dark:border-slate-700 shadow-sm overflow-hidden">
+                            <div className="px-5 py-3 bg-gradient-to-r from-emerald-50 to-white dark:from-emerald-900/30 dark:to-slate-800 border-b border-emerald-100 dark:border-emerald-800 flex items-center gap-2">
                                 <Upload className="w-4 h-4 text-emerald-600" />
-                                <span className="text-sm font-bold text-emerald-800">Mới tải lên ({uploadedDocs.length})</span>
+                                <span className="text-sm font-bold text-emerald-800 dark:text-emerald-400">Mới tải lên ({uploadedDocs.length})</span>
                             </div>
-                            <div className="divide-y divide-gray-50">
+                            <div className="divide-y divide-gray-50 dark:divide-slate-700">
                                 {uploadedDocs.map((doc) => {
                                     const fIcon = getFileIcon(doc.DocName);
                                     return (
-                                        <div key={doc.DocID} className="flex items-center gap-3 px-5 py-3 hover:bg-blue-50/30 transition-colors">
+                                        <div key={doc.DocID} className="flex items-center gap-3 px-5 py-3 hover:bg-blue-50/30 dark:hover:bg-slate-700 transition-colors">
                                             <div className={`w-8 h-8 rounded-lg ${fIcon.bg} flex items-center justify-center ring-2 ring-emerald-200`}>
                                                 <fIcon.icon className={`w-4 h-4 ${fIcon.color}`} />
                                             </div>
                                             <div className="flex-1 min-w-0">
-                                                <p className="text-sm font-medium text-gray-800 truncate">{doc.DocName}</p>
-                                                <p className="text-[11px] text-gray-400">{doc.Size} • {doc.UploadDate}</p>
+                                                <p className="text-sm font-medium text-gray-800 dark:text-slate-100 truncate">{doc.DocName}</p>
+                                                <p className="text-[11px] text-gray-400 dark:text-slate-500">{doc.Size} • {doc.UploadDate}</p>
                                             </div>
                                             <span className="text-[10px] bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full font-bold uppercase">Mới</span>
                                             <span className="text-[10px] bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full font-bold">WIP</span>
@@ -666,18 +666,18 @@ export const ProjectDocumentsTab: React.FC<ProjectDocumentsTabProps> = ({
 
             {/* CDE VIEW */}
             {activeView === 'cde' && (
-                <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden flex h-[600px]">
+                <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-gray-200 dark:border-slate-700 overflow-hidden flex h-[600px]">
                     {/* Folder Tree Sidebar */}
-                    <div className="w-[280px] border-r border-gray-200 bg-gray-50/50 flex flex-col">
-                        <div className="p-4 border-b border-gray-200 bg-white">
-                            <h3 className="text-xs font-black text-gray-800 uppercase tracking-widest flex items-center gap-2">
+                    <div className="w-[280px] border-r border-gray-200 dark:border-slate-700 bg-gray-50/50 dark:bg-slate-900/50 flex flex-col">
+                        <div className="p-4 border-b border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800">
+                            <h3 className="text-xs font-black text-gray-800 dark:text-slate-100 uppercase tracking-widest flex items-center gap-2">
                                 <FolderOpen className="w-4 h-4 text-blue-600" />
                                 Cấu trúc CDE
                             </h3>
                         </div>
 
                         {/* Container Quick Access */}
-                        <div className="p-3 space-y-1 border-b border-gray-100">
+                        <div className="p-3 space-y-1 border-b border-gray-100 dark:border-slate-700">
                             {CDE_CONTAINERS.map(container => {
                                 const colors = getStageColor(container.color);
                                 const ContainerIcon = container.icon;
@@ -707,7 +707,7 @@ export const ProjectDocumentsTab: React.FC<ProjectDocumentsTabProps> = ({
                             )}
                         </div>
 
-                        <div className="p-3 border-t border-gray-200 bg-white text-xs text-gray-400 text-center flex items-center justify-center gap-1.5">
+                        <div className="p-3 border-t border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs text-gray-400 dark:text-slate-500 text-center flex items-center justify-center gap-1.5">
                             <CheckCircle2 className="w-3 h-3" />
                             ISO 19650 Compliant
                         </div>
@@ -716,13 +716,13 @@ export const ProjectDocumentsTab: React.FC<ProjectDocumentsTabProps> = ({
                     {/* Document List Area */}
                     <div className="flex-1 flex flex-col">
                         {/* Breadcrumb */}
-                        <div className="px-5 py-3 border-b border-gray-100 flex items-center gap-2 text-sm text-gray-500 bg-white">
+                        <div className="px-5 py-3 border-b border-gray-100 dark:border-slate-700 flex items-center gap-2 text-sm text-gray-500 dark:text-slate-400 bg-white dark:bg-slate-800">
                             <FolderIcon className="w-4 h-4 text-gray-300" />
                             {breadcrumbs.map((f, i) => (
                                 <React.Fragment key={f.FolderID}>
                                     {i > 0 && <ChevronRight className="w-4 h-4 text-gray-300" />}
                                     <span
-                                        className={`${i === breadcrumbs.length - 1 ? 'font-bold text-gray-900' : 'hover:text-blue-600 cursor-pointer transition-colors'}`}
+                                        className={`${i === breadcrumbs.length - 1 ? 'font-bold text-gray-900 dark:text-slate-100' : 'hover:text-blue-600 cursor-pointer transition-colors'}`}
                                         onClick={() => setActiveFolderId(f.FolderID)}
                                     >
                                         {f.Name}
@@ -732,7 +732,7 @@ export const ProjectDocumentsTab: React.FC<ProjectDocumentsTabProps> = ({
                         </div>
 
                         {/* Document List */}
-                        <div className="flex-1 overflow-y-auto p-5 bg-gray-50/30">
+                        <div className="flex-1 overflow-y-auto p-5 bg-gray-50/30 dark:bg-slate-900/30">
                             {isLoading ? (
                                 <div className="flex items-center justify-center h-full gap-3 text-gray-400 text-sm">
                                     <div className="w-5 h-5 border-2 border-blue-300 border-t-transparent rounded-full animate-spin" />
@@ -743,8 +743,8 @@ export const ProjectDocumentsTab: React.FC<ProjectDocumentsTabProps> = ({
                                     <div className="w-20 h-20 bg-gray-100 rounded-2xl flex items-center justify-center mb-4">
                                         <FolderOpen className="w-10 h-10 text-gray-200" />
                                     </div>
-                                    <p className="text-sm font-bold text-gray-500 mb-1">Thư mục trống</p>
-                                    <p className="text-xs text-gray-400 mb-4">
+                                    <p className="text-sm font-bold text-gray-500 dark:text-slate-400 mb-1">Thư mục trống</p>
+                                    <p className="text-xs text-gray-400 dark:text-slate-500 mb-4">
                                         {searchQuery ? 'Không tìm thấy tài liệu phù hợp' : 'Tải lên tài liệu đầu tiên vào thư mục này'}
                                     </p>
                                     {!searchQuery && (
@@ -757,9 +757,9 @@ export const ProjectDocumentsTab: React.FC<ProjectDocumentsTabProps> = ({
                                     )}
                                 </div>
                             ) : (
-                                <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
+                                <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-100 dark:border-slate-700 shadow-sm overflow-hidden">
                                     <table className="w-full text-left text-sm">
-                                        <thead className="bg-gray-50/80 text-gray-500 font-bold text-[11px] uppercase border-b border-gray-100">
+                                        <thead className="bg-gray-50/80 dark:bg-slate-700/80 text-gray-500 dark:text-slate-400 font-bold text-[11px] uppercase border-b border-gray-100 dark:border-slate-600">
                                             <tr>
                                                 <th className="px-5 py-3 w-10"></th>
                                                 <th className="px-5 py-3">Tên tài liệu</th>
@@ -769,13 +769,13 @@ export const ProjectDocumentsTab: React.FC<ProjectDocumentsTabProps> = ({
                                                 <th className="px-5 py-3 w-16"></th>
                                             </tr>
                                         </thead>
-                                        <tbody className="divide-y divide-gray-50">
+                                        <tbody className="divide-y divide-gray-50 dark:divide-slate-700">
                                             {filteredDocuments.map((doc) => {
                                                 const fIcon = getFileIcon(doc.DocName);
                                                 return (
                                                     <tr
                                                         key={doc.DocID}
-                                                        className="hover:bg-blue-50/50 cursor-pointer transition-colors group"
+                                                        className="hover:bg-blue-50/50 dark:hover:bg-slate-700 cursor-pointer transition-colors group"
                                                         onClick={() => setPreviewFile(doc)}
                                                     >
                                                         <td className="px-5 py-3 text-center">
@@ -784,7 +784,7 @@ export const ProjectDocumentsTab: React.FC<ProjectDocumentsTabProps> = ({
                                                             </div>
                                                         </td>
                                                         <td className="px-5 py-3">
-                                                            <p className="font-medium text-gray-800 group-hover:text-blue-700 transition-colors">{doc.DocName}</p>
+                                                            <p className="font-medium text-gray-800 dark:text-slate-100 group-hover:text-blue-700 dark:group-hover:text-blue-400 transition-colors">{doc.DocName}</p>
                                                             <p className="text-[10px] text-gray-400 uppercase font-mono mt-0.5">{doc.DocID}</p>
                                                         </td>
                                                         <td className="px-5 py-3">
@@ -798,12 +798,12 @@ export const ProjectDocumentsTab: React.FC<ProjectDocumentsTabProps> = ({
                                                                     className="w-2.5 h-2.5 rounded-full shrink-0"
                                                                     style={{ backgroundColor: DocumentService.getStatusColor(doc.ISOStatus!) }}
                                                                 />
-                                                                <span className="text-[11px] font-bold text-gray-600">
+                                                                <span className="text-[11px] font-bold text-gray-600 dark:text-slate-400">
                                                                     {DocumentService.getStatusLabel(doc.ISOStatus!)}
                                                                 </span>
                                                             </div>
                                                         </td>
-                                                        <td className="px-5 py-3 text-right text-xs text-gray-500 font-mono">{doc.UploadDate}</td>
+                                                        <td className="px-5 py-3 text-right text-xs text-gray-500 dark:text-slate-400 font-mono">{doc.UploadDate}</td>
                                                         <td className="px-5 py-3 text-center" onClick={(e) => e.stopPropagation()}>
                                                             <DocActionMenu
                                                                 onView={() => setPreviewFile(doc)}

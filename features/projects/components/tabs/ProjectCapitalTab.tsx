@@ -144,8 +144,8 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
     }, [allocations, disbursements]);
 
     // Early returns AFTER all hooks
-    if (isLoading) return <div className="p-8 text-center text-gray-500">Đang tải dữ liệu vốn...</div>;
-    if (!data) return <div className="p-8 text-center text-red-500">Không có dữ liệu vốn</div>;
+    if (isLoading) return <div className="p-8 text-center text-gray-500 dark:text-slate-400">Đang tải dữ liệu vốn...</div>;
+    if (!data) return <div className="p-8 text-center text-red-500 dark:text-red-400">Không có dữ liệu vốn</div>;
 
     return (
         <div className="space-y-6">
@@ -208,8 +208,8 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
                ════════════════════════════════════════════ */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {/* Stacked Bar Chart */}
-                <div className="lg:col-span-2 bg-white p-5 rounded-xl border border-gray-200 shadow-sm">
-                    <h3 className="text-sm font-bold text-gray-800 mb-4 flex items-center gap-2">
+                <div className="lg:col-span-2 bg-white dark:bg-slate-800 p-5 rounded-xl border border-gray-200 dark:border-slate-700 shadow-sm">
+                    <h3 className="text-sm font-bold text-gray-800 dark:text-slate-100 mb-4 flex items-center gap-2">
                         <TrendingUp className="w-4 h-4 text-blue-600" />
                         Giải ngân theo tháng (NĐ 99/2021/NĐ-CP)
                     </h3>
@@ -249,8 +249,8 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
                 </div>
 
                 {/* Donut Chart — Nguồn vốn */}
-                <div className="bg-white p-5 rounded-xl border border-gray-200 shadow-sm">
-                    <h3 className="text-sm font-bold text-gray-800 mb-4 flex items-center gap-2">
+                <div className="bg-white dark:bg-slate-800 p-5 rounded-xl border border-gray-200 dark:border-slate-700 shadow-sm">
+                    <h3 className="text-sm font-bold text-gray-800 dark:text-slate-100 mb-4 flex items-center gap-2">
                         <Wallet className="w-4 h-4 text-purple-600" />
                         Phân bổ nguồn vốn
                     </h3>
@@ -282,9 +282,9 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
                             <div key={s.name} className="flex items-center justify-between text-xs">
                                 <div className="flex items-center gap-2">
                                     <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: s.color }} />
-                                    <span className="text-gray-600">{s.name}</span>
+                                    <span className="text-gray-600 dark:text-slate-400">{s.name}</span>
                                 </div>
-                                <span className="font-bold text-gray-800">{formatCurrency(s.value)}</span>
+                                <span className="font-bold text-gray-800 dark:text-slate-100">{formatCurrency(s.value)}</span>
                             </div>
                         ))}
                     </div>
@@ -294,16 +294,16 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
             {/* ════════════════════════════════════════════
                 SECTION C — Kế hoạch vốn theo năm (Allocations)
                ════════════════════════════════════════════ */}
-            <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-                <div className="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
-                    <h3 className="text-sm font-bold text-gray-800 uppercase tracking-wider flex items-center gap-2">
+            <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 shadow-sm overflow-hidden">
+                <div className="px-6 py-4 border-b border-gray-100 dark:border-slate-700 flex justify-between items-center bg-gray-50/50 dark:bg-slate-700/50">
+                    <h3 className="text-sm font-bold text-gray-800 dark:text-slate-100 uppercase tracking-wider flex items-center gap-2">
                         <Calendar className="w-4 h-4 text-blue-600" />
                         Kế hoạch vốn (Luật ĐTC 2024 - 58/2024/QH15)
                     </h3>
                 </div>
                 <div className="overflow-x-auto">
                     <table className="w-full text-sm text-left">
-                        <thead className="bg-gray-50 text-gray-500 font-semibold text-xs uppercase border-b border-gray-100">
+                        <thead className="bg-gray-50 dark:bg-slate-700 text-gray-500 dark:text-slate-400 font-semibold text-xs uppercase border-b border-gray-100 dark:border-slate-600">
                             <tr>
                                 <th className="px-6 py-3">Năm</th>
                                 <th className="px-6 py-3">QĐ giao vốn</th>
@@ -313,26 +313,26 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
                                 <th className="px-6 py-3">Nguồn</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-gray-50">
+                        <tbody className="divide-y divide-gray-50 dark:divide-slate-700">
                             {allocationWithRate.map(a => (
-                                <tr key={a.AllocationID} className="hover:bg-blue-50/30 transition-colors">
+                                <tr key={a.AllocationID} className="hover:bg-blue-50/30 dark:hover:bg-slate-700 transition-colors">
                                     <td className="px-6 py-4">
-                                        <span className="font-bold text-gray-800">Năm {a.Year}</span>
-                                        <p className="text-[10px] text-gray-400 font-mono mt-0.5">{a.AllocationID}</p>
+                                        <span className="font-bold text-gray-800 dark:text-slate-100">Năm {a.Year}</span>
+                                        <p className="text-[10px] text-gray-400 dark:text-slate-500 font-mono mt-0.5">{a.AllocationID}</p>
                                     </td>
                                     <td className="px-6 py-4">
-                                        <span className="text-gray-700 font-medium">{a.DecisionNumber}</span>
-                                        <p className="text-[10px] text-gray-400 italic mt-0.5">{a.DateAssigned}</p>
+                                        <span className="text-gray-700 dark:text-slate-300 font-medium">{a.DecisionNumber}</span>
+                                        <p className="text-[10px] text-gray-400 dark:text-slate-500 italic mt-0.5">{a.DateAssigned}</p>
                                     </td>
-                                    <td className="px-6 py-4 text-right font-mono font-bold text-blue-700">
+                                    <td className="px-6 py-4 text-right font-mono font-bold text-blue-700 dark:text-blue-400">
                                         {formatCurrency(a.Amount)}
                                     </td>
-                                    <td className="px-6 py-4 text-right font-mono font-medium text-emerald-600">
+                                    <td className="px-6 py-4 text-right font-mono font-medium text-emerald-600 dark:text-emerald-400">
                                         {formatCurrency(a.disbursed)}
                                     </td>
                                     <td className="px-6 py-4">
                                         <div className="flex items-center gap-2">
-                                            <div className="w-20 h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                                            <div className="w-20 h-1.5 bg-gray-100 dark:bg-slate-600 rounded-full overflow-hidden">
                                                 <div
                                                     className={`h-full rounded-full ${a.rate >= 90 ? 'bg-emerald-500' : a.rate >= 50 ? 'bg-blue-500' : 'bg-orange-500'}`}
                                                     style={{ width: `${Math.min(a.rate, 100)}%` }}
@@ -355,12 +355,12 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
                                 </tr>
                             ))}
                             {/* Tổng cộng */}
-                            <tr className="bg-blue-50/50 font-bold border-t border-blue-200">
-                                <td className="px-6 py-3 text-gray-800" colSpan={2}>Tổng cộng</td>
-                                <td className="px-6 py-3 text-right font-mono text-blue-800">
+                            <tr className="bg-blue-50/50 dark:bg-blue-900/20 font-bold border-t border-blue-200 dark:border-blue-800">
+                                <td className="px-6 py-3 text-gray-800 dark:text-slate-100" colSpan={2}>Tổng cộng</td>
+                                <td className="px-6 py-3 text-right font-mono text-blue-800 dark:text-blue-400">
                                     {formatCurrency(summary.totalAllocated)}
                                 </td>
-                                <td className="px-6 py-3 text-right font-mono text-emerald-700">
+                                <td className="px-6 py-3 text-right font-mono text-emerald-700 dark:text-emerald-400">
                                     {formatCurrency(summary.totalDisbursed)}
                                 </td>
                                 <td className="px-6 py-3">
@@ -378,14 +378,14 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
             {/* ════════════════════════════════════════════
                 SECTION D — Lịch sử giải ngân chi tiết
                ════════════════════════════════════════════ */}
-            <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-                <div className="px-6 py-4 border-b border-gray-100 flex flex-wrap justify-between items-center gap-3">
-                    <h3 className="font-bold text-gray-800 flex items-center gap-2">
+            <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 shadow-sm overflow-hidden">
+                <div className="px-6 py-4 border-b border-gray-100 dark:border-slate-700 flex flex-wrap justify-between items-center gap-3">
+                    <h3 className="font-bold text-gray-800 dark:text-slate-100 flex items-center gap-2">
                         <ArrowDownUp className="w-4 h-4 text-emerald-600" />
                         Lịch sử giải ngân (NĐ 99/2021/NĐ-CP)
                     </h3>
                     <div className="flex items-center gap-2">
-                        <div className="flex bg-gray-100 rounded-lg p-0.5">
+                        <div className="flex bg-gray-100 dark:bg-slate-700 rounded-lg p-0.5">
                             {([
                                 ['all', 'Tất cả'],
                                 ['TamUng', 'Tạm ứng'],
@@ -396,8 +396,8 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
                                     key={key}
                                     onClick={() => setDisbursementFilter(key)}
                                     className={`px-3 py-1.5 text-xs font-medium rounded-md transition-all ${disbursementFilter === key
-                                        ? 'bg-white text-gray-800 shadow-sm'
-                                        : 'text-gray-500 hover:text-gray-700'
+                                        ? 'bg-white dark:bg-slate-600 text-gray-800 dark:text-slate-100 shadow-sm'
+                                        : 'text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:hover:text-slate-200'
                                         }`}
                                 >
                                     {label}
@@ -408,7 +408,7 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
                 </div>
                 <div className="overflow-x-auto">
                     <table className="w-full text-sm text-left">
-                        <thead className="bg-gray-50 text-gray-500 font-semibold text-xs uppercase border-b border-gray-100">
+                        <thead className="bg-gray-50 dark:bg-slate-700 text-gray-500 dark:text-slate-400 font-semibold text-xs uppercase border-b border-gray-100 dark:border-slate-600">
                             <tr>
                                 <th className="px-4 py-3">Ngày</th>
                                 <th className="px-4 py-3">Nội dung</th>
@@ -420,19 +420,19 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
                                 <th className="px-4 py-3 text-center">Trạng thái</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-gray-50">
+                        <tbody className="divide-y divide-gray-50 dark:divide-slate-700">
                             {filteredDisbursements.map((d) => (
-                                <tr key={d.DisbursementID} className={`hover:bg-gray-50 transition-colors ${d.Type === 'ThuHoiTamUng' ? 'bg-green-50/30' :
-                                    d.Type === 'TamUng' ? 'bg-amber-50/20' : ''
+                                <tr key={d.DisbursementID} className={`hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors ${d.Type === 'ThuHoiTamUng' ? 'bg-green-50/30 dark:bg-green-900/10' :
+                                    d.Type === 'TamUng' ? 'bg-amber-50/20 dark:bg-amber-900/10' : ''
                                     }`}>
-                                    <td className="px-4 py-3.5 text-gray-600 font-mono text-xs whitespace-nowrap">
+                                    <td className="px-4 py-3.5 text-gray-600 dark:text-slate-400 font-mono text-xs whitespace-nowrap">
                                         {d.Date}
                                     </td>
                                     <td className="px-4 py-3.5">
-                                        <p className="text-gray-800 font-medium text-xs line-clamp-1">{d.Description}</p>
-                                        <p className="text-[10px] text-gray-400 mt-0.5 font-mono">{d.TreasuryCode || '—'}</p>
+                                        <p className="text-gray-800 dark:text-slate-200 font-medium text-xs line-clamp-1">{d.Description}</p>
+                                        <p className="text-[10px] text-gray-400 dark:text-slate-500 mt-0.5 font-mono">{d.TreasuryCode || '—'}</p>
                                     </td>
-                                    <td className="px-4 py-3.5 text-xs text-gray-600 font-medium whitespace-nowrap">
+                                    <td className="px-4 py-3.5 text-xs text-gray-600 dark:text-slate-400 font-medium whitespace-nowrap">
                                         {d.ContractNumber || '—'}
                                     </td>
                                     <td className="px-4 py-3.5 text-center">
@@ -453,11 +453,11 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
                                         </span>
                                     </td>
                                     <td className="px-4 py-3.5 text-right font-mono font-bold">
-                                        <span className={d.Type === 'ThuHoiTamUng' ? 'text-green-600' : 'text-gray-800'}>
+                                        <span className={d.Type === 'ThuHoiTamUng' ? 'text-green-600 dark:text-green-400' : 'text-gray-800 dark:text-slate-100'}>
                                             {d.Type === 'ThuHoiTamUng' ? '-' : ''}{formatCurrency(d.Amount)}
                                         </span>
                                     </td>
-                                    <td className="px-4 py-3.5 text-right font-mono text-xs text-gray-500">
+                                    <td className="px-4 py-3.5 text-right font-mono text-xs text-gray-500 dark:text-slate-400">
                                         {d.CumulativeBefore != null ? formatCurrency(d.CumulativeBefore + d.Amount) : '—'}
                                     </td>
                                     <td className="px-4 py-3.5 text-center">
@@ -476,7 +476,7 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
                             ))}
                             {filteredDisbursements.length === 0 && (
                                 <tr>
-                                    <td colSpan={8} className="px-6 py-8 text-center text-gray-400 text-sm">
+                                    <td colSpan={8} className="px-6 py-8 text-center text-gray-400 dark:text-slate-500 text-sm">
                                         Không có giao dịch nào cho bộ lọc này
                                     </td>
                                 </tr>
@@ -490,9 +490,9 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
                 SECTION E — Cảnh báo rủi ro
                ════════════════════════════════════════════ */}
             {alerts.length > 0 && (
-                <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-                    <div className="px-6 py-3 border-b border-gray-100 bg-orange-50/50">
-                        <h3 className="text-sm font-bold text-orange-800 flex items-center gap-2">
+                <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 shadow-sm overflow-hidden">
+                    <div className="px-6 py-3 border-b border-gray-100 dark:border-slate-700 bg-orange-50/50 dark:bg-orange-900/20">
+                        <h3 className="text-sm font-bold text-orange-800 dark:text-orange-400 flex items-center gap-2">
                             <AlertTriangle className="w-4 h-4" />
                             Cảnh báo giải ngân
                         </h3>
@@ -514,31 +514,31 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
             {/* ════════════════════════════════════════════
                 SECTION F — Xuất văn bản (Toolbar)
                ════════════════════════════════════════════ */}
-            <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-5">
-                <h3 className="text-sm font-bold text-gray-800 mb-3 flex items-center gap-2">
+            <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 shadow-sm p-5">
+                <h3 className="text-sm font-bold text-gray-800 dark:text-slate-100 mb-3 flex items-center gap-2">
                     <FileText className="w-4 h-4 text-blue-600" />
                     Xuất văn bản thanh toán (NĐ 99/2021/NĐ-CP)
                 </h3>
                 <div className="flex flex-wrap gap-3">
-                    <button className="flex items-center gap-2 px-4 py-2.5 bg-white border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 hover:border-gray-300 transition-all text-sm font-medium shadow-sm">
+                    <button className="flex items-center gap-2 px-4 py-2.5 bg-white dark:bg-slate-700 border border-gray-200 dark:border-slate-600 text-gray-700 dark:text-slate-300 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-600 hover:border-gray-300 transition-all text-sm font-medium shadow-sm">
                         <FileDown className="w-4 h-4 text-amber-600" />
                         <div className="text-left">
                             <div className="font-semibold">Mẫu 25</div>
-                            <div className="text-[10px] text-gray-400 -mt-0.5">Đề nghị thanh toán vốn</div>
+                            <div className="text-[10px] text-gray-400 dark:text-slate-500 -mt-0.5">Đề nghị thanh toán vốn</div>
                         </div>
                     </button>
-                    <button className="flex items-center gap-2 px-4 py-2.5 bg-white border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 hover:border-gray-300 transition-all text-sm font-medium shadow-sm">
+                    <button className="flex items-center gap-2 px-4 py-2.5 bg-white dark:bg-slate-700 border border-gray-200 dark:border-slate-600 text-gray-700 dark:text-slate-300 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-600 hover:border-gray-300 transition-all text-sm font-medium shadow-sm">
                         <FileDown className="w-4 h-4 text-blue-600" />
                         <div className="text-left">
                             <div className="font-semibold">Mẫu 26</div>
-                            <div className="text-[10px] text-gray-400 -mt-0.5">Đề nghị rút vốn</div>
+                            <div className="text-[10px] text-gray-400 dark:text-slate-500 -mt-0.5">Đề nghị rút vốn</div>
                         </div>
                     </button>
-                    <button className="flex items-center gap-2 px-4 py-2.5 bg-white border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 hover:border-gray-300 transition-all text-sm font-medium shadow-sm">
+                    <button className="flex items-center gap-2 px-4 py-2.5 bg-white dark:bg-slate-700 border border-gray-200 dark:border-slate-600 text-gray-700 dark:text-slate-300 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-600 hover:border-gray-300 transition-all text-sm font-medium shadow-sm">
                         <FileDown className="w-4 h-4 text-green-600" />
                         <div className="text-left">
                             <div className="font-semibold">Mẫu 27</div>
-                            <div className="text-[10px] text-gray-400 -mt-0.5">Thu hồi vốn tạm ứng</div>
+                            <div className="text-[10px] text-gray-400 dark:text-slate-500 -mt-0.5">Thu hồi vốn tạm ứng</div>
                         </div>
                     </button>
                 </div>
@@ -566,22 +566,22 @@ const KPICard: React.FC<KPICardProps> = ({
     label, value, sub, icon, iconBg = 'bg-gray-100 text-gray-600',
     valueColor = 'text-gray-800', progress, progressColor = 'bg-blue-500'
 }) => (
-    <div className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
+    <div className="bg-white dark:bg-slate-800 p-4 rounded-xl border border-gray-100 dark:border-slate-700 shadow-sm">
         <div className="flex items-center justify-between mb-2">
             <div className={`p-1.5 rounded-lg ${iconBg}`}>{icon}</div>
         </div>
-        <p className="text-[11px] text-gray-500 font-medium truncate">{label}</p>
-        <h3 className={`text-lg font-bold ${valueColor} mt-0.5 truncate`}>{value}</h3>
+        <p className="text-[11px] text-gray-500 dark:text-slate-400 font-medium truncate">{label}</p>
+        <h3 className={`text-lg font-bold ${valueColor} dark:text-slate-100 mt-0.5 truncate`}>{value}</h3>
         {progress != null && (
             <div className="flex items-center gap-2 mt-2">
-                <div className="flex-1 h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                <div className="flex-1 h-1.5 bg-gray-100 dark:bg-slate-600 rounded-full overflow-hidden">
                     <div className={`h-full rounded-full ${progressColor}`} style={{ width: `${Math.min(progress, 100)}%` }} />
                 </div>
-                <span className="text-[10px] font-bold text-gray-600">{progress}%</span>
+                <span className="text-[10px] font-bold text-gray-600 dark:text-slate-400">{progress}%</span>
             </div>
         )}
         {sub && !progress && (
-            <p className="text-[10px] text-gray-400 mt-1.5 truncate">{sub}</p>
+            <p className="text-[10px] text-gray-400 dark:text-slate-500 mt-1.5 truncate">{sub}</p>
         )}
     </div>
 );

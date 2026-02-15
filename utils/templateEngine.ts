@@ -11,12 +11,13 @@
 
 import {
     Document, Packer, Paragraph, TextRun, Table, TableRow, TableCell,
-    WidthType, AlignmentType, SectionType,
+    WidthType, AlignmentType, SectionType, TableLayoutType,
 } from 'docx';
 import { saveAs } from 'file-saver';
 import {
     p, pMulti, headerCell, dataCell, THIN_BORDER, PORTRAIT_A4, LANDSCAPE_A4,
-    buildDocumentHeader, buildSignatureBlock, buildSignatureBlockTable, formatDateVN, formatCurrencyVN, pEmpty,
+    buildDocumentHeader, buildSignatureBlock, buildSignatureBlockTable,
+    layoutCell, formatDateVN, formatCurrencyVN, pEmpty,
 } from './docxHelpers';
 import { ExportDataContext, TemplateConfig, autoFillFields } from './templateRegistry';
 
@@ -392,19 +393,27 @@ export function markdownToDocxElements(markdown: string): (Paragraph | Table)[] 
 }
 
 // ========================================
-// MAIN EXPORT FUNCTION
-// ========================================
-
 /**
  * Export a template as DOCX with auto-filled data
  * Uses proper Vietnamese government document formatting (NĐ 30/2020)
+ * 
+ * NĐ 30/2020 specs:
+ * - Font: Times New Roman, Unicode
+ * - Quốc hiệu: IN HOA, cỡ 12-13, đứng đậm
+ * - Tiêu ngữ: in thường, cỡ 13-14, đứng đậm, gạch chân
+ * - Tên cơ quan: IN HOA, cỡ 12-13, đứng đậm
+ * - Tên loại VB: IN HOA, cỡ 13-14, đứng đậm
+ * - Nội dung: cỡ 13-14 (size 26-28 in half-points)
+ * - Lùi đầu dòng: 1 cm hoặc 1.27 cm
+ * - Khoảng cách dòng: đơn → 1.5 lines
+ * - Khoảng cách đoạn: tối thiểu 6pt
  */
 export async function exportTemplateAsDocx(
     config: TemplateConfig,
     formData: Record<string, string>,
     context: ExportDataContext,
 ): Promise<void> {
-    // 1. Fetch template content
+    // 1. Fetch template to replace placeholders for body content
     const response = await fetch(`/templates/${config.templatePath}`);
     if (!response.ok) throw new Error(`Template not found: ${config.templatePath}`);
     const rawContent = await response.text();
@@ -412,83 +421,194 @@ export async function exportTemplateAsDocx(
     // 2. Replace placeholders
     const filledContent = replacePlaceholders(rawContent, formData, context);
 
-    // 3. Detect if template has {{placeholder}} format (new-style template)
+    // 3. Detect template type
     const isNewStyleTemplate = rawContent.includes('{{tenCoQuan}}') || rawContent.includes('{{tenDuAn}}');
 
-    let docChildren: (Paragraph | Table)[] = [];
-
-    if (isNewStyleTemplate) {
-        // ── New-style template: use proper document structure ──
-
-        // 3a. Build proper two-column header
-        const orgName = formData.tenCoQuan || formData.investorName || 'TÊN CƠ QUAN';
-        const docNumber = formData.documentNumber || '……';
-        const docDate = formData.documentDate || '';
-        const location = formData.locationName || 'Hà Nội';
-
-        const headerElements = buildDocumentHeader(orgName, docNumber, docDate, location);
-        docChildren.push(...headerElements);
-
-        // 3b. Extract body content (skip header and footer sections)
-        const lines = filledContent.split('\n');
-        let bodyStartIdx = 0;
-        let bodyEndIdx = lines.length;
-
-        // Find where the header ends (after the first "---" separator that follows the header table)
-        let hrCount = 0;
-        for (let i = 0; i < lines.length; i++) {
-            const trimmed = lines[i].trim();
-            if (trimmed === '---' || trimmed === '___') {
-                hrCount++;
-                if (hrCount === 2) {
-                    bodyStartIdx = i + 1;
-                    break;
-                }
-            }
-        }
-
-        // Find where the signature/footer section starts (last "---" separator)
-        for (let i = lines.length - 1; i >= bodyStartIdx; i--) {
-            const trimmed = lines[i].trim();
-            if (trimmed === '---' || trimmed === '___') {
-                bodyEndIdx = i;
-                break;
-            }
-        }
-
-        // 3c. Convert body markdown to DOCX elements
-        const bodyMarkdown = lines.slice(bodyStartIdx, bodyEndIdx).join('\n');
-        const bodyElements = markdownToDocxElements(bodyMarkdown);
-        docChildren.push(...bodyElements);
-
-        // 3d. Build proper two-column signature block
-        const recipients = [
-            'Như trên',
-            'Cơ quan thẩm định chủ trương ĐT',
-            'Các cơ quan liên quan',
-        ];
-        const signerTitle = formData.signerTitle || 'ĐẠI DIỆN CƠ QUAN';
-        const signerName = formData.signerName || '';
-
-        const signatureTable = buildSignatureBlockTable(recipients, signerTitle, signerName);
-        docChildren.push(pEmpty(200));
-        docChildren.push(signatureTable);
-    } else {
-        // ── Old-style template: convert entire markdown to DOCX ──
-        docChildren = markdownToDocxElements(filledContent);
+    if (!isNewStyleTemplate) {
+        // Old-style: use simple markdown conversion
+        const elements = markdownToDocxElements(filledContent);
+        const doc = new Document({
+            sections: [{ properties: { ...PORTRAIT_A4 }, children: elements }],
+        });
+        const blob = await Packer.toBlob(doc);
+        saveAs(blob, `${config.shortLabel}.docx`);
+        return;
     }
 
-    // 4. Build document
+    // ── New-style template: Build entire document programmatically per NĐ 30/2020 ──
+    const children: (Paragraph | Table)[] = [];
+
+    // --- Extract form values ---
+    const orgName = formData.tenCoQuan || formData.investorName || 'TÊN CƠ QUAN';
+    const docNumber = formData.documentNumber || '……/BC-BQLDA';
+    const docDate = formData.documentDate || '';
+    const location = formData.locationName || 'Hà Nội';
+    const kinhGui = formData.kinhGui || '(Cơ quan quyết định chủ trương đầu tư dự án)';
+    const tenDuAn = formData.projectName || '………………';
+    const nhomDuAn = formData.projectGroup ? `Nhóm ${formData.projectGroup}` : '………';
+    const capQD = formData.capQuyetDinh || '………';
+    const chuDauTu = formData.chuDauTu || formData.investorName || '………';
+    const diaDiem = formData.diaDiemDuAn || '………';
+    const tongMuc = formData.totalInvestment || '………';
+    const nguonVon = formData.nguonVon || '………';
+    const thoiGian = formData.thoiGianThucHien || '………';
+    const signerTitle = formData.signerTitle || 'ĐẠI DIỆN CƠ QUAN';
+    const signerName = formData.signerName || '………………';
+
+    // Font sizes in half-points per NĐ 30/2020
+    const SZ_HEADER = 26;    // 13pt - tên cơ quan, quốc hiệu
+    const SZ_TIEU_NGU = 28;  // 14pt - tiêu ngữ  
+    const SZ_BODY = 28;      // 14pt - nội dung
+    const SZ_TITLE = 28;     // 14pt - tên loại VB
+    const SZ_SMALL = 24;     // 12pt - nơi nhận
+    const INDENT = 12.7;     // mm - lùi đầu dòng
+
+    // ═══════════════════════════════════════════
+    // PART 0: Two-column header table
+    // ═══════════════════════════════════════════
+    const headerTable = new Table({
+        rows: [
+            // Row 1: Tên cơ quan (left) | Quốc hiệu (right)
+            new TableRow({
+                children: [
+                    layoutCell([
+                        p(orgName.toUpperCase(), { bold: true, size: SZ_HEADER, alignment: AlignmentType.CENTER, after: 0 }),
+                    ], 4200),
+                    layoutCell([
+                        p('CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM', { bold: true, size: SZ_HEADER, alignment: AlignmentType.CENTER, after: 0 }),
+                    ], 5400),
+                ],
+            }),
+            // Row 2: Gạch ngang (left) | Tiêu ngữ gạch chân (right)
+            new TableRow({
+                children: [
+                    layoutCell([
+                        p('──────', { size: 20, alignment: AlignmentType.CENTER, after: 0 }),
+                    ], 4200),
+                    layoutCell([
+                        p('Độc lập - Tự do - Hạnh phúc', { bold: true, size: SZ_TIEU_NGU, alignment: AlignmentType.CENTER, after: 0, underline: true }),
+                    ], 5400),
+                ],
+            }),
+            // Row 3: Số VB (left) | Địa danh, ngày tháng (right)
+            new TableRow({
+                children: [
+                    layoutCell([
+                        p(`Số: ${docNumber}`, { size: SZ_BODY, alignment: AlignmentType.CENTER, after: 0 }),
+                    ], 4200),
+                    layoutCell([
+                        p(`${location}, ${formatDateVN(docDate)}`, { italics: true, size: SZ_BODY, alignment: AlignmentType.CENTER, after: 0 }),
+                    ], 5400),
+                ],
+            }),
+        ],
+        width: { size: 100, type: WidthType.PERCENTAGE },
+        layout: TableLayoutType.FIXED,
+    });
+    children.push(headerTable);
+    children.push(pEmpty(200));
+
+    // ═══════════════════════════════════════════
+    // PART 1: Title - BÁO CÁO
+    // ═══════════════════════════════════════════
+    children.push(p('BÁO CÁO', { bold: true, size: SZ_TITLE, alignment: AlignmentType.CENTER, after: 60, before: 200 }));
+    children.push(pMulti([
+        { text: 'Đề xuất chủ trương đầu tư dự án ', bold: true, size: SZ_BODY },
+        { text: tenDuAn, bold: true, size: SZ_BODY },
+    ], { alignment: AlignmentType.CENTER, after: 200 }));
+
+    // ═══════════════════════════════════════════
+    // PART 2: Kính gửi + Căn cứ pháp lý
+    // ═══════════════════════════════════════════
+    children.push(pMulti([
+        { text: 'Kính gửi: ', bold: true, italics: true, size: SZ_BODY },
+        { text: kinhGui, size: SZ_BODY },
+    ], { alignment: AlignmentType.CENTER, after: 120 }));
+
+    children.push(p('Căn cứ Luật Đầu tư công ngày 29 tháng 11 năm 2024;', { size: SZ_BODY, indent: INDENT, after: 60 }));
+    children.push(p('Các căn cứ pháp lý khác (có liên quan);', { size: SZ_BODY, indent: INDENT, after: 60 }));
+
+    // Introductory paragraph
+    children.push(p(
+        `${orgName} trình ${kinhGui} Báo cáo đề xuất chủ trương đầu tư dự án ${tenDuAn} với các nội dung chính sau:`,
+        { size: SZ_BODY, indent: INDENT, after: 120 },
+    ));
+
+    // ═══════════════════════════════════════════
+    // PART 3: I. THÔNG TIN CHUNG DỰ ÁN
+    // ═══════════════════════════════════════════
+    children.push(p('I. THÔNG TIN CHUNG DỰ ÁN', { bold: true, size: SZ_BODY, indent: INDENT, after: 60 }));
+
+    const infoItems = [
+        `1. Tên dự án: ${tenDuAn}`,
+        `2. Dự án nhóm: ${nhomDuAn}`,
+        `3. Cấp quyết định đầu tư dự án: ${capQD}`,
+        `4. Tên chủ đầu tư (nếu có): ${chuDauTu}`,
+        `5. Địa điểm thực hiện dự án: ${diaDiem}`,
+    ];
+    for (const item of infoItems) {
+        children.push(p(item, { size: SZ_BODY, indent: INDENT, after: 60 }));
+    }
+
+    // Item 6 with sub-items
+    children.push(p(`6. Dự kiến tổng mức đầu tư dự án: ${tongMuc}`, { size: SZ_BODY, indent: INDENT, after: 40 }));
+    children.push(p(`- Nguồn vốn: ${nguonVon}`, { size: SZ_BODY, indent: INDENT * 2, after: 40 }));
+    children.push(p(`- Phân kỳ đầu tư: ${formData.phanKyDauTu || '...'}`, { size: SZ_BODY, indent: INDENT * 2, after: 40 }));
+    children.push(p(`- Dự kiến bố trí vốn: ${formData.duKienBoTriVon || '...'}`, { size: SZ_BODY, indent: INDENT * 2, after: 60 }));
+
+    children.push(p(`7. Thời gian thực hiện: ${thoiGian}`, { size: SZ_BODY, indent: INDENT, after: 60 }));
+    children.push(p(`8. Các thông tin khác (nếu có): ${formData.thongTinKhac || '………'}`, { size: SZ_BODY, indent: INDENT, after: 120 }));
+
+    // ═══════════════════════════════════════════
+    // PART 4: II. NỘI DUNG CHỦ YẾU CỦA DỰ ÁN
+    // ═══════════════════════════════════════════
+    children.push(p('II. NỘI DUNG CHỦ YẾU CỦA DỰ ÁN', { bold: true, size: SZ_BODY, indent: INDENT, after: 60 }));
+    children.push(p('Báo cáo đầy đủ các nội dung quy định tại Điều 35 của Luật Đầu tư công:', { size: SZ_BODY, indent: INDENT, after: 60 }));
+
+    const contentItems = [
+        { label: '1. Sự cần thiết đầu tư', key: 'suCanThiet' },
+        { label: '2. Mục tiêu đầu tư', key: 'mucTieu' },
+        { label: '3. Quy mô đầu tư', key: 'quyMo' },
+        { label: '4. Phân loại dự án', key: 'phanLoaiDuAn' },
+        { label: '5. Phương án thiết kế sơ bộ', key: 'phuongAnThietKe' },
+        { label: '6. Sơ bộ tổng mức đầu tư', key: 'soBoTongMuc' },
+        { label: '7. Tiến độ thực hiện, phân kỳ đầu tư', key: 'tienDo' },
+        { label: '8. Phân tích hiệu quả đầu tư', key: 'hieuQuaDauTu' },
+        { label: '9. Đánh giá tác động môi trường', key: 'tacDongMoiTruong' },
+        { label: '10. Phương án thu hồi vốn (nếu có)', key: 'phuongAnThuHoiVon' },
+    ];
+    for (const item of contentItems) {
+        const val = formData[item.key] || '………';
+        children.push(p(`${item.label}: ${val}`, { size: SZ_BODY, indent: INDENT * 2, after: 60 }));
+    }
+
+    // ═══════════════════════════════════════════
+    // PART 5: Closing paragraph
+    // ═══════════════════════════════════════════
+    children.push(pEmpty(60));
+    children.push(p(
+        `${orgName} trình ${kinhGui} xem xét, quyết định chủ trương đầu tư dự án ${tenDuAn}./.`,
+        { size: SZ_BODY, indent: INDENT, after: 200 },
+    ));
+
+    // ═══════════════════════════════════════════
+    // PART 6: Signature block (two-column table)
+    // ═══════════════════════════════════════════
+    const signatureTable = buildSignatureBlockTable(
+        ['Như trên', 'Cơ quan thẩm định chủ trương đầu tư dự án', 'Các cơ quan liên quan khác'],
+        signerTitle,
+        signerName,
+    );
+    children.push(signatureTable);
+
+    // ── Build and save ──
     const doc = new Document({
         sections: [{
-            properties: {
-                ...PORTRAIT_A4,
-            },
-            children: docChildren,
+            properties: { ...PORTRAIT_A4 },
+            children,
         }],
     });
 
-    // 5. Export file
     const blob = await Packer.toBlob(doc);
     const safeName = (formData.projectName || config.shortLabel)
         .replace(/[^a-zA-Z0-9\u00C0-\u1EF9\s]/g, '_')
