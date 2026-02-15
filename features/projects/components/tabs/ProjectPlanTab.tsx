@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { Task, TaskStatus, TaskPriority, Employee, ProjectGroup, Project } from '@/types';
 import {
@@ -163,6 +164,7 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({
     project,
 }) => {
     const navigate = useNavigate();
+    const queryClient = useQueryClient();
     // Dynamic phases based on project group
     const DECREE_175_PHASES = useMemo(() => getProjectPhases(groupCode, isODA), [groupCode, isODA]);
     // 1. Local Tasks State (Optimistic UI)
@@ -453,20 +455,28 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({
         setIsTaskModalOpen(true);
     };
 
-    const handleSaveTask = (taskData: Partial<Task>) => {
+    const handleSaveTask = async (taskData: Partial<Task>) => {
         let updatedTask: Task;
 
-        if (taskData.TaskID) {
+        if (taskData.TaskID && !taskData.TaskID.startsWith('NEW_')) {
             updatedTask = { ...editingTask, ...taskData } as Task;
             setTasks(prev => prev.map(t => t.TaskID === updatedTask.TaskID ? updatedTask : t));
         } else {
             updatedTask = {
                 ...taskData as Task,
-                TaskID: `NEW_${Date.now()}`,
+                TaskID: taskData.TaskID || `T-${Math.random().toString(36).substring(2, 10)}`,
                 ProjectID: projectID || 'PROJ_TEMP',
                 CreatedDate: new Date().toISOString()
             } as Task;
             setTasks(prev => [...prev, updatedTask]);
+        }
+
+        // Persist to DB
+        try {
+            await TaskService.saveTask(updatedTask);
+            queryClient.invalidateQueries({ queryKey: ['tasks'] });
+        } catch (err) {
+            console.error('Failed to save task:', err);
         }
 
         if (onSaveTask) {
@@ -547,8 +557,9 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({
             // Save to DB
             await TaskService.saveTasks(newTasks);
 
-            // Update local state
+            // Update local state + invalidate react-query cache
             setTasks(prev => [...prev, ...newTasks]);
+            queryClient.invalidateQueries({ queryKey: ['tasks'] });
         } catch (error) {
             console.error('Failed to bulk create tasks:', error);
         } finally {
