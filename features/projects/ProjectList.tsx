@@ -6,11 +6,12 @@ import { ProjectCard } from './ProjectCard';
 import { ProjectStats } from './ProjectStats';
 import { Search, Plus, LayoutGrid, List as ListIcon, Filter, Layers } from 'lucide-react';
 import { Skeleton } from '../../components/ui/Skeleton';
-import { CreateProjectModal } from './components/CreateProjectModal';
+import { CreateProjectModal, SelectedMember } from './components/CreateProjectModal';
 import { generateProjectTasks } from '../../utils/projectTemplateGenerator';
 import { TaskService } from '../../services/TaskService';
 import ProjectService from '../../services/ProjectService';
 import { Project } from '../../types';
+import { supabase } from '../../lib/supabase';
 
 const ProjectList: React.FC = () => {
     const navigate = useNavigate();
@@ -46,24 +47,35 @@ const ProjectList: React.FC = () => {
         setIsModalOpen(true);
     };
 
-    const handleSaveProject = async (data: Partial<Project> & { StartDate: Date }) => {
+    const handleSaveProject = async (data: Partial<Project> & { StartDate: Date }, members: SelectedMember[]) => {
         try {
             // 1. Create Project
             const newProject = await ProjectService.create(data);
 
             // 2. Generate Schedule based on Decree 175
-            // Ensure GroupCode is valid, default to C if missing
             const group = data.GroupCode || ProjectGroup.C;
             const tasks = generateProjectTasks(newProject.ProjectID, group, data.StartDate);
 
             // 3. Save Tasks
             await TaskService.saveTasks(tasks);
 
-            // 4. Notify and Navigate
-            refetch(); // Refresh list to update stats/list
-            setIsModalOpen(false);
+            // 4. Save Project Members
+            if (members.length > 0) {
+                const memberRows = members.map(m => ({
+                    project_id: newProject.ProjectID,
+                    employee_id: m.employeeId,
+                    role: m.role,
+                    joined_at: new Date().toISOString(),
+                }));
+                const { error: memberError } = await supabase
+                    .from('project_members')
+                    .insert(memberRows);
+                if (memberError) console.error('Failed to save members:', memberError.message);
+            }
 
-            // Navigate to the new project detail immediately
+            // 5. Notify and Navigate
+            refetch();
+            setIsModalOpen(false);
             navigate(`/projects/${newProject.ProjectID}`);
         } catch (error) {
             console.error('Error creating project:', error);

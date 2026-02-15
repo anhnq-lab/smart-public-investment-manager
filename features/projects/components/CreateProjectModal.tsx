@@ -1,12 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { X, Building2, Calendar, DollarSign, MapPin, User, Clock, FileText, HardHat, Search, Shield } from 'lucide-react';
-import { ProjectGroup, InvestmentType, Project } from '../../../types';
+import { X, Building2, Calendar, DollarSign, MapPin, User, Clock, FileText, HardHat, Search, Shield, Users, Check, ChevronDown } from 'lucide-react';
+import { ProjectGroup, InvestmentType, Project, Employee } from '../../../types';
 import { generateProjectCode, ConstructionType, PermitType } from '../../../utils/projectCodeGenerator';
+import EmployeeService from '../../../services/EmployeeService';
+
+export interface SelectedMember {
+    employeeId: string;
+    role: string;
+}
 
 interface CreateProjectModalProps {
     isOpen: boolean;
     onClose: () => void;
-    onSave: (data: Partial<Project> & { StartDate: Date }) => Promise<void>;
+    onSave: (data: Partial<Project> & { StartDate: Date }, members: SelectedMember[]) => Promise<void>;
 }
 
 const CONSTRUCTION_TYPES = [
@@ -66,6 +72,10 @@ const PROVINCES = [
 
 export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ isOpen, onClose, onSave }) => {
     const [isLoading, setIsLoading] = useState(false);
+    const [employees, setEmployees] = useState<Employee[]>([]);
+    const [selectedMembers, setSelectedMembers] = useState<SelectedMember[]>([]);
+    const [memberSearch, setMemberSearch] = useState('');
+    const [showMemberDropdown, setShowMemberDropdown] = useState(false);
     const [formData, setFormData] = useState({
         // Section 1 - Thông tin cơ bản
         ProjectID: '',
@@ -89,6 +99,16 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ isOpen, 
         SurveyContractor: '',
         ReviewContractor: '',
     });
+
+    // Fetch employees when modal opens
+    useEffect(() => {
+        if (isOpen) {
+            EmployeeService.getAll().then(setEmployees).catch(console.error);
+        } else {
+            setSelectedMembers([]);
+            setMemberSearch('');
+        }
+    }, [isOpen]);
 
     // Auto-generate Project Code theo TT 24/2025/TT-BXD
     useEffect(() => {
@@ -119,6 +139,30 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ isOpen, 
 
     if (!isOpen) return null;
 
+    const toggleMember = (empId: string) => {
+        setSelectedMembers(prev => {
+            const exists = prev.find(m => m.employeeId === empId);
+            if (exists) return prev.filter(m => m.employeeId !== empId);
+            return [...prev, { employeeId: empId, role: 'Thành viên' }];
+        });
+    };
+
+    const updateMemberRole = (empId: string, role: string) => {
+        setSelectedMembers(prev => prev.map(m => m.employeeId === empId ? { ...m, role } : m));
+    };
+
+    const filteredEmployees = employees.filter(e =>
+        e.FullName.toLowerCase().includes(memberSearch.toLowerCase()) ||
+        e.Department.toLowerCase().includes(memberSearch.toLowerCase())
+    );
+
+    const groupedEmployees = filteredEmployees.reduce((acc, emp) => {
+        const dept = emp.Department || 'Khác';
+        if (!acc[dept]) acc[dept] = [];
+        acc[dept].push(emp);
+        return acc;
+    }, {} as Record<string, Employee[]>);
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
@@ -126,8 +170,8 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ isOpen, 
             await onSave({
                 ...formData,
                 Progress: 0,
-                StartDate: new Date(formData.StartDate)
-            });
+                StartDate: new Date(formData.StartDate) as unknown as string & Date
+            } as Partial<Project> & { StartDate: Date }, selectedMembers);
             onClose();
         } catch (error) {
             console.error('Failed to create project:', error);
@@ -463,6 +507,119 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ isOpen, 
                                 </div>
                             </div>
                         </div>
+                    </div>
+
+                    {/* ═══ SECTION 4: Thành viên dự án ═══ */}
+                    <div>
+                        <SectionHeader icon={Users} title="Thành viên dự án" subtitle="Chọn nhân sự tham gia quản lý dự án" />
+
+                        {/* Selected Members Chips */}
+                        {selectedMembers.length > 0 && (
+                            <div className="flex flex-wrap gap-2 mb-3">
+                                {selectedMembers.map(sm => {
+                                    const emp = employees.find(e => e.EmployeeID === sm.employeeId);
+                                    if (!emp) return null;
+                                    return (
+                                        <div key={sm.employeeId} className="flex items-center gap-2 bg-blue-50 border border-blue-200 rounded-xl px-3 py-1.5 group">
+                                            <img
+                                                src={emp.AvatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(emp.FullName)}&background=random&color=fff&size=24`}
+                                                alt={emp.FullName}
+                                                className="w-5 h-5 rounded-full object-cover"
+                                            />
+                                            <span className="text-sm font-medium text-blue-800">{emp.FullName}</span>
+                                            <select
+                                                value={sm.role}
+                                                onChange={e => updateMemberRole(sm.employeeId, e.target.value)}
+                                                className="text-[10px] bg-blue-100 text-blue-600 rounded-md px-1 py-0.5 border-none outline-none cursor-pointer font-semibold"
+                                            >
+                                                <option value="Giám đốc dự án">Giám đốc DA</option>
+                                                <option value="Phó Giám đốc dự án">Phó GĐ DA</option>
+                                                <option value="Trưởng phòng phụ trách">TP phụ trách</option>
+                                                <option value="Kỹ sư giám sát">KS giám sát</option>
+                                                <option value="Cán bộ kỹ thuật">CB kỹ thuật</option>
+                                                <option value="Kế toán dự án">Kế toán DA</option>
+                                                <option value="Thành viên">Thành viên</option>
+                                            </select>
+                                            <button
+                                                type="button"
+                                                onClick={() => toggleMember(sm.employeeId)}
+                                                className="w-4 h-4 rounded-full flex items-center justify-center text-blue-400 hover:text-red-500 hover:bg-red-50 transition-colors"
+                                            >
+                                                <X className="w-3 h-3" />
+                                            </button>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        )}
+
+                        {/* Search & Dropdown */}
+                        <div className="relative">
+                            <div
+                                className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 flex items-center gap-2 cursor-pointer hover:border-blue-300 transition-colors"
+                                onClick={() => setShowMemberDropdown(!showMemberDropdown)}
+                            >
+                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                                <input
+                                    type="text"
+                                    placeholder={`Tìm nhân sự... (${selectedMembers.length} đã chọn)`}
+                                    className="flex-1 bg-transparent border-none outline-none text-sm text-gray-700 placeholder:text-gray-400"
+                                    value={memberSearch}
+                                    onChange={e => { setMemberSearch(e.target.value); setShowMemberDropdown(true); }}
+                                    onFocus={() => setShowMemberDropdown(true)}
+                                />
+                                <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform ${showMemberDropdown ? 'rotate-180' : ''}`} />
+                            </div>
+
+                            {showMemberDropdown && (
+                                <div className="absolute z-20 mt-1 w-full bg-white border border-gray-200 rounded-xl shadow-xl max-h-56 overflow-y-auto">
+                                    {Object.keys(groupedEmployees).length === 0 ? (
+                                        <div className="p-4 text-center text-sm text-gray-400">Không tìm thấy nhân sự</div>
+                                    ) : (
+                                        Object.entries(groupedEmployees).map(([dept, emps]) => (
+                                            <div key={dept}>
+                                                <div className="px-3 py-1.5 bg-gray-50 text-[10px] font-bold text-gray-500 uppercase tracking-wider sticky top-0">
+                                                    {dept}
+                                                </div>
+                                                {emps.map(emp => {
+                                                    const isSelected = selectedMembers.some(m => m.employeeId === emp.EmployeeID);
+                                                    return (
+                                                        <button
+                                                            key={emp.EmployeeID}
+                                                            type="button"
+                                                            onClick={() => toggleMember(emp.EmployeeID)}
+                                                            className={`w-full flex items-center gap-3 px-3 py-2 text-left hover:bg-blue-50 transition-colors ${isSelected ? 'bg-blue-50/50' : ''}`}
+                                                        >
+                                                            <img
+                                                                src={emp.AvatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(emp.FullName)}&background=random&color=fff&size=28`}
+                                                                alt={emp.FullName}
+                                                                className="w-7 h-7 rounded-full object-cover ring-2 ring-white shadow-sm"
+                                                            />
+                                                            <div className="flex-1 min-w-0">
+                                                                <p className="text-sm font-medium text-gray-800 truncate">{emp.FullName}</p>
+                                                                <p className="text-[10px] text-gray-400 truncate">{emp.Position}</p>
+                                                            </div>
+                                                            {isSelected && (
+                                                                <div className="w-5 h-5 rounded-full bg-blue-500 flex items-center justify-center shrink-0">
+                                                                    <Check className="w-3 h-3 text-white" />
+                                                                </div>
+                                                            )}
+                                                        </button>
+                                                    );
+                                                })}
+                                            </div>
+                                        ))
+                                    )}
+                                </div>
+                            )}
+                        </div>
+
+                        {selectedMembers.length === 0 && (
+                            <p className="text-[11px] text-amber-600 mt-2 flex items-center gap-1">
+                                <span className="inline-block w-1.5 h-1.5 bg-amber-500 rounded-full"></span>
+                                Có thể bổ sung thành viên sau khi tạo dự án
+                            </p>
+                        )}
                     </div>
 
                 </form>
