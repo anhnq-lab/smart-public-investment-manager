@@ -224,6 +224,11 @@ export const ProjectDocumentsTab: React.FC<ProjectDocumentsTabProps> = ({
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [uploadedDocs, setUploadedDocs] = useState<Document[]>([]);
 
+    // Doc metadata editing
+    const [expandedDocIdx, setExpandedDocIdx] = useState<string | null>(null);
+    const [editingMeta, setEditingMeta] = useState<Record<string, any>>({});
+    const [savingMeta, setSavingMeta] = useState(false);
+
     // Data hooks
     const { data: folders = [] } = useFolders(projectID);
     const { data: documents = [], isLoading } = useDocuments(activeFolderId);
@@ -254,7 +259,13 @@ export const ProjectDocumentsTab: React.FC<ProjectDocumentsTabProps> = ({
                     source: row.source,
                     task_id: row.task_id,
                     tt24_field: row.tt24_field,
-                } as Document & { source?: string; task_id?: string; tt24_field?: string }));
+                    // Metadata fields
+                    document_number: row.document_number || '',
+                    issue_date: row.issue_date || '',
+                    issuing_authority: row.issuing_authority || '',
+                    updated_by: row.updated_by || '',
+                    notes: row.notes || '',
+                } as Document & { source?: string; task_id?: string; tt24_field?: string; document_number?: string; issue_date?: string; issuing_authority?: string; updated_by?: string; notes?: string }));
                 setDbDocs(mapped);
             }
         };
@@ -382,6 +393,34 @@ export const ProjectDocumentsTab: React.FC<ProjectDocumentsTabProps> = ({
         e.target.value = '';
     };
 
+    // Save document metadata
+    const handleSaveMetadata = async (docId: number, meta: Record<string, any>) => {
+        setSavingMeta(true);
+        try {
+            const updateData: any = {};
+            if (meta.document_number !== undefined) updateData.document_number = meta.document_number;
+            if (meta.issue_date !== undefined) updateData.issue_date = meta.issue_date || null;
+            if (meta.issuing_authority !== undefined) updateData.issuing_authority = meta.issuing_authority;
+            if (meta.updated_by !== undefined) updateData.updated_by = meta.updated_by;
+            if (meta.notes !== undefined) updateData.notes = meta.notes;
+
+            await (supabase.from('documents') as any)
+                .update(updateData)
+                .eq('doc_id', docId);
+
+            // Update local dbDocs state
+            setDbDocs(prev => prev.map(d =>
+                d.DocID === docId ? { ...d, ...meta } : d
+            ));
+
+            setExpandedDocIdx(null);
+            setEditingMeta({});
+        } catch (err) {
+            console.error('Save metadata failed:', err);
+        } finally {
+            setSavingMeta(false);
+        }
+    };
     // Breadcrumb calculation for CDE
     const activeFolder = folders.find(f => f.FolderID === activeFolderId);
     const breadcrumbs = useMemo(() => {
@@ -643,83 +682,212 @@ export const ProjectDocumentsTab: React.FC<ProjectDocumentsTabProps> = ({
                                             </div>
                                         )}
 
-                                        {/* Document type list with real matching */}
+                                        {/* Document type list with expandable metadata */}
                                         {category.docs.map((docType, idx) => {
                                             const matchedDoc = matchDocToCategory(docType.keywords);
                                             const hasDoc = !!matchedDoc;
                                             const fileInfo = hasDoc ? getFileIcon(matchedDoc!.DocName) : null;
+                                            const docKey = `${category.stage}-${idx}`;
+                                            const isExpanded = expandedDocIdx === docKey;
+                                            const currentMeta = editingMeta[docKey] || {};
 
                                             return (
-                                                <div
-                                                    key={idx}
-                                                    className={`flex items-center justify-between py-2.5 px-3 rounded-lg transition-all ${hasDoc
-                                                        ? 'hover:bg-blue-50/50 dark:hover:bg-slate-700 cursor-pointer'
-                                                        : 'hover:bg-gray-50 dark:hover:bg-slate-700/50'
-                                                        }`}
-                                                    onClick={() => hasDoc && setPreviewFile(matchedDoc)}
-                                                >
-                                                    <div className="flex items-center gap-3 min-w-0 flex-1">
-                                                        {hasDoc && fileInfo ? (
-                                                            <div className={`w-8 h-8 rounded-lg ${fileInfo.bg} flex items-center justify-center shrink-0`}>
-                                                                <fileInfo.icon className={`w-4 h-4 ${fileInfo.color}`} />
-                                                            </div>
-                                                        ) : (
-                                                            <div className="w-8 h-8 rounded-lg bg-gray-50 border border-dashed border-gray-200 flex items-center justify-center shrink-0">
-                                                                <FileText className="w-4 h-4 text-gray-300" />
-                                                            </div>
-                                                        )}
-                                                        <div className="min-w-0">
-                                                            <span className={`text-sm ${hasDoc ? 'text-gray-800 dark:text-slate-100 font-medium' : 'text-gray-500 dark:text-slate-400'}`}>{docType.name}</span>
-                                                            {hasDoc && (
-                                                                <p className="text-[11px] text-gray-400 truncate mt-0.5">
-                                                                    {matchedDoc!.DocName} • {matchedDoc!.UploadDate}
-                                                                </p>
+                                                <div key={idx} className="rounded-lg border border-transparent hover:border-gray-200 dark:hover:border-slate-600 transition-all">
+                                                    {/* Main row */}
+                                                    <div
+                                                        className={`flex items-center justify-between py-2.5 px-3 rounded-lg transition-all ${hasDoc
+                                                            ? 'hover:bg-blue-50/50 dark:hover:bg-slate-700 cursor-pointer'
+                                                            : 'hover:bg-gray-50 dark:hover:bg-slate-700/50'
+                                                            }`}
+                                                        onClick={() => {
+                                                            if (hasDoc) {
+                                                                setExpandedDocIdx(isExpanded ? null : docKey);
+                                                                if (!isExpanded) {
+                                                                    // Pre-fill metadata from matched doc
+                                                                    const md = matchedDoc as any;
+                                                                    setEditingMeta(prev => ({
+                                                                        ...prev,
+                                                                        [docKey]: {
+                                                                            document_number: md?.document_number || '',
+                                                                            issue_date: md?.issue_date || '',
+                                                                            issuing_authority: md?.issuing_authority || '',
+                                                                            updated_by: md?.updated_by || '',
+                                                                            notes: md?.notes || '',
+                                                                        }
+                                                                    }));
+                                                                }
+                                                            }
+                                                        }}
+                                                    >
+                                                        <div className="flex items-center gap-3 min-w-0 flex-1">
+                                                            {hasDoc && fileInfo ? (
+                                                                <div className={`w-8 h-8 rounded-lg ${fileInfo.bg} flex items-center justify-center shrink-0`}>
+                                                                    <fileInfo.icon className={`w-4 h-4 ${fileInfo.color}`} />
+                                                                </div>
+                                                            ) : (
+                                                                <div className="w-8 h-8 rounded-lg bg-gray-50 dark:bg-slate-700 border border-dashed border-gray-200 dark:border-slate-600 flex items-center justify-center shrink-0">
+                                                                    <FileText className="w-4 h-4 text-gray-300 dark:text-slate-500" />
+                                                                </div>
                                                             )}
+                                                            <div className="min-w-0">
+                                                                <span className={`text-sm ${hasDoc ? 'text-gray-800 dark:text-slate-100 font-medium' : 'text-gray-500 dark:text-slate-400'}`}>{docType.name}</span>
+                                                                {hasDoc && (
+                                                                    <p className="text-[11px] text-gray-400 dark:text-slate-500 truncate mt-0.5">
+                                                                        {(matchedDoc as any)?.document_number && <span className="font-semibold text-gray-500 dark:text-slate-400">{(matchedDoc as any).document_number} • </span>}
+                                                                        {(matchedDoc as any)?.issuing_authority && <span>{(matchedDoc as any).issuing_authority} • </span>}
+                                                                        {(matchedDoc as any)?.issue_date || matchedDoc!.UploadDate || ''}
+                                                                    </p>
+                                                                )}
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                    <div className="flex items-center gap-2 shrink-0">
-                                                        {hasDoc ? (
-                                                            <>
-                                                                {/* Source badge */}
-                                                                {(matchedDoc as any)?.source && (
-                                                                    <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold ${(matchedDoc as any).source === 'task'
+                                                        <div className="flex items-center gap-2 shrink-0">
+                                                            {hasDoc ? (
+                                                                <>
+                                                                    {/* Source badge */}
+                                                                    {(matchedDoc as any)?.source && (
+                                                                        <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold ${(matchedDoc as any).source === 'task'
                                                                             ? 'bg-violet-100 dark:bg-violet-900/30 text-violet-700 dark:text-violet-300'
                                                                             : (matchedDoc as any).source === 'tt24'
                                                                                 ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300'
                                                                                 : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300'
-                                                                        }`}>
-                                                                        {(matchedDoc as any).source === 'task' ? '📋 Công việc'
-                                                                            : (matchedDoc as any).source === 'tt24' ? '📄 TT24'
-                                                                                : (matchedDoc as any).source === 'manual' ? '📤 Tải lên' : ''}
+                                                                            }`}>
+                                                                            {(matchedDoc as any).source === 'task' ? '📋 Công việc'
+                                                                                : (matchedDoc as any).source === 'tt24' ? '📄 TT24'
+                                                                                    : (matchedDoc as any).source === 'manual' ? '📤 Tải lên' : ''}
+                                                                        </span>
+                                                                    )}
+                                                                    <span className="text-xs px-2.5 py-1 bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 rounded-lg font-bold flex items-center gap-1">
+                                                                        <CheckCircle2 className="w-3 h-3" /> Đã có
                                                                     </span>
-                                                                )}
-                                                                <span className="text-xs px-2.5 py-1 bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 rounded-lg font-bold flex items-center gap-1">
-                                                                    <CheckCircle2 className="w-3 h-3" /> Đã có
-                                                                </span>
-                                                                {matchedDoc!.Version && (
-                                                                    <span className="text-[10px] font-mono bg-gray-100 dark:bg-slate-700 text-gray-500 dark:text-slate-400 px-1.5 py-0.5 rounded">
-                                                                        {matchedDoc!.Version}
-                                                                    </span>
-                                                                )}
-                                                                <DocActionMenu
-                                                                    onView={() => setPreviewFile(matchedDoc)}
-                                                                    onDownload={() => {/* download logic */ }}
-                                                                    onHistory={() => setHistoryDoc(matchedDoc!)}
-                                                                />
-                                                            </>
-                                                        ) : (
-                                                            <>
-                                                                <span className="text-xs px-2.5 py-1 bg-gray-100 text-gray-400 rounded-lg font-medium">Chưa có</span>
-                                                                <button
-                                                                    onClick={(e) => { e.stopPropagation(); handleUpload(); }}
-                                                                    className="p-1.5 hover:bg-blue-50 rounded-lg text-gray-400 hover:text-blue-600 transition-all"
-                                                                    title="Tải lên văn bản"
-                                                                >
-                                                                    <Plus className="w-4 h-4" />
-                                                                </button>
-                                                            </>
-                                                        )}
+                                                                    {isExpanded ? (
+                                                                        <ChevronDown className="w-4 h-4 text-gray-400" />
+                                                                    ) : (
+                                                                        <ChevronRight className="w-4 h-4 text-gray-400" />
+                                                                    )}
+                                                                </>
+                                                            ) : (
+                                                                <>
+                                                                    <span className="text-xs px-2.5 py-1 bg-gray-100 dark:bg-slate-700 text-gray-400 dark:text-slate-500 rounded-lg font-medium">Chưa có</span>
+                                                                    <button
+                                                                        onClick={(e) => { e.stopPropagation(); handleUpload(); }}
+                                                                        className="p-1.5 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-all"
+                                                                        title="Tải lên văn bản"
+                                                                    >
+                                                                        <Plus className="w-4 h-4" />
+                                                                    </button>
+                                                                </>
+                                                            )}
+                                                        </div>
                                                     </div>
+
+                                                    {/* Expanded metadata panel */}
+                                                    {isExpanded && hasDoc && (
+                                                        <div className="mx-3 mb-3 p-4 bg-slate-50 dark:bg-slate-800/50 rounded-lg border border-gray-100 dark:border-slate-700 space-y-3 animate-in slide-in-from-top-2 duration-200">
+                                                            {/* File info row */}
+                                                            <div className="flex items-center gap-3 pb-3 border-b border-gray-100 dark:border-slate-700">
+                                                                <div className="flex-1 min-w-0">
+                                                                    <p className="text-xs text-gray-500 dark:text-slate-400">Tệp đính kèm</p>
+                                                                    <p className="text-sm font-medium text-gray-800 dark:text-slate-100 truncate">{matchedDoc!.DocName}</p>
+                                                                </div>
+                                                                <div className="flex items-center gap-1.5">
+                                                                    <button
+                                                                        onClick={(e) => { e.stopPropagation(); setPreviewFile(matchedDoc); }}
+                                                                        className="p-1.5 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-all"
+                                                                        title="Xem"
+                                                                    >
+                                                                        <Eye className="w-4 h-4" />
+                                                                    </button>
+                                                                    <button
+                                                                        onClick={(e) => { e.stopPropagation(); /* download */ }}
+                                                                        className="p-1.5 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 rounded-lg text-gray-400 hover:text-emerald-600 dark:hover:text-emerald-400 transition-all"
+                                                                        title="Tải về"
+                                                                    >
+                                                                        <Download className="w-4 h-4" />
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+
+                                                            {/* Metadata grid */}
+                                                            <div className="grid grid-cols-2 gap-3">
+                                                                <div>
+                                                                    <label className="text-[11px] font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider">Số hiệu văn bản</label>
+                                                                    <input
+                                                                        type="text"
+                                                                        value={currentMeta.document_number || ''}
+                                                                        onChange={e => setEditingMeta(prev => ({ ...prev, [docKey]: { ...prev[docKey], document_number: e.target.value } }))}
+                                                                        placeholder="VD: 123/QĐ-TTg"
+                                                                        className="mt-1 w-full px-3 py-1.5 text-sm border border-gray-200 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-gray-800 dark:text-slate-100 focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-900 focus:border-blue-300 dark:focus:border-blue-700 transition-all"
+                                                                    />
+                                                                </div>
+                                                                <div>
+                                                                    <label className="text-[11px] font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider">Ngày ban hành</label>
+                                                                    <input
+                                                                        type="date"
+                                                                        value={currentMeta.issue_date || ''}
+                                                                        onChange={e => setEditingMeta(prev => ({ ...prev, [docKey]: { ...prev[docKey], issue_date: e.target.value } }))}
+                                                                        className="mt-1 w-full px-3 py-1.5 text-sm border border-gray-200 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-gray-800 dark:text-slate-100 focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-900 focus:border-blue-300 dark:focus:border-blue-700 transition-all"
+                                                                    />
+                                                                </div>
+                                                                <div>
+                                                                    <label className="text-[11px] font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider">Đơn vị ban hành</label>
+                                                                    <input
+                                                                        type="text"
+                                                                        value={currentMeta.issuing_authority || ''}
+                                                                        onChange={e => setEditingMeta(prev => ({ ...prev, [docKey]: { ...prev[docKey], issuing_authority: e.target.value } }))}
+                                                                        placeholder="VD: Thủ tướng Chính phủ"
+                                                                        className="mt-1 w-full px-3 py-1.5 text-sm border border-gray-200 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-gray-800 dark:text-slate-100 focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-900 focus:border-blue-300 dark:focus:border-blue-700 transition-all"
+                                                                    />
+                                                                </div>
+                                                                <div>
+                                                                    <label className="text-[11px] font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider">Người cập nhật</label>
+                                                                    <input
+                                                                        type="text"
+                                                                        value={currentMeta.updated_by || ''}
+                                                                        onChange={e => setEditingMeta(prev => ({ ...prev, [docKey]: { ...prev[docKey], updated_by: e.target.value } }))}
+                                                                        placeholder="VD: Nguyễn Văn A"
+                                                                        className="mt-1 w-full px-3 py-1.5 text-sm border border-gray-200 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-gray-800 dark:text-slate-100 focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-900 focus:border-blue-300 dark:focus:border-blue-700 transition-all"
+                                                                    />
+                                                                </div>
+                                                            </div>
+                                                            <div>
+                                                                <label className="text-[11px] font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider">Ghi chú</label>
+                                                                <textarea
+                                                                    value={currentMeta.notes || ''}
+                                                                    onChange={e => setEditingMeta(prev => ({ ...prev, [docKey]: { ...prev[docKey], notes: e.target.value } }))}
+                                                                    placeholder="Nhập ghi chú..."
+                                                                    rows={2}
+                                                                    className="mt-1 w-full px-3 py-1.5 text-sm border border-gray-200 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-gray-800 dark:text-slate-100 focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-900 focus:border-blue-300 dark:focus:border-blue-700 transition-all resize-none"
+                                                                />
+                                                            </div>
+
+                                                            {/* Action buttons */}
+                                                            <div className="flex items-center justify-between pt-2 border-t border-gray-100 dark:border-slate-700">
+                                                                <div className="text-[11px] text-gray-400 dark:text-slate-500">
+                                                                    {matchedDoc!.Size && <span>Kích thước: {matchedDoc!.Size}</span>}
+                                                                    {matchedDoc!.Version && <span className="ml-3">Phiên bản: {matchedDoc!.Version}</span>}
+                                                                </div>
+                                                                <div className="flex gap-2">
+                                                                    <button
+                                                                        onClick={(e) => { e.stopPropagation(); setExpandedDocIdx(null); }}
+                                                                        className="px-3 py-1.5 text-xs font-medium text-gray-500 dark:text-slate-400 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-lg transition-all"
+                                                                    >
+                                                                        Đóng
+                                                                    </button>
+                                                                    <button
+                                                                        onClick={(e) => {
+                                                                            e.stopPropagation();
+                                                                            handleSaveMetadata(matchedDoc!.DocID, currentMeta);
+                                                                        }}
+                                                                        disabled={savingMeta}
+                                                                        className="px-4 py-1.5 text-xs font-bold bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-all shadow-sm disabled:opacity-50 flex items-center gap-1.5"
+                                                                    >
+                                                                        <FileCheck className="w-3.5 h-3.5" />
+                                                                        {savingMeta ? 'Đang lưu...' : 'Lưu thông tin'}
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    )}
                                                 </div>
                                             );
                                         })}
