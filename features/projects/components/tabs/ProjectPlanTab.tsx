@@ -193,19 +193,20 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({
     const fileInputRef = React.useRef<HTMLInputElement>(null);
     const [pendingUploadTaskId, setPendingUploadTaskId] = useState<string | null>(null);
 
-    // Load attachment counts
+    // Load attachment counts from documents table
     useEffect(() => {
         if (!projectID) return;
         const loadCounts = async () => {
             const taskIds = tasks.map(t => t.TaskID);
             if (taskIds.length === 0) return;
             const { data } = await supabase
-                .from('task_attachments')
+                .from('documents')
                 .select('task_id')
-                .in('task_id', taskIds);
+                .eq('source' as any, 'task')
+                .in('task_id' as any, taskIds) as any;
             if (data) {
                 const counts: Record<string, number> = {};
-                data.forEach((row: { task_id: string }) => {
+                (data as any[]).forEach((row: { task_id: string }) => {
                     counts[row.task_id] = (counts[row.task_id] || 0) + 1;
                 });
                 setAttachmentCounts(counts);
@@ -214,7 +215,7 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({
         loadCounts();
     }, [tasks, projectID]);
 
-    // Handle file upload for task
+    // Handle file upload for task → saves to documents table
     const handleFileUpload = async (taskId: string, file: File) => {
         setUploadingTaskId(taskId);
         try {
@@ -229,12 +230,16 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({
                 .from('task-attachments')
                 .getPublicUrl(path);
 
-            await supabase.from('task_attachments').insert({
+            // Insert into unified documents table
+            await (supabase.from('documents') as any).insert({
+                project_id: projectID,
                 task_id: taskId,
-                file_name: file.name,
-                file_url: urlData.publicUrl,
-                file_size: file.size,
-                file_type: file.type,
+                doc_name: file.name,
+                storage_path: urlData.publicUrl,
+                size: `${(file.size / 1024).toFixed(0)} KB`,
+                category: 0,
+                source: 'task',
+                is_digitized: true,
             });
 
             setAttachmentCounts(prev => ({ ...prev, [taskId]: (prev[taskId] || 0) + 1 }));

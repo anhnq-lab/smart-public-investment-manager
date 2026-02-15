@@ -7,6 +7,7 @@ import {
     FileCheck, Pencil, ExternalLink, Trash2
 } from 'lucide-react';
 import { GoogleGenerativeAI } from '@google/generative-ai';
+import { supabase } from '@/lib/supabase';
 
 // ══════════════════════════════════════════════════════════════
 //  Types
@@ -490,6 +491,32 @@ export const ProjectComplianceTab: React.FC<ProjectComplianceTabProps> = ({ proj
     const handleFileSelect = async (row: TT24Row, file: File) => {
         const key = `doc_${row.stt}_${row.label}`;
         setUploads(prev => ({ ...prev, [key]: { file, fileName: file.name, status: 'extracting' } }));
+
+        // Upload file to Supabase Storage and save to documents table
+        try {
+            const ext = file.name.split('.').pop();
+            const storagePath = `${project.ProjectID}/tt24/${row.stt}_${Date.now()}.${ext}`;
+            const { error: uploadErr } = await supabase.storage
+                .from('task-attachments')
+                .upload(storagePath, file);
+            if (!uploadErr) {
+                const { data: urlData } = supabase.storage
+                    .from('task-attachments')
+                    .getPublicUrl(storagePath);
+                await (supabase.from('documents') as any).insert({
+                    project_id: project.ProjectID,
+                    doc_name: `[TT24] ${row.label} - ${file.name}`,
+                    storage_path: urlData.publicUrl,
+                    size: `${(file.size / 1024).toFixed(0)} KB`,
+                    category: row.stt ? parseInt(row.stt.split('.')[0]) || 0 : 0,
+                    source: 'tt24',
+                    tt24_field: key,
+                    is_digitized: true,
+                });
+            }
+        } catch (storageErr) {
+            console.warn('TT24 file storage failed (non-critical):', storageErr);
+        }
 
         if (row.extractPrompt && row.subFields) {
             try {
