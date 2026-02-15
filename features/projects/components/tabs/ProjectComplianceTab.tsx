@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useRef, useCallback } from 'react';
+import React, { useState, useMemo, useRef, useCallback, useEffect } from 'react';
 import { Project, ProjectGroup, CostBreakdown } from '@/types';
 import { ProjectService } from '@/services/ProjectService';
 import {
@@ -443,6 +443,31 @@ export const ProjectComplianceTab: React.FC<ProjectComplianceTabProps> = ({ proj
     // Upload states
     const [uploads, setUploads] = useState<Record<string, UploadState>>({});
     const fileInputRefs = useRef<Record<string, HTMLInputElement | null>>({});
+
+    // Load existing TT24 uploads from documents table
+    useEffect(() => {
+        const loadExisting = async () => {
+            const { data } = await supabase
+                .from('documents')
+                .select('*')
+                .eq('project_id', project.ProjectID)
+                .eq('source' as any, 'tt24') as any;
+            if (data && (data as any[]).length > 0) {
+                const existing: Record<string, UploadState> = {};
+                (data as any[]).forEach((row: any) => {
+                    if (row.tt24_field) {
+                        existing[row.tt24_field] = {
+                            file: null as any,
+                            fileName: row.doc_name?.replace('[TT24] ', '').split(' - ').pop() || row.doc_name,
+                            status: 'done',
+                        };
+                    }
+                });
+                setUploads(prev => ({ ...existing, ...prev }));
+            }
+        };
+        loadExisting();
+    }, [project.ProjectID]);
 
     // Editing state for data fields
     const [editingData, setEditingData] = useState(false);

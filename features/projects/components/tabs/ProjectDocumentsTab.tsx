@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useRef, useCallback } from 'react';
+import React, { useState, useMemo, useRef, useCallback, useEffect } from 'react';
 import {
     Folder as FolderIcon, FileText, ChevronRight, ChevronDown,
     Upload, Search, Eye, Download, FolderOpen, MoreVertical,
@@ -13,6 +13,7 @@ import {
 import { DocumentService } from '@/services/DocumentService';
 import { useFolders, useDocuments } from '@/hooks/useDocuments';
 import FilePreviewModal from '../FilePreviewModal';
+import { supabase } from '@/lib/supabase';
 
 interface ProjectDocumentsTabProps {
     projectID: string;
@@ -226,21 +227,55 @@ export const ProjectDocumentsTab: React.FC<ProjectDocumentsTabProps> = ({
     const { data: folders = [] } = useFolders(projectID);
     const { data: documents = [], isLoading } = useDocuments(activeFolderId);
 
-    // All project documents (from service)
+    // Load real documents from Supabase
+    const [dbDocs, setDbDocs] = useState<Document[]>([]);
+    useEffect(() => {
+        if (!projectID) return;
+        const loadDocs = async () => {
+            const { data } = await supabase
+                .from('documents')
+                .select('*')
+                .eq('project_id', projectID)
+                .order('upload_date', { ascending: false }) as any;
+            if (data) {
+                const mapped = (data as any[]).map((row: any) => ({
+                    DocID: row.doc_id,
+                    ReferenceID: row.reference_id || projectID,
+                    ProjectID: row.project_id,
+                    Category: row.category || 0,
+                    DocName: row.doc_name,
+                    StoragePath: row.storage_path,
+                    IsDigitized: row.is_digitized ?? true,
+                    UploadDate: row.upload_date ? new Date(row.upload_date).toLocaleDateString('vi-VN') : '',
+                    Version: row.version || 'P01.01',
+                    Size: row.size || '',
+                    ISOStatus: 'S0' as any,
+                    source: row.source,
+                    task_id: row.task_id,
+                    tt24_field: row.tt24_field,
+                } as Document & { source?: string; task_id?: string; tt24_field?: string }));
+                setDbDocs(mapped);
+            }
+        };
+        loadDocs();
+    }, [projectID]);
+
+    // All project documents (mock + real from DB)
     const projectDocuments = useMemo(() => {
-        return [...DocumentService.getDocumentsByProject(projectID), ...uploadedDocs];
-    }, [projectID, uploadedDocs]);
+        return [...DocumentService.getDocumentsByProject(projectID), ...uploadedDocs, ...dbDocs];
+    }, [projectID, uploadedDocs, dbDocs]);
 
     // Dynamic stats
     const stats = useMemo(() => {
         const base = DocumentService.getDocumentStats(projectID);
+        const extraCount = uploadedDocs.length + dbDocs.length;
         return {
-            total: base.total + uploadedDocs.length,
+            total: base.total + extraCount,
             approved: base.approved,
             inProgress: base.inProgress,
-            wip: base.wip + uploadedDocs.length,
+            wip: base.wip + extraCount,
         };
-    }, [projectID, uploadedDocs]);
+    }, [projectID, uploadedDocs, dbDocs]);
 
     // Search filter
     const filteredDocuments = useMemo(() => {
