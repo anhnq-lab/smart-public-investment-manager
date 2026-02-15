@@ -147,115 +147,113 @@ const ProjectDetail: React.FC = () => {
     if (!project) return <div className="flex h-screen items-center justify-center font-bold text-gray-500 dark:text-slate-400">Dự án không tồn tại.</div>;
 
     return (
-        <div className="min-h-screen bg-[#F8FAFC] dark:bg-slate-900">
-            <div className="container mx-auto px-4 py-6">
-                {/* Sticky Header + Tabs */}
-                <div className="sticky top-0 z-20 bg-[#F8FAFC] dark:bg-slate-900 pb-0 -mx-4 px-4 pt-0">
-                    {/* 1. Header */}
-                    <ProjectHeader
+        <div className="flex flex-col h-[calc(100vh-120px)] bg-[#F8FAFC] dark:bg-slate-900">
+            {/* Fixed Header + Tabs — does NOT scroll */}
+            <div className="shrink-0 px-4 pt-4">
+                {/* 1. Header */}
+                <ProjectHeader
+                    project={project}
+                    onSync={handleSync}
+                    isSyncing={isSyncing}
+                    syncResult={syncResult}
+                />
+
+                {/* 2. Tab Navigation */}
+                <div className="border-b border-gray-200 dark:border-slate-700 flex gap-8 mt-4 overflow-x-auto">
+                    {[
+                        { id: 'info', label: 'TỔNG QUAN', icon: Info },
+                        { id: 'plan', label: 'KẾ HOẠCH', icon: CalendarCheck },
+                        { id: 'packages', label: 'GÓI THẦU', icon: Briefcase },
+                        { id: 'capital', label: 'VỐN & GIẢI NGÂN', icon: Landmark },
+                        { id: 'tt24', label: 'DỮ LIỆU TT24', icon: Database },
+                        { id: 'documents', label: 'HỒ SƠ', icon: FolderOpen },
+                        { id: 'bim', label: 'MÔ HÌNH BIM', icon: Layers },
+                    ].map(t => (
+                        <button
+                            key={t.id} onClick={() => setActiveTab(t.id as any)}
+                            className={`py-3 px-1 text-xs font-black border-b-2 transition-all flex items-center gap-2 tracking-widest whitespace-nowrap ${activeTab === t.id ? 'border-blue-600 text-blue-600 dark:border-blue-400 dark:text-blue-400' : 'border-transparent text-gray-400 dark:text-slate-500 hover:text-gray-600 dark:hover:text-slate-300'}`}
+                        >
+                            <t.icon className="w-4 h-4" />
+                            {t.label}
+                        </button>
+                    ))}
+                </div>
+            </div>
+
+            {/* 3. Scrollable Tab Content */}
+            <div className="flex-1 overflow-y-auto px-4 py-6 min-h-0">
+                {activeTab === 'info' && (
+                    <ProjectInfoTab
                         project={project}
-                        onSync={handleSync}
+                        projectMembers={projectMembers}
+                        projectPackages={packages}
                         isSyncing={isSyncing}
                         syncResult={syncResult}
+                        isGeneratingReport={isGeneratingReport}
+                        onGenerateReport={handleGenerateReport}
+                        onViewMember={(employeeId) => {
+                            // TODO: Navigate to Personnel module
+                            console.log('View member:', employeeId);
+                        }}
+                        onViewPackage={(packageId) => {
+                            // Navigate to Packages tab
+                            setActiveTab('packages');
+                        }}
+                        onStageChange={(newStage, entry) => {
+                            // Update project stage
+                            setProject(prev => prev ? {
+                                ...prev,
+                                Stage: newStage,
+                                StageHistory: [...(prev.StageHistory || []), entry]
+                            } : null);
+                            console.log('Stage changed to:', newStage, entry);
+                            // TODO: Persist to API
+                        }}
+                        onHistoryUpdate={(history) => {
+                            setProject(prev => prev ? { ...prev, StageHistory: history } : null);
+                        }}
+                        canEditLifecycle={true}
                     />
-
-                    {/* 2. Tab Navigation */}
-                    <div className="border-b border-gray-200 dark:border-slate-700 flex gap-8 mt-6 overflow-x-auto">
-                        {[
-                            { id: 'info', label: 'TỔNG QUAN', icon: Info },
-                            { id: 'plan', label: 'KẾ HOẠCH', icon: CalendarCheck },
-                            { id: 'packages', label: 'GÓI THẦU', icon: Briefcase },
-                            { id: 'capital', label: 'VỐN & GIẢI NGÂN', icon: Landmark },
-                            { id: 'tt24', label: 'DỮ LIỆU TT24', icon: Database },
-                            { id: 'documents', label: 'HỒ SƠ', icon: FolderOpen },
-                            { id: 'bim', label: 'MÔ HÌNH BIM', icon: Layers },
-                        ].map(t => (
-                            <button
-                                key={t.id} onClick={() => setActiveTab(t.id as any)}
-                                className={`py-4 px-1 text-xs font-black border-b-2 transition-all flex items-center gap-2 tracking-widest whitespace-nowrap ${activeTab === t.id ? 'border-blue-600 text-blue-600 dark:border-blue-400 dark:text-blue-400' : 'border-transparent text-gray-400 dark:text-slate-500 hover:text-gray-600 dark:hover:text-slate-300'}`}
-                            >
-                                <t.icon className="w-4 h-4" />
-                                {t.label}
-                            </button>
-                        ))}
-                    </div>
-                </div>
-
-                {/* 3. Tab Content */}
-                <div className="mt-6 min-h-[500px]">
-                    {activeTab === 'info' && (
-                        <ProjectInfoTab
-                            project={project}
-                            projectMembers={projectMembers}
-                            projectPackages={packages}
-                            isSyncing={isSyncing}
-                            syncResult={syncResult}
-                            isGeneratingReport={isGeneratingReport}
-                            onGenerateReport={handleGenerateReport}
-                            onViewMember={(employeeId) => {
-                                // TODO: Navigate to Personnel module
-                                console.log('View member:', employeeId);
-                            }}
-                            onViewPackage={(packageId) => {
-                                // Navigate to Packages tab
-                                setActiveTab('packages');
-                            }}
-                            onStageChange={(newStage, entry) => {
-                                // Update project stage
-                                setProject(prev => prev ? {
-                                    ...prev,
-                                    Stage: newStage,
-                                    StageHistory: [...(prev.StageHistory || []), entry]
-                                } : null);
-                                console.log('Stage changed to:', newStage, entry);
-                                // TODO: Persist to API
-                            }}
-                            onHistoryUpdate={(history) => {
-                                setProject(prev => prev ? { ...prev, StageHistory: history } : null);
-                            }}
-                            canEditLifecycle={true}
-                        />
-                    )}
-                    {activeTab === 'plan' && (
-                        <ProjectPlanTab
-                            tasks={tasks}
-                            projectID={project.ProjectID}
-                            onSaveTask={(t) => saveTask(t)}
-                            groupCode={project.GroupCode}
-                            isODA={project.IsODA}
-                            project={project}
-                        />
-                    )}
-                    {activeTab === 'packages' && (
-                        <ProjectPackagesTab projectID={project.ProjectID} project={project} />
-                    )}
-                    {activeTab === 'capital' && (
-                        <ProjectCapitalTab projectID={project.ProjectID} />
-                    )}
-                    {activeTab === 'documents' && (
-                        <ProjectDocumentsTab
-                            projectID={project.ProjectID}
-                            projectStage={project.Stage || ProjectStage.Execution}
-                            investmentPolicy={(project as any).InvestmentPolicy}
-                            feasibilityStudy={(project as any).FeasibilityStudy}
-                        />
-                    )}
-                    {activeTab === 'tt24' && (
-                        <ProjectComplianceTab
-                            project={project}
-                            onUpdate={(updated) => {
-                                setProject(prev => prev ? { ...prev, ...updated } : null);
-                            }}
-                        />
-                    )}
-                    {activeTab === 'bim' && (
-                        <BimErrorBoundary>
-                            <Suspense fallback={<div className="flex items-center justify-center h-96 text-blue-500 dark:text-blue-400">Đang tải BIM Viewer...</div>}>
-                                <ProjectBimTab projectID={project.ProjectID} />
-                            </Suspense>
-                        </BimErrorBoundary>
-                    )}
-                </div>
+                )}
+                {activeTab === 'plan' && (
+                    <ProjectPlanTab
+                        tasks={tasks}
+                        projectID={project.ProjectID}
+                        onSaveTask={(t) => saveTask(t)}
+                        groupCode={project.GroupCode}
+                        isODA={project.IsODA}
+                        project={project}
+                    />
+                )}
+                {activeTab === 'packages' && (
+                    <ProjectPackagesTab projectID={project.ProjectID} project={project} />
+                )}
+                {activeTab === 'capital' && (
+                    <ProjectCapitalTab projectID={project.ProjectID} />
+                )}
+                {activeTab === 'documents' && (
+                    <ProjectDocumentsTab
+                        projectID={project.ProjectID}
+                        projectStage={project.Stage || ProjectStage.Execution}
+                        investmentPolicy={(project as any).InvestmentPolicy}
+                        feasibilityStudy={(project as any).FeasibilityStudy}
+                    />
+                )}
+                {activeTab === 'tt24' && (
+                    <ProjectComplianceTab
+                        project={project}
+                        onUpdate={(updated) => {
+                            setProject(prev => prev ? { ...prev, ...updated } : null);
+                        }}
+                    />
+                )}
+                {activeTab === 'bim' && (
+                    <BimErrorBoundary>
+                        <Suspense fallback={<div className="flex items-center justify-center h-96 text-blue-500 dark:text-blue-400">Đang tải BIM Viewer...</div>}>
+                            <ProjectBimTab projectID={project.ProjectID} />
+                        </Suspense>
+                    </BimErrorBoundary>
+                )}
             </div>
         </div>
     );
