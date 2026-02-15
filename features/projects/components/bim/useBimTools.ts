@@ -35,7 +35,6 @@ export interface BimToolState {
     renderMode: RenderMode;
     leftPanel: PanelView;
     rightPanel: PanelView;
-    isDarkMode: boolean;
     clipPlanes: ClipPlaneState[];
     measurements: MeasurementState[];
     sectionBoxActive: boolean;
@@ -48,7 +47,6 @@ export function useBimTools() {
     const [renderMode, setRenderMode] = useState<RenderMode>('shading');
     const [leftPanel, setLeftPanel] = useState<PanelView>('none');
     const [rightPanel, setRightPanel] = useState<PanelView>('properties');
-    const [isDarkMode, setIsDarkMode] = useState(true);
     const [clipPlanes, setClipPlanes] = useState<ClipPlaneState[]>([]);
     const [measurements, setMeasurements] = useState<MeasurementState[]>([]);
     const [sectionBoxActive, setSectionBoxActive] = useState(false);
@@ -111,7 +109,6 @@ export function useBimTools() {
         renderMode,
         leftPanel,
         rightPanel,
-        isDarkMode,
         clipPlanes,
         measurements,
         sectionBoxActive,
@@ -123,7 +120,6 @@ export function useBimTools() {
         setRenderMode,
         toggleLeftPanel,
         toggleRightPanel,
-        setIsDarkMode,
         addClipPlane,
         removeClipPlane,
         clearClipPlanes,

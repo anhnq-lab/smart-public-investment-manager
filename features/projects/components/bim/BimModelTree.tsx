@@ -38,7 +38,7 @@ type TreeMode = 'spatial' | 'types' | 'disciplines';
 
 interface BimModelTreeProps {
     isDarkMode: boolean;
-    isMobile: boolean;
+    isMobile?: boolean;
     onClose: () => void;
     // Spatial tree data
     spatialTree: SpatialNode[];
@@ -47,12 +47,11 @@ interface BimModelTreeProps {
     disciplineModels: DisciplineModel[];
     // Actions
     onSelectElement: (expressId: number) => void;
-    onToggleVisibility: (expressId: number) => void;
+    onToggleVisibility: (index: number) => void;
     onToggleTypeVisibility: (type: string) => void;
-    onToggleDiscipline: (index: number) => void;
-    onDeleteDiscipline: (index: number) => void;
-    onUploadIFC: (e: React.ChangeEvent<HTMLInputElement>) => void;
-    isLoading: boolean;
+    onUpload: (e: React.ChangeEvent<HTMLInputElement>) => void;
+    onDeleteModel: (index: number) => void;
+    viewerReady: boolean;
 }
 
 // ── Icons for IFC types ──────────────────────────────
@@ -89,7 +88,7 @@ export const BimModelTree: React.FC<BimModelTreeProps> = ({
     isDarkMode, isMobile, onClose,
     spatialTree, typeGroups, disciplineModels,
     onSelectElement, onToggleVisibility, onToggleTypeVisibility,
-    onToggleDiscipline, onDeleteDiscipline, onUploadIFC, isLoading
+    onUpload, onDeleteModel, viewerReady
 }) => {
     const [mode, setMode] = useState<TreeMode>('disciplines');
     const [searchQuery, setSearchQuery] = useState('');
@@ -243,7 +242,7 @@ export const BimModelTree: React.FC<BimModelTreeProps> = ({
                     `}>
                         <Upload className="w-4 h-4" />
                         Upload IFC
-                        <input type="file" accept=".ifc" className="hidden" onChange={onUploadIFC} disabled={isLoading} />
+                        <input type="file" accept=".ifc" className="hidden" onChange={onUpload} disabled={!viewerReady} />
                     </label>
                 </div>
             ) : (
@@ -261,7 +260,7 @@ export const BimModelTree: React.FC<BimModelTreeProps> = ({
                         <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
                             {dm.model.status === 'ready' && (
                                 <button
-                                    onClick={() => onToggleDiscipline(idx)}
+                                    onClick={() => onToggleVisibility(idx)}
                                     className={`p-1 rounded ${isDarkMode ? 'hover:bg-white/10' : 'hover:bg-gray-200'}`}
                                     title={dm.visible ? 'Hide' : 'Show'}
                                 >
@@ -269,7 +268,7 @@ export const BimModelTree: React.FC<BimModelTreeProps> = ({
                                 </button>
                             )}
                             <button
-                                onClick={() => onDeleteDiscipline(idx)}
+                                onClick={() => onDeleteModel(idx)}
                                 className={`p-1 rounded ${isDarkMode ? 'hover:bg-red-500/20' : 'hover:bg-red-50'}`}
                                 title="Delete"
                             >
@@ -358,14 +357,14 @@ export const BimModelTree: React.FC<BimModelTreeProps> = ({
                 <div className={`p-2 border-t ${isDarkMode ? 'border-slate-700/30' : 'border-gray-200'}`}>
                     <label className={`
                         flex items-center justify-center gap-2 w-full px-3 py-2 rounded-lg cursor-pointer text-xs font-semibold transition-all border
-                        ${isLoading ? 'opacity-50 pointer-events-none' : ''}
+                        ${!viewerReady ? 'opacity-50 pointer-events-none' : ''}
                         ${isDarkMode
                             ? 'bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 border-blue-500/20'
                             : 'bg-blue-50 hover:bg-blue-100 text-blue-600 border-blue-200'}
                     `}>
-                        {isLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Upload className="w-3.5 h-3.5" />}
-                        <span>{isLoading ? 'Loading...' : 'Add IFC Model'}</span>
-                        <input type="file" accept=".ifc" className="hidden" onChange={onUploadIFC} disabled={isLoading} />
+                        {!viewerReady ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Upload className="w-3.5 h-3.5" />}
+                        <span>{!viewerReady ? 'Loading...' : 'Add IFC Model'}</span>
+                        <input type="file" accept=".ifc" className="hidden" onChange={onUpload} disabled={!viewerReady} />
                     </label>
                 </div>
             )}
