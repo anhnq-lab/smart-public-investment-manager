@@ -679,53 +679,121 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({
                                             {/* Sub-tasks from Registry */}
                                             {expandedSubTasks[item.code] && (() => {
                                                 const subTasks = getSubTasksForStep(item.code, groupCode);
+
+                                                // ── Auto-fill Start/End dates ──
+                                                // Lấy ngày bắt đầu: từ project.StartDate / ApprovalDate hoặc today
+                                                const getBaseDate = (): Date => {
+                                                    if (project?.StartDate) return new Date(project.StartDate);
+                                                    if (project?.ApprovalDate) return new Date(project.ApprovalDate);
+                                                    return new Date();
+                                                };
+
+                                                // Tính tổng ngày từ các bước TRƯỚC item hiện tại
+                                                const allPhaseItems = DECREE_175_PHASES.flatMap(p => p.items);
+                                                const currentIdx = allPhaseItems.findIndex(i => i.code === item.code);
+                                                let cumulativeDaysBefore = 0;
+                                                for (let i = 0; i < currentIdx; i++) {
+                                                    const prevSubs = getSubTasksForStep(allPhaseItems[i].code, groupCode);
+                                                    cumulativeDaysBefore += prevSubs.reduce((sum, s) => sum + (s.estimatedDays || 10), 0);
+                                                }
+
+                                                // Build date ranges cho từng sub-task
+                                                const baseDate = getBaseDate();
+                                                let runningDays = cumulativeDaysBefore;
+                                                const stepDates = subTasks.map(st => {
+                                                    const days = st.estimatedDays || 10;
+                                                    const start = new Date(baseDate);
+                                                    start.setDate(start.getDate() + runningDays);
+                                                    const end = new Date(start);
+                                                    end.setDate(end.getDate() + days);
+                                                    runningDays += days;
+                                                    return { start, end, days };
+                                                });
+
+                                                // Tổng ngày cho toàn bộ quy trình con này
+                                                const totalStepDays = subTasks.reduce((s, st) => s + (st.estimatedDays || 10), 0);
+
                                                 return (
-                                                    <div className="mt-3 border border-purple-100 rounded-lg overflow-hidden bg-purple-50/30">
-                                                        <div className="px-3 py-2 bg-purple-50 border-b border-purple-100 flex items-center justify-between">
+                                                    <div className="mt-3 border border-purple-100 dark:border-purple-800 rounded-lg overflow-hidden bg-purple-50/30 dark:bg-purple-900/10">
+                                                        <div className="px-3 py-2 bg-purple-50 dark:bg-purple-900/30 border-b border-purple-100 dark:border-purple-800 flex items-center justify-between">
                                                             <div className="flex items-center gap-2">
                                                                 <Scale className="w-3.5 h-3.5 text-purple-500" />
-                                                                <span className="text-xs font-semibold text-purple-700">
+                                                                <span className="text-xs font-semibold text-purple-700 dark:text-purple-300">
                                                                     Quy trình theo NĐ 175, Luật 135, NĐ 140, NĐ 144
                                                                 </span>
                                                             </div>
-                                                            <span className="text-[10px] text-purple-500">
-                                                                {subTasks.length} bước
-                                                            </span>
+                                                            <div className="flex items-center gap-3">
+                                                                <span className="text-[10px] text-purple-500 dark:text-purple-400 flex items-center gap-1">
+                                                                    <Calendar className="w-3 h-3" />
+                                                                    ~{totalStepDays} ngày
+                                                                </span>
+                                                                <span className="text-[10px] text-purple-500 dark:text-purple-400">
+                                                                    {subTasks.length} bước
+                                                                </span>
+                                                            </div>
                                                         </div>
-                                                        <div className="divide-y divide-purple-100">
-                                                            {subTasks.map((st, idx) => (
-                                                                <div
-                                                                    key={st.code}
-                                                                    onClick={() => setSelectedSubTask({ def: st, stepTitle: item.title, stepCode: item.code })}
-                                                                    className="px-3 py-2 flex items-center gap-3 hover:bg-purple-50 transition-colors cursor-pointer group/st"
-                                                                >
-                                                                    <span className="w-5 h-5 rounded-full bg-purple-100 text-purple-600 text-[10px] font-bold flex items-center justify-center shrink-0">
-                                                                        {idx + 1}
-                                                                    </span>
-                                                                    <div className="flex-1 min-w-0">
-                                                                        <p className="text-xs font-medium text-gray-700 truncate">{st.title}</p>
-                                                                        <div className="flex items-center gap-2 mt-0.5">
-                                                                            <span className="flex items-center gap-1 text-[10px] text-blue-600">
-                                                                                <Building2 className="w-2.5 h-2.5" />
-                                                                                {st.responsible}
-                                                                            </span>
-                                                                            {st.estimatedDays && (
-                                                                                <span className="flex items-center gap-0.5 text-[10px] text-gray-400">
-                                                                                    <Clock className="w-2.5 h-2.5" />
-                                                                                    {st.estimatedDays}d
+                                                        <div className="divide-y divide-purple-100 dark:divide-purple-800/50">
+                                                            {subTasks.map((st, idx) => {
+                                                                const dates = stepDates[idx];
+                                                                const fmtDate = (d: Date) => d.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' });
+                                                                const fmtShort = (d: Date) => d.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit' });
+
+                                                                return (
+                                                                    <div
+                                                                        key={st.code}
+                                                                        onClick={() => setSelectedSubTask({ def: st, stepTitle: item.title, stepCode: item.code })}
+                                                                        className="px-3 py-2.5 flex items-center gap-3 hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-colors cursor-pointer group/st"
+                                                                    >
+                                                                        <span className="w-5 h-5 rounded-full bg-purple-100 dark:bg-purple-800 text-purple-600 dark:text-purple-300 text-[10px] font-bold flex items-center justify-center shrink-0">
+                                                                            {idx + 1}
+                                                                        </span>
+                                                                        <div className="flex-1 min-w-0">
+                                                                            <p className="text-xs font-medium text-gray-700 dark:text-slate-300 truncate">{st.title}</p>
+                                                                            <div className="flex items-center gap-2 mt-0.5">
+                                                                                <span className="flex items-center gap-1 text-[10px] text-blue-600 dark:text-blue-400">
+                                                                                    <Building2 className="w-2.5 h-2.5" />
+                                                                                    {st.responsible}
                                                                                 </span>
-                                                                            )}
-                                                                            {st.templatePath && (
-                                                                                <span className="flex items-center gap-0.5 text-[10px] text-cyan-600">
-                                                                                    <FileText className="w-2.5 h-2.5" />
-                                                                                    Biểu mẫu
-                                                                                </span>
-                                                                            )}
+                                                                                {st.estimatedDays && (
+                                                                                    <span className="flex items-center gap-0.5 text-[10px] text-gray-400 dark:text-slate-500">
+                                                                                        <Clock className="w-2.5 h-2.5" />
+                                                                                        {st.estimatedDays}d
+                                                                                    </span>
+                                                                                )}
+                                                                                {st.templatePath && (
+                                                                                    <span className="flex items-center gap-0.5 text-[10px] text-cyan-600 dark:text-cyan-400">
+                                                                                        <FileText className="w-2.5 h-2.5" />
+                                                                                        Biểu mẫu
+                                                                                    </span>
+                                                                                )}
+                                                                            </div>
                                                                         </div>
+
+                                                                        {/* ── AUTO-FILLED DATE RANGE ── */}
+                                                                        <div className="hidden sm:flex flex-col items-end gap-0.5 shrink-0 min-w-[140px]">
+                                                                            <div className="flex items-center gap-1.5 text-[10px]">
+                                                                                <Calendar className="w-3 h-3 text-indigo-400" />
+                                                                                <span className="text-gray-600 dark:text-slate-400 font-medium">
+                                                                                    {fmtShort(dates.start)}
+                                                                                </span>
+                                                                                <span className="text-gray-300 dark:text-slate-600">→</span>
+                                                                                <span className="text-gray-700 dark:text-slate-300 font-semibold">
+                                                                                    {fmtShort(dates.end)}
+                                                                                </span>
+                                                                            </div>
+                                                                            {/* Mini progress bar */}
+                                                                            <div className="w-full h-1 bg-gray-100 dark:bg-slate-700 rounded-full overflow-hidden">
+                                                                                <div
+                                                                                    className="h-full bg-gradient-to-r from-indigo-400 to-purple-400 rounded-full transition-all"
+                                                                                    style={{ width: `${Math.min(100, (dates.days / totalStepDays) * 100)}%` }}
+                                                                                />
+                                                                            </div>
+                                                                        </div>
+
+                                                                        <Info className="w-3.5 h-3.5 text-gray-300 group-hover/st:text-purple-400 transition-colors shrink-0" />
                                                                     </div>
-                                                                    <Info className="w-3.5 h-3.5 text-gray-300 group-hover/st:text-purple-400 transition-colors shrink-0" />
-                                                                </div>
-                                                            ))}
+                                                                );
+                                                            })}
                                                         </div>
                                                     </div>
                                                 );
