@@ -155,22 +155,22 @@ export const SubTaskDetailModal: React.FC<SubTaskDetailModalProps> = ({
         <>
             <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm animate-in fade-in duration-200"
                 onClick={onClose}>
-                <div className="bg-white rounded-xl shadow-2xl w-full max-w-2xl mx-4 overflow-hidden animate-in zoom-in-95 duration-200 max-h-[90vh] flex flex-col"
+                <div className="bg-[var(--bg-primary)] rounded-xl shadow-2xl w-full max-w-2xl mx-4 overflow-hidden animate-in zoom-in-95 duration-200 max-h-[90vh] flex flex-col border border-[var(--border-primary)]"
                     onClick={e => e.stopPropagation()}>
 
                     {/* Header */}
-                    <div className="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50 shrink-0">
+                    <div className="px-6 py-4 border-b border-[var(--border-primary)] flex justify-between items-center bg-[var(--bg-secondary)] shrink-0">
                         <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-2">
                                 <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-500 to-indigo-500 flex items-center justify-center shrink-0">
                                     <Briefcase size={16} className="text-white" />
                                 </div>
                                 <div className="min-w-0">
-                                    <h3 className="text-base font-bold text-gray-800 truncate">
+                                    <h3 className="text-base font-bold text-[var(--text-primary)] truncate">
                                         {subTask.title}
                                     </h3>
                                     {stepTitle && (
-                                        <p className="text-xs text-blue-600 font-medium truncate">
+                                        <p className="text-xs text-blue-400 font-medium truncate">
                                             Thuộc: {stepTitle}
                                         </p>
                                     )}
@@ -179,21 +179,21 @@ export const SubTaskDetailModal: React.FC<SubTaskDetailModalProps> = ({
                         </div>
                         <div className="flex items-center gap-2 shrink-0 ml-3">
                             {/* Mode toggle */}
-                            <div className="flex bg-gray-200 rounded-lg p-0.5">
+                            <div className="flex bg-[var(--bg-tertiary)] rounded-lg p-0.5">
                                 <button
                                     onClick={() => setMode('view')}
-                                    className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors ${mode === 'view' ? 'bg-white text-gray-800 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+                                    className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors ${mode === 'view' ? 'bg-[var(--bg-primary)] text-[var(--text-primary)] shadow-sm' : 'text-[var(--text-tertiary)] hover:text-[var(--text-secondary)]'}`}
                                 >
                                     Xem
                                 </button>
                                 <button
                                     onClick={() => setMode('create')}
-                                    className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors ${mode === 'create' ? 'bg-white text-blue-700 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+                                    className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors ${mode === 'create' ? 'bg-[var(--bg-primary)] text-blue-400 shadow-sm' : 'text-[var(--text-tertiary)] hover:text-[var(--text-secondary)]'}`}
                                 >
                                     Tạo việc
                                 </button>
                             </div>
-                            <button onClick={onClose} className="p-2 hover:bg-gray-200 rounded-full text-gray-500 transition-colors">
+                            <button onClick={onClose} className="p-2 hover:bg-[var(--bg-tertiary)] rounded-full text-[var(--text-tertiary)] transition-colors">
                                 <X className="w-5 h-5" />
                             </button>
                         </div>
@@ -207,36 +207,36 @@ export const SubTaskDetailModal: React.FC<SubTaskDetailModalProps> = ({
                             <>
                                 {/* Code badge */}
                                 <div className="flex items-center gap-2">
-                                    <span className="px-2 py-1 rounded-md bg-gray-100 text-gray-500 text-xs font-mono">
+                                    <span className="px-2 py-1 rounded-md bg-[var(--bg-tertiary)] text-[var(--text-tertiary)] text-xs font-mono">
                                         {subTask.code}
                                     </span>
                                 </div>
 
                                 {/* Description */}
                                 {subTask.description && (
-                                    <div className="p-3 rounded-xl bg-amber-50 border border-amber-200">
-                                        <p className="text-sm text-amber-800">{subTask.description}</p>
+                                    <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/20">
+                                        <p className="text-sm text-amber-300">{subTask.description}</p>
                                     </div>
                                 )}
 
                                 {/* Info cards */}
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                     {/* Đơn vị phụ trách */}
-                                    <div className="flex items-start gap-3 p-3 rounded-xl bg-blue-50 border border-blue-100">
-                                        <Building2 size={18} className="text-blue-500 mt-0.5 shrink-0" />
+                                    <div className="flex items-start gap-3 p-3 rounded-xl bg-blue-500/10 border border-blue-500/20">
+                                        <Building2 size={18} className="text-blue-400 mt-0.5 shrink-0" />
                                         <div>
-                                            <p className="text-xs text-blue-400 font-medium">Đơn vị phụ trách</p>
-                                            <p className="text-sm font-semibold text-blue-800">{subTask.responsible}</p>
+                                            <p className="text-xs text-blue-400/70 font-medium">Đơn vị phụ trách</p>
+                                            <p className="text-sm font-semibold text-blue-300">{subTask.responsible}</p>
                                         </div>
                                     </div>
 
                                     {/* Thời gian */}
                                     {subTask.estimatedDays && (
-                                        <div className="flex items-start gap-3 p-3 rounded-xl bg-orange-50 border border-orange-100">
-                                            <Clock size={18} className="text-orange-500 mt-0.5 shrink-0" />
+                                        <div className="flex items-start gap-3 p-3 rounded-xl bg-orange-500/10 border border-orange-500/20">
+                                            <Clock size={18} className="text-orange-400 mt-0.5 shrink-0" />
                                             <div>
-                                                <p className="text-xs text-orange-400 font-medium">Thời gian ước tính</p>
-                                                <p className="text-sm font-semibold text-orange-800">{subTask.estimatedDays} ngày</p>
+                                                <p className="text-xs text-orange-400/70 font-medium">Thời gian ước tính</p>
+                                                <p className="text-sm font-semibold text-orange-300">{subTask.estimatedDays} ngày</p>
                                             </div>
                                         </div>
                                     )}
@@ -244,11 +244,11 @@ export const SubTaskDetailModal: React.FC<SubTaskDetailModalProps> = ({
 
                                 {/* Căn cứ pháp lý */}
                                 {subTask.legalBasis && (
-                                    <div className="flex items-start gap-3 p-3 rounded-xl bg-purple-50 border border-purple-100">
-                                        <Scale size={18} className="text-purple-500 mt-0.5 shrink-0" />
+                                    <div className="flex items-start gap-3 p-3 rounded-xl bg-purple-500/10 border border-purple-500/20">
+                                        <Scale size={18} className="text-purple-400 mt-0.5 shrink-0" />
                                         <div>
-                                            <p className="text-xs text-purple-400 font-medium">Căn cứ pháp lý</p>
-                                            <p className="text-sm text-purple-800">{subTask.legalBasis}</p>
+                                            <p className="text-xs text-purple-400/70 font-medium">Căn cứ pháp lý</p>
+                                            <p className="text-sm text-purple-300">{subTask.legalBasis}</p>
                                         </div>
                                     </div>
                                 )}
@@ -258,28 +258,28 @@ export const SubTaskDetailModal: React.FC<SubTaskDetailModalProps> = ({
                                     <div className="space-y-2">
                                         <button
                                             onClick={() => setShowTemplate(true)}
-                                            className="w-full flex items-center gap-3 p-3 rounded-xl bg-cyan-50 border border-cyan-100 hover:bg-cyan-100 transition-colors group"
+                                            className="w-full flex items-center gap-3 p-3 rounded-xl bg-cyan-500/10 border border-cyan-500/20 hover:bg-cyan-500/20 transition-colors group"
                                         >
-                                            <FileText size={18} className="text-cyan-500 shrink-0" />
+                                            <FileText size={18} className="text-cyan-400 shrink-0" />
                                             <div className="flex-1 text-left">
-                                                <p className="text-xs text-cyan-400 font-medium">Biểu mẫu liên kết</p>
-                                                <p className="text-sm text-cyan-700 font-semibold">
+                                                <p className="text-xs text-cyan-400/70 font-medium">Biểu mẫu liên kết</p>
+                                                <p className="text-sm text-cyan-300 font-semibold">
                                                     {subTask.templateLabel || subTask.templatePath}
                                                 </p>
                                             </div>
-                                            <ChevronRight size={16} className="text-cyan-300 group-hover:text-cyan-600 transition-colors" />
+                                            <ChevronRight size={16} className="text-cyan-500/50 group-hover:text-cyan-400 transition-colors" />
                                         </button>
                                         {hasExportConfig && (
                                             <button
                                                 onClick={() => setShowExport(true)}
-                                                className="w-full flex items-center gap-3 p-3 rounded-xl bg-gradient-to-r from-indigo-50 to-purple-50 border border-indigo-200 hover:from-indigo-100 hover:to-purple-100 transition-all group shadow-sm"
+                                                className="w-full flex items-center gap-3 p-3 rounded-xl bg-gradient-to-r from-indigo-500/10 to-purple-500/10 border border-indigo-500/20 hover:from-indigo-500/20 hover:to-purple-500/20 transition-all group shadow-sm"
                                             >
                                                 <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center shadow">
                                                     <Download size={14} className="text-white" />
                                                 </div>
                                                 <div className="flex-1 text-left">
-                                                    <p className="text-xs text-indigo-500 font-medium">Xuất văn bản DOCX</p>
-                                                    <p className="text-sm text-indigo-700 font-semibold">
+                                                    <p className="text-xs text-indigo-400 font-medium">Xuất văn bản DOCX</p>
+                                                    <p className="text-sm text-indigo-300 font-semibold">
                                                         Tự động điền dữ liệu dự án
                                                     </p>
                                                 </div>
@@ -309,12 +309,12 @@ export const SubTaskDetailModal: React.FC<SubTaskDetailModalProps> = ({
                             <>
                                 {/* Title */}
                                 <div className="space-y-1.5">
-                                    <label className="text-sm font-semibold text-gray-700 flex items-center gap-2">
-                                        <CheckSquare className="w-4 h-4 text-gray-400" /> Tên công việc <span className="text-red-500">*</span>
+                                    <label className="text-sm font-semibold text-[var(--text-secondary)] flex items-center gap-2">
+                                        <CheckSquare className="w-4 h-4 text-[var(--text-tertiary)]" /> Tên công việc <span className="text-red-500">*</span>
                                     </label>
                                     <input
                                         type="text"
-                                        className="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+                                        className="w-full px-4 py-2.5 rounded-lg border border-[var(--border-primary)] bg-[var(--bg-primary)] text-[var(--text-primary)] focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
                                         value={title}
                                         onChange={e => setTitle(e.target.value)}
                                     />
@@ -323,11 +323,11 @@ export const SubTaskDetailModal: React.FC<SubTaskDetailModalProps> = ({
                                 {/* Đơn vị phụ trách + Phòng ban */}
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className="space-y-1.5">
-                                        <label className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                                        <label className="text-sm font-semibold text-[var(--text-secondary)] flex items-center gap-2">
                                             <Building2 className="w-4 h-4 text-gray-400" /> Đơn vị phụ trách
                                         </label>
                                         <select
-                                            className="w-full px-3 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none bg-white text-sm"
+                                            className="w-full px-3 py-2.5 rounded-lg border border-[var(--border-primary)] focus:ring-2 focus:ring-blue-500 outline-none bg-[var(--bg-primary)] text-[var(--text-primary)] text-sm"
                                             value={responsibleUnit}
                                             onChange={e => setResponsibleUnit(e.target.value)}
                                         >
@@ -342,7 +342,7 @@ export const SubTaskDetailModal: React.FC<SubTaskDetailModalProps> = ({
                                             <Users className="w-4 h-4 text-gray-400" /> Phòng ban
                                         </label>
                                         <select
-                                            className="w-full px-3 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none bg-white text-sm"
+                                            className="w-full px-3 py-2.5 rounded-lg border border-[var(--border-primary)] focus:ring-2 focus:ring-blue-500 outline-none bg-[var(--bg-primary)] text-[var(--text-primary)] text-sm"
                                             value={department}
                                             onChange={e => {
                                                 setDepartment(e.target.value);
@@ -384,7 +384,7 @@ export const SubTaskDetailModal: React.FC<SubTaskDetailModalProps> = ({
                                         </label>
                                         <input
                                             type="date"
-                                            className="w-full px-3 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none text-sm"
+                                            className="w-full px-3 py-2.5 rounded-lg border border-[var(--border-primary)] focus:ring-2 focus:ring-blue-500 outline-none bg-[var(--bg-primary)] text-[var(--text-primary)] text-sm"
                                             value={startDate}
                                             onChange={e => setStartDate(e.target.value)}
                                         />
@@ -396,7 +396,7 @@ export const SubTaskDetailModal: React.FC<SubTaskDetailModalProps> = ({
                                         <input
                                             type="number"
                                             min="1"
-                                            className="w-full px-3 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none text-sm"
+                                            className="w-full px-3 py-2.5 rounded-lg border border-[var(--border-primary)] focus:ring-2 focus:ring-blue-500 outline-none bg-[var(--bg-primary)] text-[var(--text-primary)] text-sm"
                                             value={durationDays || ''}
                                             onChange={e => setDurationDays(parseInt(e.target.value) || 0)}
                                         />
@@ -417,9 +417,9 @@ export const SubTaskDetailModal: React.FC<SubTaskDetailModalProps> = ({
                                 {/* Status + Priority */}
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className="space-y-1.5">
-                                        <label className="text-sm font-semibold text-gray-700">Trạng thái</label>
+                                        <label className="text-sm font-semibold text-[var(--text-secondary)]">Trạng thái</label>
                                         <select
-                                            className="w-full px-3 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none bg-white text-sm"
+                                            className="w-full px-3 py-2.5 rounded-lg border border-[var(--border-primary)] focus:ring-2 focus:ring-blue-500 outline-none bg-[var(--bg-primary)] text-[var(--text-primary)] text-sm"
                                             value={status}
                                             onChange={e => setStatus(e.target.value as TaskStatus)}
                                         >
@@ -460,7 +460,7 @@ export const SubTaskDetailModal: React.FC<SubTaskDetailModalProps> = ({
                                         <AlignLeft className="w-4 h-4 text-gray-400" /> Ghi chú / Diễn giải
                                     </label>
                                     <textarea
-                                        className="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none h-20 resize-none text-sm"
+                                        className="w-full px-4 py-2.5 rounded-lg border border-[var(--border-primary)] bg-[var(--bg-primary)] text-[var(--text-primary)] focus:ring-2 focus:ring-blue-500 outline-none h-20 resize-none text-sm"
                                         placeholder="Nhập ghi chú, yêu cầu..."
                                         value={description}
                                         onChange={e => setDescription(e.target.value)}
@@ -474,7 +474,7 @@ export const SubTaskDetailModal: React.FC<SubTaskDetailModalProps> = ({
                                     </label>
                                     <input
                                         type="text"
-                                        className="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none text-sm"
+                                        className="w-full px-4 py-2.5 rounded-lg border border-[var(--border-primary)] bg-[var(--bg-primary)] text-[var(--text-primary)] focus:ring-2 focus:ring-blue-500 outline-none text-sm"
                                         value={legalBasis}
                                         onChange={e => setLegalBasis(e.target.value)}
                                     />
@@ -497,11 +497,11 @@ export const SubTaskDetailModal: React.FC<SubTaskDetailModalProps> = ({
 
                     {/* Footer */}
                     {mode === 'create' && (
-                        <div className="px-6 py-4 border-t border-gray-100 flex justify-end gap-3 bg-gray-50 shrink-0">
+                        <div className="px-6 py-4 border-t border-[var(--border-primary)] flex justify-end gap-3 bg-[var(--bg-secondary)] shrink-0">
                             <button
                                 type="button"
                                 onClick={() => setMode('view')}
-                                className="px-5 py-2.5 text-gray-600 font-medium hover:bg-gray-100 rounded-lg transition-colors"
+                                className="px-5 py-2.5 text-[var(--text-secondary)] font-medium hover:bg-[var(--bg-tertiary)] rounded-lg transition-colors"
                             >
                                 Quay lại
                             </button>
