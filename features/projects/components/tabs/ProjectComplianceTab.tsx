@@ -44,7 +44,7 @@ interface UploadState {
 }
 
 // ══════════════════════════════════════════════════════════════
-//  TT24 Phần A — Bảng số 01:  Mục lục đầy đủ
+//  TT24 Phần A + B — Bảng số 01:  Mục lục đầy đủ
 // ══════════════════════════════════════════════════════════════
 
 const ALL = [ProjectGroup.QN, ProjectGroup.A, ProjectGroup.B, ProjectGroup.C];
@@ -212,6 +212,104 @@ const TT24_ROWS: TT24Row[] = [
         stt: '7.7', label: 'Hình thức quản lý dự án', type: 'data', depth: 2,
         projectKey: 'ManagementForm', groups: ALL,
     },
+
+    // ═════════════════════════════════════════════════════════════
+    //  PHẦN B — THIẾT KẾ XÂY DỰNG TRIỂN KHAI SAU THIẾT KẾ CƠ SỞ
+    //  (Chỉ áp dụng Nhóm QN, A, B — Nhóm C dùng BCKTKT, TK 1 bước)
+    // ═════════════════════════════════════════════════════════════
+
+    // ─── PHẦN B.I — DỮ LIỆU CHUNG ───
+    { stt: 'B', label: 'PHẦN B — THIẾT KẾ XÂY DỰNG TRIỂN KHAI', type: 'heading', depth: 0, groups: ABC_NOT_C },
+
+    { stt: 'I', label: 'DỮ LIỆU CHUNG', type: 'heading', depth: 0, groups: ABC_NOT_C },
+    {
+        stt: '1', label: 'Liên kết mã số thông tin dự án', type: 'data', depth: 1,
+        projectKey: 'ProjectID', groups: ABC_NOT_C,
+    },
+    {
+        stt: '2', label: 'Tên công trình', type: 'data', depth: 1,
+        projectKey: 'ProjectName', groups: ABC_NOT_C,
+    },
+    {
+        stt: '3', label: 'Loại công trình', type: 'data', depth: 1,
+        projectKey: 'ConstructionType', groups: ABC_NOT_C,
+    },
+    {
+        stt: '4', label: 'Cấp công trình', type: 'data', depth: 1,
+        projectKey: 'ConstructionGrade', groups: ABC_NOT_C,
+    },
+    {
+        stt: '5', label: 'Địa điểm xây dựng', type: 'data', depth: 1,
+        projectKey: 'LocationCode', groups: ABC_NOT_C,
+    },
+    {
+        stt: '6', label: 'Quy mô công trình', type: 'data', depth: 1,
+        projectKey: 'InvestmentScale', groups: ABC_NOT_C,
+    },
+
+    // ─── PHẦN B.II — DỮ LIỆU CHI TIẾT ───
+    { stt: 'II', label: 'DỮ LIỆU CHI TIẾT', type: 'heading', depth: 0, groups: ABC_NOT_C },
+
+    // 1. PCCC, MT ở cấp công trình
+    { stt: '1', label: 'Thủ tục về PCCC, bảo vệ môi trường (cấp công trình)', type: 'heading', depth: 1, groups: ABC_NOT_C },
+    {
+        stt: '1.1', label: 'Kết quả thủ tục về PCCC (cấp công trình)', type: 'document', depth: 2,
+        groups: ABC_NOT_C,
+        extractPrompt: 'Trích xuất: Số văn bản PCCC, Ngày cấp, Cơ quan cấp ở cấp công trình',
+        subFields: [
+            { key: 'PCCCApprovalNumber', label: 'Số VB' },
+            { key: 'PCCCApprovalDate', label: 'Ngày' },
+            { key: 'PCCCApprovalAgency', label: 'CQ cấp' },
+        ],
+    },
+    {
+        stt: '1.2', label: 'Kết quả thủ tục bảo vệ môi trường (cấp công trình)', type: 'document', depth: 2,
+        groups: ABC_NOT_C,
+        extractPrompt: 'Trích xuất: Loại thủ tục MT, Số văn bản, Ngày cấp',
+        subFields: [
+            { key: 'EnvApprovalType', label: 'Loại' },
+            { key: 'EnvApprovalNumber', label: 'Số VB' },
+            { key: 'EnvApprovalDate', label: 'Ngày' },
+        ],
+    },
+
+    // 2. Thẩm định thiết kế XD triển khai
+    {
+        stt: '2', label: 'Thông báo kết quả thẩm định thiết kế xây dựng triển khai', type: 'document', depth: 1,
+        groups: ABC_NOT_C,
+        templateFile: 'bao-cao-ket-qua-tham-tra-thiet-ke-xay-dung.md',
+        templateLabel: 'BC thẩm tra TKXD',
+        extractPrompt: 'Trích xuất: Số thông báo thẩm định, Ngày thẩm định, Cơ quan thẩm định thiết kế xây dựng',
+        subFields: [
+            { key: 'DesignAppraisalNumber', label: 'Số TB' },
+            { key: 'DesignAppraisalDate', label: 'Ngày' },
+        ],
+    },
+
+    // 3. QĐ phê duyệt TK
+    {
+        stt: '3', label: 'Quyết định phê duyệt thiết kế xây dựng triển khai', type: 'document', depth: 1,
+        groups: ABC_NOT_C,
+        templateFile: 'quyet-dinh-phe-duyet-thiet-ke-xay-dung.md',
+        templateLabel: 'QĐ phê duyệt TK',
+        extractPrompt: 'Trích xuất: Số quyết định phê duyệt thiết kế, Ngày phê duyệt, Cơ quan phê duyệt',
+        subFields: [
+            { key: 'DesignApprovalNumber', label: 'Số QĐ' },
+            { key: 'DesignApprovalDate', label: 'Ngày' },
+            { key: 'DesignApprovalAuthority', label: 'CQ phê duyệt' },
+        ],
+    },
+
+    // 4. Nhà thầu thiết kế
+    { stt: '4', label: 'Nhà thầu tham gia (giai đoạn thiết kế)', type: 'heading', depth: 1, groups: ABC_NOT_C },
+    {
+        stt: '4.1', label: 'Nhà thầu thiết kế xây dựng', type: 'data', depth: 2,
+        projectKey: 'DesignContractor', groups: ABC_NOT_C,
+    },
+    {
+        stt: '4.2', label: 'Nhà thầu thẩm tra thiết kế', type: 'data', depth: 2,
+        projectKey: 'ReviewContractor', groups: ABC_NOT_C,
+    },
 ];
 
 // ══════════════════════════════════════════════════════════════
@@ -352,7 +450,7 @@ export const ProjectComplianceTab: React.FC<ProjectComplianceTabProps> = ({ proj
     const [saving, setSaving] = useState(false);
 
     // Expand sections
-    const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set(['I', 'II']));
+    const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set(['I', 'II', 'B']));
 
     const toggleSection = (stt: string) => {
         setExpandedSections(prev => {
@@ -622,10 +720,10 @@ export const ProjectComplianceTab: React.FC<ProjectComplianceTabProps> = ({ proj
                         </div>
                         <div>
                             <h2 className="text-base font-black tracking-wide">
-                                TT24/2025/TT-BXD — Phụ lục A, Bảng số 01
+                                TT24/2025/TT-BXD — Phụ lục III, Bảng số 01
                             </h2>
                             <p className="text-blue-200 text-xs mt-0.5">
-                                Dữ liệu về Dự án đầu tư xây dựng • {getGroupLabel(projectGroup)}
+                                Phần A + B — Dữ liệu dự án & thiết kế xây dựng • {getGroupLabel(projectGroup)}
                             </p>
                         </div>
                     </div>
