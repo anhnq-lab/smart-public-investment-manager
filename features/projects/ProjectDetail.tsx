@@ -149,33 +149,36 @@ const ProjectDetail: React.FC = () => {
     return (
         <div className="min-h-screen bg-[#F8FAFC] dark:bg-slate-900">
             <div className="container mx-auto px-4 py-6">
-                {/* 1. Header */}
-                <ProjectHeader
-                    project={project}
-                    onSync={handleSync}
-                    isSyncing={isSyncing}
-                    syncResult={syncResult}
-                />
+                {/* Sticky Header + Tabs */}
+                <div className="sticky top-0 z-20 bg-[#F8FAFC] dark:bg-slate-900 pb-0 -mx-4 px-4 pt-0">
+                    {/* 1. Header */}
+                    <ProjectHeader
+                        project={project}
+                        onSync={handleSync}
+                        isSyncing={isSyncing}
+                        syncResult={syncResult}
+                    />
 
-                {/* 2. Tab Navigation */}
-                <div className="border-b border-gray-200 dark:border-slate-700 flex gap-8 mt-6 overflow-x-auto">
-                    {[
-                        { id: 'info', label: 'TỔNG QUAN', icon: Info },
-                        { id: 'plan', label: 'KẾ HOẠCH', icon: CalendarCheck },
-                        { id: 'packages', label: 'GÓI THẦU', icon: Briefcase },
-                        { id: 'capital', label: 'VỐN & GIẢI NGÂN', icon: Landmark },
-                        { id: 'tt24', label: 'DỮ LIỆU TT24', icon: Database },
-                        { id: 'documents', label: 'HỒ SƠ', icon: FolderOpen },
-                        { id: 'bim', label: 'MÔ HÌNH BIM', icon: Layers },
-                    ].map(t => (
-                        <button
-                            key={t.id} onClick={() => setActiveTab(t.id as any)}
-                            className={`py-4 px-1 text-xs font-black border-b-2 transition-all flex items-center gap-2 tracking-widest whitespace-nowrap ${activeTab === t.id ? 'border-blue-600 text-blue-600 dark:border-blue-400 dark:text-blue-400' : 'border-transparent text-gray-400 dark:text-slate-500 hover:text-gray-600 dark:hover:text-slate-300'}`}
-                        >
-                            <t.icon className="w-4 h-4" />
-                            {t.label}
-                        </button>
-                    ))}
+                    {/* 2. Tab Navigation */}
+                    <div className="border-b border-gray-200 dark:border-slate-700 flex gap-8 mt-6 overflow-x-auto">
+                        {[
+                            { id: 'info', label: 'TỔNG QUAN', icon: Info },
+                            { id: 'plan', label: 'KẾ HOẠCH', icon: CalendarCheck },
+                            { id: 'packages', label: 'GÓI THẦU', icon: Briefcase },
+                            { id: 'capital', label: 'VỐN & GIẢI NGÂN', icon: Landmark },
+                            { id: 'tt24', label: 'DỮ LIỆU TT24', icon: Database },
+                            { id: 'documents', label: 'HỒ SƠ', icon: FolderOpen },
+                            { id: 'bim', label: 'MÔ HÌNH BIM', icon: Layers },
+                        ].map(t => (
+                            <button
+                                key={t.id} onClick={() => setActiveTab(t.id as any)}
+                                className={`py-4 px-1 text-xs font-black border-b-2 transition-all flex items-center gap-2 tracking-widest whitespace-nowrap ${activeTab === t.id ? 'border-blue-600 text-blue-600 dark:border-blue-400 dark:text-blue-400' : 'border-transparent text-gray-400 dark:text-slate-500 hover:text-gray-600 dark:hover:text-slate-300'}`}
+                            >
+                                <t.icon className="w-4 h-4" />
+                                {t.label}
+                            </button>
+                        ))}
+                    </div>
                 </div>
 
                 {/* 3. Tab Content */}
