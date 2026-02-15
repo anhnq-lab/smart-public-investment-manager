@@ -80,11 +80,11 @@ const TaskDetail: React.FC = () => {
         return (
             <div className="flex items-center justify-center h-64">
                 <div className="text-center">
-                    <div className="w-14 h-14 bg-red-50 rounded-2xl flex items-center justify-center mx-auto mb-3">
+                    <div className="w-14 h-14 bg-red-50 dark:bg-red-900/30 rounded-2xl flex items-center justify-center mx-auto mb-3">
                         <AlertTriangle className="w-6 h-6 text-red-400" />
                     </div>
-                    <p className="text-slate-600 font-medium">Không tìm thấy công việc!</p>
-                    <button onClick={() => navigate('/tasks')} className="text-sm text-blue-600 mt-2 hover:underline">← Quay lại</button>
+                    <p className="text-slate-600 dark:text-slate-400 font-medium">Không tìm thấy công việc!</p>
+                    <button onClick={() => navigate('/tasks')} className="text-sm text-blue-600 dark:text-blue-400 mt-2 hover:underline">← Quay lại</button>
                 </div>
             </div>
         );
@@ -106,12 +106,12 @@ const TaskDetail: React.FC = () => {
     const getDependencyTask = (taskId: string) => allTasks.find(t => t.TaskID === taskId);
 
     return (
-        <div className="bg-gradient-to-br from-slate-50 to-slate-100/50 min-h-screen animate-in fade-in duration-300">
+        <div className="bg-gradient-to-br from-slate-50 to-slate-100/50 dark:from-slate-900 dark:to-slate-800/50 min-h-screen animate-in fade-in duration-300">
             <div className="max-w-6xl mx-auto px-6 py-6 space-y-6">
 
                 {/* ══════════ BREADCRUMB ══════════ */}
-                <nav className="flex items-center gap-1.5 text-sm text-slate-400 flex-wrap">
-                    <button onClick={() => navigate('/tasks')} className="hover:text-blue-600 transition-colors font-medium flex items-center gap-1">
+                <nav className="flex items-center gap-1.5 text-sm text-slate-400 dark:text-slate-500 flex-wrap">
+                    <button onClick={() => navigate('/tasks')} className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-medium flex items-center gap-1">
                         <ArrowLeft className="w-3.5 h-3.5" />
                         Công việc
                     </button>
@@ -120,18 +120,18 @@ const TaskDetail: React.FC = () => {
                             <ChevronRight className="w-3 h-3" />
                             <button
                                 onClick={() => navigate(`/projects/${project.ProjectID}`, { state: { activeTab: 'plan' } })}
-                                className="hover:text-blue-600 transition-colors font-medium"
+                                className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-medium"
                             >
                                 {project.ProjectName}
                             </button>
                         </>
                     )}
                     <ChevronRight className="w-3 h-3" />
-                    <span className="text-slate-700 font-bold truncate max-w-[300px]">{task.Title}</span>
+                    <span className="text-slate-700 dark:text-slate-200 font-bold truncate max-w-[300px]">{task.Title}</span>
                 </nav>
 
                 {/* ══════════ HEADER CARD ══════════ */}
-                <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+                <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm overflow-hidden">
                     {/* Top accent */}
                     <div className={`h-1 ${statusCfg.bg}`} />
 
@@ -146,7 +146,7 @@ const TaskDetail: React.FC = () => {
                                     <span className={`text-[10px] font-bold px-2 py-1 rounded-md ${priorityCfg.color}`}>
                                         {priorityCfg.label}
                                     </span>
-                                    <span className="text-[10px] font-mono text-slate-400 bg-slate-50 px-2 py-1 rounded-md">{task.TaskID}</span>
+                                    <span className="text-[10px] font-mono text-slate-400 dark:text-slate-500 bg-slate-50 dark:bg-slate-700 px-2 py-1 rounded-md">{task.TaskID}</span>
                                     {task.IsCritical && (
                                         <span className="text-[10px] font-black text-red-600 bg-red-50 ring-1 ring-red-200 px-2 py-1 rounded-md flex items-center gap-1">
                                             <Zap className="w-3 h-3" /> ĐƯỜNG GĂNG
@@ -159,14 +159,14 @@ const TaskDetail: React.FC = () => {
                                     )}
                                 </div>
 
-                                <h1 className="text-2xl font-black text-slate-800 leading-tight mb-2">{task.Title}</h1>
+                                <h1 className="text-2xl font-black text-slate-800 dark:text-slate-100 leading-tight mb-2">{task.Title}</h1>
 
-                                <p className="text-sm text-slate-400 flex items-center gap-2">
+                                <p className="text-sm text-slate-400 dark:text-slate-500 flex items-center gap-2">
                                     <Building2 className="w-4 h-4" />
                                     Thuộc dự án:
                                     <button
                                         onClick={() => navigate(`/projects/${project?.ProjectID}`, { state: { activeTab: 'plan' } })}
-                                        className="font-semibold text-blue-600 hover:text-blue-700 hover:underline flex items-center gap-1"
+                                        className="font-semibold text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 hover:underline flex items-center gap-1"
                                     >
                                         {project?.ProjectName}
                                         <ExternalLink className="w-3 h-3" />
@@ -179,7 +179,7 @@ const TaskDetail: React.FC = () => {
                                 {prevStatus && (
                                     <button
                                         onClick={() => handleStatusChange(prevStatus)}
-                                        className="px-4 py-2.5 rounded-xl text-sm font-medium border border-slate-200 hover:bg-slate-50 text-slate-600 transition-all active:scale-[0.98]"
+                                        className="px-4 py-2.5 rounded-xl text-sm font-medium border border-slate-200 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition-all active:scale-[0.98]"
                                     >
                                         ← {getStatusConfig(prevStatus).label}
                                     </button>
@@ -200,14 +200,14 @@ const TaskDetail: React.FC = () => {
                         </div>
 
                         {/* ── Progress Bar ── */}
-                        <div className="mt-5 pt-5 border-t border-slate-100">
+                        <div className="mt-5 pt-5 border-t border-slate-100 dark:border-slate-700">
                             <div className="flex items-center justify-between mb-2">
-                                <span className="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
+                                <span className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
                                     <BarChart3 className="w-3.5 h-3.5" /> Tiến độ thực hiện
                                 </span>
                                 <span className={`text-sm font-black ${progress >= 100 ? 'text-emerald-600' : progress >= 70 ? 'text-blue-600' : 'text-slate-600'}`}>{progress}%</span>
                             </div>
-                            <div className="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden">
+                            <div className="w-full h-2.5 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
                                 <div
                                     className={`h-full rounded-full bg-gradient-to-r ${getProgressGradient(progress)} transition-all duration-700`}
                                     style={{ width: `${progress}%` }}
@@ -224,56 +224,56 @@ const TaskDetail: React.FC = () => {
                     <div className="lg:col-span-2 space-y-6">
 
                         {/* Description */}
-                        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6">
-                            <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest mb-4 flex items-center gap-2">
+                        <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm p-6">
+                            <h3 className="text-xs font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-4 flex items-center gap-2">
                                 <FileText className="w-4 h-4" /> Nội dung thực hiện
                             </h3>
-                            <div className="prose prose-sm max-w-none text-slate-600 leading-relaxed">
+                            <div className="prose prose-sm max-w-none text-slate-600 dark:text-slate-300 leading-relaxed">
                                 <p className="whitespace-pre-wrap">{task.Description || "Chưa có mô tả chi tiết."}</p>
                             </div>
                         </div>
 
                         {/* Regulatory */}
-                        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+                        <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm overflow-hidden">
                             <div className="h-1 bg-gradient-to-r from-blue-400 to-indigo-500" />
                             <div className="p-6">
-                                <h3 className="text-xs font-black text-blue-700 uppercase tracking-widest mb-6 flex items-center gap-2">
+                                <h3 className="text-xs font-black text-blue-700 dark:text-blue-400 uppercase tracking-widest mb-6 flex items-center gap-2">
                                     <Scale className="w-4 h-4" /> Thông tin pháp lý & Quy trình
                                 </h3>
 
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                                     <div>
-                                        <label className="text-[10px] uppercase font-bold text-slate-400 mb-2 block tracking-wider">Căn cứ pháp lý</label>
-                                        <div className="flex items-start gap-2.5 bg-blue-50/60 p-4 rounded-xl text-blue-800 text-sm font-medium ring-1 ring-blue-100">
+                                        <label className="text-[10px] uppercase font-bold text-slate-400 dark:text-slate-500 mb-2 block tracking-wider">Căn cứ pháp lý</label>
+                                        <div className="flex items-start gap-2.5 bg-blue-50/60 dark:bg-blue-900/20 p-4 rounded-xl text-blue-800 dark:text-blue-300 text-sm font-medium ring-1 ring-blue-100 dark:ring-blue-800/40">
                                             <ShieldCheck className="w-4 h-4 mt-0.5 shrink-0 text-blue-500" />
                                             {task.LegalBasis || "Chưa cập nhật"}
                                         </div>
                                     </div>
                                     <div>
-                                        <label className="text-[10px] uppercase font-bold text-slate-400 mb-2 block tracking-wider">Sản phẩm / Kết quả</label>
-                                        <div className="flex items-start gap-2.5 bg-emerald-50/60 p-4 rounded-xl text-emerald-800 text-sm font-medium ring-1 ring-emerald-100">
+                                        <label className="text-[10px] uppercase font-bold text-slate-400 dark:text-slate-500 mb-2 block tracking-wider">Sản phẩm / Kết quả</label>
+                                        <div className="flex items-start gap-2.5 bg-emerald-50/60 dark:bg-emerald-900/20 p-4 rounded-xl text-emerald-800 dark:text-emerald-300 text-sm font-medium ring-1 ring-emerald-100 dark:ring-emerald-800/40">
                                             <CheckCircle2 className="w-4 h-4 mt-0.5 shrink-0 text-emerald-500" />
                                             {task.OutputDocument || "Chưa xác định"}
                                         </div>
                                     </div>
                                 </div>
 
-                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-5 border-t border-slate-100">
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-5 border-t border-slate-100 dark:border-slate-700">
                                     <div>
-                                        <label className="text-[10px] uppercase font-bold text-slate-400 mb-2 block tracking-wider">Bước thực hiện</label>
+                                        <label className="text-[10px] uppercase font-bold text-slate-400 dark:text-slate-500 mb-2 block tracking-wider">Bước thực hiện</label>
                                         <div className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-bold ${phaseColor.bg} ${phaseColor.text} ring-1 ${phaseColor.border}`}>
                                             <Layers className="w-3.5 h-3.5" />
                                             {stepLabel}
                                         </div>
                                     </div>
                                     <div>
-                                        <label className="text-[10px] uppercase font-bold text-slate-400 mb-2 block tracking-wider">Thời gian quy định</label>
-                                        <p className="text-sm font-bold text-slate-700 flex items-center gap-1.5">
-                                            <Clock className="w-4 h-4 text-slate-400" /> {task.DurationDays ? `${task.DurationDays} ngày` : "N/A"}
+                                        <label className="text-[10px] uppercase font-bold text-slate-400 dark:text-slate-500 mb-2 block tracking-wider">Thời gian quy định</label>
+                                        <p className="text-sm font-bold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
+                                            <Clock className="w-4 h-4 text-slate-400 dark:text-slate-500" /> {task.DurationDays ? `${task.DurationDays} ngày` : "N/A"}
                                         </p>
                                     </div>
                                     <div>
-                                        <label className="text-[10px] uppercase font-bold text-slate-400 mb-2 block tracking-wider">Phụ thuộc</label>
+                                        <label className="text-[10px] uppercase font-bold text-slate-400 dark:text-slate-500 mb-2 block tracking-wider">Phụ thuộc</label>
                                         <div className="space-y-1.5">
                                             {task.Dependencies && task.Dependencies.length > 0 ? (
                                                 task.Dependencies.map((dep, idx) => {
@@ -282,7 +282,7 @@ const TaskDetail: React.FC = () => {
                                                         <button
                                                             key={idx}
                                                             onClick={() => navigate(`/tasks/${dep.TaskID}`)}
-                                                            className="flex items-center gap-1.5 text-xs bg-slate-50 hover:bg-blue-50 hover:text-blue-600 px-3 py-1.5 rounded-lg transition-all group/dep w-full text-left ring-1 ring-slate-100 hover:ring-blue-200"
+                                                            className="flex items-center gap-1.5 text-xs bg-slate-50 dark:bg-slate-700 hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:text-blue-600 dark:hover:text-blue-400 px-3 py-1.5 rounded-lg transition-all group/dep w-full text-left ring-1 ring-slate-100 dark:ring-slate-600 hover:ring-blue-200 dark:hover:ring-blue-700"
                                                         >
                                                             <Link2 className="w-3 h-3 shrink-0 text-slate-400 group-hover/dep:text-blue-500 transition-colors" />
                                                             <span className="truncate font-medium">{depTask ? depTask.Title : dep.TaskID}</span>
@@ -304,10 +304,10 @@ const TaskDetail: React.FC = () => {
                     <div className="space-y-6">
 
                         {/* Assignee Card */}
-                        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6">
-                            <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest mb-5">Phân công</h3>
+                        <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm p-6">
+                            <h3 className="text-xs font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-5">Phân công</h3>
 
-                            <div className="flex items-center gap-3 mb-5 pb-5 border-b border-slate-100">
+                            <div className="flex items-center gap-3 mb-5 pb-5 border-b border-slate-100 dark:border-slate-700">
                                 <div className="relative">
                                     <img
                                         src={assignee?.AvatarUrl || `https://ui-avatars.com/api/?name=${assignee?.FullName || 'U'}&background=6366f1&color=fff&size=48`}
@@ -317,14 +317,14 @@ const TaskDetail: React.FC = () => {
                                     <span className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-emerald-500 border-2 border-white rounded-full" />
                                 </div>
                                 <div>
-                                    <p className="text-sm font-bold text-slate-800">{assignee?.FullName || "Chưa phân công"}</p>
-                                    <p className="text-xs text-slate-400">{assignee?.Position || assignee?.Department || "N/A"}</p>
+                                    <p className="text-sm font-bold text-slate-800 dark:text-slate-200">{assignee?.FullName || "Chưa phân công"}</p>
+                                    <p className="text-xs text-slate-400 dark:text-slate-500">{assignee?.Position || assignee?.Department || "N/A"}</p>
                                 </div>
                             </div>
 
                             <div className="space-y-4">
                                 <div>
-                                    <label className="text-[10px] uppercase font-bold text-slate-400 mb-1.5 flex items-center gap-1 tracking-wider">
+                                    <label className="text-[10px] uppercase font-bold text-slate-400 dark:text-slate-500 mb-1.5 flex items-center gap-1 tracking-wider">
                                         <Calendar className="w-3 h-3" /> Hạn chót
                                     </label>
                                     <p className={`text-sm font-semibold px-3 py-2 rounded-xl inline-flex items-center gap-2 ${isOverdue ? 'text-red-600 bg-red-50 ring-1 ring-red-200' : 'text-slate-700 bg-slate-50'}`}>
@@ -333,18 +333,18 @@ const TaskDetail: React.FC = () => {
                                     </p>
                                 </div>
                                 <div>
-                                    <label className="text-[10px] uppercase font-bold text-slate-400 mb-1.5 flex items-center gap-1 tracking-wider">
+                                    <label className="text-[10px] uppercase font-bold text-slate-400 dark:text-slate-500 mb-1.5 flex items-center gap-1 tracking-wider">
                                         <User className="w-3 h-3" /> Người phê duyệt
                                     </label>
-                                    <p className="text-sm font-medium text-slate-700">
+                                    <p className="text-sm font-medium text-slate-700 dark:text-slate-300">
                                         {approver?.FullName || "Lãnh đạo Ban"}
                                     </p>
                                 </div>
                                 <div>
-                                    <label className="text-[10px] uppercase font-bold text-slate-400 mb-1.5 flex items-center gap-1 tracking-wider">
+                                    <label className="text-[10px] uppercase font-bold text-slate-400 dark:text-slate-500 mb-1.5 flex items-center gap-1 tracking-wider">
                                         <DollarSign className="w-3 h-3" /> Chi phí dự kiến
                                     </label>
-                                    <p className="text-sm font-bold text-slate-700">
+                                    <p className="text-sm font-bold text-slate-700 dark:text-slate-300">
                                         {task.EstimatedCost ? new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(task.EstimatedCost) : "Chưa lập dự toán"}
                                     </p>
                                 </div>
@@ -352,12 +352,12 @@ const TaskDetail: React.FC = () => {
                         </div>
 
                         {/* Subtasks */}
-                        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6">
+                        <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm p-6">
                             <div className="flex justify-between items-center mb-4">
-                                <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest">Công việc con</h3>
+                                <h3 className="text-xs font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest">Công việc con</h3>
                                 <button
                                     onClick={() => { setIsSubTaskModalOpen(true); setEditingSubTask(null); }}
-                                    className="p-2 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-xl transition-colors"
+                                    className="p-2 bg-blue-50 dark:bg-blue-900/30 hover:bg-blue-100 dark:hover:bg-blue-900/50 text-blue-600 dark:text-blue-400 rounded-xl transition-colors"
                                 >
                                     <Plus className="w-3.5 h-3.5" />
                                 </button>
@@ -365,13 +365,13 @@ const TaskDetail: React.FC = () => {
 
                             <div className="space-y-2">
                                 {(task.SubTasks || []).length === 0 && (
-                                    <div className="text-center py-8 border-2 border-dashed border-slate-100 rounded-xl">
-                                        <p className="text-xs text-slate-300 italic">Chưa có công việc con</p>
+                                    <div className="text-center py-8 border-2 border-dashed border-slate-100 dark:border-slate-700 rounded-xl">
+                                        <p className="text-xs text-slate-300 dark:text-slate-600 italic">Chưa có công việc con</p>
                                     </div>
                                 )}
 
                                 {(task.SubTasks || []).map((sub, idx) => (
-                                    <div key={idx} className="flex items-start gap-3 p-3 bg-slate-50/80 rounded-xl group/sub border border-transparent hover:border-slate-200 hover:bg-white transition-all">
+                                    <div key={idx} className="flex items-start gap-3 p-3 bg-slate-50/80 dark:bg-slate-700/40 rounded-xl group/sub border border-transparent hover:border-slate-200 dark:hover:border-slate-600 hover:bg-white dark:hover:bg-slate-700 transition-all">
                                         <div
                                             onClick={() => {
                                                 const updatedSubTasks = [...(task.SubTasks || [])];
@@ -384,7 +384,7 @@ const TaskDetail: React.FC = () => {
                                             {sub.Status === 'Done' && <CheckCircle2 className="w-3 h-3" />}
                                         </div>
                                         <div className="flex-1 min-w-0 cursor-pointer" onClick={() => { setEditingSubTask(sub); setIsSubTaskModalOpen(true); }}>
-                                            <p className={`text-xs font-semibold line-clamp-2 ${sub.Status === 'Done' ? 'line-through text-slate-400' : 'text-slate-700'}`}>{sub.Title}</p>
+                                            <p className={`text-xs font-semibold line-clamp-2 ${sub.Status === 'Done' ? 'line-through text-slate-400 dark:text-slate-500' : 'text-slate-700 dark:text-slate-300'}`}>{sub.Title}</p>
                                             <div className="flex items-center gap-2 mt-1 flex-wrap">
                                                 <span className="text-[10px] text-slate-400 bg-white px-2 py-0.5 rounded-md ring-1 ring-slate-100 flex items-center gap-1">
                                                     <User className="w-3 h-3" />
@@ -414,19 +414,19 @@ const TaskDetail: React.FC = () => {
                         </div>
 
                         {/* Attachments */}
-                        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6">
-                            <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest mb-4">Tệp đính kèm</h3>
+                        <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm p-6">
+                            <h3 className="text-xs font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-4">Tệp đính kèm</h3>
                             <div className="space-y-2">
-                                <div className="flex items-center gap-3 p-3 bg-slate-50/80 rounded-xl hover:bg-slate-100 cursor-pointer transition-colors ring-1 ring-slate-100">
+                                <div className="flex items-center gap-3 p-3 bg-slate-50/80 dark:bg-slate-700/40 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-700 cursor-pointer transition-colors ring-1 ring-slate-100 dark:ring-slate-600">
                                     <div className="p-2 bg-white rounded-xl shadow-sm text-red-500 ring-1 ring-slate-100">
                                         <FileText className="w-4 h-4" />
                                     </div>
                                     <div className="flex-1 min-w-0">
-                                        <p className="text-xs font-semibold text-slate-700 truncate">Mau-to-trinh-phe-duyet.docx</p>
-                                        <p className="text-[10px] text-slate-400">1.2 MB • 20/02/2025</p>
+                                        <p className="text-xs font-semibold text-slate-700 dark:text-slate-300 truncate">Mau-to-trinh-phe-duyet.docx</p>
+                                        <p className="text-[10px] text-slate-400 dark:text-slate-500">1.2 MB • 20/02/2025</p>
                                     </div>
                                 </div>
-                                <button className="w-full text-center py-3 text-xs font-bold text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-xl transition-colors flex items-center justify-center gap-1.5 border-2 border-dashed border-blue-200">
+                                <button className="w-full text-center py-3 text-xs font-bold text-blue-600 dark:text-blue-400 hover:text-blue-700 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-xl transition-colors flex items-center justify-center gap-1.5 border-2 border-dashed border-blue-200 dark:border-blue-800/40">
                                     <Paperclip className="w-3.5 h-3.5" /> Thêm tài liệu
                                 </button>
                             </div>
@@ -438,10 +438,10 @@ const TaskDetail: React.FC = () => {
             {/* ══════════ SUBTASK MODAL ══════════ */}
             {isSubTaskModalOpen && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-in fade-in duration-200">
-                    <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200 ring-1 ring-black/5">
-                        <div className="px-6 py-4 border-b border-slate-100 flex justify-between items-center bg-gradient-to-r from-slate-50 to-white">
-                            <h3 className="text-base font-bold text-slate-800">{editingSubTask ? 'Cập nhật công việc con' : 'Thêm công việc con'}</h3>
-                            <button onClick={() => { setIsSubTaskModalOpen(false); setEditingSubTask(null); }} className="p-2 hover:bg-slate-100 rounded-xl text-slate-400 hover:text-slate-600 transition-colors">✕</button>
+                    <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200 ring-1 ring-black/5 dark:ring-slate-700">
+                        <div className="px-6 py-4 border-b border-slate-100 dark:border-slate-700 flex justify-between items-center bg-gradient-to-r from-slate-50 to-white dark:from-slate-800 dark:to-slate-800">
+                            <h3 className="text-base font-bold text-slate-800 dark:text-slate-200">{editingSubTask ? 'Cập nhật công việc con' : 'Thêm công việc con'}</h3>
+                            <button onClick={() => { setIsSubTaskModalOpen(false); setEditingSubTask(null); }} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-xl text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors">✕</button>
                         </div>
                         <form onSubmit={(e) => {
                             e.preventDefault();
@@ -461,12 +461,12 @@ const TaskDetail: React.FC = () => {
                             setEditingSubTask(null);
                         }} className="p-6 space-y-4">
                             <div>
-                                <label className="block text-xs font-semibold text-slate-600 mb-1.5 uppercase tracking-wider">Nội dung</label>
-                                <input defaultValue={editingSubTask?.Title || ''} name="title" required className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400 placeholder:text-slate-400" placeholder="Nhập tên công việc..." />
+                                <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5 uppercase tracking-wider">Nội dung</label>
+                                <input defaultValue={editingSubTask?.Title || ''} name="title" required className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400 placeholder:text-slate-400" placeholder="Nhập tên công việc..." />
                             </div>
                             <div>
-                                <label className="block text-xs font-semibold text-slate-600 mb-1.5 uppercase tracking-wider">Người thực hiện</label>
-                                <select defaultValue={editingSubTask?.AssigneeID || ''} name="assignee" className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400">
+                                <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5 uppercase tracking-wider">Người thực hiện</label>
+                                <select defaultValue={editingSubTask?.AssigneeID || ''} name="assignee" className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400">
                                     <option value="">-- Chọn --</option>
                                     {employees.filter(e => e.Status === 1).map(e => (
                                         <option key={e.EmployeeID} value={e.EmployeeID}>{e.FullName} - {e.Department}</option>
@@ -474,11 +474,11 @@ const TaskDetail: React.FC = () => {
                                 </select>
                             </div>
                             <div>
-                                <label className="block text-xs font-semibold text-slate-600 mb-1.5 uppercase tracking-wider">Hạn hoàn thành</label>
-                                <input defaultValue={editingSubTask?.DueDate || ''} type="date" name="dueDate" className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400" />
+                                <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5 uppercase tracking-wider">Hạn hoàn thành</label>
+                                <input defaultValue={editingSubTask?.DueDate || ''} type="date" name="dueDate" className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400" />
                             </div>
-                            <div className="flex justify-end gap-3 pt-3 border-t border-slate-100">
-                                <button type="button" onClick={() => { setIsSubTaskModalOpen(false); setEditingSubTask(null); }} className="px-4 py-2.5 text-sm font-medium text-slate-600 hover:bg-slate-100 rounded-xl">Hủy</button>
+                            <div className="flex justify-end gap-3 pt-3 border-t border-slate-100 dark:border-slate-700">
+                                <button type="button" onClick={() => { setIsSubTaskModalOpen(false); setEditingSubTask(null); }} className="px-4 py-2.5 text-sm font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-xl">Hủy</button>
                                 <button type="submit" className="px-5 py-2.5 text-sm font-bold text-white bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 rounded-xl shadow-lg shadow-blue-600/25 active:scale-[0.98]">
                                     {editingSubTask ? 'Lưu' : 'Thêm mới'}
                                 </button>

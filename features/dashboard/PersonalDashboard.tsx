@@ -65,10 +65,10 @@ const PersonalDashboard: React.FC = () => {
 
     // Priority colors
     const priorityColors: Record<string, string> = {
-        [TaskPriority.Urgent]: 'bg-red-100 text-red-700 border-red-200',
-        [TaskPriority.High]: 'bg-orange-100 text-orange-700 border-orange-200',
-        [TaskPriority.Medium]: 'bg-yellow-100 text-yellow-700 border-yellow-200',
-        [TaskPriority.Low]: 'bg-green-100 text-green-700 border-green-200',
+        [TaskPriority.Urgent]: 'bg-red-100 text-red-700 border-red-200 dark:bg-red-900/30 dark:text-red-400 dark:border-red-800',
+        [TaskPriority.High]: 'bg-orange-100 text-orange-700 border-orange-200 dark:bg-orange-900/30 dark:text-orange-400 dark:border-orange-800',
+        [TaskPriority.Medium]: 'bg-yellow-100 text-yellow-700 border-yellow-200 dark:bg-yellow-900/30 dark:text-yellow-400 dark:border-yellow-800',
+        [TaskPriority.Low]: 'bg-green-100 text-green-700 border-green-200 dark:bg-green-900/30 dark:text-green-400 dark:border-green-800',
     };
 
     const daysUntil = (dateStr: string) => {
@@ -108,50 +108,50 @@ const PersonalDashboard: React.FC = () => {
 
             {/* Quick Stats */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
+                <div className="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-gray-100 dark:border-slate-700 shadow-sm hover:shadow-md transition-shadow">
                     <div className="flex items-center justify-between">
                         <div>
-                            <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">Dự án phụ trách</p>
-                            <p className="text-3xl font-black text-gray-900 mt-1">{myProjects.length}</p>
+                            <p className="text-xs font-bold text-gray-400 dark:text-slate-500 uppercase tracking-wider">Dự án phụ trách</p>
+                            <p className="text-3xl font-black text-gray-900 dark:text-slate-100 mt-1">{myProjects.length}</p>
                         </div>
-                        <div className="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center">
-                            <Building2 className="w-6 h-6 text-blue-600" />
+                        <div className="w-12 h-12 bg-blue-50 dark:bg-blue-900/30 rounded-xl flex items-center justify-center">
+                            <Building2 className="w-6 h-6 text-blue-600 dark:text-blue-400" />
                         </div>
                     </div>
                 </div>
 
-                <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
+                <div className="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-gray-100 dark:border-slate-700 shadow-sm hover:shadow-md transition-shadow">
                     <div className="flex items-center justify-between">
                         <div>
-                            <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">Công việc đang làm</p>
-                            <p className="text-3xl font-black text-blue-600 mt-1">{taskStats.inProgress}</p>
+                            <p className="text-xs font-bold text-gray-400 dark:text-slate-500 uppercase tracking-wider">Công việc đang làm</p>
+                            <p className="text-3xl font-black text-blue-600 dark:text-blue-400 mt-1">{taskStats.inProgress}</p>
                         </div>
-                        <div className="w-12 h-12 bg-indigo-50 rounded-xl flex items-center justify-center">
-                            <Target className="w-6 h-6 text-indigo-600" />
+                        <div className="w-12 h-12 bg-indigo-50 dark:bg-indigo-900/30 rounded-xl flex items-center justify-center">
+                            <Target className="w-6 h-6 text-indigo-600 dark:text-indigo-400" />
                         </div>
                     </div>
                 </div>
 
-                <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
+                <div className="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-gray-100 dark:border-slate-700 shadow-sm hover:shadow-md transition-shadow">
                     <div className="flex items-center justify-between">
                         <div>
-                            <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">Chờ xử lý</p>
-                            <p className="text-3xl font-black text-amber-600 mt-1">{taskStats.todo}</p>
+                            <p className="text-xs font-bold text-gray-400 dark:text-slate-500 uppercase tracking-wider">Chờ xử lý</p>
+                            <p className="text-3xl font-black text-amber-600 dark:text-amber-400 mt-1">{taskStats.todo}</p>
                         </div>
-                        <div className="w-12 h-12 bg-amber-50 rounded-xl flex items-center justify-center">
-                            <Clock className="w-6 h-6 text-amber-600" />
+                        <div className="w-12 h-12 bg-amber-50 dark:bg-amber-900/30 rounded-xl flex items-center justify-center">
+                            <Clock className="w-6 h-6 text-amber-600 dark:text-amber-400" />
                         </div>
                     </div>
                 </div>
 
-                <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
+                <div className="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-gray-100 dark:border-slate-700 shadow-sm hover:shadow-md transition-shadow">
                     <div className="flex items-center justify-between">
                         <div>
-                            <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">Quá hạn</p>
-                            <p className={`text-3xl font-black mt-1 ${taskStats.overdue > 0 ? 'text-red-600' : 'text-gray-400'}`}>{taskStats.overdue}</p>
+                            <p className="text-xs font-bold text-gray-400 dark:text-slate-500 uppercase tracking-wider">Quá hạn</p>
+                            <p className={`text-3xl font-black mt-1 ${taskStats.overdue > 0 ? 'text-red-600 dark:text-red-400' : 'text-gray-400 dark:text-slate-500'}`}>{taskStats.overdue}</p>
                         </div>
-                        <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${taskStats.overdue > 0 ? 'bg-red-50' : 'bg-gray-50'}`}>
-                            <AlertTriangle className={`w-6 h-6 ${taskStats.overdue > 0 ? 'text-red-600' : 'text-gray-400'}`} />
+                        <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${taskStats.overdue > 0 ? 'bg-red-50 dark:bg-red-900/30' : 'bg-gray-50 dark:bg-slate-700'}`}>
+                            <AlertTriangle className={`w-6 h-6 ${taskStats.overdue > 0 ? 'text-red-600 dark:text-red-400' : 'text-gray-400 dark:text-slate-500'}`} />
                         </div>
                     </div>
                 </div>
@@ -159,24 +159,24 @@ const PersonalDashboard: React.FC = () => {
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {/* My Projects */}
-                <div className="lg:col-span-2 bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-                    <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+                <div className="lg:col-span-2 bg-white dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-700 shadow-sm overflow-hidden">
+                    <div className="px-6 py-4 border-b border-gray-100 dark:border-slate-700 flex items-center justify-between">
                         <div className="flex items-center gap-2">
-                            <Briefcase className="w-5 h-5 text-blue-600" />
-                            <h3 className="font-bold text-gray-800">Dự án của tôi</h3>
+                            <Briefcase className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                            <h3 className="font-bold text-gray-800 dark:text-slate-100">Dự án của tôi</h3>
                         </div>
                         <button
                             onClick={() => navigate('/projects')}
-                            className="text-xs font-bold text-blue-600 hover:text-blue-700 flex items-center gap-1"
+                            className="text-xs font-bold text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 flex items-center gap-1"
                         >
                             Xem tất cả <ArrowRight className="w-3 h-3" />
                         </button>
                     </div>
 
-                    <div className="divide-y divide-gray-50">
+                    <div className="divide-y divide-gray-50 dark:divide-slate-700">
                         {myProjects.length === 0 ? (
-                            <div className="p-8 text-center text-gray-400">
-                                <Building2 className="w-12 h-12 mx-auto mb-3 text-gray-300" />
+                            <div className="p-8 text-center text-gray-400 dark:text-slate-500">
+                                <Building2 className="w-12 h-12 mx-auto mb-3 text-gray-300 dark:text-slate-600" />
                                 <p>Bạn chưa được phân công dự án nào</p>
                             </div>
                         ) : (
@@ -184,14 +184,14 @@ const PersonalDashboard: React.FC = () => {
                                 <div
                                     key={project.ProjectID}
                                     onClick={() => navigate(`/projects/${project.ProjectID}`)}
-                                    className="p-4 hover:bg-gray-50 cursor-pointer transition-colors flex items-center gap-4"
+                                    className="p-4 hover:bg-gray-50 dark:hover:bg-slate-700/50 cursor-pointer transition-colors flex items-center gap-4"
                                 >
                                     <div className={`w-2 h-12 rounded-full ${project.Status === ProjectStatus.Execution ? 'bg-blue-500' :
-                                        project.Status === ProjectStatus.Completion ? 'bg-emerald-500' : 'bg-gray-300'
+                                        project.Status === ProjectStatus.Completion ? 'bg-emerald-500' : 'bg-gray-300 dark:bg-slate-600'
                                         }`}></div>
                                     <div className="flex-1 min-w-0">
-                                        <p className="font-semibold text-gray-800 truncate">{project.ProjectName}</p>
-                                        <div className="flex items-center gap-3 mt-1 text-xs text-gray-500">
+                                        <p className="font-semibold text-gray-800 dark:text-slate-100 truncate">{project.ProjectName}</p>
+                                        <div className="flex items-center gap-3 mt-1 text-xs text-gray-500 dark:text-slate-400">
                                             <span>Nhóm {project.GroupCode}</span>
                                             <span>•</span>
                                             <span>{formatCurrency(project.TotalInvestment)}</span>
@@ -199,22 +199,22 @@ const PersonalDashboard: React.FC = () => {
                                     </div>
                                     <div className="text-right">
                                         <div className="flex items-center gap-2 mb-1">
-                                            <div className="w-20 h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                                            <div className="w-20 h-1.5 bg-gray-100 dark:bg-slate-700 rounded-full overflow-hidden">
                                                 <div
                                                     className="h-full bg-blue-500 rounded-full transition-all"
                                                     style={{ width: `${project.Progress || 0}%` }}
                                                 ></div>
                                             </div>
-                                            <span className="text-xs font-bold text-gray-600">{project.Progress || 0}%</span>
+                                            <span className="text-xs font-bold text-gray-600 dark:text-slate-300">{project.Progress || 0}%</span>
                                         </div>
-                                        <span className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded ${project.Status === ProjectStatus.Execution ? 'bg-blue-100 text-blue-700' :
-                                            project.Status === ProjectStatus.Completion ? 'bg-emerald-100 text-emerald-700' : 'bg-gray-100 text-gray-600'
+                                        <span className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded ${project.Status === ProjectStatus.Execution ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400' :
+                                            project.Status === ProjectStatus.Completion ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' : 'bg-gray-100 text-gray-600 dark:bg-slate-700 dark:text-slate-400'
                                             }`}>
                                             {project.Status === ProjectStatus.Execution ? 'Thực hiện DA' :
                                                 project.Status === ProjectStatus.Completion ? 'Kết thúc XD' : 'Chuẩn bị DA'}
                                         </span>
                                     </div>
-                                    <ChevronRight className="w-4 h-4 text-gray-300" />
+                                    <ChevronRight className="w-4 h-4 text-gray-300 dark:text-slate-600" />
                                 </div>
                             ))
                         )}
@@ -222,19 +222,19 @@ const PersonalDashboard: React.FC = () => {
                 </div>
 
                 {/* Upcoming Deadlines */}
-                <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-                    <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+                <div className="bg-white dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-700 shadow-sm overflow-hidden">
+                    <div className="px-6 py-4 border-b border-gray-100 dark:border-slate-700 flex items-center justify-between">
                         <div className="flex items-center gap-2">
-                            <Clock className="w-5 h-5 text-amber-600" />
-                            <h3 className="font-bold text-gray-800">Deadline sắp tới</h3>
+                            <Clock className="w-5 h-5 text-amber-600 dark:text-amber-400" />
+                            <h3 className="font-bold text-gray-800 dark:text-slate-100">Deadline sắp tới</h3>
                         </div>
-                        <span className="text-[10px] font-bold text-amber-600 bg-amber-50 px-2 py-1 rounded">7 ngày</span>
+                        <span className="text-[10px] font-bold text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/30 px-2 py-1 rounded">7 ngày</span>
                     </div>
 
-                    <div className="divide-y divide-gray-50">
+                    <div className="divide-y divide-gray-50 dark:divide-slate-700">
                         {upcomingDeadlines.length === 0 ? (
-                            <div className="p-8 text-center text-gray-400">
-                                <CheckSquare className="w-12 h-12 mx-auto mb-3 text-gray-300" />
+                            <div className="p-8 text-center text-gray-400 dark:text-slate-500">
+                                <CheckSquare className="w-12 h-12 mx-auto mb-3 text-gray-300 dark:text-slate-600" />
                                 <p>Không có deadline trong 7 ngày tới</p>
                             </div>
                         ) : (
@@ -242,12 +242,12 @@ const PersonalDashboard: React.FC = () => {
                                 <div
                                     key={task.TaskID}
                                     onClick={() => navigate(`/tasks/${task.TaskID}`)}
-                                    className="p-4 hover:bg-gray-50 cursor-pointer transition-colors"
+                                    className="p-4 hover:bg-gray-50 dark:hover:bg-slate-700/50 cursor-pointer transition-colors"
                                 >
                                     <div className="flex items-start justify-between gap-3">
                                         <div className="flex-1 min-w-0">
-                                            <p className="font-medium text-gray-800 text-sm truncate">{task.Title}</p>
-                                            <p className="text-xs text-gray-400 mt-1 truncate">{task.ProjectID}</p>
+                                            <p className="font-medium text-gray-800 dark:text-slate-100 text-sm truncate">{task.Title}</p>
+                                            <p className="text-xs text-gray-400 dark:text-slate-500 mt-1 truncate">{task.ProjectID}</p>
                                         </div>
                                         <span className={`text-[10px] font-bold px-2 py-1 rounded border shrink-0 ${priorityColors[task.Priority]}`}>
                                             {daysUntil(task.DueDate)}
@@ -263,44 +263,44 @@ const PersonalDashboard: React.FC = () => {
             {/* Bottom Row */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {/* My Tasks */}
-                <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-                    <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+                <div className="bg-white dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-700 shadow-sm overflow-hidden">
+                    <div className="px-6 py-4 border-b border-gray-100 dark:border-slate-700 flex items-center justify-between">
                         <div className="flex items-center gap-2">
-                            <CheckSquare className="w-5 h-5 text-indigo-600" />
-                            <h3 className="font-bold text-gray-800">Công việc đang thực hiện</h3>
+                            <CheckSquare className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
+                            <h3 className="font-bold text-gray-800 dark:text-slate-100">Công việc đang thực hiện</h3>
                         </div>
                         <button
                             onClick={() => navigate('/tasks')}
-                            className="text-xs font-bold text-indigo-600 hover:text-indigo-700 flex items-center gap-1"
+                            className="text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 flex items-center gap-1"
                         >
                             Xem tất cả <ArrowRight className="w-3 h-3" />
                         </button>
                     </div>
 
-                    <div className="divide-y divide-gray-50 max-h-[300px] overflow-y-auto">
+                    <div className="divide-y divide-gray-50 dark:divide-slate-700 max-h-[300px] overflow-y-auto">
                         {myTasks.filter(t => t.Status === TaskStatus.InProgress).slice(0, 5).map(task => (
                             <div
                                 key={task.TaskID}
                                 onClick={() => navigate(`/tasks/${task.TaskID}`)}
-                                className="p-4 hover:bg-gray-50 cursor-pointer transition-colors flex items-center gap-3"
+                                className="p-4 hover:bg-gray-50 dark:hover:bg-slate-700/50 cursor-pointer transition-colors flex items-center gap-3"
                             >
                                 <div className={`w-2 h-2 rounded-full ${task.Priority === TaskPriority.Urgent ? 'bg-red-500' :
                                     task.Priority === TaskPriority.High ? 'bg-orange-500' :
                                         task.Priority === TaskPriority.Medium ? 'bg-yellow-500' : 'bg-green-500'
                                     }`}></div>
                                 <div className="flex-1 min-w-0">
-                                    <p className="font-medium text-gray-800 text-sm truncate">{task.Title}</p>
-                                    <p className="text-xs text-gray-400 mt-0.5">{task.DueDate}</p>
+                                    <p className="font-medium text-gray-800 dark:text-slate-100 text-sm truncate">{task.Title}</p>
+                                    <p className="text-xs text-gray-400 dark:text-slate-500 mt-0.5">{task.DueDate}</p>
                                 </div>
-                                <span className="text-[10px] font-bold text-blue-600 bg-blue-50 px-2 py-1 rounded">
+                                <span className="text-[10px] font-bold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 px-2 py-1 rounded">
                                     Đang làm
                                 </span>
                             </div>
                         ))}
 
                         {myTasks.filter(t => t.Status === TaskStatus.InProgress).length === 0 && (
-                            <div className="p-8 text-center text-gray-400">
-                                <Target className="w-10 h-10 mx-auto mb-2 text-gray-300" />
+                            <div className="p-8 text-center text-gray-400 dark:text-slate-500">
+                                <Target className="w-10 h-10 mx-auto mb-2 text-gray-300 dark:text-slate-600" />
                                 <p className="text-sm">Không có công việc đang thực hiện</p>
                             </div>
                         )}
@@ -308,40 +308,40 @@ const PersonalDashboard: React.FC = () => {
                 </div>
 
                 {/* My Documents */}
-                <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-                    <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+                <div className="bg-white dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-700 shadow-sm overflow-hidden">
+                    <div className="px-6 py-4 border-b border-gray-100 dark:border-slate-700 flex items-center justify-between">
                         <div className="flex items-center gap-2">
-                            <FileText className="w-5 h-5 text-purple-600" />
-                            <h3 className="font-bold text-gray-800">Tài liệu liên quan</h3>
+                            <FileText className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+                            <h3 className="font-bold text-gray-800 dark:text-slate-100">Tài liệu liên quan</h3>
                         </div>
                         <button
                             onClick={() => navigate('/documents')}
-                            className="text-xs font-bold text-purple-600 hover:text-purple-700 flex items-center gap-1"
+                            className="text-xs font-bold text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 flex items-center gap-1"
                         >
                             Xem tất cả <ArrowRight className="w-3 h-3" />
                         </button>
                     </div>
 
-                    <div className="divide-y divide-gray-50 max-h-[300px] overflow-y-auto">
+                    <div className="divide-y divide-gray-50 dark:divide-slate-700 max-h-[300px] overflow-y-auto">
                         {myDocuments.length === 0 ? (
-                            <div className="p-8 text-center text-gray-400">
-                                <FileText className="w-10 h-10 mx-auto mb-2 text-gray-300" />
+                            <div className="p-8 text-center text-gray-400 dark:text-slate-500">
+                                <FileText className="w-10 h-10 mx-auto mb-2 text-gray-300 dark:text-slate-600" />
                                 <p className="text-sm">Chưa có tài liệu nào</p>
                             </div>
                         ) : (
                             myDocuments.map(doc => (
                                 <div
                                     key={doc.DocumentID}
-                                    className="p-4 hover:bg-gray-50 cursor-pointer transition-colors flex items-center gap-3"
+                                    className="p-4 hover:bg-gray-50 dark:hover:bg-slate-700/50 cursor-pointer transition-colors flex items-center gap-3"
                                 >
-                                    <div className="w-10 h-10 bg-purple-50 rounded-xl flex items-center justify-center shrink-0">
-                                        <FileText className="w-5 h-5 text-purple-600" />
+                                    <div className="w-10 h-10 bg-purple-50 dark:bg-purple-900/30 rounded-xl flex items-center justify-center shrink-0">
+                                        <FileText className="w-5 h-5 text-purple-600 dark:text-purple-400" />
                                     </div>
                                     <div className="flex-1 min-w-0">
-                                        <p className="font-medium text-gray-800 text-sm truncate">{doc.Name}</p>
-                                        <p className="text-xs text-gray-400 mt-0.5">{doc.ProjectID} • v{doc.CurrentVersion}</p>
+                                        <p className="font-medium text-gray-800 dark:text-slate-100 text-sm truncate">{doc.Name}</p>
+                                        <p className="text-xs text-gray-400 dark:text-slate-500 mt-0.5">{doc.ProjectID} • v{doc.CurrentVersion}</p>
                                     </div>
-                                    <span className={`text-[10px] font-bold px-2 py-1 rounded ${doc.SignatureStatus === 'Signed' ? 'bg-emerald-50 text-emerald-700' : 'bg-gray-100 text-gray-600'
+                                    <span className={`text-[10px] font-bold px-2 py-1 rounded ${doc.SignatureStatus === 'Signed' ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' : 'bg-gray-100 text-gray-600 dark:bg-slate-700 dark:text-slate-400'
                                         }`}>
                                         {doc.SignatureStatus === 'Signed' ? 'Đã ký' : 'Chưa ký'}
                                     </span>
@@ -353,24 +353,24 @@ const PersonalDashboard: React.FC = () => {
             </div>
 
             {/* Summary Footer */}
-            <div className="bg-gradient-to-r from-gray-50 to-white rounded-2xl border border-gray-100 p-6">
+            <div className="bg-gradient-to-r from-gray-50 to-white dark:from-slate-800 dark:to-slate-800 rounded-2xl border border-gray-100 dark:border-slate-700 p-6">
                 <div className="flex flex-wrap items-center justify-between gap-6">
                     <div className="flex items-center gap-8">
                         <div>
-                            <p className="text-xs font-bold text-gray-400 uppercase">Tổng mức đầu tư phụ trách</p>
-                            <p className="text-xl font-black text-gray-900 mt-1">{formatCurrency(totalInvestment)}</p>
+                            <p className="text-xs font-bold text-gray-400 dark:text-slate-500 uppercase">Tổng mức đầu tư phụ trách</p>
+                            <p className="text-xl font-black text-gray-900 dark:text-slate-100 mt-1">{formatCurrency(totalInvestment)}</p>
                         </div>
-                        <div className="h-10 w-px bg-gray-200"></div>
+                        <div className="h-10 w-px bg-gray-200 dark:bg-slate-700"></div>
                         <div>
-                            <p className="text-xs font-bold text-gray-400 uppercase">Hoàn thành công việc</p>
-                            <p className="text-xl font-black text-emerald-600 mt-1">
-                                {taskStats.done}/{taskStats.total} <span className="text-sm font-normal text-gray-400">({taskStats.total > 0 ? Math.round(taskStats.done / taskStats.total * 100) : 0}%)</span>
+                            <p className="text-xs font-bold text-gray-400 dark:text-slate-500 uppercase">Hoàn thành công việc</p>
+                            <p className="text-xl font-black text-emerald-600 dark:text-emerald-400 mt-1">
+                                {taskStats.done}/{taskStats.total} <span className="text-sm font-normal text-gray-400 dark:text-slate-500">({taskStats.total > 0 ? Math.round(taskStats.done / taskStats.total * 100) : 0}%)</span>
                             </p>
                         </div>
                     </div>
                     <button
                         onClick={() => navigate('/tasks')}
-                        className="px-5 py-2.5 bg-blue-600 text-white text-sm font-bold rounded-xl hover:bg-blue-700 transition-colors shadow-lg shadow-blue-200 flex items-center gap-2"
+                        className="px-5 py-2.5 bg-blue-600 text-white text-sm font-bold rounded-xl hover:bg-blue-700 transition-colors shadow-lg shadow-blue-200 dark:shadow-blue-900/30 flex items-center gap-2"
                     >
                         <TrendingUp className="w-4 h-4" />
                         Xem báo cáo chi tiết

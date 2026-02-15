@@ -34,11 +34,11 @@ class BimErrorBoundary extends React.Component<
         if (this.state.hasError) {
             return (
                 <div className="flex flex-col items-center justify-center h-96 gap-4 text-center p-8">
-                    <div className="text-red-500 text-lg font-bold">⚠️ BIM Viewer Error</div>
-                    <div className="text-gray-600 text-sm max-w-lg">
+                    <div className="text-red-500 dark:text-red-400 text-lg font-bold">⚠️ BIM Viewer Error</div>
+                    <div className="text-gray-600 dark:text-slate-400 text-sm max-w-lg">
                         {this.state.error?.message || 'Unknown error'}
                     </div>
-                    <pre className="text-xs bg-gray-100 p-4 rounded-lg max-w-2xl overflow-auto max-h-48 text-left text-gray-500">
+                    <pre className="text-xs bg-gray-100 dark:bg-slate-800 p-4 rounded-lg max-w-2xl overflow-auto max-h-48 text-left text-gray-500 dark:text-slate-400">
                         {this.state.error?.stack}
                     </pre>
                     <button
@@ -142,11 +142,11 @@ const ProjectDetail: React.FC = () => {
         }
     };
 
-    if (loading) return <div className="flex h-screen items-center justify-center text-blue-600">Loading Project...</div>;
-    if (!project) return <div className="flex h-screen items-center justify-center font-bold text-gray-500">Dự án không tồn tại.</div>;
+    if (loading) return <div className="flex h-screen items-center justify-center text-blue-600 dark:text-blue-400">Loading Project...</div>;
+    if (!project) return <div className="flex h-screen items-center justify-center font-bold text-gray-500 dark:text-slate-400">Dự án không tồn tại.</div>;
 
     return (
-        <div className="min-h-screen bg-[#F8FAFC]">
+        <div className="min-h-screen bg-[#F8FAFC] dark:bg-slate-900">
             <div className="container mx-auto px-4 py-6">
                 {/* 1. Header */}
                 <ProjectHeader
@@ -157,7 +157,7 @@ const ProjectDetail: React.FC = () => {
                 />
 
                 {/* 2. Tab Navigation */}
-                <div className="border-b border-gray-200 flex gap-8 mt-6 overflow-x-auto">
+                <div className="border-b border-gray-200 dark:border-slate-700 flex gap-8 mt-6 overflow-x-auto">
                     {[
                         { id: 'info', label: 'TỔNG QUAN', icon: Info },
                         { id: 'plan', label: 'KẾ HOẠCH', icon: CalendarCheck },
@@ -168,7 +168,7 @@ const ProjectDetail: React.FC = () => {
                     ].map(t => (
                         <button
                             key={t.id} onClick={() => setActiveTab(t.id as any)}
-                            className={`py-4 px-1 text-xs font-black border-b-2 transition-all flex items-center gap-2 tracking-widest whitespace-nowrap ${activeTab === t.id ? 'border-blue-600 text-blue-600' : 'border-transparent text-gray-400 hover:text-gray-600'}`}
+                            className={`py-4 px-1 text-xs font-black border-b-2 transition-all flex items-center gap-2 tracking-widest whitespace-nowrap ${activeTab === t.id ? 'border-blue-600 text-blue-600 dark:border-blue-400 dark:text-blue-400' : 'border-transparent text-gray-400 dark:text-slate-500 hover:text-gray-600 dark:hover:text-slate-300'}`}
                         >
                             <t.icon className="w-4 h-4" />
                             {t.label}
@@ -237,7 +237,7 @@ const ProjectDetail: React.FC = () => {
                     )}
                     {activeTab === 'bim' && (
                         <BimErrorBoundary>
-                            <Suspense fallback={<div className="flex items-center justify-center h-96 text-blue-500">Đang tải BIM Viewer...</div>}>
+                            <Suspense fallback={<div className="flex items-center justify-center h-96 text-blue-500 dark:text-blue-400">Đang tải BIM Viewer...</div>}>
                                 <ProjectBimTab projectID={project.ProjectID} />
                             </Suspense>
                         </BimErrorBoundary>

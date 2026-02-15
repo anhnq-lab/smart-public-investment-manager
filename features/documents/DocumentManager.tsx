@@ -33,15 +33,15 @@ const FilePreviewModal: React.FC<{ file: any, onClose: () => void }> = ({ file, 
 
     return (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
-            <div className="bg-[#F1F5F9] w-full max-w-6xl h-[90vh] rounded-3xl shadow-2xl overflow-hidden flex flex-col border border-white/20">
-                <div className="bg-white px-6 py-4 flex items-center justify-between border-b border-gray-200">
+            <div className="bg-[#F1F5F9] dark:bg-slate-800 w-full max-w-6xl h-[90vh] rounded-3xl shadow-2xl overflow-hidden flex flex-col border border-white/20 dark:border-slate-700">
+                <div className="bg-white dark:bg-slate-800 px-6 py-4 flex items-center justify-between border-b border-gray-200 dark:border-slate-700">
                     <div className="flex items-center gap-4">
                         <div className={`p-2 rounded-xl ${isIFC ? 'bg-orange-50 text-orange-600' : 'bg-blue-50 text-blue-600'}`}>
                             {isIFC ? <Box className="w-6 h-6" /> : isImage ? <ImageIcon className="w-6 h-6" /> : <FileText className="w-6 h-6" />}
                         </div>
                         <div>
-                            <h3 className="text-base font-black text-gray-800 tracking-tight">{f.DocName || f.name}</h3>
-                            <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">
+                            <h3 className="text-base font-black text-gray-800 dark:text-slate-200 tracking-tight">{f.DocName || f.name}</h3>
+                            <p className="text-[10px] text-gray-400 dark:text-slate-500 font-bold uppercase tracking-widest">
                                 {f.isLocal ? 'TÀI LIỆU VỪA TẢI LÊN' : `PHIÊN BẢN: ${f.Version || '1.0'}`} • {f.Size || (f.fileObj ? (f.fileObj.size / 1024 / 1024).toFixed(2) + ' MB' : 'N/A')}
                             </p>
                         </div>
@@ -146,17 +146,17 @@ const VersionHistoryModal: React.FC<{ file: any, onClose: () => void }> = ({ fil
 
     return (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in zoom-in-95">
-            <div className="bg-white w-full max-w-2xl rounded-2xl shadow-xl overflow-hidden">
-                <div className="p-6 border-b border-gray-100 flex justify-between items-center bg-gray-50">
+            <div className="bg-white dark:bg-slate-800 w-full max-w-2xl rounded-2xl shadow-xl overflow-hidden">
+                <div className="p-6 border-b border-gray-100 dark:border-slate-700 flex justify-between items-center bg-gray-50 dark:bg-slate-800">
                     <div>
-                        <h3 className="text-lg font-bold text-gray-800">Lịch sử phiên bản</h3>
-                        <p className="text-sm text-gray-500 mt-1 truncate max-w-md">{file.DocName}</p>
+                        <h3 className="text-lg font-bold text-gray-800 dark:text-slate-200">Lịch sử phiên bản</h3>
+                        <p className="text-sm text-gray-500 dark:text-slate-400 mt-1 truncate max-w-md">{file.DocName}</p>
                     </div>
-                    <button onClick={onClose} className="p-2 hover:bg-gray-200 rounded-full text-gray-500"><X className="w-5 h-5" /></button>
+                    <button onClick={onClose} className="p-2 hover:bg-gray-200 dark:hover:bg-slate-700 rounded-full text-gray-500 dark:text-slate-400"><X className="w-5 h-5" /></button>
                 </div>
                 <div className="p-0">
                     <table className="w-full text-left text-sm">
-                        <thead className="bg-gray-50 text-xs uppercase font-bold text-gray-500">
+                        <thead className="bg-gray-50 dark:bg-slate-700/50 text-xs uppercase font-bold text-gray-500 dark:text-slate-400">
                             <tr>
                                 <th className="px-6 py-4">Phiên bản</th>
                                 <th className="px-6 py-4">Thời gian cập nhật</th>
@@ -164,9 +164,9 @@ const VersionHistoryModal: React.FC<{ file: any, onClose: () => void }> = ({ fil
                                 <th className="px-6 py-4 text-right">Dung lượng</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-gray-100">
+                        <tbody className="divide-y divide-gray-100 dark:divide-slate-700">
                             {history.map((ver: any, idx: number) => (
-                                <tr key={idx} className="hover:bg-gray-50">
+                                <tr key={idx} className="hover:bg-gray-50 dark:hover:bg-slate-700/40">
                                     <td className="px-6 py-4">
                                         <div className="flex items-center gap-2">
                                             <span className={`px-2 py-1 rounded-md font-mono text-xs font-bold ${ver.isCurrent ? 'bg-emerald-100 text-emerald-700' : 'bg-gray-100 text-gray-600'}`}>
@@ -175,9 +175,9 @@ const VersionHistoryModal: React.FC<{ file: any, onClose: () => void }> = ({ fil
                                             {ver.isCurrent && <span className="text-[10px] uppercase font-bold text-emerald-600 bg-white border border-emerald-200 px-1.5 rounded">Hiện tại</span>}
                                         </div>
                                     </td>
-                                    <td className="px-6 py-4 text-gray-600">{ver.Date}</td>
-                                    <td className="px-6 py-4 font-medium text-gray-800">{ver.User}</td>
-                                    <td className="px-6 py-4 text-right font-mono text-gray-500">{ver.Size}</td>
+                                    <td className="px-6 py-4 text-gray-600 dark:text-slate-400">{ver.Date}</td>
+                                    <td className="px-6 py-4 font-medium text-gray-800 dark:text-slate-300">{ver.User}</td>
+                                    <td className="px-6 py-4 text-right font-mono text-gray-500 dark:text-slate-400">{ver.Size}</td>
                                 </tr>
                             ))}
                         </tbody>
@@ -188,8 +188,8 @@ const VersionHistoryModal: React.FC<{ file: any, onClose: () => void }> = ({ fil
                         </div>
                     )}
                 </div>
-                <div className="p-4 bg-gray-50 border-t border-gray-100 text-right">
-                    <button onClick={onClose} className="px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm font-medium hover:bg-gray-50">Đóng</button>
+                <div className="p-4 bg-gray-50 dark:bg-slate-800 border-t border-gray-100 dark:border-slate-700 text-right">
+                    <button onClick={onClose} className="px-4 py-2 bg-white dark:bg-slate-700 border border-gray-300 dark:border-slate-600 rounded-lg text-sm font-medium hover:bg-gray-50 dark:hover:bg-slate-600 dark:text-slate-300">Đóng</button>
                 </div>
             </div>
         </div>
@@ -208,8 +208,8 @@ const FilterChip: React.FC<{ label: string, active: boolean, onClick: () => void
     <button
         onClick={onClick}
         className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all border ${active
-            ? 'bg-blue-600 text-white border-blue-600 shadow-md shadow-blue-200'
-            : 'bg-white text-gray-500 border-gray-200 hover:bg-gray-50 hover:text-gray-700'
+            ? 'bg-blue-600 text-white border-blue-600 shadow-md shadow-blue-200 dark:shadow-blue-900/30'
+            : 'bg-white dark:bg-slate-800 text-gray-500 dark:text-slate-400 border-gray-200 dark:border-slate-600 hover:bg-gray-50 dark:hover:bg-slate-700 hover:text-gray-700 dark:hover:text-slate-300'
             }`}
     >
         {icon}
@@ -396,11 +396,11 @@ const DocumentManager: React.FC = () => {
                 {/* TOP ROW: Title & Upload */}
                 <div className="flex items-center justify-between">
                     <div>
-                        <h2 className="text-2xl font-black text-gray-800 tracking-tight uppercase flex items-center gap-3">
-                            <HardDrive className="w-8 h-8 text-blue-600" />
+                        <h2 className="text-2xl font-black text-gray-800 dark:text-slate-100 tracking-tight uppercase flex items-center gap-3">
+                            <HardDrive className="w-8 h-8 text-blue-600 dark:text-blue-400" />
                             Kho lưu trữ số hóa hồ sơ
                         </h2>
-                        <p className="text-sm text-gray-500 mt-1 font-medium ml-11">Quản lý hồ sơ dự án, thiết kế và văn bản pháp lý theo chuẩn lưu trữ Quốc gia</p>
+                        <p className="text-sm text-gray-500 dark:text-slate-400 mt-1 font-medium ml-11">Quản lý hồ sơ dự án, thiết kế và văn bản pháp lý theo chuẩn lưu trữ Quốc gia</p>
                     </div>
                     <button
                         onClick={handleUploadClick}
@@ -413,17 +413,17 @@ const DocumentManager: React.FC = () => {
                 {/* MIDDLE ROW: Project Context & Search */}
                 <div className="flex items-stretch gap-4">
                     {/* Project Selector Card */}
-                    <div className="w-[450px] bg-white p-1 rounded-2xl shadow-sm border border-gray-200 flex flex-col">
+                    <div className="w-[450px] bg-white dark:bg-slate-800 p-1 rounded-2xl shadow-sm border border-gray-200 dark:border-slate-700 flex flex-col">
                         <div className="flex items-center gap-3 px-4 py-3 h-full">
-                            <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center flex-shrink-0">
-                                <Box className="w-5 h-5 text-blue-600" />
+                            <div className="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-900/30 flex items-center justify-center flex-shrink-0">
+                                <Box className="w-5 h-5 text-blue-600 dark:text-blue-400" />
                             </div>
                             <div className="flex-1 min-w-0">
-                                <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-0.5">Dự án đang làm việc</p>
+                                <p className="text-[10px] font-black text-gray-400 dark:text-slate-500 uppercase tracking-widest mb-0.5">Dự án đang làm việc</p>
                                 <select
                                     value={selectedProject}
                                     onChange={(e) => setSelectedProject(e.target.value)}
-                                    className="w-full text-sm font-bold text-gray-800 outline-none bg-transparent cursor-pointer hover:text-blue-600 transition-colors truncate"
+                                    className="w-full text-sm font-bold text-gray-800 dark:text-slate-200 outline-none bg-transparent cursor-pointer hover:text-blue-600 dark:hover:text-blue-400 transition-colors truncate"
                                 >
                                     {mockProjects.map(p => (
                                         <option key={p.ProjectID} value={p.ProjectID}>{p.ProjectName}</option>
@@ -435,12 +435,12 @@ const DocumentManager: React.FC = () => {
                     </div>
 
                     {/* Smart Search Bar */}
-                    <div className="flex-1 bg-white rounded-2xl shadow-sm border border-gray-200 flex items-center px-4 transition-all focus-within:ring-2 focus-within:ring-blue-100 focus-within:border-blue-400">
-                        <Search className="w-5 h-5 text-gray-400 mr-3" />
+                    <div className="flex-1 bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-gray-200 dark:border-slate-700 flex items-center px-4 transition-all focus-within:ring-2 focus-within:ring-blue-100 dark:focus-within:ring-blue-900/40 focus-within:border-blue-400">
+                        <Search className="w-5 h-5 text-gray-400 dark:text-slate-500 mr-3" />
                         <input
                             type="text"
                             placeholder="Tìm kiếm tài liệu theo tên, mã số hoặc nội dung..."
-                            className="flex-1 h-full outline-none text-sm font-medium text-gray-700 placeholder-gray-400 bg-transparent"
+                            className="flex-1 h-full outline-none text-sm font-medium text-gray-700 dark:text-slate-300 placeholder-gray-400 dark:placeholder-slate-500 bg-transparent"
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                         />
@@ -454,7 +454,7 @@ const DocumentManager: React.FC = () => {
 
                 {/* BOTTOM ROW: Quick Filters */}
                 <div className="flex items-center gap-2 overflow-x-auto pb-2">
-                    <span className="text-xs font-bold text-gray-400 uppercase mr-2">Bộ lọc nhanh:</span>
+                    <span className="text-xs font-bold text-gray-400 dark:text-slate-500 uppercase mr-2">Bộ lọc nhanh:</span>
                     <FilterChip label="Tất cả" active={filterType === 'all'} onClick={() => setFilterType('all')} />
                     <FilterChip label="Văn bản PDF" active={filterType === 'pdf'} onClick={() => setFilterType('pdf')} icon={<FileText className="w-3 h-3" />} />
                     <FilterChip label="Hồ sơ Office" active={filterType === 'office'} onClick={() => setFilterType('office')} icon={<FileIcon className="w-3 h-3" />} />
@@ -464,14 +464,14 @@ const DocumentManager: React.FC = () => {
             </div>
 
             <div className="flex flex-1 gap-6 overflow-hidden">
-                <div className="w-80 bg-white rounded-3xl shadow-sm border border-gray-100 p-5 flex flex-col overflow-y-auto">
-                    <h3 className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-6 px-2">Cấu trúc thư mục</h3>
+                <div className="w-80 bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-gray-100 dark:border-slate-700 p-5 flex flex-col overflow-y-auto">
+                    <h3 className="text-[10px] font-black text-gray-400 dark:text-slate-500 uppercase tracking-[0.2em] mb-6 px-2">Cấu trúc thư mục</h3>
                     <div className="space-y-2">
                         {folders.map(folder => (
                             <div
                                 key={folder.id}
                                 onClick={() => setSelectedFolder(folder.id)}
-                                className={`flex items-center gap-3 px-4 py-3 rounded-2xl cursor-pointer transition-all ${selectedFolder === folder.id ? 'bg-blue-600 text-white shadow-lg shadow-blue-100' : 'text-gray-500 hover:bg-gray-50'
+                                className={`flex items-center gap-3 px-4 py-3 rounded-2xl cursor-pointer transition-all ${selectedFolder === folder.id ? 'bg-blue-600 text-white shadow-lg shadow-blue-100 dark:shadow-blue-900/30' : 'text-gray-500 dark:text-slate-400 hover:bg-gray-50 dark:hover:bg-slate-700'
                                     }`}
                             >
                                 <Folder className={`w-4 h-4 ${selectedFolder === folder.id ? 'fill-white/30' : ''}`} />
@@ -484,12 +484,12 @@ const DocumentManager: React.FC = () => {
                     </div>
                 </div>
 
-                <div className="flex-1 bg-white rounded-3xl shadow-sm border border-gray-100 flex flex-col overflow-hidden">
-                    <div className="p-5 border-b border-gray-50 bg-gray-50/50 flex justify-between items-center">
-                        <h3 className="font-black text-gray-800 text-sm flex items-center gap-2 uppercase tracking-widest">
-                            <Folder className="w-4 h-4 text-blue-500" /> {folders.find(f => f.id === selectedFolder)?.name}
+                <div className="flex-1 bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-gray-100 dark:border-slate-700 flex flex-col overflow-hidden">
+                    <div className="p-5 border-b border-gray-50 dark:border-slate-700 bg-gray-50/50 dark:bg-slate-800/50 flex justify-between items-center">
+                        <h3 className="font-black text-gray-800 dark:text-slate-200 text-sm flex items-center gap-2 uppercase tracking-widest">
+                            <Folder className="w-4 h-4 text-blue-500 dark:text-blue-400" /> {folders.find(f => f.id === selectedFolder)?.name}
                         </h3>
-                        <span className="bg-white text-gray-400 text-[10px] px-3 py-1 rounded-xl font-black border border-gray-100">{allDocs.length} TÀI LIỆU</span>
+                        <span className="bg-white dark:bg-slate-700 text-gray-400 dark:text-slate-400 text-[10px] px-3 py-1 rounded-xl font-black border border-gray-100 dark:border-slate-600">{allDocs.length} TÀI LIỆU</span>
                     </div>
 
                     <div className="flex-1 overflow-y-auto relative">
@@ -498,8 +498,8 @@ const DocumentManager: React.FC = () => {
                                 <div className="w-24 h-24 bg-gray-50 rounded-full flex items-center justify-center mb-6">
                                     <Folder className="w-10 h-10 text-gray-300" />
                                 </div>
-                                <h3 className="text-lg font-bold text-gray-800 mb-2">Chưa có tài liệu nào</h3>
-                                <p className="text-gray-400 text-sm text-center max-w-xs mb-6">Không tìm thấy tài liệu phù hợp với bộ lọc hoặc thư mục hiện tại.</p>
+                                <h3 className="text-lg font-bold text-gray-800 dark:text-slate-200 mb-2">Chưa có tài liệu nào</h3>
+                                <p className="text-gray-400 dark:text-slate-500 text-sm text-center max-w-xs mb-6">Không tìm thấy tài liệu phù hợp với bộ lọc hoặc thư mục hiện tại.</p>
                                 <button
                                     onClick={handleUploadClick}
                                     className="px-6 py-2 bg-blue-50 text-blue-600 rounded-xl font-bold text-xs uppercase tracking-wider hover:bg-blue-100 transition-colors"
@@ -509,7 +509,7 @@ const DocumentManager: React.FC = () => {
                             </div>
                         ) : (
                             <table className="w-full text-left text-sm">
-                                <thead className="bg-white text-[10px] uppercase font-black text-gray-400 sticky top-0 z-20 border-b border-gray-100 tracking-[0.1em] shadow-sm">
+                                <thead className="bg-white dark:bg-slate-800 text-[10px] uppercase font-black text-gray-400 dark:text-slate-500 sticky top-0 z-20 border-b border-gray-100 dark:border-slate-700 tracking-[0.1em] shadow-sm">
                                     <tr>
                                         <th className="px-6 py-5">Tên tài liệu</th>
                                         <th className="px-6 py-5 w-32 text-center">Phiên bản</th>
@@ -517,16 +517,16 @@ const DocumentManager: React.FC = () => {
                                         <th className="px-6 py-5 text-right">Thao tác</th>
                                     </tr>
                                 </thead>
-                                <tbody className="divide-y divide-gray-50">
+                                <tbody className="divide-y divide-gray-50 dark:divide-slate-700/50">
                                     {allDocs.map((doc, idx) => (
-                                        <tr key={idx} className="hover:bg-blue-50/40 transition-all group">
+                                        <tr key={idx} className="hover:bg-blue-50/40 dark:hover:bg-slate-700/40 transition-all group">
                                             <td className="px-6 py-4">
                                                 <div className="flex items-center gap-4">
                                                     <div className={`p-3 rounded-2xl shadow-sm ${doc.DocName.toLowerCase().endsWith('.ifc') ? 'bg-orange-50 text-orange-600' : 'bg-blue-50 text-blue-600'} ${doc.isLocal ? 'ring-2 ring-emerald-400/30' : ''}`}>
                                                         {doc.DocName.toLowerCase().endsWith('.ifc') ? <Box className="w-6 h-6" /> : (doc.DocName.toLowerCase().endsWith('.png') || doc.DocName.toLowerCase().endsWith('.jpg')) ? <ImageIcon className="w-6 h-6" /> : <FileIcon className="w-6 h-6" />}
                                                     </div>
                                                     <div>
-                                                        <p className="font-black text-gray-800 text-sm tracking-tight flex items-center gap-2 mb-1">
+                                                        <p className="font-black text-gray-800 dark:text-slate-200 text-sm tracking-tight flex items-center gap-2 mb-1">
                                                             {doc.DocName}
                                                             {doc.isLocal && <span className="text-[9px] bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full font-black uppercase tracking-wider">Mới</span>}
                                                         </p>
@@ -539,11 +539,11 @@ const DocumentManager: React.FC = () => {
                                                 </div>
                                             </td>
                                             <td className="px-6 py-4 text-center">
-                                                <span className="text-[11px] font-black text-gray-600 bg-gray-100 px-3 py-1 rounded-full border border-gray-200 font-mono inline-block shadow-sm">
+                                                <span className="text-[11px] font-black text-gray-600 dark:text-slate-400 bg-gray-100 dark:bg-slate-700 px-3 py-1 rounded-full border border-gray-200 dark:border-slate-600 font-mono inline-block shadow-sm">
                                                     {doc.Version || 'v1.0'}
                                                 </span>
                                             </td>
-                                            <td className="px-6 py-4 text-xs font-bold text-gray-500">{doc.UploadDate}</td>
+                                            <td className="px-6 py-4 text-xs font-bold text-gray-500 dark:text-slate-400">{doc.UploadDate}</td>
                                             <td className="px-6 py-4 text-right">
                                                 <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-all translate-x-2 group-hover:translate-x-0">
                                                     <button
@@ -572,19 +572,19 @@ const DocumentManager: React.FC = () => {
 
             {isSignModalOpen && (
                 <div className="fixed inset-0 z-[110] bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
-                    <div className="bg-white w-full max-w-md rounded-[32px] shadow-2xl overflow-hidden p-8 animate-in zoom-in-95">
+                    <div className="bg-white dark:bg-slate-800 w-full max-w-md rounded-[32px] shadow-2xl overflow-hidden p-8 animate-in zoom-in-95">
                         <div className="flex justify-between items-center mb-8">
-                            <h3 className="text-xl font-black text-gray-800 flex items-center gap-3 tracking-tight">
+                            <h3 className="text-xl font-black text-gray-800 dark:text-slate-200 flex items-center gap-3 tracking-tight">
                                 <ShieldCheck className="w-6 h-6 text-emerald-600" /> Ký số văn bản (CA)
                             </h3>
                             <button onClick={() => setIsSignModalOpen(false)} className="text-gray-400 hover:text-red-500 transition-colors"><X className="w-6 h-6" /></button>
                         </div>
                         <div className="space-y-6">
-                            <div className="bg-gray-50 p-5 rounded-2xl border border-gray-100 flex items-center gap-4">
-                                <FileIcon className="w-10 h-10 text-blue-500" />
+                            <div className="bg-gray-50 dark:bg-slate-700/50 p-5 rounded-2xl border border-gray-100 dark:border-slate-600 flex items-center gap-4">
+                                <FileIcon className="w-10 h-10 text-blue-500 dark:text-blue-400" />
                                 <div className="flex-1 overflow-hidden">
-                                    <p className="font-black text-gray-800 truncate text-sm">{selectedFile?.DocName}</p>
-                                    <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">HỒ SƠ DỰ ÁN • {selectedFile?.Size || '2.5 MB'}</p>
+                                    <p className="font-black text-gray-800 dark:text-slate-200 truncate text-sm">{selectedFile?.DocName}</p>
+                                    <p className="text-[10px] text-gray-400 dark:text-slate-500 font-bold uppercase tracking-widest">HỒ SƠ DỰ ÁN • {selectedFile?.Size || '2.5 MB'}</p>
                                 </div>
                             </div>
                             {signStep === 0 && (

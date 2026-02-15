@@ -60,8 +60,8 @@ const ReportCenter: React.FC = () => {
         <div className="space-y-6 animate-in fade-in duration-300">
             <div className="flex items-center justify-between">
                 <div>
-                    <h2 className="text-2xl font-bold text-gray-800">Trung tâm Báo cáo & Điều hành</h2>
-                    <p className="text-sm text-gray-500 mt-1">Tổng hợp báo cáo giám sát đầu tư và đồng bộ dữ liệu quốc gia</p>
+                    <h2 className="text-2xl font-bold text-gray-800 dark:text-slate-100">Trung tâm Báo cáo & Điều hành</h2>
+                    <p className="text-sm text-gray-500 dark:text-slate-400 mt-1">Tổng hợp báo cáo giám sát đầu tư và đồng bộ dữ liệu quốc gia</p>
                 </div>
             </div>
 
@@ -123,22 +123,22 @@ const ReportCenter: React.FC = () => {
             </div>
 
             {/* Reports Grid */}
-            <h3 className="text-lg font-bold text-gray-800 mt-8 mb-4 flex items-center gap-2">
-                <FileText className="w-5 h-5 text-blue-600" /> Danh sách Báo cáo định kỳ
+            <h3 className="text-lg font-bold text-gray-800 dark:text-slate-100 mt-8 mb-4 flex items-center gap-2">
+                <FileText className="w-5 h-5 text-blue-600 dark:text-blue-400" /> Danh sách Báo cáo định kỳ
             </h3>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {/* BC-01: Báo cáo giám sát đầu tư */}
-                <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow group">
-                    <div className="w-12 h-12 bg-purple-50 rounded-xl flex items-center justify-center text-purple-600 mb-4 group-hover:scale-110 transition-transform">
+                <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 hover:shadow-md transition-shadow group">
+                    <div className="w-12 h-12 bg-purple-50 dark:bg-purple-900/30 rounded-xl flex items-center justify-center text-purple-600 dark:text-purple-400 mb-4 group-hover:scale-110 transition-transform">
                         <BarChart2 className="w-6 h-6" />
                     </div>
-                    <h4 className="text-base font-bold text-gray-800 mb-2">Báo cáo Giám sát Đầu tư</h4>
-                    <p className="text-sm text-gray-500 mb-6 min-h-[40px]">
+                    <h4 className="text-base font-bold text-gray-800 dark:text-slate-200 mb-2">Báo cáo Giám sát Đầu tư</h4>
+                    <p className="text-sm text-gray-500 dark:text-slate-400 mb-6 min-h-[40px]">
                         Báo cáo tình hình thực hiện dự án theo biểu mẫu quy định của Bộ KH&ĐT (BC-01).
                     </p>
-                    <div className="pt-4 border-t border-gray-100 flex justify-between items-center">
-                        <span className="text-xs font-medium text-gray-400 bg-gray-50 px-2 py-1 rounded">Định kỳ: Tháng/Quý</span>
+                    <div className="pt-4 border-t border-gray-100 dark:border-slate-700 flex justify-between items-center">
+                        <span className="text-xs font-medium text-gray-400 dark:text-slate-500 bg-gray-50 dark:bg-slate-700 px-2 py-1 rounded">Định kỳ: Tháng/Quý</span>
                         <button
                             onClick={() => handleExportReport('monitoring')}
                             disabled={exportingReport === 'monitoring'}
@@ -165,16 +165,16 @@ const ReportCenter: React.FC = () => {
                 </div>
 
                 {/* BC-02: Giải ngân */}
-                <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow group">
-                    <div className="w-12 h-12 bg-emerald-50 rounded-xl flex items-center justify-center text-emerald-600 mb-4 group-hover:scale-110 transition-transform">
+                <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 hover:shadow-md transition-shadow group">
+                    <div className="w-12 h-12 bg-emerald-50 dark:bg-emerald-900/30 rounded-xl flex items-center justify-center text-emerald-600 dark:text-emerald-400 mb-4 group-hover:scale-110 transition-transform">
                         <PieChart className="w-6 h-6" />
                     </div>
-                    <h4 className="text-base font-bold text-gray-800 mb-2">Báo cáo Tình hình Giải ngân</h4>
-                    <p className="text-sm text-gray-500 mb-6 min-h-[40px]">
+                    <h4 className="text-base font-bold text-gray-800 dark:text-slate-200 mb-2">Báo cáo Tình hình Giải ngân</h4>
+                    <p className="text-sm text-gray-500 dark:text-slate-400 mb-6 min-h-[40px]">
                         So sánh vốn giải ngân thực tế so với kế hoạch vốn được giao.
                     </p>
-                    <div className="pt-4 border-t border-gray-100 flex justify-between items-center">
-                        <span className="text-xs font-medium text-gray-400 bg-gray-50 px-2 py-1 rounded">Real-time</span>
+                    <div className="pt-4 border-t border-gray-100 dark:border-slate-700 flex justify-between items-center">
+                        <span className="text-xs font-medium text-gray-400 dark:text-slate-500 bg-gray-50 dark:bg-slate-700 px-2 py-1 rounded">Real-time</span>
                         <button
                             onClick={() => handleExportReport('disbursement')}
                             disabled={exportingReport === 'disbursement'}
@@ -201,16 +201,16 @@ const ReportCenter: React.FC = () => {
                 </div>
 
                 {/* Other Report */}
-                <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow group">
-                    <div className="w-12 h-12 bg-orange-50 rounded-xl flex items-center justify-center text-orange-600 mb-4 group-hover:scale-110 transition-transform">
+                <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 hover:shadow-md transition-shadow group">
+                    <div className="w-12 h-12 bg-orange-50 dark:bg-orange-900/30 rounded-xl flex items-center justify-center text-orange-600 dark:text-orange-400 mb-4 group-hover:scale-110 transition-transform">
                         <AlertTriangle className="w-6 h-6" />
                     </div>
-                    <h4 className="text-base font-bold text-gray-800 mb-2">Báo cáo Xử lý Vướng mắc</h4>
-                    <p className="text-sm text-gray-500 mb-6 min-h-[40px]">
+                    <h4 className="text-base font-bold text-gray-800 dark:text-slate-200 mb-2">Báo cáo Xử lý Vướng mắc</h4>
+                    <p className="text-sm text-gray-500 dark:text-slate-400 mb-6 min-h-[40px]">
                         Tổng hợp các vấn đề khó khăn, vướng mắc cần tháo gỡ trong quá trình thi công.
                     </p>
-                    <div className="pt-4 border-t border-gray-100 flex justify-between items-center">
-                        <span className="text-xs font-medium text-gray-400 bg-gray-50 px-2 py-1 rounded">Theo sự vụ</span>
+                    <div className="pt-4 border-t border-gray-100 dark:border-slate-700 flex justify-between items-center">
+                        <span className="text-xs font-medium text-gray-400 dark:text-slate-500 bg-gray-50 dark:bg-slate-700 px-2 py-1 rounded">Theo sự vụ</span>
                         <button
                             onClick={() => handleExportReport('issues')}
                             disabled={exportingReport === 'issues'}

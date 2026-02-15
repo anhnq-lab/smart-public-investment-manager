@@ -61,7 +61,7 @@ const PREP_PREFEASIBILITY: SubTaskDef[] = [
 const PREP_POLICY: SubTaskDef[] = [
     {
         code: 'POLICY_01', title: 'Lập BC đề xuất chủ trương đầu tư',
-        responsible: 'Đơn vị được giao lập',
+        responsible: 'Chủ đầu tư (Ban QLDA)',
         estimatedDays: 20,
         legalBasis: 'Đ34-35 Luật ĐTC 58',
         templatePath: 'mau-03-bc-de-xuat-chu-truong-dt.md',
@@ -91,11 +91,6 @@ const PREP_POLICY: SubTaskDef[] = [
         legalBasis: 'K2 Đ25,27,28 Luật ĐTC 58',
         templatePath: 'mau-06-nghi-quyet-chu-truong-dt.md',
         templateLabel: 'Mẫu 06 – Nghị quyết CTrĐT',
-    },
-    {
-        code: 'POLICY_06', title: 'Giao CĐT dự án',
-        responsible: 'Người QĐ đầu tư',
-        legalBasis: 'Đ7 Luật XD 135',
     },
 ];
 
