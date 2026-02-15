@@ -32,6 +32,7 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
     const [isMobile, setIsMobile] = useState(false);
     const [isTablet, setIsTablet] = useState(false);
     const [showShortcuts, setShowShortcuts] = useState(false);
+    const [toolbarCollapsed, setToolbarCollapsed] = useState(false);
 
     // ── Hooks ──────────────────────────────
     const tools = useBimTools();
@@ -169,6 +170,9 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
                 case '?':
                     setShowShortcuts(prev => !prev);
                     break;
+                case 't': case 'T':
+                    setToolbarCollapsed(prev => !prev);
+                    break;
             }
         };
         window.addEventListener('keydown', handleKeyDown);
@@ -284,6 +288,8 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
                     measurementCount={measure.measurementCount}
                     onSectionAction={handleSectionAction}
                     onMeasureAction={handleMeasureAction}
+                    isCollapsed={toolbarCollapsed}
+                    onToggleCollapse={() => setToolbarCollapsed(prev => !prev)}
                 />
             )}
 

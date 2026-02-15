@@ -8,7 +8,7 @@ import {
     Camera, MoreHorizontal, Box, ArrowUp, Square as SquareIcon,
     ArrowRight, Grid3X3, Axis3D, Sun, Moon, RotateCcw,
     EyeOff, Focus, Download, Trash2, CircleDot, PenTool,
-    Layers, TreePine, PanelLeft, PanelRight, ChevronDown,
+    Layers, TreePine, PanelLeft, PanelRight, ChevronDown, ChevronUp,
     Slice, ScanLine, BoxSelect, Pipette, Waypoints
 } from 'lucide-react';
 import { useTheme } from '../../../../context/ThemeContext';
@@ -29,6 +29,8 @@ interface BimToolbarProps {
     measurementCount?: number;
     onSectionAction?: (action: string) => void;
     onMeasureAction?: (action: string) => void;
+    isCollapsed?: boolean;
+    onToggleCollapse?: () => void;
 }
 
 // ── Tool Button ─────────────────────────────────────
@@ -156,6 +158,7 @@ export const BimToolbar: React.FC<BimToolbarProps> = ({
     onScreenshot, onIsolateSelected, onHideSelected, onShowAll, isMobile,
     clipPlaneCount = 0, measurementCount = 0,
     onSectionAction, onMeasureAction,
+    isCollapsed = false, onToggleCollapse,
 }) => {
     const { theme } = useTheme();
     const isDarkMode = theme === 'dark';
@@ -192,10 +195,30 @@ export const BimToolbar: React.FC<BimToolbarProps> = ({
         );
     }
 
+    // Collapsed state — show a small floating pill button
+    if (isCollapsed) {
+        return (
+            <button
+                onClick={onToggleCollapse}
+                className={`
+                    absolute bottom-12 left-1/2 -translate-x-1/2 z-30
+                    flex items-center gap-1.5 px-3 py-1.5 rounded-full
+                    backdrop-blur-xl shadow-lg border cursor-pointer
+                    transition-all hover:scale-105
+                    ${isDarkMode ? 'bg-slate-800/90 border-slate-700/50 text-slate-400 hover:text-white' : 'bg-white/90 border-gray-200 text-gray-500 hover:text-gray-800'}
+                `}
+                title="Show Toolbar (T)"
+            >
+                <ChevronUp className="w-3.5 h-3.5" />
+                <span className="text-[10px] font-semibold uppercase tracking-wider">Tools</span>
+            </button>
+        );
+    }
+
     return (
         <div className={`
-            absolute top-3 left-1/2 -translate-x-1/2 flex items-center gap-0.5 px-2 py-1.5 rounded-xl z-30
-            backdrop-blur-xl shadow-2xl border
+            absolute bottom-12 left-1/2 -translate-x-1/2 flex items-center gap-0.5 px-2 py-1.5 rounded-xl z-30
+            backdrop-blur-xl shadow-2xl border transition-all
             ${isDarkMode ? 'bg-slate-800/95 border-slate-700/50' : 'bg-white/95 border-gray-200'}
         `}>
             {/* ── Navigate ──── */}
@@ -311,6 +334,12 @@ export const BimToolbar: React.FC<BimToolbarProps> = ({
             {/* ── Extras ──── */}
             <ToolBtn isDark={isDarkMode} onClick={onScreenshot} title="Screenshot" disabled={disabled}>
                 <Camera className="w-4 h-4" />
+            </ToolBtn>
+
+            {/* ── Collapse ──── */}
+            <Divider isDark={isDarkMode} />
+            <ToolBtn isDark={isDarkMode} onClick={onToggleCollapse} title="Hide Toolbar (T)">
+                <ChevronDown className="w-4 h-4" />
             </ToolBtn>
         </div>
     );

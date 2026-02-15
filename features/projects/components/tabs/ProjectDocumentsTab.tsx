@@ -223,6 +223,7 @@ export const ProjectDocumentsTab: React.FC<ProjectDocumentsTabProps> = ({
     // Upload
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [uploadedDocs, setUploadedDocs] = useState<Document[]>([]);
+    const [pendingDocType, setPendingDocType] = useState<string>('');
 
     // Doc metadata editing
     const [expandedDocIdx, setExpandedDocIdx] = useState<string | null>(null);
@@ -342,7 +343,10 @@ export const ProjectDocumentsTab: React.FC<ProjectDocumentsTabProps> = ({
     };
 
     // Upload handler — saves to Supabase Storage + documents table
-    const handleUpload = () => fileInputRef.current?.click();
+    const handleUpload = (docTypeName?: string) => {
+        if (docTypeName) setPendingDocType(docTypeName);
+        fileInputRef.current?.click();
+    };
     const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const files = e.target.files;
         if (!files || files.length === 0) return;
@@ -359,14 +363,20 @@ export const ProjectDocumentsTab: React.FC<ProjectDocumentsTabProps> = ({
                     .from('task-attachments')
                     .getPublicUrl(path);
 
+                // Use doc type name as prefix for keyword matching
+                const finalDocName = pendingDocType
+                    ? `${pendingDocType} - ${file.name}`
+                    : file.name;
+
                 await (supabase.from('documents') as any).insert({
                     project_id: projectID,
-                    doc_name: file.name,
+                    doc_name: finalDocName,
                     storage_path: urlData.publicUrl,
                     size: `${(file.size / 1024).toFixed(0)} KB`,
                     category: 0,
                     source: 'manual',
                     is_digitized: true,
+                    doc_type: pendingDocType || null,
                 });
 
                 // Also add to local state for immediate display
@@ -375,7 +385,7 @@ export const ProjectDocumentsTab: React.FC<ProjectDocumentsTabProps> = ({
                     ReferenceID: projectID,
                     ProjectID: projectID,
                     Category: DocCategory.Legal,
-                    DocName: file.name,
+                    DocName: pendingDocType ? `${pendingDocType} - ${file.name}` : file.name,
                     StoragePath: urlData.publicUrl,
                     IsDigitized: true,
                     UploadDate: new Date().toLocaleDateString('vi-VN'),
@@ -391,6 +401,7 @@ export const ProjectDocumentsTab: React.FC<ProjectDocumentsTabProps> = ({
             }
         }
         e.target.value = '';
+        setPendingDocType('');
     };
 
     // Save document metadata
@@ -769,7 +780,7 @@ export const ProjectDocumentsTab: React.FC<ProjectDocumentsTabProps> = ({
                                                                 <>
                                                                     <span className="text-xs px-2.5 py-1 bg-gray-100 dark:bg-slate-700 text-gray-400 dark:text-slate-500 rounded-lg font-medium">Chưa có</span>
                                                                     <button
-                                                                        onClick={(e) => { e.stopPropagation(); handleUpload(); }}
+                                                                        onClick={(e) => { e.stopPropagation(); handleUpload(docType.name); }}
                                                                         className="p-1.5 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-all"
                                                                         title="Tải lên văn bản"
                                                                     >
