@@ -256,19 +256,38 @@ export const SubTaskDetailModal: React.FC<SubTaskDetailModalProps> = ({
                                 {/* Biểu mẫu */}
                                 {subTask.templatePath && (
                                     <div className="space-y-2">
-                                        <button
-                                            onClick={() => setShowTemplate(true)}
+                                        <a
+                                            href={`/templates/${subTask.templatePath.replace('.md', '.docx').replace('mau-03-bc-de-xuat-chu-truong-dt', 'bao-cao-de-xuat-chu-truong-dau-tu-du-an-nhom-b-nhom-c')}`}
+                                            download
                                             className="w-full flex items-center gap-3 p-3 rounded-xl bg-cyan-500/10 border border-cyan-500/20 hover:bg-cyan-500/20 transition-colors group"
+                                            onClick={(e) => {
+                                                // If no .docx exists, fall back to downloading the .md template
+                                                const link = e.currentTarget;
+                                                fetch(link.href, { method: 'HEAD' }).then(res => {
+                                                    if (!res.ok) {
+                                                        e.preventDefault();
+                                                        // Download md template instead
+                                                        const mdLink = document.createElement('a');
+                                                        mdLink.href = `/templates/${subTask.templatePath}`;
+                                                        mdLink.download = subTask.templatePath || 'template';
+                                                        mdLink.click();
+                                                    }
+                                                }).catch(() => {
+                                                    // Fallback: open template viewer
+                                                    e.preventDefault();
+                                                    setShowTemplate(true);
+                                                });
+                                            }}
                                         >
-                                            <FileText size={18} className="text-cyan-400 shrink-0" />
+                                            <Download size={18} className="text-cyan-400 shrink-0" />
                                             <div className="flex-1 text-left">
-                                                <p className="text-xs text-cyan-400/70 font-medium">Biểu mẫu liên kết</p>
+                                                <p className="text-xs text-cyan-400/70 font-medium">Tải biểu mẫu gốc (DOCX)</p>
                                                 <p className="text-sm text-cyan-300 font-semibold">
                                                     {subTask.templateLabel || subTask.templatePath}
                                                 </p>
                                             </div>
                                             <ChevronRight size={16} className="text-cyan-500/50 group-hover:text-cyan-400 transition-colors" />
-                                        </button>
+                                        </a>
                                         {hasExportConfig && (
                                             <button
                                                 onClick={() => setShowExport(true)}

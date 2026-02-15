@@ -202,6 +202,7 @@ export function layoutCell(
 
 /**
  * Build standard Vietnamese government document header
+ * Two-column layout table per NĐ 30/2020:
  * Left: Cơ quan ban hành | Right: Quốc hiệu, tiêu ngữ
  */
 export function buildDocumentHeader(
@@ -209,37 +210,93 @@ export function buildDocumentHeader(
     docNumber: string,
     dateStr: string,
     locationName = 'Hà Nội',
-): Paragraph[] {
-    const paragraphs: Paragraph[] = [];
+): (Paragraph | Table)[] {
+    const elements: (Paragraph | Table)[] = [];
 
-    // Cơ quan ban hành
-    paragraphs.push(p(orgName.toUpperCase(), {
-        bold: true, size: 24, alignment: AlignmentType.CENTER, after: 20,
-    }));
-    paragraphs.push(p('_______________', {
-        size: 20, alignment: AlignmentType.CENTER, after: 40,
-    }));
-    paragraphs.push(p(`Số: ${docNumber}`, {
-        size: 24, alignment: AlignmentType.CENTER, after: 200,
+    // Two-column header table (no borders)
+    const headerTable = new Table({
+        rows: [
+            // Row 1: Tên cơ quan | Quốc hiệu
+            new TableRow({
+                children: [
+                    layoutCell([
+                        p(orgName.toUpperCase(), { bold: true, size: 24, alignment: AlignmentType.CENTER, after: 0 }),
+                    ], 4200),
+                    layoutCell([
+                        p('CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM', { bold: true, size: 26, alignment: AlignmentType.CENTER, after: 0 }),
+                    ], 5400),
+                ],
+            }),
+            // Row 2: Gạch ngang | Tiêu ngữ
+            new TableRow({
+                children: [
+                    layoutCell([
+                        p('───────', { size: 20, alignment: AlignmentType.CENTER, after: 20 }),
+                    ], 4200),
+                    layoutCell([
+                        p('Độc lập - Tự do - Hạnh phúc', { bold: true, size: 26, alignment: AlignmentType.CENTER, after: 0, underline: true }),
+                    ], 5400),
+                ],
+            }),
+            // Row 3: Số văn bản | Gạch ngang
+            new TableRow({
+                children: [
+                    layoutCell([
+                        p(`Số: ${docNumber}`, { size: 24, alignment: AlignmentType.CENTER, after: 0 }),
+                    ], 4200),
+                    layoutCell([
+                        pEmpty(0),
+                    ], 5400),
+                ],
+            }),
+        ],
+        width: { size: 100, type: WidthType.PERCENTAGE },
+        layout: TableLayoutType.FIXED,
+    });
+
+    elements.push(headerTable);
+
+    // Địa danh, ngày tháng (right-aligned below table)
+    elements.push(p(`${locationName}, ${formatDateVN(dateStr)}`, {
+        italics: true, size: 26, alignment: AlignmentType.CENTER, after: 300, before: 200,
     }));
 
-    // Quốc hiệu
-    paragraphs.push(p('CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM', {
-        bold: true, size: 26, alignment: AlignmentType.CENTER, after: 20,
-    }));
-    paragraphs.push(p('Độc lập - Tự do - Hạnh phúc', {
-        bold: true, size: 24, alignment: AlignmentType.CENTER, after: 20,
-    }));
-    paragraphs.push(p('_______________', {
-        size: 20, alignment: AlignmentType.CENTER, after: 200,
-    }));
+    return elements;
+}
 
-    // Địa danh, ngày tháng
-    paragraphs.push(p(`${locationName}, ${formatDateVN(dateStr)}`, {
-        italics: true, size: 24, alignment: AlignmentType.RIGHT, after: 300,
-    }));
-
-    return paragraphs;
+/**
+ * Build signature block as two-column layout table (Nơi nhận left + Ký tên right)
+ * Per NĐ 30/2020 standard
+ */
+export function buildSignatureBlockTable(
+    recipientList: string[],
+    signerTitle: string,
+    signerName: string,
+): Table {
+    return new Table({
+        rows: [
+            new TableRow({
+                children: [
+                    // Left: Nơi nhận
+                    layoutCell([
+                        pMulti([
+                            { text: 'Nơi nhận:', bold: true, italics: true, size: 20 },
+                        ], { after: 20 }),
+                        ...recipientList.map(r => p(`- ${r};`, { size: 20, after: 10 })),
+                        p('- Lưu: VT.', { size: 20, after: 0 }),
+                    ], 4200),
+                    // Right: Ký tên
+                    layoutCell([
+                        p(signerTitle.toUpperCase(), { bold: true, size: 24, alignment: AlignmentType.CENTER, after: 20 }),
+                        p('(Ký, ghi rõ họ tên, chức vụ và đóng dấu)', { italics: true, size: 20, alignment: AlignmentType.CENTER, after: 600 }),
+                        p(signerName || '', { bold: true, size: 24, alignment: AlignmentType.CENTER }),
+                    ], 5400),
+                ],
+            }),
+        ],
+        width: { size: 100, type: WidthType.PERCENTAGE },
+        layout: TableLayoutType.FIXED,
+    });
 }
 
 /**

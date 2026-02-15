@@ -132,15 +132,15 @@ export const ProjectInfoTab: React.FC<ProjectInfoTabProps> = ({
 
             {/* National Gateway Section - Enhanced */}
             <div className={`rounded-xl shadow-sm border overflow-hidden transition-all ${isSynced
-                    ? 'bg-gradient-to-r from-emerald-50 to-teal-50 border-emerald-200'
-                    : 'bg-gradient-to-r from-amber-50 to-orange-50 border-amber-200'
+                ? 'bg-gradient-to-r from-emerald-50 to-teal-50 border-emerald-200'
+                : 'bg-gradient-to-r from-amber-50 to-orange-50 border-amber-200'
                 }`}>
                 <div className="px-5 py-4">
                     <div className="flex justify-between items-start">
                         <div className="flex items-center gap-4">
                             <div className={`w-12 h-12 rounded-xl flex items-center justify-center shadow-sm ${isSynced
-                                    ? 'bg-gradient-to-br from-emerald-400 to-teal-500 text-white'
-                                    : 'bg-gradient-to-br from-amber-400 to-orange-500 text-white'
+                                ? 'bg-gradient-to-br from-emerald-400 to-teal-500 text-white'
+                                : 'bg-gradient-to-br from-amber-400 to-orange-500 text-white'
                                 }`}>
                                 {isSyncing ? (
                                     <RefreshCw className="w-6 h-6 animate-spin" />
@@ -152,12 +152,12 @@ export const ProjectInfoTab: React.FC<ProjectInfoTabProps> = ({
                             </div>
                             <div>
                                 <div className="flex items-center gap-2">
-                                    <Landmark className="w-4 h-4 text-gray-600" />
-                                    <h3 className="font-black text-gray-800 text-sm uppercase tracking-wide">
+                                    <Landmark className="w-4 h-4 text-gray-600 dark:text-slate-400" />
+                                    <h3 className="font-black text-gray-800 dark:text-slate-200 text-sm uppercase tracking-wide">
                                         Cổng CSDLQG về Đầu tư công
                                     </h3>
                                 </div>
-                                <p className="text-xs text-gray-500 mt-0.5">
+                                <p className="text-xs text-gray-500 dark:text-slate-400 mt-0.5">
                                     Theo Nghị định 111/2024/NĐ-CP • TT 24/2023/TT-BKHĐT
                                 </p>
 
@@ -174,7 +174,7 @@ export const ProjectInfoTab: React.FC<ProjectInfoTabProps> = ({
                                                 <CheckCircle2 className="w-3.5 h-3.5" />
                                                 Đã đồng bộ
                                             </span>
-                                            <span className="text-sm font-mono font-bold text-gray-800">
+                                            <span className="text-sm font-mono font-bold text-gray-800 dark:text-slate-200">
                                                 Mã: {nationalCode || 'ND111-2024-XXXX'}
                                             </span>
                                         </>
@@ -194,7 +194,7 @@ export const ProjectInfoTab: React.FC<ProjectInfoTabProps> = ({
                                 <button
                                     onClick={() => onGenerateReport('Monitoring')}
                                     disabled={isGeneratingReport}
-                                    className="px-3 py-2 bg-white text-blue-700 text-xs font-bold rounded-lg border border-blue-200 hover:bg-blue-50 flex items-center gap-2 transition-all shadow-sm disabled:opacity-50"
+                                    className="px-3 py-2 bg-white dark:bg-slate-800 text-blue-700 dark:text-blue-400 text-xs font-bold rounded-lg border border-blue-200 dark:border-blue-800 hover:bg-blue-50 dark:hover:bg-slate-700 flex items-center gap-2 transition-all shadow-sm disabled:opacity-50"
                                 >
                                     <FileBarChart className="w-3.5 h-3.5" />
                                     BC Giám sát
@@ -202,7 +202,7 @@ export const ProjectInfoTab: React.FC<ProjectInfoTabProps> = ({
                                 <button
                                     onClick={() => onGenerateReport('Settlement')}
                                     disabled={isGeneratingReport}
-                                    className="px-3 py-2 bg-white text-blue-700 text-xs font-bold rounded-lg border border-blue-200 hover:bg-blue-50 flex items-center gap-2 transition-all shadow-sm disabled:opacity-50"
+                                    className="px-3 py-2 bg-white dark:bg-slate-800 text-blue-700 dark:text-blue-400 text-xs font-bold rounded-lg border border-blue-200 dark:border-blue-800 hover:bg-blue-50 dark:hover:bg-slate-700 flex items-center gap-2 transition-all shadow-sm disabled:opacity-50"
                                 >
                                     <FileCheck className="w-3.5 h-3.5" />
                                     BC Quyết toán
@@ -211,7 +211,7 @@ export const ProjectInfoTab: React.FC<ProjectInfoTabProps> = ({
 
                             <button
                                 onClick={() => setShowSyncDetails(!showSyncDetails)}
-                                className="flex items-center gap-1 text-[10px] text-gray-500 hover:text-gray-700"
+                                className="flex items-center gap-1 text-[10px] text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:hover:text-slate-300"
                             >
                                 Chi tiết đồng bộ
                                 {showSyncDetails ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
@@ -222,11 +222,11 @@ export const ProjectInfoTab: React.FC<ProjectInfoTabProps> = ({
 
                 {/* Sync Details Panel */}
                 {showSyncDetails && (
-                    <div className="px-5 py-3 bg-white/50 border-t border-gray-200">
+                    <div className="px-5 py-3 bg-white/50 dark:bg-slate-800/50 border-t border-gray-200 dark:border-slate-700">
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-xs">
                             <div>
-                                <span className="text-gray-500">Lần đồng bộ cuối</span>
-                                <p className="font-bold text-gray-800 mt-0.5">
+                                <span className="text-gray-500 dark:text-slate-400">Lần đồng bộ cuối</span>
+                                <p className="font-bold text-gray-800 dark:text-slate-200 mt-0.5">
                                     {lastSyncTime
                                         ? new Date(lastSyncTime).toLocaleString('vi-VN')
                                         : 'Chưa có'
@@ -234,15 +234,15 @@ export const ProjectInfoTab: React.FC<ProjectInfoTabProps> = ({
                                 </p>
                             </div>
                             <div>
-                                <span className="text-gray-500">Schema version</span>
-                                <p className="font-bold text-gray-800 mt-0.5 font-mono">v2024.1</p>
+                                <span className="text-gray-500 dark:text-slate-400">Schema version</span>
+                                <p className="font-bold text-gray-800 dark:text-slate-200 mt-0.5 font-mono">v2024.1</p>
                             </div>
                             <div>
-                                <span className="text-gray-500">API Endpoint</span>
-                                <p className="font-bold text-gray-800 mt-0.5">Production</p>
+                                <span className="text-gray-500 dark:text-slate-400">API Endpoint</span>
+                                <p className="font-bold text-gray-800 dark:text-slate-200 mt-0.5">Production</p>
                             </div>
                             <div>
-                                <span className="text-gray-500">Trạng thái kết nối</span>
+                                <span className="text-gray-500 dark:text-slate-400">Trạng thái kết nối</span>
                                 <p className="font-bold text-emerald-600 mt-0.5 flex items-center gap-1">
                                     <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span>
                                     Online
@@ -277,9 +277,9 @@ export const ProjectInfoTab: React.FC<ProjectInfoTabProps> = ({
                     />
 
                     {/* General Info Section */}
-                    <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-                        <div className="px-5 py-3 bg-gray-50 border-b border-gray-200 flex items-center justify-between">
-                            <h3 className="font-bold text-gray-800 text-xs uppercase">Thông tin chung</h3>
+                    <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 overflow-hidden">
+                        <div className="px-5 py-3 bg-gray-50 dark:bg-slate-700 border-b border-gray-200 dark:border-slate-600 flex items-center justify-between">
+                            <h3 className="font-bold text-gray-800 dark:text-slate-200 text-xs uppercase">Thông tin chung</h3>
                             <button className="flex items-center gap-1 text-[10px] text-blue-600 hover:underline">
                                 <Settings className="w-3 h-3" />
                                 Chỉnh sửa
@@ -300,7 +300,7 @@ export const ProjectInfoTab: React.FC<ProjectInfoTabProps> = ({
                     </div>
 
                     {/* Project Team Section */}
-                    <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden p-5">
+                    <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 overflow-hidden p-5">
                         <ProjectTeamSection
                             members={projectMembers}
                             onViewMember={onViewMember}
@@ -334,7 +334,7 @@ export const ProjectInfoTab: React.FC<ProjectInfoTabProps> = ({
                     />
 
                     {/* Contractors List */}
-                    <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden p-5">
+                    <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 overflow-hidden p-5">
                         <ContractorsListSection
                             contractors={[]}
                             packages={projectPackages}
@@ -355,8 +355,8 @@ const InfoItem: React.FC<{
     span2?: boolean;
 }> = ({ label, value, highlight, span2 }) => (
     <div className={`flex flex-col ${span2 ? 'md:col-span-2' : ''}`}>
-        <span className="text-xs text-gray-500 mb-1">{label}</span>
-        <span className={`text-sm font-medium ${highlight ? 'text-blue-700 font-bold' : 'text-gray-900'}`}>
+        <span className="text-xs text-gray-500 dark:text-slate-400 mb-1">{label}</span>
+        <span className={`text-sm font-medium ${highlight ? 'text-blue-700 dark:text-blue-400 font-bold' : 'text-gray-900 dark:text-slate-200'}`}>
             {value}
         </span>
     </div>

@@ -89,7 +89,7 @@ export const PlanStatisticsHeader: React.FC<PlanStatisticsHeaderProps> = ({ task
 
                     <div className="relative flex items-start justify-between">
                         <div>
-                            <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">
+                            <p className="text-xs font-medium text-gray-500 dark:text-slate-400 uppercase tracking-wide">
                                 {stat.label}
                             </p>
                             <div className="mt-2 flex items-baseline gap-2">
@@ -103,7 +103,7 @@ export const PlanStatisticsHeader: React.FC<PlanStatisticsHeaderProps> = ({ task
                                 )}
                             </div>
                         </div>
-                        <div className={`p-2 rounded-lg bg-white shadow-sm`}>
+                        <div className={`p-2 rounded-lg bg-white dark:bg-slate-700 shadow-sm`}>
                             <stat.icon className={`w-5 h-5 ${stat.textColor} ${stat.alert ? 'animate-pulse' : ''}`} />
                         </div>
                     </div>
@@ -111,7 +111,7 @@ export const PlanStatisticsHeader: React.FC<PlanStatisticsHeaderProps> = ({ task
                     {/* Progress bar for completion */}
                     {stat.label === 'Hoàn thành' && (
                         <div className="mt-3">
-                            <div className="h-1.5 bg-gray-200 rounded-full overflow-hidden">
+                            <div className="h-1.5 bg-gray-200 dark:bg-slate-600 rounded-full overflow-hidden">
                                 <div
                                     className={`h-full bg-gradient-to-r ${stat.bgGradient} transition-all duration-500`}
                                     style={{ width: `${completionRate}%` }}

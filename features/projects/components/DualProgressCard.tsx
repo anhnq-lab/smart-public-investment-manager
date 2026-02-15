@@ -15,9 +15,9 @@ export const DualProgressCard: React.FC<DualProgressCardProps> = ({
     financialLabel = 'Tiến độ giải ngân'
 }) => {
     return (
-        <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-            <div className="px-4 py-3 bg-gray-50 border-b border-gray-200">
-                <h4 className="text-xs font-bold text-gray-700 uppercase tracking-wide">
+        <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 shadow-sm overflow-hidden">
+            <div className="px-4 py-3 bg-gray-50 dark:bg-slate-700 border-b border-gray-200 dark:border-slate-600">
+                <h4 className="text-xs font-bold text-gray-700 dark:text-slate-300 uppercase tracking-wide">
                     Tiến độ thực hiện
                 </h4>
             </div>
@@ -27,13 +27,13 @@ export const DualProgressCard: React.FC<DualProgressCardProps> = ({
                     <div className="flex items-center justify-between mb-2">
                         <div className="flex items-center gap-2">
                             <TrendingUp className="w-4 h-4 text-blue-600" />
-                            <span className="text-xs font-medium text-gray-700">{physicalLabel}</span>
+                            <span className="text-xs font-medium text-gray-700 dark:text-slate-300">{physicalLabel}</span>
                         </div>
                         <span className="text-sm font-bold text-blue-700 tabular-nums">
                             {physicalProgress.toFixed(1)}%
                         </span>
                     </div>
-                    <div className="h-2.5 bg-gray-200 rounded-full overflow-hidden">
+                    <div className="h-2.5 bg-gray-200 dark:bg-slate-600 rounded-full overflow-hidden">
                         <div
                             className="h-full bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full transition-all duration-500"
                             style={{ width: `${Math.min(100, Math.max(0, physicalProgress))}%` }}
@@ -46,13 +46,13 @@ export const DualProgressCard: React.FC<DualProgressCardProps> = ({
                     <div className="flex items-center justify-between mb-2">
                         <div className="flex items-center gap-2">
                             <Banknote className="w-4 h-4 text-emerald-600" />
-                            <span className="text-xs font-medium text-gray-700">{financialLabel}</span>
+                            <span className="text-xs font-medium text-gray-700 dark:text-slate-300">{financialLabel}</span>
                         </div>
                         <span className="text-sm font-bold text-emerald-700 tabular-nums">
                             {financialProgress.toFixed(1)}%
                         </span>
                     </div>
-                    <div className="h-2.5 bg-gray-200 rounded-full overflow-hidden">
+                    <div className="h-2.5 bg-gray-200 dark:bg-slate-600 rounded-full overflow-hidden">
                         <div
                             className="h-full bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full transition-all duration-500"
                             style={{ width: `${Math.min(100, Math.max(0, financialProgress))}%` }}
@@ -63,8 +63,8 @@ export const DualProgressCard: React.FC<DualProgressCardProps> = ({
                 {/* Variance indicator */}
                 {Math.abs(physicalProgress - financialProgress) > 10 && (
                     <div className={`text-[10px] p-2 rounded-md ${physicalProgress > financialProgress
-                            ? 'bg-amber-50 text-amber-700 border border-amber-200'
-                            : 'bg-blue-50 text-blue-700 border border-blue-200'
+                        ? 'bg-amber-50 text-amber-700 border border-amber-200'
+                        : 'bg-blue-50 text-blue-700 border border-blue-200'
                         }`}>
                         {physicalProgress > financialProgress
                             ? '⚠️ Khối lượng vượt trước giải ngân'

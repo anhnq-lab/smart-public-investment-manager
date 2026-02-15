@@ -79,7 +79,7 @@ export const QuickActionsPanel: React.FC<QuickActionsPanelProps> = ({
     const actionsToRender = actions || defaultActions;
 
     const getButtonStyle = (variant: QuickAction['variant'] = 'secondary', disabled?: boolean) => {
-        if (disabled) return 'bg-gray-100 text-gray-400 cursor-not-allowed';
+        if (disabled) return 'bg-gray-100 dark:bg-slate-700 text-gray-400 dark:text-slate-500 cursor-not-allowed';
 
         switch (variant) {
             case 'primary':
@@ -87,7 +87,7 @@ export const QuickActionsPanel: React.FC<QuickActionsPanelProps> = ({
             case 'danger':
                 return 'bg-red-600 hover:bg-red-700 text-white shadow-sm shadow-red-200';
             default:
-                return 'bg-white hover:bg-gray-50 text-gray-700 border border-gray-200 shadow-sm';
+                return 'bg-white dark:bg-slate-800 hover:bg-gray-50 dark:hover:bg-slate-700 text-gray-700 dark:text-slate-300 border border-gray-200 dark:border-slate-600 shadow-sm';
         }
     };
 
@@ -114,11 +114,11 @@ export const QuickActionsPanel: React.FC<QuickActionsPanelProps> = ({
     }
 
     return (
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+        <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 overflow-hidden">
             {/* Header */}
-            <div className="px-5 py-3 bg-gray-50 border-b border-gray-100 flex items-center gap-2">
-                <Settings className="w-4 h-4 text-gray-600" />
-                <h3 className="font-bold text-gray-800 text-xs uppercase">Thao tác nhanh</h3>
+            <div className="px-5 py-3 bg-gray-50 dark:bg-slate-700 border-b border-gray-100 dark:border-slate-600 flex items-center gap-2">
+                <Settings className="w-4 h-4 text-gray-600 dark:text-slate-400" />
+                <h3 className="font-bold text-gray-800 dark:text-slate-200 text-xs uppercase">Thao tác nhanh</h3>
             </div>
 
             {/* Actions Grid */}

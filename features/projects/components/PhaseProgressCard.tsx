@@ -105,10 +105,10 @@ export const PhaseProgressCard: React.FC<PhaseProgressCardProps> = ({
     const StatusIcon = config.icon;
 
     return (
-        <div className={`bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow border-l-4 ${config.borderColor}`}>
+        <div className={`bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow border-l-4 ${config.borderColor}`}>
             {/* Header */}
             <div
-                className="px-5 py-4 flex items-center justify-between cursor-pointer hover:bg-gray-50 transition-colors"
+                className="px-5 py-4 flex items-center justify-between cursor-pointer hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors"
                 onClick={onToggle}
             >
                 <div className="flex items-center gap-4 flex-1">
@@ -119,16 +119,16 @@ export const PhaseProgressCard: React.FC<PhaseProgressCardProps> = ({
 
                     {/* Title & Description */}
                     <div className="flex-1 min-w-0">
-                        <h4 className="font-bold text-gray-800 text-sm">
+                        <h4 className="font-bold text-gray-800 dark:text-slate-200 text-sm">
                             {phase.title}
                         </h4>
                         <div className="flex items-center gap-3 mt-1">
-                            <p className="text-xs text-gray-500 truncate">
+                            <p className="text-xs text-gray-500 dark:text-slate-400 truncate">
                                 {phase.description}
                             </p>
                             {/* Date Range Badge */}
                             {phaseStartDate && phaseEndDate && (
-                                <span className="hidden md:flex items-center gap-1 text-[10px] text-gray-400 bg-gray-50 px-2 py-0.5 rounded border border-gray-100 shrink-0">
+                                <span className="hidden md:flex items-center gap-1 text-[10px] text-gray-400 dark:text-slate-500 bg-gray-50 dark:bg-slate-700 px-2 py-0.5 rounded border border-gray-100 dark:border-slate-600 shrink-0">
                                     <Calendar className="w-3 h-3" />
                                     {phaseStartDate.toLocaleDateString('vi-VN')} → {phaseEndDate.toLocaleDateString('vi-VN')}
                                 </span>
@@ -147,9 +147,9 @@ export const PhaseProgressCard: React.FC<PhaseProgressCardProps> = ({
                     <div className="hidden sm:flex items-center gap-4 mr-4">
                         {/* Mini Progress */}
                         <div className="flex flex-col items-end">
-                            <span className="text-xs text-gray-500">Tiến độ</span>
+                            <span className="text-xs text-gray-500 dark:text-slate-400">Tiến độ</span>
                             <div className="flex items-center gap-2">
-                                <div className="w-24 h-2 bg-gray-100 rounded-full overflow-hidden">
+                                <div className="w-24 h-2 bg-gray-100 dark:bg-slate-600 rounded-full overflow-hidden">
                                     <div
                                         className={`h-full bg-gradient-to-r ${config.progressColor} transition-all duration-500`}
                                         style={{ width: `${progress}%` }}
@@ -162,11 +162,11 @@ export const PhaseProgressCard: React.FC<PhaseProgressCardProps> = ({
                         </div>
 
                         {/* Item Counter */}
-                        <div className="flex flex-col items-center px-3 py-1 bg-gray-50 rounded-lg border border-gray-100">
-                            <span className="text-lg font-bold text-gray-800 tabular-nums">
+                        <div className="flex flex-col items-center px-3 py-1 bg-gray-50 dark:bg-slate-700 rounded-lg border border-gray-100 dark:border-slate-600">
+                            <span className="text-lg font-bold text-gray-800 dark:text-slate-200 tabular-nums">
                                 {completedItems}/{totalItems}
                             </span>
-                            <span className="text-[10px] text-gray-500 uppercase tracking-wide">
+                            <span className="text-[10px] text-gray-500 dark:text-slate-400 uppercase tracking-wide">
                                 Hoàn thành
                             </span>
                         </div>
@@ -182,7 +182,7 @@ export const PhaseProgressCard: React.FC<PhaseProgressCardProps> = ({
             {/* Mobile Progress Bar */}
             <div className="sm:hidden px-5 pb-3">
                 <div className="flex items-center gap-2">
-                    <div className="flex-1 h-2 bg-gray-100 rounded-full overflow-hidden">
+                    <div className="flex-1 h-2 bg-gray-100 dark:bg-slate-600 rounded-full overflow-hidden">
                         <div
                             className={`h-full bg-gradient-to-r ${config.progressColor} transition-all duration-500`}
                             style={{ width: `${progress}%` }}
@@ -194,7 +194,7 @@ export const PhaseProgressCard: React.FC<PhaseProgressCardProps> = ({
                 </div>
                 {/* Mobile Date Range */}
                 {phaseStartDate && phaseEndDate && (
-                    <div className="flex items-center gap-1 text-[10px] text-gray-400 mt-2">
+                    <div className="flex items-center gap-1 text-[10px] text-gray-400 dark:text-slate-500 mt-2">
                         <Calendar className="w-3 h-3" />
                         {phaseStartDate.toLocaleDateString('vi-VN')} → {phaseEndDate.toLocaleDateString('vi-VN')}
                     </div>

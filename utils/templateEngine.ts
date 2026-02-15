@@ -16,7 +16,7 @@ import {
 import { saveAs } from 'file-saver';
 import {
     p, pMulti, headerCell, dataCell, THIN_BORDER, PORTRAIT_A4, LANDSCAPE_A4,
-    buildDocumentHeader, buildSignatureBlock, formatDateVN, formatCurrencyVN, pEmpty,
+    buildDocumentHeader, buildSignatureBlock, buildSignatureBlockTable, formatDateVN, formatCurrencyVN, pEmpty,
 } from './docxHelpers';
 import { ExportDataContext, TemplateConfig, autoFillFields } from './templateRegistry';
 
@@ -397,6 +397,7 @@ export function markdownToDocxElements(markdown: string): (Paragraph | Table)[] 
 
 /**
  * Export a template as DOCX with auto-filled data
+ * Uses proper Vietnamese government document formatting (NĐ 30/2020)
  */
 export async function exportTemplateAsDocx(
     config: TemplateConfig,
@@ -411,8 +412,71 @@ export async function exportTemplateAsDocx(
     // 2. Replace placeholders
     const filledContent = replacePlaceholders(rawContent, formData, context);
 
-    // 3. Convert to DOCX elements
-    const elements = markdownToDocxElements(filledContent);
+    // 3. Detect if template has {{placeholder}} format (new-style template)
+    const isNewStyleTemplate = rawContent.includes('{{tenCoQuan}}') || rawContent.includes('{{tenDuAn}}');
+
+    let docChildren: (Paragraph | Table)[] = [];
+
+    if (isNewStyleTemplate) {
+        // ── New-style template: use proper document structure ──
+
+        // 3a. Build proper two-column header
+        const orgName = formData.tenCoQuan || formData.investorName || 'TÊN CƠ QUAN';
+        const docNumber = formData.documentNumber || '……';
+        const docDate = formData.documentDate || '';
+        const location = formData.locationName || 'Hà Nội';
+
+        const headerElements = buildDocumentHeader(orgName, docNumber, docDate, location);
+        docChildren.push(...headerElements);
+
+        // 3b. Extract body content (skip header and footer sections)
+        const lines = filledContent.split('\n');
+        let bodyStartIdx = 0;
+        let bodyEndIdx = lines.length;
+
+        // Find where the header ends (after the first "---" separator that follows the header table)
+        let hrCount = 0;
+        for (let i = 0; i < lines.length; i++) {
+            const trimmed = lines[i].trim();
+            if (trimmed === '---' || trimmed === '___') {
+                hrCount++;
+                if (hrCount === 2) {
+                    bodyStartIdx = i + 1;
+                    break;
+                }
+            }
+        }
+
+        // Find where the signature/footer section starts (last "---" separator)
+        for (let i = lines.length - 1; i >= bodyStartIdx; i--) {
+            const trimmed = lines[i].trim();
+            if (trimmed === '---' || trimmed === '___') {
+                bodyEndIdx = i;
+                break;
+            }
+        }
+
+        // 3c. Convert body markdown to DOCX elements
+        const bodyMarkdown = lines.slice(bodyStartIdx, bodyEndIdx).join('\n');
+        const bodyElements = markdownToDocxElements(bodyMarkdown);
+        docChildren.push(...bodyElements);
+
+        // 3d. Build proper two-column signature block
+        const recipients = [
+            'Như trên',
+            'Cơ quan thẩm định chủ trương ĐT',
+            'Các cơ quan liên quan',
+        ];
+        const signerTitle = formData.signerTitle || 'ĐẠI DIỆN CƠ QUAN';
+        const signerName = formData.signerName || '';
+
+        const signatureTable = buildSignatureBlockTable(recipients, signerTitle, signerName);
+        docChildren.push(pEmpty(200));
+        docChildren.push(signatureTable);
+    } else {
+        // ── Old-style template: convert entire markdown to DOCX ──
+        docChildren = markdownToDocxElements(filledContent);
+    }
 
     // 4. Build document
     const doc = new Document({
@@ -420,7 +484,7 @@ export async function exportTemplateAsDocx(
             properties: {
                 ...PORTRAIT_A4,
             },
-            children: elements,
+            children: docChildren,
         }],
     });
 

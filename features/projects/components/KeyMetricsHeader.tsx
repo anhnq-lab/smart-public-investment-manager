@@ -59,18 +59,18 @@ export const KeyMetricsHeader: React.FC<KeyMetricsHeaderProps> = ({
             {metrics.map((metric, idx) => (
                 <div
                     key={idx}
-                    className={`bg-gradient-to-br ${metric.bgGradient} rounded-xl p-5 border border-gray-100 shadow-sm hover:shadow-md transition-shadow`}
+                    className={`bg-gradient-to-br ${metric.bgGradient} dark:from-slate-800 dark:to-slate-800 rounded-xl p-5 border border-gray-100 dark:border-slate-700 shadow-sm hover:shadow-md transition-shadow`}
                 >
                     <div className="flex items-start justify-between">
                         <div className="flex-1">
-                            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">
+                            <p className="text-xs font-semibold text-gray-500 dark:text-slate-400 uppercase tracking-wide mb-1">
                                 {metric.label}
                             </p>
                             <p className={`text-2xl font-bold bg-gradient-to-r ${metric.gradient} bg-clip-text text-transparent tabular-nums`}>
                                 {metric.value}
                             </p>
                             {metric.subValue && (
-                                <p className="text-sm text-gray-500 mt-1">
+                                <p className="text-sm text-gray-500 dark:text-slate-400 mt-1">
                                     {metric.subValue} tổng mức
                                 </p>
                             )}

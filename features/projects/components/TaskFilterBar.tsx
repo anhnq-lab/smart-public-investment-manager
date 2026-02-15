@@ -71,7 +71,7 @@ export const TaskFilterBar: React.FC<TaskFilterBarProps> = ({
     };
 
     const getFilterStyle = (filter: { id: TaskFilter; color: string }, isActive: boolean) => {
-        if (!isActive) return 'bg-white text-gray-600 border-gray-200 hover:bg-gray-50';
+        if (!isActive) return 'bg-white dark:bg-slate-800 text-gray-600 dark:text-slate-300 border-gray-200 dark:border-slate-600 hover:bg-gray-50 dark:hover:bg-slate-700';
 
         switch (filter.color) {
             case 'blue': return 'bg-blue-50 text-blue-700 border-blue-300 ring-1 ring-blue-200';
@@ -85,7 +85,7 @@ export const TaskFilterBar: React.FC<TaskFilterBarProps> = ({
     };
 
     return (
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 space-y-4">
+        <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 p-4 space-y-4">
             {/* Top Row: Search + Add Button */}
             <div className="flex items-center gap-4">
                 {/* Search */}
@@ -97,7 +97,7 @@ export const TaskFilterBar: React.FC<TaskFilterBarProps> = ({
                             placeholder="Tìm kiếm công việc..."
                             value={searchQuery}
                             onChange={(e) => onSearch(e.target.value)}
-                            className="w-full pl-10 pr-8 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            className="w-full pl-10 pr-8 py-2 text-sm border border-gray-200 dark:border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-slate-700 text-gray-900 dark:text-slate-100 placeholder-gray-400 dark:placeholder-slate-500"
                         />
                         {searchQuery && (
                             <button
@@ -139,10 +139,10 @@ export const TaskFilterBar: React.FC<TaskFilterBarProps> = ({
                                 {filter.label}
                                 {count !== undefined && count > 0 && (
                                     <span className={`ml-0.5 px-1.5 py-0.5 rounded-full text-[10px] ${isActive
-                                            ? 'bg-white/50'
-                                            : filter.color === 'red' && count > 0
-                                                ? 'bg-red-100 text-red-700'
-                                                : 'bg-gray-100'
+                                        ? 'bg-white/50'
+                                        : filter.color === 'red' && count > 0
+                                            ? 'bg-red-100 text-red-700'
+                                            : 'bg-gray-100'
                                         }`}>
                                         {count}
                                     </span>
@@ -153,7 +153,7 @@ export const TaskFilterBar: React.FC<TaskFilterBarProps> = ({
                 </div>
 
                 {/* View Toggle */}
-                <div className="flex items-center bg-gray-100 rounded-lg p-1">
+                <div className="flex items-center bg-gray-100 dark:bg-slate-700 rounded-lg p-1">
                     {views.map(view => {
                         const isActive = currentView === view.id;
                         const Icon = view.icon;
@@ -163,8 +163,8 @@ export const TaskFilterBar: React.FC<TaskFilterBarProps> = ({
                                 key={view.id}
                                 onClick={() => onViewChange(view.id)}
                                 className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-md transition-all ${isActive
-                                        ? 'bg-white text-blue-700 shadow-sm'
-                                        : 'text-gray-500 hover:text-gray-700'
+                                    ? 'bg-white dark:bg-slate-600 text-blue-700 dark:text-blue-400 shadow-sm'
+                                    : 'text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:hover:text-slate-300'
                                     }`}
                                 title={view.label}
                             >
