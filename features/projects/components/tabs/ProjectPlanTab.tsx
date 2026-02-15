@@ -186,6 +186,7 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({
     const [expandedSubTasks, setExpandedSubTasks] = useState<Record<string, boolean>>({});
     const [selectedSubTask, setSelectedSubTask] = useState<{ def: SubTaskDef; stepTitle: string; stepCode: string } | null>(null);
     const [bulkCreatingStep, setBulkCreatingStep] = useState<string | null>(null);
+    const [bulkCreatingAll, setBulkCreatingAll] = useState(false);
 
     // 2. Filter Tasks
     const filteredTasks = useMemo(() => {
@@ -443,7 +444,8 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({
             let runningDays = cumulativeDaysBefore;
             const newTasks: Task[] = [];
 
-            for (const st of subTaskDefs) {
+            for (let idx = 0; idx < subTaskDefs.length; idx++) {
+                const st = subTaskDefs[idx];
                 // Skip if task already exists with same title
                 if (existingTitles.has(st.title)) continue;
 
@@ -454,8 +456,10 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({
                 dueDate.setDate(dueDate.getDate() + days);
                 runningDays += days;
 
+                const shortId = Math.random().toString(36).substring(2, 10);
                 const task: Task = {
-                    TaskID: `TASK-${projectID}-${stepCode}-${st.code}-${Date.now()}`,
+                    TaskID: `T-${shortId}${idx}`,
+                    // idx added for uniqueness within batch
                     ProjectID: projectID,
                     Title: st.title,
                     Description: st.description || `Bước trong quy trình: ${stepTitle}. Phụ trách: ${st.responsible}.${st.legalBasis ? ` Căn cứ: ${st.legalBasis}` : ''}`,
@@ -487,6 +491,25 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({
             console.error('Failed to bulk create tasks:', error);
         } finally {
             setBulkCreatingStep(null);
+        }
+    };
+
+    // ── Bulk create ALL tasks across ALL steps ──
+    const handleBulkCreateAll = async () => {
+        if (!projectID) return;
+        setBulkCreatingAll(true);
+        try {
+            const allPhaseItems = DECREE_175_PHASES.flatMap(p => p.items);
+            for (const item of allPhaseItems) {
+                const subTasks = getSubTasksForStep(item.code, groupCode);
+                if (subTasks.length > 0) {
+                    await handleBulkCreateFromSubTasks(item.code, item.title);
+                }
+            }
+        } catch (error) {
+            console.error('Failed to bulk create all tasks:', error);
+        } finally {
+            setBulkCreatingAll(false);
         }
     };
 
@@ -526,6 +549,27 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({
                     </p>
                 </div>
                 <div className="flex items-center gap-3">
+                    {/* Tạo tất cả công việc Button */}
+                    <button
+                        onClick={handleBulkCreateAll}
+                        disabled={bulkCreatingAll}
+                        className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg border transition-all shadow-sm ${bulkCreatingAll
+                                ? 'text-amber-600 bg-amber-50 border-amber-200 cursor-wait'
+                                : 'text-emerald-600 bg-emerald-50 hover:bg-emerald-100 border-emerald-200 hover:shadow'
+                            }`}
+                    >
+                        {bulkCreatingAll ? (
+                            <>
+                                <div className="w-3 h-3 border-2 border-amber-300 border-t-amber-600 rounded-full animate-spin" />
+                                Đang tạo...
+                            </>
+                        ) : (
+                            <>
+                                <ListPlus className="w-3.5 h-3.5" />
+                                Tạo tất cả công việc
+                            </>
+                        )}
+                    </button>
                     <button
                         onClick={() => navigate(`/tasks`, { state: { filterProject: projectID } })}
                         className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-blue-600 dark:text-blue-400 bg-white dark:bg-slate-800 hover:bg-blue-50 dark:hover:bg-slate-700 rounded-lg border border-blue-200 dark:border-blue-700 transition-colors shadow-sm"
@@ -816,10 +860,10 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({
                                                                             }}
                                                                             disabled={bulkCreatingStep === item.code || allCreated}
                                                                             className={`px-2.5 py-1 text-[10px] font-semibold rounded-lg flex items-center gap-1 transition-all ${allCreated
-                                                                                    ? 'bg-emerald-50 text-emerald-600 border border-emerald-200 cursor-default'
-                                                                                    : bulkCreatingStep === item.code
-                                                                                        ? 'bg-amber-50 text-amber-600 border border-amber-200 cursor-wait'
-                                                                                        : 'bg-blue-50 text-blue-600 border border-blue-200 hover:bg-blue-100 hover:shadow-sm'
+                                                                                ? 'bg-emerald-50 text-emerald-600 border border-emerald-200 cursor-default'
+                                                                                : bulkCreatingStep === item.code
+                                                                                    ? 'bg-amber-50 text-amber-600 border border-amber-200 cursor-wait'
+                                                                                    : 'bg-blue-50 text-blue-600 border border-blue-200 hover:bg-blue-100 hover:shadow-sm'
                                                                                 }`}
                                                                             title={allCreated ? 'Đã tạo công việc cho tất cả bước' : 'Tạo công việc tự động cho tất cả bước quy trình'}
                                                                         >
