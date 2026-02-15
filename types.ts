@@ -157,6 +157,75 @@ export interface Project {
     FeasibilityContractor?: string;  // Nhà thầu lập BCNCKT
     SurveyContractor?: string;       // Nhà thầu khảo sát xây dựng
     ReviewContractor?: string;       // Nhà thầu thẩm tra
+
+    // ═══════════════════════════════════════════════════════════
+    // TT24/2025/TT-BXD Phụ lục III — Dữ liệu CSDL Quốc gia
+    // ═══════════════════════════════════════════════════════════
+
+    // A.I: Quy mô đầu tư
+    InvestmentScale?: string;            // Diện tích, công suất, số tầng...
+
+    // A.II.2: Quy hoạch liên quan
+    PlanningApprovalNumber?: string;     // Số QĐ phê duyệt QH
+    PlanningApprovalDate?: string;       // Ngày phê duyệt QH
+
+    // A.II.3.1: PCCC
+    PCCCApprovalNumber?: string;         // Số văn bản thủ tục PCCC
+    PCCCApprovalDate?: string;           // Ngày cấp
+    PCCCApprovalAgency?: string;         // CQ cấp
+
+    // A.II.3.2: Môi trường
+    EnvApprovalNumber?: string;          // Số văn bản MT
+    EnvApprovalDate?: string;            // Ngày cấp
+    EnvApprovalType?: string;            // 'ĐTM' | 'KH_BVMT'
+
+    // A.II.4: Thẩm định BCNCKT
+    AppraisalResultNumber?: string;      // Số TB kết quả thẩm định
+    AppraisalResultDate?: string;        // Ngày thẩm định
+    AppraisalAgency?: string;            // CQ thẩm định
+
+    // A.II.7.4: Chi tiết tổng mức đầu tư
+    CostBreakdown?: CostBreakdown;       // Chi tiết chi phí
+
+    // B.II: Thiết kế triển khai sau TKCS
+    DesignAppraisalNumber?: string;      // Số TB thẩm định TK
+    DesignAppraisalDate?: string;        // Ngày thẩm định TK
+    DesignApprovalNumber?: string;       // Số QĐ phê duyệt TK
+    DesignApprovalDate?: string;         // Ngày phê duyệt TK
+    DesignApprovalAuthority?: string;    // CQ phê duyệt TK
+    DesignContractor?: string;           // NT thiết kế
+    SupervisionContractor?: string;      // NT tư vấn giám sát
+
+    // C: Giấy phép xây dựng
+    ConstructionPermitNumber?: string;   // Số GPXD
+    ConstructionPermitDate?: string;     // Ngày cấp GPXD
+    ConstructionPermitAgency?: string;   // CQ cấp GPXD
+
+    // D: Khởi công + Bảo hiểm
+    ActualStartDateConstruction?: string;// Ngày khởi công thực tế
+    InsuranceContract?: string;          // Số HĐ bảo hiểm CT
+    InsuranceValue?: number;             // Giá trị bảo hiểm
+
+    // E: Nghiệm thu + Bàn giao
+    AcceptanceResult?: string;           // Kết quả nghiệm thu
+    AcceptanceDate?: string;             // Ngày nghiệm thu
+    HandoverDate?: string;               // Ngày bàn giao đưa vào sử dụng
+
+    // Tracking
+    TT24CompletionPct?: number;          // Tỷ lệ hoàn thành dữ liệu TT24 (0-100)
+    StartDate?: string;                  // Ngày bắt đầu
+    ExpectedEndDate?: string;            // Ngày kết thúc dự kiến
+    ActualEndDate?: string;              // Ngày kết thúc thực tế
+}
+
+/** Chi tiết tổng mức đầu tư — TT24 A.II.7.4 */
+export interface CostBreakdown {
+    construction?: number;   // Chi phí xây dựng
+    equipment?: number;      // Chi phí thiết bị
+    management?: number;     // Chi phí QLDA
+    consultancy?: number;    // Chi phí TVXD
+    other?: number;          // Chi phí khác
+    contingency?: number;    // Dự phòng
 }
 
 // ═══════════════════════════════════════════════════════════════

@@ -13,7 +13,8 @@ const ProjectBimTab = React.lazy(() => import('./components/tabs/ProjectBimTab')
 import { ProjectPackagesTab } from './components/tabs/ProjectPackagesTab';
 import { ProjectCapitalTab } from './components/tabs/ProjectCapitalTab';
 import { ProjectDocumentsTab } from './components/tabs/ProjectDocumentsTab';
-import { Info, CalendarCheck, Briefcase, FolderOpen, Layers, Landmark } from 'lucide-react';
+import { ProjectComplianceTab } from './components/tabs/ProjectComplianceTab';
+import { Info, CalendarCheck, Briefcase, FolderOpen, Layers, Landmark, Database } from 'lucide-react';
 
 // Error Boundary for BIM tab - catches runtime crashes from 3D libraries
 class BimErrorBoundary extends React.Component<
@@ -64,7 +65,7 @@ const ProjectDetail: React.FC = () => {
 
     // Read initial tab from navigation state (e.g. from TaskDetail breadcrumb)
     const initialTab = (location.state as any)?.activeTab || 'info';
-    const [activeTab, setActiveTab] = useState<'info' | 'plan' | 'packages' | 'capital' | 'documents' | 'bim'>(initialTab);
+    const [activeTab, setActiveTab] = useState<'info' | 'plan' | 'packages' | 'capital' | 'documents' | 'bim' | 'tt24'>(initialTab);
 
     // Module 1: National Gateway State
     const [isSyncing, setIsSyncing] = useState(false);
@@ -163,6 +164,7 @@ const ProjectDetail: React.FC = () => {
                         { id: 'plan', label: 'KẾ HOẠCH', icon: CalendarCheck },
                         { id: 'packages', label: 'GÓI THẦU', icon: Briefcase },
                         { id: 'capital', label: 'VỐN & GIẢI NGÂN', icon: Landmark },
+                        { id: 'tt24', label: 'DỮ LIỆU TT24', icon: Database },
                         { id: 'documents', label: 'HỒ SƠ', icon: FolderOpen },
                         { id: 'bim', label: 'MÔ HÌNH BIM', icon: Layers },
                     ].map(t => (
@@ -233,6 +235,14 @@ const ProjectDetail: React.FC = () => {
                             projectStage={project.Stage || ProjectStage.Execution}
                             investmentPolicy={(project as any).InvestmentPolicy}
                             feasibilityStudy={(project as any).FeasibilityStudy}
+                        />
+                    )}
+                    {activeTab === 'tt24' && (
+                        <ProjectComplianceTab
+                            project={project}
+                            onUpdate={(updated) => {
+                                setProject(prev => prev ? { ...prev, ...updated } : null);
+                            }}
                         />
                     )}
                     {activeTab === 'bim' && (

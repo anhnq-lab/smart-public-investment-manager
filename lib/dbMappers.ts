@@ -132,6 +132,35 @@ export const dbToProject = (row: any): Project => ({
     StartDate: row.start_date || '',
     ExpectedEndDate: row.expected_end_date || '',
     ActualEndDate: row.actual_end_date || '',
+    // TT24 Compliance
+    InvestmentScale: row.investment_scale || '',
+    PlanningApprovalNumber: row.planning_approval_number || '',
+    PlanningApprovalDate: row.planning_approval_date || '',
+    PCCCApprovalNumber: row.pccc_approval_number || '',
+    PCCCApprovalDate: row.pccc_approval_date || '',
+    PCCCApprovalAgency: row.pccc_approval_agency || '',
+    EnvApprovalNumber: row.env_approval_number || '',
+    EnvApprovalDate: row.env_approval_date || '',
+    EnvApprovalType: row.env_approval_type || '',
+    AppraisalResultNumber: row.appraisal_result_number || '',
+    AppraisalResultDate: row.appraisal_result_date || '',
+    AppraisalAgency: row.appraisal_agency || '',
+    CostBreakdown: row.cost_breakdown || {},
+    DesignAppraisalNumber: row.design_appraisal_number || '',
+    DesignAppraisalDate: row.design_appraisal_date || '',
+    DesignApprovalNumber: row.design_approval_number || '',
+    DesignApprovalDate: row.design_approval_date || '',
+    DesignApprovalAuthority: row.design_approval_authority || '',
+    ConstructionPermitNumber: row.construction_permit_number || '',
+    ConstructionPermitDate: row.construction_permit_date || '',
+    ConstructionPermitAgency: row.construction_permit_agency || '',
+    ActualStartDateConstruction: row.actual_start_date_construction || '',
+    InsuranceContract: row.insurance_contract || '',
+    InsuranceValue: Number(row.insurance_value) || 0,
+    AcceptanceResult: row.acceptance_result || '',
+    AcceptanceDate: row.acceptance_date || '',
+    HandoverDate: row.handover_date || '',
+    TT24CompletionPct: row.tt24_completion_pct || 0,
 });
 
 export const projectToDb = (p: Partial<Project>) => {
@@ -162,6 +191,37 @@ export const projectToDb = (p: Partial<Project>) => {
     if (p.DecisionAuthority !== undefined) result.decision_authority = p.DecisionAuthority;
     if (p.StartDate !== undefined) result.start_date = p.StartDate;
     if (p.ExpectedEndDate !== undefined) result.expected_end_date = p.ExpectedEndDate;
+    // TT24 Compliance
+    if (p.InvestmentScale !== undefined) result.investment_scale = p.InvestmentScale;
+    if (p.PlanningApprovalNumber !== undefined) result.planning_approval_number = p.PlanningApprovalNumber;
+    if (p.PlanningApprovalDate !== undefined) result.planning_approval_date = p.PlanningApprovalDate;
+    if (p.PCCCApprovalNumber !== undefined) result.pccc_approval_number = p.PCCCApprovalNumber;
+    if (p.PCCCApprovalDate !== undefined) result.pccc_approval_date = p.PCCCApprovalDate;
+    if (p.PCCCApprovalAgency !== undefined) result.pccc_approval_agency = p.PCCCApprovalAgency;
+    if (p.EnvApprovalNumber !== undefined) result.env_approval_number = p.EnvApprovalNumber;
+    if (p.EnvApprovalDate !== undefined) result.env_approval_date = p.EnvApprovalDate;
+    if (p.EnvApprovalType !== undefined) result.env_approval_type = p.EnvApprovalType;
+    if (p.AppraisalResultNumber !== undefined) result.appraisal_result_number = p.AppraisalResultNumber;
+    if (p.AppraisalResultDate !== undefined) result.appraisal_result_date = p.AppraisalResultDate;
+    if (p.AppraisalAgency !== undefined) result.appraisal_agency = p.AppraisalAgency;
+    if (p.CostBreakdown !== undefined) result.cost_breakdown = p.CostBreakdown;
+    if (p.DesignAppraisalNumber !== undefined) result.design_appraisal_number = p.DesignAppraisalNumber;
+    if (p.DesignAppraisalDate !== undefined) result.design_appraisal_date = p.DesignAppraisalDate;
+    if (p.DesignApprovalNumber !== undefined) result.design_approval_number = p.DesignApprovalNumber;
+    if (p.DesignApprovalDate !== undefined) result.design_approval_date = p.DesignApprovalDate;
+    if (p.DesignApprovalAuthority !== undefined) result.design_approval_authority = p.DesignApprovalAuthority;
+    if (p.DesignContractor !== undefined) result.design_contractor = p.DesignContractor;
+    if (p.SupervisionContractor !== undefined) result.supervision_contractor = p.SupervisionContractor;
+    if (p.ConstructionPermitNumber !== undefined) result.construction_permit_number = p.ConstructionPermitNumber;
+    if (p.ConstructionPermitDate !== undefined) result.construction_permit_date = p.ConstructionPermitDate;
+    if (p.ConstructionPermitAgency !== undefined) result.construction_permit_agency = p.ConstructionPermitAgency;
+    if (p.ActualStartDateConstruction !== undefined) result.actual_start_date_construction = p.ActualStartDateConstruction;
+    if (p.InsuranceContract !== undefined) result.insurance_contract = p.InsuranceContract;
+    if (p.InsuranceValue !== undefined) result.insurance_value = p.InsuranceValue;
+    if (p.AcceptanceResult !== undefined) result.acceptance_result = p.AcceptanceResult;
+    if (p.AcceptanceDate !== undefined) result.acceptance_date = p.AcceptanceDate;
+    if (p.HandoverDate !== undefined) result.handover_date = p.HandoverDate;
+    if (p.TT24CompletionPct !== undefined) result.tt24_completion_pct = p.TT24CompletionPct;
     return result;
 };
 
