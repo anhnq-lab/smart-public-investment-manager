@@ -155,22 +155,22 @@ export const SubTaskDetailModal: React.FC<SubTaskDetailModalProps> = ({
         <>
             <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm animate-in fade-in duration-200"
                 onClick={onClose}>
-                <div className="bg-[#0f172a] rounded-xl shadow-2xl w-full max-w-2xl mx-4 overflow-hidden animate-in zoom-in-95 duration-200 max-h-[90vh] flex flex-col border border-[#334155]"
+                <div className="bg-white dark:bg-slate-900 rounded-xl shadow-2xl w-full max-w-2xl mx-4 overflow-hidden animate-in zoom-in-95 duration-200 max-h-[90vh] flex flex-col border border-gray-200 dark:border-slate-700"
                     onClick={e => e.stopPropagation()}>
 
                     {/* Header */}
-                    <div className="px-6 py-4 border-b border-[#334155] flex justify-between items-center bg-[#1e293b] shrink-0">
+                    <div className="px-6 py-4 border-b border-gray-200 dark:border-slate-700 flex justify-between items-center bg-gray-50 dark:bg-slate-800 shrink-0">
                         <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-2">
                                 <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-500 to-indigo-500 flex items-center justify-center shrink-0">
                                     <Briefcase size={16} className="text-white" />
                                 </div>
                                 <div className="min-w-0">
-                                    <h3 className="text-base font-bold text-[#f8fafc] truncate">
+                                    <h3 className="text-base font-bold text-gray-900 dark:text-slate-50 truncate">
                                         {subTask.title}
                                     </h3>
                                     {stepTitle && (
-                                        <p className="text-xs text-blue-400 font-medium truncate">
+                                        <p className="text-xs text-blue-600 dark:text-blue-400 font-medium truncate">
                                             Thuộc: {stepTitle}
                                         </p>
                                     )}
@@ -179,21 +179,21 @@ export const SubTaskDetailModal: React.FC<SubTaskDetailModalProps> = ({
                         </div>
                         <div className="flex items-center gap-2 shrink-0 ml-3">
                             {/* Mode toggle */}
-                            <div className="flex bg-[#334155] rounded-lg p-0.5">
+                            <div className="flex bg-gray-100 dark:bg-slate-700 rounded-lg p-0.5">
                                 <button
                                     onClick={() => setMode('view')}
-                                    className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors ${mode === 'view' ? 'bg-[#0f172a] text-[#f8fafc] shadow-sm' : 'text-[#94a3b8] hover:text-[#cbd5e1]'}`}
+                                    className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors ${mode === 'view' ? 'bg-white dark:bg-slate-900 text-gray-900 dark:text-slate-50 shadow-sm' : 'text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:hover:text-slate-200'}`}
                                 >
                                     Xem
                                 </button>
                                 <button
                                     onClick={() => setMode('create')}
-                                    className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors ${mode === 'create' ? 'bg-[#0f172a] text-blue-400 shadow-sm' : 'text-[#94a3b8] hover:text-[#cbd5e1]'}`}
+                                    className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors ${mode === 'create' ? 'bg-white dark:bg-slate-900 text-blue-600 dark:text-blue-400 shadow-sm' : 'text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:hover:text-slate-200'}`}
                                 >
                                     Tạo việc
                                 </button>
                             </div>
-                            <button onClick={onClose} className="p-2 hover:bg-[#334155] rounded-full text-[#94a3b8] transition-colors">
+                            <button onClick={onClose} className="p-2 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-full text-gray-400 dark:text-slate-400 transition-colors">
                                 <X className="w-5 h-5" />
                             </button>
                         </div>
@@ -207,36 +207,36 @@ export const SubTaskDetailModal: React.FC<SubTaskDetailModalProps> = ({
                             <>
                                 {/* Code badge */}
                                 <div className="flex items-center gap-2">
-                                    <span className="px-2 py-1 rounded-md bg-[#334155] text-[#94a3b8] text-xs font-mono">
+                                    <span className="px-2 py-1 rounded-md bg-gray-100 dark:bg-slate-700 text-gray-500 dark:text-slate-400 text-xs font-mono">
                                         {subTask.code}
                                     </span>
                                 </div>
 
                                 {/* Description */}
                                 {subTask.description && (
-                                    <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/20">
-                                        <p className="text-sm text-amber-300">{subTask.description}</p>
+                                    <div className="p-3 rounded-xl bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/20">
+                                        <p className="text-sm text-amber-700 dark:text-amber-300">{subTask.description}</p>
                                     </div>
                                 )}
 
                                 {/* Info cards */}
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                     {/* Đơn vị phụ trách */}
-                                    <div className="flex items-start gap-3 p-3 rounded-xl bg-blue-500/10 border border-blue-500/20">
-                                        <Building2 size={18} className="text-blue-400 mt-0.5 shrink-0" />
+                                    <div className="flex items-start gap-3 p-3 rounded-xl bg-blue-50 dark:bg-blue-500/10 border border-blue-200 dark:border-blue-500/20">
+                                        <Building2 size={18} className="text-blue-600 dark:text-blue-400 mt-0.5 shrink-0" />
                                         <div>
-                                            <p className="text-xs text-blue-400/70 font-medium">Đơn vị phụ trách</p>
-                                            <p className="text-sm font-semibold text-blue-300">{subTask.responsible}</p>
+                                            <p className="text-xs text-blue-500 dark:text-blue-400/70 font-medium">Đơn vị phụ trách</p>
+                                            <p className="text-sm font-semibold text-blue-700 dark:text-blue-300">{subTask.responsible}</p>
                                         </div>
                                     </div>
 
                                     {/* Thời gian */}
                                     {subTask.estimatedDays && (
-                                        <div className="flex items-start gap-3 p-3 rounded-xl bg-orange-500/10 border border-orange-500/20">
-                                            <Clock size={18} className="text-orange-400 mt-0.5 shrink-0" />
+                                        <div className="flex items-start gap-3 p-3 rounded-xl bg-orange-50 dark:bg-orange-500/10 border border-orange-200 dark:border-orange-500/20">
+                                            <Clock size={18} className="text-orange-600 dark:text-orange-400 mt-0.5 shrink-0" />
                                             <div>
-                                                <p className="text-xs text-orange-400/70 font-medium">Thời gian ước tính</p>
-                                                <p className="text-sm font-semibold text-orange-300">{subTask.estimatedDays} ngày</p>
+                                                <p className="text-xs text-orange-500 dark:text-orange-400/70 font-medium">Thời gian ước tính</p>
+                                                <p className="text-sm font-semibold text-orange-700 dark:text-orange-300">{subTask.estimatedDays} ngày</p>
                                             </div>
                                         </div>
                                     )}
@@ -244,11 +244,11 @@ export const SubTaskDetailModal: React.FC<SubTaskDetailModalProps> = ({
 
                                 {/* Căn cứ pháp lý */}
                                 {subTask.legalBasis && (
-                                    <div className="flex items-start gap-3 p-3 rounded-xl bg-purple-500/10 border border-purple-500/20">
-                                        <Scale size={18} className="text-purple-400 mt-0.5 shrink-0" />
+                                    <div className="flex items-start gap-3 p-3 rounded-xl bg-purple-50 dark:bg-purple-500/10 border border-purple-200 dark:border-purple-500/20">
+                                        <Scale size={18} className="text-purple-600 dark:text-purple-400 mt-0.5 shrink-0" />
                                         <div>
-                                            <p className="text-xs text-purple-400/70 font-medium">Căn cứ pháp lý</p>
-                                            <p className="text-sm text-purple-300">{subTask.legalBasis}</p>
+                                            <p className="text-xs text-purple-500 dark:text-purple-400/70 font-medium">Căn cứ pháp lý</p>
+                                            <p className="text-sm text-purple-700 dark:text-purple-300">{subTask.legalBasis}</p>
                                         </div>
                                     </div>
                                 )}
@@ -259,7 +259,7 @@ export const SubTaskDetailModal: React.FC<SubTaskDetailModalProps> = ({
                                         <a
                                             href={`/templates/${subTask.templatePath.replace('.md', '.docx').replace('mau-03-bc-de-xuat-chu-truong-dt', 'bao-cao-de-xuat-chu-truong-dau-tu-du-an-nhom-b-nhom-c')}`}
                                             download
-                                            className="w-full flex items-center gap-3 p-3 rounded-xl bg-cyan-500/10 border border-cyan-500/20 hover:bg-cyan-500/20 transition-colors group"
+                                            className="w-full flex items-center gap-3 p-3 rounded-xl bg-cyan-50 dark:bg-cyan-500/10 border border-cyan-200 dark:border-cyan-500/20 hover:bg-cyan-100 dark:hover:bg-cyan-500/20 transition-colors group"
                                             onClick={(e) => {
                                                 // If no .docx exists, fall back to downloading the .md template
                                                 const link = e.currentTarget;
@@ -279,26 +279,26 @@ export const SubTaskDetailModal: React.FC<SubTaskDetailModalProps> = ({
                                                 });
                                             }}
                                         >
-                                            <Download size={18} className="text-cyan-400 shrink-0" />
+                                            <Download size={18} className="text-cyan-600 dark:text-cyan-400 shrink-0" />
                                             <div className="flex-1 text-left">
-                                                <p className="text-xs text-cyan-400/70 font-medium">Tải biểu mẫu gốc (DOCX)</p>
-                                                <p className="text-sm text-cyan-300 font-semibold">
+                                                <p className="text-xs text-cyan-500 dark:text-cyan-400/70 font-medium">Tải biểu mẫu gốc (DOCX)</p>
+                                                <p className="text-sm text-cyan-700 dark:text-cyan-300 font-semibold">
                                                     {subTask.templateLabel || subTask.templatePath}
                                                 </p>
                                             </div>
-                                            <ChevronRight size={16} className="text-cyan-500/50 group-hover:text-cyan-400 transition-colors" />
+                                            <ChevronRight size={16} className="text-cyan-400 dark:text-cyan-500/50 group-hover:text-cyan-600 dark:group-hover:text-cyan-400 transition-colors" />
                                         </a>
                                         {hasExportConfig && (
                                             <button
                                                 onClick={() => setShowExport(true)}
-                                                className="w-full flex items-center gap-3 p-3 rounded-xl bg-gradient-to-r from-indigo-500/10 to-purple-500/10 border border-indigo-500/20 hover:from-indigo-500/20 hover:to-purple-500/20 transition-all group shadow-sm"
+                                                className="w-full flex items-center gap-3 p-3 rounded-xl bg-gradient-to-r from-indigo-50 dark:from-indigo-500/10 to-purple-50 dark:to-purple-500/10 border border-indigo-200 dark:border-indigo-500/20 hover:from-indigo-100 dark:hover:from-indigo-500/20 hover:to-purple-100 dark:hover:to-purple-500/20 transition-all group shadow-sm"
                                             >
                                                 <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center shadow">
                                                     <Download size={14} className="text-white" />
                                                 </div>
                                                 <div className="flex-1 text-left">
-                                                    <p className="text-xs text-indigo-400 font-medium">Xuất văn bản DOCX</p>
-                                                    <p className="text-sm text-indigo-300 font-semibold">
+                                                    <p className="text-xs text-indigo-600 dark:text-indigo-400 font-medium">Xuất văn bản DOCX</p>
+                                                    <p className="text-sm text-indigo-700 dark:text-indigo-300 font-semibold">
                                                         Tự động điền dữ liệu dự án
                                                     </p>
                                                 </div>
@@ -328,12 +328,12 @@ export const SubTaskDetailModal: React.FC<SubTaskDetailModalProps> = ({
                             <>
                                 {/* Title */}
                                 <div className="space-y-1.5">
-                                    <label className="text-sm font-semibold text-[#cbd5e1] flex items-center gap-2">
-                                        <CheckSquare className="w-4 h-4 text-[#94a3b8]" /> Tên công việc <span className="text-red-500">*</span>
+                                    <label className="text-sm font-semibold text-gray-700 dark:text-slate-300 flex items-center gap-2">
+                                        <CheckSquare className="w-4 h-4 text-gray-400 dark:text-slate-400" /> Tên công việc <span className="text-red-500">*</span>
                                     </label>
                                     <input
                                         type="text"
-                                        className="w-full px-4 py-2.5 rounded-lg border border-[#334155] bg-[#0f172a] text-[#f8fafc] focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+                                        className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-gray-900 dark:text-slate-50 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
                                         value={title}
                                         onChange={e => setTitle(e.target.value)}
                                     />
@@ -342,11 +342,11 @@ export const SubTaskDetailModal: React.FC<SubTaskDetailModalProps> = ({
                                 {/* Đơn vị phụ trách + Phòng ban */}
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className="space-y-1.5">
-                                        <label className="text-sm font-semibold text-[#cbd5e1] flex items-center gap-2">
+                                        <label className="text-sm font-semibold text-gray-700 dark:text-slate-300 flex items-center gap-2">
                                             <Building2 className="w-4 h-4 text-gray-400" /> Đơn vị phụ trách
                                         </label>
                                         <select
-                                            className="w-full px-3 py-2.5 rounded-lg border border-[#334155] focus:ring-2 focus:ring-blue-500 outline-none bg-[#0f172a] text-[#f8fafc] text-sm"
+                                            className="w-full px-3 py-2.5 rounded-lg border border-gray-300 dark:border-slate-700 focus:ring-2 focus:ring-blue-500 outline-none bg-white dark:bg-slate-900 text-gray-900 dark:text-slate-50 text-sm"
                                             value={responsibleUnit}
                                             onChange={e => setResponsibleUnit(e.target.value)}
                                         >
@@ -357,11 +357,11 @@ export const SubTaskDetailModal: React.FC<SubTaskDetailModalProps> = ({
                                         </select>
                                     </div>
                                     <div className="space-y-1.5">
-                                        <label className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                                        <label className="text-sm font-semibold text-gray-700 dark:text-slate-300 flex items-center gap-2">
                                             <Users className="w-4 h-4 text-gray-400" /> Phòng ban
                                         </label>
                                         <select
-                                            className="w-full px-3 py-2.5 rounded-lg border border-[#334155] focus:ring-2 focus:ring-blue-500 outline-none bg-[#0f172a] text-[#f8fafc] text-sm"
+                                            className="w-full px-3 py-2.5 rounded-lg border border-gray-300 dark:border-slate-700 focus:ring-2 focus:ring-blue-500 outline-none bg-white dark:bg-slate-900 text-gray-900 dark:text-slate-50 text-sm"
                                             value={department}
                                             onChange={e => {
                                                 setDepartment(e.target.value);
@@ -378,11 +378,11 @@ export const SubTaskDetailModal: React.FC<SubTaskDetailModalProps> = ({
 
                                 {/* Người phụ trách */}
                                 <div className="space-y-1.5">
-                                    <label className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                                    <label className="text-sm font-semibold text-gray-700 dark:text-slate-300 flex items-center gap-2">
                                         <User className="w-4 h-4 text-gray-400" /> Người phụ trách
                                     </label>
                                     <select
-                                        className="w-full px-3 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none bg-white text-sm"
+                                        className="w-full px-3 py-2.5 rounded-lg border border-gray-300 dark:border-slate-700 focus:ring-2 focus:ring-blue-500 outline-none bg-white dark:bg-slate-900 text-gray-900 dark:text-slate-50 text-sm"
                                         value={assigneeId}
                                         onChange={e => setAssigneeId(e.target.value)}
                                     >
@@ -398,35 +398,35 @@ export const SubTaskDetailModal: React.FC<SubTaskDetailModalProps> = ({
                                 {/* Date Range */}
                                 <div className="grid grid-cols-3 gap-4">
                                     <div className="space-y-1.5">
-                                        <label className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                                        <label className="text-sm font-semibold text-gray-700 dark:text-slate-300 flex items-center gap-2">
                                             <Calendar className="w-4 h-4 text-gray-400" /> Ngày bắt đầu
                                         </label>
                                         <input
                                             type="date"
-                                            className="w-full px-3 py-2.5 rounded-lg border border-[#334155] focus:ring-2 focus:ring-blue-500 outline-none bg-[#0f172a] text-[#f8fafc] text-sm"
+                                            className="w-full px-3 py-2.5 rounded-lg border border-gray-300 dark:border-slate-700 focus:ring-2 focus:ring-blue-500 outline-none bg-white dark:bg-slate-900 text-gray-900 dark:text-slate-50 text-sm"
                                             value={startDate}
                                             onChange={e => setStartDate(e.target.value)}
                                         />
                                     </div>
                                     <div className="space-y-1.5">
-                                        <label className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                                        <label className="text-sm font-semibold text-gray-700 dark:text-slate-300 flex items-center gap-2">
                                             <Clock className="w-4 h-4 text-gray-400" /> Thời gian (ngày)
                                         </label>
                                         <input
                                             type="number"
                                             min="1"
-                                            className="w-full px-3 py-2.5 rounded-lg border border-[#334155] focus:ring-2 focus:ring-blue-500 outline-none bg-[#0f172a] text-[#f8fafc] text-sm"
+                                            className="w-full px-3 py-2.5 rounded-lg border border-gray-300 dark:border-slate-700 focus:ring-2 focus:ring-blue-500 outline-none bg-white dark:bg-slate-900 text-gray-900 dark:text-slate-50 text-sm"
                                             value={durationDays || ''}
                                             onChange={e => setDurationDays(parseInt(e.target.value) || 0)}
                                         />
                                     </div>
                                     <div className="space-y-1.5">
-                                        <label className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                                        <label className="text-sm font-semibold text-gray-700 dark:text-slate-300 flex items-center gap-2">
                                             <Calendar className="w-4 h-4 text-gray-400" /> Hạn hoàn thành
                                         </label>
                                         <input
                                             type="date"
-                                            className="w-full px-3 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none text-sm"
+                                            className="w-full px-3 py-2.5 rounded-lg border border-gray-300 dark:border-slate-700 focus:ring-2 focus:ring-blue-500 outline-none bg-white dark:bg-slate-900 text-gray-900 dark:text-slate-50 text-sm"
                                             value={dueDate}
                                             onChange={e => setDueDate(e.target.value)}
                                         />
@@ -436,9 +436,9 @@ export const SubTaskDetailModal: React.FC<SubTaskDetailModalProps> = ({
                                 {/* Status + Priority */}
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className="space-y-1.5">
-                                        <label className="text-sm font-semibold text-[#cbd5e1]">Trạng thái</label>
+                                        <label className="text-sm font-semibold text-gray-700 dark:text-slate-300">Trạng thái</label>
                                         <select
-                                            className="w-full px-3 py-2.5 rounded-lg border border-[#334155] focus:ring-2 focus:ring-blue-500 outline-none bg-[#0f172a] text-[#f8fafc] text-sm"
+                                            className="w-full px-3 py-2.5 rounded-lg border border-gray-300 dark:border-slate-700 focus:ring-2 focus:ring-blue-500 outline-none bg-white dark:bg-slate-900 text-gray-900 dark:text-slate-50 text-sm"
                                             value={status}
                                             onChange={e => setStatus(e.target.value as TaskStatus)}
                                         >
@@ -449,7 +449,7 @@ export const SubTaskDetailModal: React.FC<SubTaskDetailModalProps> = ({
                                         </select>
                                     </div>
                                     <div className="space-y-1.5">
-                                        <label className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                                        <label className="text-sm font-semibold text-gray-700 dark:text-slate-300 flex items-center gap-2">
                                             <Flag className="w-4 h-4 text-gray-400" /> Mức ưu tiên
                                         </label>
                                         <select
@@ -475,11 +475,11 @@ export const SubTaskDetailModal: React.FC<SubTaskDetailModalProps> = ({
 
                                 {/* Description */}
                                 <div className="space-y-1.5">
-                                    <label className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                                    <label className="text-sm font-semibold text-gray-700 dark:text-slate-300 flex items-center gap-2">
                                         <AlignLeft className="w-4 h-4 text-gray-400" /> Ghi chú / Diễn giải
                                     </label>
                                     <textarea
-                                        className="w-full px-4 py-2.5 rounded-lg border border-[#334155] bg-[#0f172a] text-[#f8fafc] focus:ring-2 focus:ring-blue-500 outline-none h-20 resize-none text-sm"
+                                        className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-gray-900 dark:text-slate-50 focus:ring-2 focus:ring-blue-500 outline-none h-20 resize-none text-sm"
                                         placeholder="Nhập ghi chú, yêu cầu..."
                                         value={description}
                                         onChange={e => setDescription(e.target.value)}
@@ -488,12 +488,12 @@ export const SubTaskDetailModal: React.FC<SubTaskDetailModalProps> = ({
 
                                 {/* Căn cứ pháp lý (read from registry, editable) */}
                                 <div className="space-y-1.5">
-                                    <label className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                                    <label className="text-sm font-semibold text-gray-700 dark:text-slate-300 flex items-center gap-2">
                                         <Scale className="w-4 h-4 text-gray-400" /> Căn cứ pháp lý
                                     </label>
                                     <input
                                         type="text"
-                                        className="w-full px-4 py-2.5 rounded-lg border border-[#334155] bg-[#0f172a] text-[#f8fafc] focus:ring-2 focus:ring-blue-500 outline-none text-sm"
+                                        className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-gray-900 dark:text-slate-50 focus:ring-2 focus:ring-blue-500 outline-none text-sm"
                                         value={legalBasis}
                                         onChange={e => setLegalBasis(e.target.value)}
                                     />
@@ -516,11 +516,11 @@ export const SubTaskDetailModal: React.FC<SubTaskDetailModalProps> = ({
 
                     {/* Footer */}
                     {mode === 'create' && (
-                        <div className="px-6 py-4 border-t border-[#334155] flex justify-end gap-3 bg-[#1e293b] shrink-0">
+                        <div className="px-6 py-4 border-t border-gray-200 dark:border-slate-700 flex justify-end gap-3 bg-gray-50 dark:bg-slate-800 shrink-0">
                             <button
                                 type="button"
                                 onClick={() => setMode('view')}
-                                className="px-5 py-2.5 text-[#cbd5e1] font-medium hover:bg-[#334155] rounded-lg transition-colors"
+                                className="px-5 py-2.5 text-gray-600 dark:text-slate-300 font-medium hover:bg-gray-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
                             >
                                 Quay lại
                             </button>
