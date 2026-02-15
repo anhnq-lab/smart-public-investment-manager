@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Task, TaskStatus, TaskPriority, Employee, ProjectGroup, Project } from '@/types';
 import {
     Layers, CheckCircle2, Circle, Clock, ChevronDown, ChevronRight,
-    FileText, AlertCircle, Plus, Calendar, User, Flag, Zap, Building2, Scale, Info, ExternalLink, ListPlus
+    FileText, AlertCircle, Plus, Calendar, User, Flag, Zap, Building2, Scale, Info, ExternalLink, ListPlus, Paperclip, Upload
 } from 'lucide-react';
 import { ProjectGanttChart } from '../ProjectGanttChart';
 import { ProjectTaskModal } from '../ProjectTaskModal';
@@ -17,6 +17,7 @@ import { ProgressBadge } from '../ProgressSlider';
 import { getSubTasksForStep, hasSubTasks, SubTaskDef } from '@/utils/stepSubtasksRegistry';
 import { SubTaskDetailModal } from '../SubTaskDetailModal';
 import { TaskService } from '@/services/TaskService';
+import { supabase } from '@/lib/supabase';
 
 interface ProjectPlanTabProps {
     tasks: Task[];
@@ -187,6 +188,62 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({
     const [selectedSubTask, setSelectedSubTask] = useState<{ def: SubTaskDef; stepTitle: string; stepCode: string } | null>(null);
     const [bulkCreatingStep, setBulkCreatingStep] = useState<string | null>(null);
     const [bulkCreatingAll, setBulkCreatingAll] = useState(false);
+    const [attachmentCounts, setAttachmentCounts] = useState<Record<string, number>>({});
+    const [uploadingTaskId, setUploadingTaskId] = useState<string | null>(null);
+    const fileInputRef = React.useRef<HTMLInputElement>(null);
+    const [pendingUploadTaskId, setPendingUploadTaskId] = useState<string | null>(null);
+
+    // Load attachment counts
+    useEffect(() => {
+        if (!projectID) return;
+        const loadCounts = async () => {
+            const taskIds = tasks.map(t => t.TaskID);
+            if (taskIds.length === 0) return;
+            const { data } = await supabase
+                .from('task_attachments')
+                .select('task_id')
+                .in('task_id', taskIds);
+            if (data) {
+                const counts: Record<string, number> = {};
+                data.forEach((row: { task_id: string }) => {
+                    counts[row.task_id] = (counts[row.task_id] || 0) + 1;
+                });
+                setAttachmentCounts(counts);
+            }
+        };
+        loadCounts();
+    }, [tasks, projectID]);
+
+    // Handle file upload for task
+    const handleFileUpload = async (taskId: string, file: File) => {
+        setUploadingTaskId(taskId);
+        try {
+            const ext = file.name.split('.').pop();
+            const path = `${projectID}/${taskId}/${Date.now()}.${ext}`;
+            const { error: uploadError } = await supabase.storage
+                .from('task-attachments')
+                .upload(path, file);
+            if (uploadError) throw uploadError;
+
+            const { data: urlData } = supabase.storage
+                .from('task-attachments')
+                .getPublicUrl(path);
+
+            await supabase.from('task_attachments').insert({
+                task_id: taskId,
+                file_name: file.name,
+                file_url: urlData.publicUrl,
+                file_size: file.size,
+                file_type: file.type,
+            });
+
+            setAttachmentCounts(prev => ({ ...prev, [taskId]: (prev[taskId] || 0) + 1 }));
+        } catch (err) {
+            console.error('Upload failed:', err);
+        } finally {
+            setUploadingTaskId(null);
+        }
+    };
 
     // 2. Filter Tasks
     const filteredTasks = useMemo(() => {
@@ -554,8 +611,8 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({
                         onClick={handleBulkCreateAll}
                         disabled={bulkCreatingAll}
                         className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg border transition-all shadow-sm ${bulkCreatingAll
-                                ? 'text-amber-600 bg-amber-50 border-amber-200 cursor-wait'
-                                : 'text-emerald-600 bg-emerald-50 hover:bg-emerald-100 border-emerald-200 hover:shadow'
+                            ? 'text-amber-600 bg-amber-50 border-amber-200 cursor-wait'
+                            : 'text-emerald-600 bg-emerald-50 hover:bg-emerald-100 border-emerald-200 hover:shadow'
                             }`}
                     >
                         {bulkCreatingAll ? (
@@ -604,7 +661,13 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({
                         {expandedPhases[phase.id] && (
                             <div className="mt-2 ml-4 border-l-2 border-gray-200 dark:border-slate-700 pl-4 space-y-2">
                                 {phase.items.map((item) => {
-                                    const linkedTasks = filteredTasks.filter(t => t.TimelineStep === item.code);
+                                    const linkedTasks = filteredTasks
+                                        .filter(t => t.TimelineStep === item.code)
+                                        .sort((a, b) => {
+                                            const dateA = a.StartDate ? new Date(a.StartDate).getTime() : (a.DueDate ? new Date(a.DueDate).getTime() : 0);
+                                            const dateB = b.StartDate ? new Date(b.StartDate).getTime() : (b.DueDate ? new Date(b.DueDate).getTime() : 0);
+                                            return dateA - dateB;
+                                        });
                                     const agg = stepAggregates.get(item.code);
                                     const parentStatus = agg?.status || TaskStatus.Todo;
                                     const isParentDone = parentStatus === TaskStatus.Done;
@@ -703,6 +766,7 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({
                                                                 <th className="px-2 py-1.5 text-left font-medium w-20 hidden sm:table-cell">Phụ trách</th>
                                                                 <th className="px-2 py-1.5 text-left font-medium w-24 hidden sm:table-cell">Hạn</th>
                                                                 <th className="px-2 py-1.5 text-center font-medium w-16">Ưu tiên</th>
+                                                                <th className="px-2 py-1.5 text-center font-medium w-16">Tài liệu</th>
                                                                 <th className="px-2 py-1.5 text-center font-medium w-8"></th>
                                                             </tr>
                                                         </thead>
@@ -772,6 +836,35 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({
                                                                                 {t.Priority}
                                                                             </span>
                                                                         )}
+                                                                    </td>
+                                                                    {/* Upload Attachment */}
+                                                                    <td className="px-2 py-2 text-center">
+                                                                        <div className="flex items-center justify-center gap-1">
+                                                                            <button
+                                                                                onClick={(e) => {
+                                                                                    e.stopPropagation();
+                                                                                    setPendingUploadTaskId(t.TaskID);
+                                                                                    fileInputRef.current?.click();
+                                                                                }}
+                                                                                disabled={uploadingTaskId === t.TaskID}
+                                                                                className={`p-1 rounded transition-colors ${uploadingTaskId === t.TaskID
+                                                                                    ? 'bg-amber-50 text-amber-500'
+                                                                                    : 'hover:bg-blue-50 text-gray-400 hover:text-blue-600'
+                                                                                    }`}
+                                                                                title="Tải tài liệu hoàn thành"
+                                                                            >
+                                                                                {uploadingTaskId === t.TaskID
+                                                                                    ? <div className="w-3.5 h-3.5 border-2 border-amber-300 border-t-amber-600 rounded-full animate-spin" />
+                                                                                    : <Upload className="w-3.5 h-3.5" />
+                                                                                }
+                                                                            </button>
+                                                                            {(attachmentCounts[t.TaskID] || 0) > 0 && (
+                                                                                <span className="flex items-center gap-0.5 text-[9px] px-1 py-0.5 rounded bg-blue-50 text-blue-600 border border-blue-100 font-bold">
+                                                                                    <Paperclip className="w-2.5 h-2.5" />
+                                                                                    {attachmentCounts[t.TaskID]}
+                                                                                </span>
+                                                                            )}
+                                                                        </div>
                                                                     </td>
                                                                     {/* Navigate to Task Detail */}
                                                                     <td className="px-2 py-2 text-center">
@@ -1068,6 +1161,22 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({
                 onClose={() => setSelectedSubTask(null)}
                 onCreateTask={handleSaveTask}
                 project={project}
+            />
+
+            {/* Hidden file input for attachments */}
+            <input
+                ref={fileInputRef}
+                type="file"
+                className="hidden"
+                accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png,.gif,.webp,.zip"
+                onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file && pendingUploadTaskId) {
+                        handleFileUpload(pendingUploadTaskId, file);
+                        setPendingUploadTaskId(null);
+                    }
+                    e.target.value = '';
+                }}
             />
         </div>
     );
