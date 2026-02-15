@@ -1,9 +1,9 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Task, TaskStatus, Employee, ProjectGroup, Project } from '@/types';
+import { Task, TaskStatus, TaskPriority, Employee, ProjectGroup, Project } from '@/types';
 import {
     Layers, CheckCircle2, Circle, Clock, ChevronDown, ChevronRight,
-    FileText, AlertCircle, Plus, Calendar, User, Flag, Zap, Building2, Scale, Info, ExternalLink
+    FileText, AlertCircle, Plus, Calendar, User, Flag, Zap, Building2, Scale, Info, ExternalLink, ListPlus
 } from 'lucide-react';
 import { ProjectGanttChart } from '../ProjectGanttChart';
 import { ProjectTaskModal } from '../ProjectTaskModal';
@@ -16,6 +16,7 @@ import { ResourceAllocationView } from '../ResourceAllocationView';
 import { ProgressBadge } from '../ProgressSlider';
 import { getSubTasksForStep, hasSubTasks, SubTaskDef } from '@/utils/stepSubtasksRegistry';
 import { SubTaskDetailModal } from '../SubTaskDetailModal';
+import { TaskService } from '@/services/TaskService';
 
 interface ProjectPlanTabProps {
     tasks: Task[];
@@ -184,6 +185,7 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({
     // Sub-task registry state
     const [expandedSubTasks, setExpandedSubTasks] = useState<Record<string, boolean>>({});
     const [selectedSubTask, setSelectedSubTask] = useState<{ def: SubTaskDef; stepTitle: string; stepCode: string } | null>(null);
+    const [bulkCreatingStep, setBulkCreatingStep] = useState<string | null>(null);
 
     // 2. Filter Tasks
     const filteredTasks = useMemo(() => {
@@ -408,6 +410,84 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({
             onSaveTask(updatedTask);
         }
         setIsTaskModalOpen(false);
+    };
+
+    // ── Bulk create tasks from workflow sub-steps ──
+    const handleBulkCreateFromSubTasks = async (stepCode: string, stepTitle: string) => {
+        if (!projectID) return;
+        setBulkCreatingStep(stepCode);
+        try {
+            const subTaskDefs = getSubTasksForStep(stepCode, groupCode);
+            if (subTaskDefs.length === 0) return;
+
+            // Calculate base date (same logic as date display)
+            const getBaseDate = (): Date => {
+                if (project?.StartDate) return new Date(project.StartDate);
+                if (project?.ApprovalDate) return new Date(project.ApprovalDate);
+                return new Date();
+            };
+
+            // Already-linked step codes to avoid duplicates
+            const existingTitles = new Set(tasks.filter(t => t.TimelineStep === stepCode).map(t => t.Title));
+
+            // Calculate cumulative days before this step
+            const allPhaseItems = DECREE_175_PHASES.flatMap(p => p.items);
+            const currentIdx = allPhaseItems.findIndex(i => i.code === stepCode);
+            let cumulativeDaysBefore = 0;
+            for (let i = 0; i < currentIdx; i++) {
+                const prevSubs = getSubTasksForStep(allPhaseItems[i].code, groupCode);
+                cumulativeDaysBefore += prevSubs.reduce((sum, s) => sum + (s.estimatedDays || 10), 0);
+            }
+
+            const baseDate = getBaseDate();
+            let runningDays = cumulativeDaysBefore;
+            const newTasks: Task[] = [];
+
+            for (const st of subTaskDefs) {
+                // Skip if task already exists with same title
+                if (existingTitles.has(st.title)) continue;
+
+                const days = st.estimatedDays || 10;
+                const startDate = new Date(baseDate);
+                startDate.setDate(startDate.getDate() + runningDays);
+                const dueDate = new Date(startDate);
+                dueDate.setDate(dueDate.getDate() + days);
+                runningDays += days;
+
+                const task: Task = {
+                    TaskID: `TASK-${projectID}-${stepCode}-${st.code}-${Date.now()}`,
+                    ProjectID: projectID,
+                    Title: st.title,
+                    Description: st.description || `Bước trong quy trình: ${stepTitle}. Phụ trách: ${st.responsible}.${st.legalBasis ? ` Căn cứ: ${st.legalBasis}` : ''}`,
+                    Status: TaskStatus.Todo,
+                    Priority: TaskPriority.Medium,
+                    StartDate: startDate.toISOString(),
+                    DueDate: dueDate.toISOString(),
+                    AssigneeID: st.responsible,
+                    TimelineStep: stepCode,
+                    StepCode: stepCode,
+                    LegalBasis: st.legalBasis || '',
+                    DurationDays: days,
+                    Phase: stepTitle,
+                } as Task;
+                newTasks.push(task);
+            }
+
+            if (newTasks.length === 0) {
+                setBulkCreatingStep(null);
+                return;
+            }
+
+            // Save to DB
+            await TaskService.saveTasks(newTasks);
+
+            // Update local state
+            setTasks(prev => [...prev, ...newTasks]);
+        } catch (error) {
+            console.error('Failed to bulk create tasks:', error);
+        } finally {
+            setBulkCreatingStep(null);
+        }
     };
 
     // Priority color helper
@@ -723,6 +803,45 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({
                                                                 </span>
                                                             </div>
                                                             <div className="flex items-center gap-3">
+                                                                {/* Bulk Create Tasks Button */}
+                                                                {(() => {
+                                                                    const existingCount = tasks.filter(t => t.TimelineStep === item.code).length;
+                                                                    const subCount = subTasks.length;
+                                                                    const allCreated = existingCount >= subCount;
+                                                                    return (
+                                                                        <button
+                                                                            onClick={(e) => {
+                                                                                e.stopPropagation();
+                                                                                handleBulkCreateFromSubTasks(item.code, item.title);
+                                                                            }}
+                                                                            disabled={bulkCreatingStep === item.code || allCreated}
+                                                                            className={`px-2.5 py-1 text-[10px] font-semibold rounded-lg flex items-center gap-1 transition-all ${allCreated
+                                                                                    ? 'bg-emerald-50 text-emerald-600 border border-emerald-200 cursor-default'
+                                                                                    : bulkCreatingStep === item.code
+                                                                                        ? 'bg-amber-50 text-amber-600 border border-amber-200 cursor-wait'
+                                                                                        : 'bg-blue-50 text-blue-600 border border-blue-200 hover:bg-blue-100 hover:shadow-sm'
+                                                                                }`}
+                                                                            title={allCreated ? 'Đã tạo công việc cho tất cả bước' : 'Tạo công việc tự động cho tất cả bước quy trình'}
+                                                                        >
+                                                                            {bulkCreatingStep === item.code ? (
+                                                                                <>
+                                                                                    <div className="w-3 h-3 border-2 border-amber-300 border-t-amber-600 rounded-full animate-spin" />
+                                                                                    Đang tạo...
+                                                                                </>
+                                                                            ) : allCreated ? (
+                                                                                <>
+                                                                                    <CheckCircle2 className="w-3 h-3" />
+                                                                                    Đã tạo {existingCount} việc
+                                                                                </>
+                                                                            ) : (
+                                                                                <>
+                                                                                    <ListPlus className="w-3 h-3" />
+                                                                                    Tạo {subCount} công việc
+                                                                                </>
+                                                                            )}
+                                                                        </button>
+                                                                    );
+                                                                })()}
                                                                 <span className="text-[10px] text-purple-500 dark:text-purple-400 flex items-center gap-1">
                                                                     <Calendar className="w-3 h-3" />
                                                                     ~{totalStepDays} ngày
