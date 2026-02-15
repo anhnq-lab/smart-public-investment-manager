@@ -158,14 +158,14 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
                     value={formatCurrency(summary.totalInvestment)}
                     sub={`Đã bố trí: ${summary.totalAllocated > 0 ? Math.round((summary.totalAllocated / summary.totalInvestment) * 100) : 0}%`}
                     icon={<Coins className="w-5 h-5" />}
-                    iconBg="bg-slate-100 text-slate-600"
+                    iconBg="bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300"
                 />
                 <KPICard
                     label="KH vốn lũy kế"
                     value={formatCurrency(summary.totalAllocated)}
                     sub={`${allocations.length} đợt bố trí`}
                     icon={<Landmark className="w-5 h-5" />}
-                    iconBg="bg-blue-100 text-blue-600"
+                    iconBg="bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400"
                     valueColor="text-blue-700"
                 />
                 <KPICard
@@ -344,10 +344,10 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
                                         </div>
                                     </td>
                                     <td className="px-6 py-4">
-                                        <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${a.Source === 'NganSachTrungUong' ? 'bg-blue-100 text-blue-700' :
-                                            a.Source === 'NganSachDiaPhuong' ? 'bg-purple-100 text-purple-700' :
-                                                a.Source === 'ODA' ? 'bg-cyan-100 text-cyan-700' :
-                                                    'bg-gray-100 text-gray-700'
+                                        <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${a.Source === 'NganSachTrungUong' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300' :
+                                            a.Source === 'NganSachDiaPhuong' ? 'bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300' :
+                                                a.Source === 'ODA' ? 'bg-cyan-100 text-cyan-700 dark:bg-cyan-900/40 dark:text-cyan-300' :
+                                                    'bg-gray-100 text-gray-700 dark:bg-slate-700 dark:text-slate-300'
                                             }`}>
                                             {SOURCE_LABELS[a.Source] || a.Source}
                                         </span>
@@ -436,10 +436,10 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
                                         {d.ContractNumber || '—'}
                                     </td>
                                     <td className="px-4 py-3.5 text-center">
-                                        <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold ${d.Type === 'TamUng' ? 'bg-amber-100 text-amber-700' :
-                                            d.Type === 'ThanhToanKLHT' ? 'bg-blue-100 text-blue-700' :
-                                                d.Type === 'ThuHoiTamUng' ? 'bg-green-100 text-green-700' :
-                                                    'bg-gray-100 text-gray-600'
+                                        <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold ${d.Type === 'TamUng' ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300' :
+                                            d.Type === 'ThanhToanKLHT' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300' :
+                                                d.Type === 'ThuHoiTamUng' ? 'bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300' :
+                                                    'bg-gray-100 text-gray-600 dark:bg-slate-700 dark:text-slate-300'
                                             }`}>
                                             {d.Type === 'TamUng' && <Receipt className="w-3 h-3" />}
                                             {d.Type === 'ThanhToanKLHT' && <DollarSign className="w-3 h-3" />}
@@ -448,7 +448,7 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
                                         </span>
                                     </td>
                                     <td className="px-4 py-3.5 text-center">
-                                        <span className="px-2 py-0.5 bg-gray-100 border border-gray-200 text-gray-600 rounded text-[10px] font-mono font-bold">
+                                        <span className="px-2 py-0.5 bg-gray-100 dark:bg-slate-700 border border-gray-200 dark:border-slate-600 text-gray-600 dark:text-slate-300 rounded text-[10px] font-mono font-bold">
                                             {d.FormType || '—'}
                                         </span>
                                     </td>
@@ -563,7 +563,7 @@ interface KPICardProps {
 }
 
 const KPICard: React.FC<KPICardProps> = ({
-    label, value, sub, icon, iconBg = 'bg-gray-100 text-gray-600',
+    label, value, sub, icon, iconBg = 'bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-slate-300',
     valueColor = 'text-gray-800', progress, progressColor = 'bg-blue-500'
 }) => (
     <div className="bg-white dark:bg-slate-800 p-4 rounded-xl border border-gray-100 dark:border-slate-700 shadow-sm">

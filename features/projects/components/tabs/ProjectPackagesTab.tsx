@@ -59,13 +59,13 @@ export const ProjectPackagesTab: React.FC<ProjectPackagesTabProps> = ({ projectI
 
     const getStatusColor = (status: PackageStatus) => {
         switch (status) {
-            case PackageStatus.Planning: return 'bg-gray-100 text-gray-600 border-gray-200';
-            case PackageStatus.Posted: return 'bg-indigo-100 text-indigo-700 border-indigo-200';
-            case PackageStatus.Bidding: return 'bg-blue-100 text-blue-700 border-blue-200';
-            case PackageStatus.Evaluating: return 'bg-yellow-100 text-yellow-700 border-yellow-200';
-            case PackageStatus.Awarded: return 'bg-green-100 text-green-700 border-green-200';
-            case PackageStatus.Cancelled: return 'bg-red-100 text-red-700 border-red-200';
-            default: return 'bg-gray-100 text-gray-600 border-gray-200';
+            case PackageStatus.Planning: return 'bg-gray-100 text-gray-600 border-gray-200 dark:bg-slate-700 dark:text-slate-300 dark:border-slate-600';
+            case PackageStatus.Posted: return 'bg-indigo-100 text-indigo-700 border-indigo-200 dark:bg-indigo-900/40 dark:text-indigo-300 dark:border-indigo-800';
+            case PackageStatus.Bidding: return 'bg-blue-100 text-blue-700 border-blue-200 dark:bg-blue-900/40 dark:text-blue-300 dark:border-blue-800';
+            case PackageStatus.Evaluating: return 'bg-yellow-100 text-yellow-700 border-yellow-200 dark:bg-yellow-900/40 dark:text-yellow-300 dark:border-yellow-800';
+            case PackageStatus.Awarded: return 'bg-green-100 text-green-700 border-green-200 dark:bg-green-900/40 dark:text-green-300 dark:border-green-800';
+            case PackageStatus.Cancelled: return 'bg-red-100 text-red-700 border-red-200 dark:bg-red-900/40 dark:text-red-300 dark:border-red-800';
+            default: return 'bg-gray-100 text-gray-600 border-gray-200 dark:bg-slate-700 dark:text-slate-300 dark:border-slate-600';
         }
     };
 
@@ -119,8 +119,8 @@ export const ProjectPackagesTab: React.FC<ProjectPackagesTabProps> = ({ projectI
         }
     };
 
-    if (isLoading) return <div className="p-8 text-center text-gray-500">Đang tải dữ liệu gói thầu...</div>;
-    if (error) return <div className="p-8 text-center text-red-500">Không thể tải dữ liệu gói thầu</div>;
+    if (isLoading) return <div className="p-8 text-center text-gray-500 dark:text-slate-400">Đang tải dữ liệu gói thầu...</div>;
+    if (error) return <div className="p-8 text-center text-red-500 dark:text-red-400">Không thể tải dữ liệu gói thầu</div>;
 
     return (
         <div className="space-y-6">
@@ -336,7 +336,7 @@ export const ProjectPackagesTab: React.FC<ProjectPackagesTabProps> = ({ projectI
                                     onClick={() => handleView(pkg)}
                                 >
                                     {/* Checkbox */}
-                                    <td className="border border-slate-200 px-2 py-3 text-center" onClick={(e) => e.stopPropagation()}>
+                                    <td className="border border-slate-200 dark:border-slate-700 px-2 py-3 text-center" onClick={(e) => e.stopPropagation()}>
                                         <input
                                             type="checkbox"
                                             className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
@@ -353,18 +353,18 @@ export const ProjectPackagesTab: React.FC<ProjectPackagesTabProps> = ({ projectI
                                         />
                                     </td>
                                     {/* TT */}
-                                    <td className="border border-slate-200 px-2 py-3 text-center text-slate-600 font-medium">
+                                    <td className="border border-slate-200 dark:border-slate-700 px-2 py-3 text-center text-slate-600 dark:text-slate-300 font-medium">
                                         {index + 1}
                                     </td>
 
                                     {/* Tên chủ đầu tư */}
-                                    <td className="border border-slate-200 px-2 py-3 text-slate-700 align-top">
+                                    <td className="border border-slate-200 dark:border-slate-700 px-2 py-3 text-slate-700 dark:text-slate-300 align-top">
                                         <div className="flex flex-col gap-1">
-                                            <span className="font-medium text-slate-800">Ban QLDA</span>
-                                            <span className={`text-[10px] px-1.5 py-0.5 rounded w-fit ${pkg.Field === 'Construction' ? 'bg-blue-100 text-blue-700' :
-                                                pkg.Field === 'Consultancy' ? 'bg-purple-100 text-purple-700' :
-                                                    pkg.Field === 'Goods' ? 'bg-orange-100 text-orange-700' :
-                                                        'bg-gray-100 text-gray-600'
+                                            <span className="font-medium text-slate-800 dark:text-slate-200">Ban QLDA</span>
+                                            <span className={`text-[10px] px-1.5 py-0.5 rounded w-fit ${pkg.Field === 'Construction' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300' :
+                                                pkg.Field === 'Consultancy' ? 'bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300' :
+                                                    pkg.Field === 'Goods' ? 'bg-orange-100 text-orange-700 dark:bg-orange-900/40 dark:text-orange-300' :
+                                                        'bg-gray-100 text-gray-600 dark:bg-slate-700 dark:text-slate-400'
                                                 }`}>
                                                 {pkg.Field === 'Construction' ? 'Xây lắp' :
                                                     pkg.Field === 'Consultancy' ? 'Tư vấn' :
@@ -374,16 +374,16 @@ export const ProjectPackagesTab: React.FC<ProjectPackagesTabProps> = ({ projectI
                                     </td>
 
                                     {/* Tên gói thầu */}
-                                    <td className="border border-slate-200 px-2 py-3 align-top">
+                                    <td className="border border-slate-200 dark:border-slate-700 px-2 py-3 align-top">
                                         <div className="flex flex-col gap-1">
-                                            <span className="font-bold text-slate-900">{pkg.PackageNumber}</span>
-                                            <span className="text-slate-700 leading-relaxed">{pkg.PackageName}</span>
+                                            <span className="font-bold text-slate-900 dark:text-slate-100">{pkg.PackageNumber}</span>
+                                            <span className="text-slate-700 dark:text-slate-300 leading-relaxed">{pkg.PackageName}</span>
                                             {pkg.NotificationCode && (
                                                 <a
                                                     href={`https://muasamcong.mpi.gov.vn/web/guest/contractor-selection?noticeNo=${pkg.NotificationCode}`}
                                                     target="_blank"
                                                     rel="noopener noreferrer"
-                                                    className="text-[10px] font-mono text-blue-600 hover:underline mt-1"
+                                                    className="text-[10px] font-mono text-blue-600 dark:text-blue-400 hover:underline mt-1"
                                                     onClick={(e) => e.stopPropagation()}
                                                 >
                                                     TBMT: {pkg.NotificationCode}
@@ -393,22 +393,22 @@ export const ProjectPackagesTab: React.FC<ProjectPackagesTabProps> = ({ projectI
                                     </td>
 
                                     {/* Tóm tắt công việc */}
-                                    <td className="border border-slate-200 px-2 py-3 text-slate-600 align-top">
+                                    <td className="border border-slate-200 dark:border-slate-700 px-2 py-3 text-slate-600 dark:text-slate-400 align-top">
                                         {pkg.Description || pkg.PackageName}
                                     </td>
 
                                     {/* Giá gói thầu */}
-                                    <td className="border border-slate-200 px-2 py-3 text-right font-bold text-slate-900 align-top whitespace-nowrap">
+                                    <td className="border border-slate-200 dark:border-slate-700 px-2 py-3 text-right font-bold text-slate-900 dark:text-slate-100 align-top whitespace-nowrap">
                                         {formatCurrency(pkg.Price)}
                                     </td>
 
                                     {/* Nguồn vốn */}
-                                    <td className="border border-slate-200 px-2 py-3 text-slate-600 align-top">
+                                    <td className="border border-slate-200 dark:border-slate-700 px-2 py-3 text-slate-600 dark:text-slate-400 align-top">
                                         {pkg.FundingSource || 'Ngân sách Nhà nước'}
                                     </td>
 
                                     {/* Hình thức LCNT */}
-                                    <td className="border border-slate-200 px-2 py-3 text-slate-700 align-top">
+                                    <td className="border border-slate-200 dark:border-slate-700 px-2 py-3 text-slate-700 dark:text-slate-300 align-top">
                                         <div className="flex flex-col gap-1">
                                             <span className="font-medium">
                                                 {pkg.SelectionMethod === 'OpenBidding' ? 'Đấu thầu rộng rãi' :
@@ -418,14 +418,14 @@ export const ProjectPackagesTab: React.FC<ProjectPackagesTabProps> = ({ projectI
                                                                 pkg.SelectionMethod === 'DirectProcurement' ? 'Mua sắm trực tiếp' :
                                                                     pkg.SelectionMethod}
                                             </span>
-                                            <span className={`text-[10px] ${pkg.BidType === 'Online' ? 'text-blue-600' : 'text-slate-500'}`}>
+                                            <span className={`text-[10px] ${pkg.BidType === 'Online' ? 'text-blue-600 dark:text-blue-400' : 'text-slate-500 dark:text-slate-400'}`}>
                                                 {pkg.BidType === 'Online' ? '(qua mạng)' : '(trực tiếp)'}
                                             </span>
                                         </div>
                                     </td>
 
                                     {/* Phương thức LCNT */}
-                                    <td className="border border-slate-200 px-2 py-3 text-slate-600 align-top">
+                                    <td className="border border-slate-200 dark:border-slate-700 px-2 py-3 text-slate-600 dark:text-slate-400 align-top">
                                         {pkg.SelectionProcedure === 'OneStageOneEnvelope' ? 'Một giai đoạn, hai túi hồ sơ' :
                                             pkg.SelectionProcedure === 'OneStageTwoEnvelope' ? 'Một giai đoạn, hai túi hồ sơ' :
                                                 pkg.SelectionProcedure === 'TwoStageOneEnvelope' ? 'Hai giai đoạn' :
@@ -434,17 +434,17 @@ export const ProjectPackagesTab: React.FC<ProjectPackagesTabProps> = ({ projectI
                                     </td>
 
                                     {/* Thời gian tổ chức LCNT */}
-                                    <td className="border border-slate-200 px-2 py-3 text-center text-slate-600 align-top">
+                                    <td className="border border-slate-200 dark:border-slate-700 px-2 py-3 text-center text-slate-600 dark:text-slate-400 align-top">
                                         {pkg.SelectionDuration || '45 ngày'}
                                     </td>
 
                                     {/* Thời gian bắt đầu tổ chức LCNT */}
-                                    <td className="border border-slate-200 px-2 py-3 text-center text-slate-700 align-top font-medium">
+                                    <td className="border border-slate-200 dark:border-slate-700 px-2 py-3 text-center text-slate-700 dark:text-slate-300 align-top font-medium">
                                         {pkg.SelectionStartDate || (pkg.PostingDate ? new Date(pkg.PostingDate).toLocaleDateString('vi-VN', { month: 'long', year: 'numeric' }) : '-')}
                                     </td>
 
                                     {/* Loại hợp đồng */}
-                                    <td className="border border-slate-200 px-2 py-3 text-center text-slate-700 align-top">
+                                    <td className="border border-slate-200 dark:border-slate-700 px-2 py-3 text-center text-slate-700 dark:text-slate-300 align-top">
                                         {pkg.ContractType === 'LumpSum' ? 'Hợp đồng trọn gói' :
                                             pkg.ContractType === 'UnitPrice' ? 'Đơn giá cố định' :
                                                 pkg.ContractType === 'AdjustableUnitPrice' ? 'Đơn giá điều chỉnh' :
@@ -453,17 +453,17 @@ export const ProjectPackagesTab: React.FC<ProjectPackagesTabProps> = ({ projectI
                                     </td>
 
                                     {/* Thời gian thực hiện */}
-                                    <td className="border border-slate-200 px-2 py-3 text-center text-slate-700 align-top font-medium">
+                                    <td className="border border-slate-200 dark:border-slate-700 px-2 py-3 text-center text-slate-700 dark:text-slate-300 align-top font-medium">
                                         {pkg.Duration || '-'}
                                     </td>
 
                                     {/* Tùy chọn mua thêm */}
-                                    <td className="border border-slate-200 px-2 py-3 text-center text-slate-600 align-top">
+                                    <td className="border border-slate-200 dark:border-slate-700 px-2 py-3 text-center text-slate-600 dark:text-slate-400 align-top">
                                         {pkg.HasOption ? 'Có' : 'Không'}
                                     </td>
 
                                     {/* Trạng thái */}
-                                    <td className="border border-slate-200 px-2 py-3 text-center align-top">
+                                    <td className="border border-slate-200 dark:border-slate-700 px-2 py-3 text-center align-top">
                                         <div className="flex flex-col items-center gap-1.5">
                                             {/* Status Badge */}
                                             <span className={`inline-flex items-center gap-1 px-2 py-1 rounded text-[10px] font-semibold ${getStatusColor(pkg.Status)}`}>
@@ -476,30 +476,30 @@ export const ProjectPackagesTab: React.FC<ProjectPackagesTabProps> = ({ projectI
                                             </span>
                                             {/* Mini Progress Indicator */}
                                             <div className="flex gap-0.5">
-                                                <span className={`w-2 h-1 rounded-full ${pkg.Status === PackageStatus.Planning || pkg.Status === PackageStatus.Posted || pkg.Status === PackageStatus.Bidding || pkg.Status === PackageStatus.Evaluating || pkg.Status === PackageStatus.Awarded ? 'bg-emerald-500' : 'bg-gray-200'}`}></span>
-                                                <span className={`w-2 h-1 rounded-full ${pkg.Status === PackageStatus.Posted || pkg.Status === PackageStatus.Bidding || pkg.Status === PackageStatus.Evaluating || pkg.Status === PackageStatus.Awarded ? 'bg-emerald-500' : 'bg-gray-200'}`}></span>
-                                                <span className={`w-2 h-1 rounded-full ${pkg.Status === PackageStatus.Bidding || pkg.Status === PackageStatus.Evaluating || pkg.Status === PackageStatus.Awarded ? 'bg-emerald-500' : 'bg-gray-200'}`}></span>
-                                                <span className={`w-2 h-1 rounded-full ${pkg.Status === PackageStatus.Evaluating || pkg.Status === PackageStatus.Awarded ? 'bg-emerald-500' : 'bg-gray-200'}`}></span>
-                                                <span className={`w-2 h-1 rounded-full ${pkg.Status === PackageStatus.Awarded ? 'bg-emerald-500' : 'bg-gray-200'}`}></span>
+                                                <span className={`w-2 h-1 rounded-full ${pkg.Status === PackageStatus.Planning || pkg.Status === PackageStatus.Posted || pkg.Status === PackageStatus.Bidding || pkg.Status === PackageStatus.Evaluating || pkg.Status === PackageStatus.Awarded ? 'bg-emerald-500' : 'bg-gray-200 dark:bg-slate-600'}`}></span>
+                                                <span className={`w-2 h-1 rounded-full ${pkg.Status === PackageStatus.Posted || pkg.Status === PackageStatus.Bidding || pkg.Status === PackageStatus.Evaluating || pkg.Status === PackageStatus.Awarded ? 'bg-emerald-500' : 'bg-gray-200 dark:bg-slate-600'}`}></span>
+                                                <span className={`w-2 h-1 rounded-full ${pkg.Status === PackageStatus.Bidding || pkg.Status === PackageStatus.Evaluating || pkg.Status === PackageStatus.Awarded ? 'bg-emerald-500' : 'bg-gray-200 dark:bg-slate-600'}`}></span>
+                                                <span className={`w-2 h-1 rounded-full ${pkg.Status === PackageStatus.Evaluating || pkg.Status === PackageStatus.Awarded ? 'bg-emerald-500' : 'bg-gray-200 dark:bg-slate-600'}`}></span>
+                                                <span className={`w-2 h-1 rounded-full ${pkg.Status === PackageStatus.Awarded ? 'bg-emerald-500' : 'bg-gray-200 dark:bg-slate-600'}`}></span>
                                             </div>
                                             {/* Next Action Hint */}
                                             {pkg.Status === PackageStatus.Planning && (
-                                                <span className="text-[9px] text-gray-400 italic">→ Lập E-HSMT</span>
+                                                <span className="text-[9px] text-gray-400 dark:text-slate-500 italic">→ Lập E-HSMT</span>
                                             )}
                                             {pkg.Status === PackageStatus.Posted && (
-                                                <span className="text-[9px] text-blue-500 italic">→ Chờ mở thầu</span>
+                                                <span className="text-[9px] text-blue-500 dark:text-blue-400 italic">→ Chờ mở thầu</span>
                                             )}
                                             {pkg.Status === PackageStatus.Bidding && (
-                                                <span className="text-[9px] text-amber-600 italic">→ Đang chấm thầu</span>
+                                                <span className="text-[9px] text-amber-600 dark:text-amber-400 italic">→ Đang chấm thầu</span>
                                             )}
                                             {pkg.Status === PackageStatus.Evaluating && (
-                                                <span className="text-[9px] text-yellow-600 italic">→ Chờ phê duyệt</span>
+                                                <span className="text-[9px] text-yellow-600 dark:text-yellow-400 italic">→ Chờ phê duyệt</span>
                                             )}
                                         </div>
                                     </td>
 
                                     {/* Thao tác */}
-                                    <td className="border border-slate-200 px-2 py-3 text-center" onClick={(e) => e.stopPropagation()}>
+                                    <td className="border border-slate-200 dark:border-slate-700 px-2 py-3 text-center" onClick={(e) => e.stopPropagation()}>
                                         <ActionDropdown
                                             pkg={pkg}
                                             isOpen={openDropdownId === pkg.PackageID}
@@ -515,9 +515,9 @@ export const ProjectPackagesTab: React.FC<ProjectPackagesTabProps> = ({ projectI
                             ))}
                             {filteredPackages?.length === 0 && (
                                 <tr>
-                                    <td colSpan={16} className="border border-slate-200 px-6 py-12 text-center text-gray-500">
+                                    <td colSpan={16} className="border border-slate-200 dark:border-slate-700 px-6 py-12 text-center text-gray-500 dark:text-slate-400">
                                         <div className="flex flex-col items-center gap-2">
-                                            <FileText className="w-10 h-10 text-gray-300" />
+                                            <FileText className="w-10 h-10 text-gray-300 dark:text-slate-600" />
                                             <span>Không tìm thấy gói thầu nào</span>
                                         </div>
                                     </td>
@@ -528,10 +528,10 @@ export const ProjectPackagesTab: React.FC<ProjectPackagesTabProps> = ({ projectI
                         {filteredPackages && filteredPackages.length > 0 && (
                             <tfoot>
                                 <tr className="bg-slate-100 dark:bg-slate-700 font-bold">
-                                    <td colSpan={5} className="border border-slate-300 px-3 py-3 text-center text-slate-800">
+                                    <td colSpan={5} className="border border-slate-300 dark:border-slate-600 px-3 py-3 text-center text-slate-800 dark:text-slate-100">
                                         Tổng cộng giá gói thầu: {formatCurrency(filteredPackages.reduce((sum, pkg) => sum + pkg.Price, 0))} đồng
                                     </td>
-                                    <td colSpan={11} className="border border-slate-300"></td>
+                                    <td colSpan={11} className="border border-slate-300 dark:border-slate-600"></td>
                                 </tr>
                             </tfoot>
                         )}
@@ -577,7 +577,7 @@ export const ProjectPackagesTab: React.FC<ProjectPackagesTabProps> = ({ projectI
                     <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setIsDeleteConfirmOpen(false)} />
                     <div className="relative bg-white dark:bg-slate-800 rounded-xl shadow-2xl w-full max-w-md p-6 animate-scale-in">
                         <div className="flex items-center gap-4 mb-4">
-                            <div className="p-3 bg-red-100 rounded-full">
+                            <div className="p-3 bg-red-100 dark:bg-red-900/30 rounded-full">
                                 <AlertTriangle className="w-6 h-6 text-red-600" />
                             </div>
                             <div>
@@ -678,12 +678,12 @@ const ActionDropdown: React.FC<ActionDropdownProps> = ({
                     </button>
                     {pkg.NotificationCode && (
                         <>
-                            <hr className="my-1 border-gray-100" />
+                            <hr className="my-1 border-gray-100 dark:border-slate-700" />
                             <a
                                 href={`https://muasamcong.mpi.gov.vn/web/guest/contractor-selection?noticeNo=${pkg.NotificationCode}`}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="w-full flex items-center gap-2 px-4 py-2 text-sm text-blue-600 hover:bg-blue-50"
+                                className="w-full flex items-center gap-2 px-4 py-2 text-sm text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-slate-700"
                             >
                                 <ExternalLink className="w-4 h-4" />
                                 Xem trên MSC
@@ -697,10 +697,10 @@ const ActionDropdown: React.FC<ActionDropdownProps> = ({
                             </button>
                         </>
                     )}
-                    <hr className="my-1 border-gray-100" />
+                    <hr className="my-1 border-gray-100 dark:border-slate-700" />
                     <button
                         onClick={() => onDelete(pkg)}
-                        className="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50"
+                        className="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20"
                     >
                         <Trash2 className="w-4 h-4" />
                         Xóa
