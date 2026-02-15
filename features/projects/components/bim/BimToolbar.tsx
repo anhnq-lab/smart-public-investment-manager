@@ -9,7 +9,7 @@ import {
     ArrowRight, Grid3X3, Axis3D, Sun, Moon, RotateCcw,
     EyeOff, Focus, Download, Trash2, CircleDot, PenTool,
     Layers, TreePine, PanelLeft, PanelRight, ChevronDown, ChevronUp,
-    Slice, ScanLine, BoxSelect, Pipette, Waypoints
+    Slice, ScanLine, BoxSelect, Pipette, Waypoints, FileUp
 } from 'lucide-react';
 import { useTheme } from '../../../../context/ThemeContext';
 import type { ActiveTool, RenderMode, PanelView, BimToolsAPI } from './useBimTools';
@@ -29,6 +29,7 @@ interface BimToolbarProps {
     measurementCount?: number;
     onSectionAction?: (action: string) => void;
     onMeasureAction?: (action: string) => void;
+    onUpload?: (e: React.ChangeEvent<HTMLInputElement>) => void;
     isCollapsed?: boolean;
     onToggleCollapse?: () => void;
 }
@@ -158,6 +159,7 @@ export const BimToolbar: React.FC<BimToolbarProps> = ({
     onScreenshot, onIsolateSelected, onHideSelected, onShowAll, isMobile,
     clipPlaneCount = 0, measurementCount = 0,
     onSectionAction, onMeasureAction,
+    onUpload,
     isCollapsed = false, onToggleCollapse,
 }) => {
     const { theme } = useTheme();
@@ -332,6 +334,12 @@ export const BimToolbar: React.FC<BimToolbarProps> = ({
             <Divider isDark={isDarkMode} />
 
             {/* ── Extras ──── */}
+            <label className="cursor-pointer">
+                <ToolBtn isDark={isDarkMode} title="Upload IFC">
+                    <FileUp className="w-4 h-4" />
+                </ToolBtn>
+                <input type="file" accept=".ifc" className="hidden" onChange={onUpload} />
+            </label>
             <ToolBtn isDark={isDarkMode} onClick={onScreenshot} title="Screenshot" disabled={disabled}>
                 <Camera className="w-4 h-4" />
             </ToolBtn>

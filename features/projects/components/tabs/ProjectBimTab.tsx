@@ -288,6 +288,7 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
                     measurementCount={measure.measurementCount}
                     onSectionAction={handleSectionAction}
                     onMeasureAction={handleMeasureAction}
+                    onUpload={upload.handleFileUpload}
                     isCollapsed={toolbarCollapsed}
                     onToggleCollapse={() => setToolbarCollapsed(prev => !prev)}
                 />
