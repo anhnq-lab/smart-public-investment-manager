@@ -2,13 +2,15 @@ import React, { useState, useEffect, useMemo } from 'react';
 import {
     X, Building2, Scale, Clock, FileText, ChevronRight,
     Users, Briefcase, Calendar, User, Flag, CheckSquare,
-    AlignLeft, BarChart3, Save, Zap
+    AlignLeft, BarChart3, Save, Zap, Download
 } from 'lucide-react';
 import { SubTaskDef } from '@/utils/stepSubtasksRegistry';
-import { Task, TaskStatus, TaskPriority, Employee } from '@/types';
+import { Task, TaskStatus, TaskPriority, Employee, Project } from '@/types';
 import { mockEmployees } from '@/mockData';
 import { ProgressSlider } from './ProgressSlider';
 import { TemplateViewer } from './TemplateViewer';
+import { TemplateExportModal } from './TemplateExportModal';
+import { getTemplateConfig } from '@/utils/templateRegistry';
 
 interface SubTaskDetailModalProps {
     subTask: SubTaskDef | null;
@@ -17,6 +19,7 @@ interface SubTaskDetailModalProps {
     isOpen: boolean;
     onClose: () => void;
     onCreateTask?: (task: Partial<Task>) => void;
+    project?: Project | null;
 }
 
 // Danh sách đơn vị phụ trách theo mô hình 2 cấp (NĐ 140/2025)
@@ -59,8 +62,11 @@ export const SubTaskDetailModal: React.FC<SubTaskDetailModalProps> = ({
     isOpen,
     onClose,
     onCreateTask,
+    project,
 }) => {
     const [showTemplate, setShowTemplate] = useState(false);
+    const [showExport, setShowExport] = useState(false);
+    const hasExportConfig = subTask?.templatePath ? !!getTemplateConfig(subTask.templatePath) : false;
     const [mode, setMode] = useState<'view' | 'create'>('view');
 
     // Form state
@@ -249,19 +255,40 @@ export const SubTaskDetailModal: React.FC<SubTaskDetailModalProps> = ({
 
                                 {/* Biểu mẫu */}
                                 {subTask.templatePath && (
-                                    <button
-                                        onClick={() => setShowTemplate(true)}
-                                        className="w-full flex items-center gap-3 p-3 rounded-xl bg-cyan-50 border border-cyan-100 hover:bg-cyan-100 transition-colors group"
-                                    >
-                                        <FileText size={18} className="text-cyan-500 shrink-0" />
-                                        <div className="flex-1 text-left">
-                                            <p className="text-xs text-cyan-400 font-medium">Biểu mẫu liên kết</p>
-                                            <p className="text-sm text-cyan-700 font-semibold">
-                                                {subTask.templateLabel || subTask.templatePath}
-                                            </p>
-                                        </div>
-                                        <ChevronRight size={16} className="text-cyan-300 group-hover:text-cyan-600 transition-colors" />
-                                    </button>
+                                    <div className="space-y-2">
+                                        <button
+                                            onClick={() => setShowTemplate(true)}
+                                            className="w-full flex items-center gap-3 p-3 rounded-xl bg-cyan-50 border border-cyan-100 hover:bg-cyan-100 transition-colors group"
+                                        >
+                                            <FileText size={18} className="text-cyan-500 shrink-0" />
+                                            <div className="flex-1 text-left">
+                                                <p className="text-xs text-cyan-400 font-medium">Biểu mẫu liên kết</p>
+                                                <p className="text-sm text-cyan-700 font-semibold">
+                                                    {subTask.templateLabel || subTask.templatePath}
+                                                </p>
+                                            </div>
+                                            <ChevronRight size={16} className="text-cyan-300 group-hover:text-cyan-600 transition-colors" />
+                                        </button>
+                                        {hasExportConfig && (
+                                            <button
+                                                onClick={() => setShowExport(true)}
+                                                className="w-full flex items-center gap-3 p-3 rounded-xl bg-gradient-to-r from-indigo-50 to-purple-50 border border-indigo-200 hover:from-indigo-100 hover:to-purple-100 transition-all group shadow-sm"
+                                            >
+                                                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center shadow">
+                                                    <Download size={14} className="text-white" />
+                                                </div>
+                                                <div className="flex-1 text-left">
+                                                    <p className="text-xs text-indigo-500 font-medium">Xuất văn bản DOCX</p>
+                                                    <p className="text-sm text-indigo-700 font-semibold">
+                                                        Tự động điền dữ liệu dự án
+                                                    </p>
+                                                </div>
+                                                <span className="px-2 py-1 text-[10px] font-bold rounded-full bg-indigo-500 text-white">
+                                                    SMART
+                                                </span>
+                                            </button>
+                                        )}
+                                    </div>
                                 )}
 
                                 {/* CTA to create */}
@@ -499,6 +526,19 @@ export const SubTaskDetailModal: React.FC<SubTaskDetailModalProps> = ({
                     templateLabel={subTask.templateLabel}
                     isOpen={showTemplate}
                     onClose={() => setShowTemplate(false)}
+                />
+            )}
+
+            {/* Template Export Modal */}
+            {subTask.templatePath && hasExportConfig && (
+                <TemplateExportModal
+                    isOpen={showExport}
+                    onClose={() => setShowExport(false)}
+                    templatePath={subTask.templatePath}
+                    templateLabel={subTask.templateLabel}
+                    project={project}
+                    stepTitle={stepTitle}
+                    stepCode={stepCode}
                 />
             )}
         </>

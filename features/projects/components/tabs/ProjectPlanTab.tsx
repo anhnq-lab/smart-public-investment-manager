@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Task, TaskStatus, Employee, ProjectGroup } from '@/types';
+import { Task, TaskStatus, Employee, ProjectGroup, Project } from '@/types';
 import {
     Layers, CheckCircle2, Circle, Clock, ChevronDown, ChevronRight,
     FileText, AlertCircle, Plus, Calendar, User, Flag, Zap, Building2, Scale, Info, ExternalLink
@@ -25,6 +25,7 @@ interface ProjectPlanTabProps {
     currentUserId?: string;
     groupCode?: ProjectGroup;
     isODA?: boolean;
+    project?: Project | null;
 }
 
 /**
@@ -156,7 +157,8 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({
     employees = [],
     currentUserId,
     groupCode = ProjectGroup.C,
-    isODA = false
+    isODA = false,
+    project,
 }) => {
     const navigate = useNavigate();
     // Dynamic phases based on project group
@@ -834,6 +836,7 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({
                 isOpen={!!selectedSubTask}
                 onClose={() => setSelectedSubTask(null)}
                 onCreateTask={handleSaveTask}
+                project={project}
             />
         </div>
     );
