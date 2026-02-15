@@ -32,7 +32,7 @@ const MainLayout: React.FC = () => {
     if (!isAuthenticated) return <Navigate to="/login" />;
 
     return (
-        <div className="flex min-h-screen bg-gray-50">
+        <div className="flex min-h-screen bg-gray-50 dark:bg-slate-950">
             {/* Mobile Overlay */}
             {isSidebarOpen && (
                 <div

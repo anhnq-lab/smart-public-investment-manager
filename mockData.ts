@@ -6,6 +6,7 @@ import {
     PackageIssue, RiskLevel, PackageHealthCheck,
     Folder, ISO19650Status, CapitalPlan, Disbursement, VariationOrder, WorkflowStep
 } from './types';
+import { classifyProject } from './utils/projectCompliance';
 
 // Helper to generate formatted currency
 export const formatCurrency = (amount: number) => {
@@ -43,11 +44,11 @@ const hvctqgProjects = [
         decisionAuthority: "Giám đốc Học viện Chính trị quốc gia Hồ Chí Minh"
     },
     {
-        id: "DA-NOHV-8567",
+        id: "0122118567000",
         name: "Xây dựng tòa nhà ở học viên - Học viện Chính trị quốc gia Hồ Chí Minh",
         total: 597000000000,
         status: ProjectStatus.Execution,
-        projectNumber: "DA-NOHV-8567",
+        projectNumber: "0122118567000",
         version: "00",
         objective: "Xây dựng tòa nhà ở học viên đáp ứng nhu cầu chỗ ở cho học viên, nghiên cứu sinh trong quá trình đào tạo, bồi dưỡng tại Học viện Chính trị quốc gia Hồ Chí Minh.",
         investor: "Ban Quản lý dự án đầu tư xây dựng chuyên ngành",
@@ -105,8 +106,8 @@ export const mockProjects: Project[] = hvctqgProjects.map((p, i) => {
     return {
         ProjectID: p.id,
         ProjectName: p.name,
-        // Luật ĐTC 58/2024 Đ9-11: Ngành giáo dục, văn hóa → A ≥ 1600 tỷ, B ≥ 90 tỷ
-        GroupCode: p.total >= 1600000000000 ? ProjectGroup.A : (p.total >= 90000000000 ? ProjectGroup.B : ProjectGroup.C),
+        // Luật ĐTC 58/2024: Phân loại tự động theo lĩnh vực Giáo dục
+        GroupCode: classifyProject(p.total, ProjectSector.Education),
         InvestmentType: InvestmentType.Public,
         DecisionMakerID: 100,
         TotalInvestment: p.total,
@@ -147,7 +148,7 @@ export const mockProjects: Project[] = hvctqgProjects.map((p, i) => {
         } : {
             IsSynced: true,
             LastSyncDate: '2023-06-15',
-            NationalProjectCode: 'DA-NOHV-8567',
+            NationalProjectCode: '0122118567000',
             SyncError: undefined
         },
 
@@ -421,19 +422,19 @@ mockContractors.push(
 );
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// GÓI THẦU DỰ ÁN NHÀ Ở HỌC VIÊN (DA-NOHV-8567)
+// GÓI THẦU DỰ ÁN NHÀ Ở HỌC VIÊN (0122118567000)
 // 17 gói thầu theo KHLCNT được phê duyệt
 // ═══════════════════════════════════════════════════════════════════════════════
 
 
 export const mockBiddingPackages: BiddingPackage[] = [
     // ═══════════════════════════════════════════════════════════════
-    // 17 GÓI THẦU DỰ ÁN NHÀ Ở HỌC VIÊN (DA-NOHV-8567)
+    // 17 GÓI THẦU DỰ ÁN NHÀ Ở HỌC VIÊN (0122118567000)
     // Nguồn: KHLCNT dự án Xây dựng tòa nhà ở học viên - HVCTQG HCM
     // ═══════════════════════════════════════════════════════════════
     {
         PackageID: "PKG-NOHV-01",
-        ProjectID: "DA-NOHV-8567",
+        ProjectID: "0122118567000",
         PackageNumber: "01",
         PackageName: "Tư vấn thiết kế nội thất",
         Price: 912_752_000,
@@ -450,7 +451,7 @@ export const mockBiddingPackages: BiddingPackage[] = [
     },
     {
         PackageID: "PKG-NOHV-02",
-        ProjectID: "DA-NOHV-8567",
+        ProjectID: "0122118567000",
         PackageNumber: "02",
         PackageName: "Tư vấn thẩm tra thiết kế và dự toán nội thất",
         Price: 113_204_000,
@@ -467,7 +468,7 @@ export const mockBiddingPackages: BiddingPackage[] = [
     },
     {
         PackageID: "PKG-NOHV-03",
-        ProjectID: "DA-NOHV-8567",
+        ProjectID: "0122118567000",
         PackageNumber: "03",
         PackageName: "Tư vấn thẩm định giá nội thất",
         Price: 50_000_000,
@@ -484,7 +485,7 @@ export const mockBiddingPackages: BiddingPackage[] = [
     },
     {
         PackageID: "PKG-NOHV-04",
-        ProjectID: "DA-NOHV-8567",
+        ProjectID: "0122118567000",
         PackageNumber: "04",
         PackageName: "Tư vấn lập hồ sơ mời thầu, đánh giá hồ sơ dự thầu các gói thầu",
         Price: 470_177_000,
@@ -501,7 +502,7 @@ export const mockBiddingPackages: BiddingPackage[] = [
     },
     {
         PackageID: "PKG-NOHV-05",
-        ProjectID: "DA-NOHV-8567",
+        ProjectID: "0122118567000",
         PackageNumber: "05",
         PackageName: "Tư vấn thẩm định hồ sơ mời thầu, thẩm định kết quả lựa chọn nhà thầu các gói thầu",
         Price: 217_024_000,
@@ -518,7 +519,7 @@ export const mockBiddingPackages: BiddingPackage[] = [
     },
     {
         PackageID: "PKG-NOHV-06",
-        ProjectID: "DA-NOHV-8567",
+        ProjectID: "0122118567000",
         PackageNumber: "06",
         PackageName: "Giám sát thi công xây dựng, lắp đặt thiết bị và nội thất",
         Price: 6_073_498_000,
@@ -535,7 +536,7 @@ export const mockBiddingPackages: BiddingPackage[] = [
     },
     {
         PackageID: "PKG-NOHV-07",
-        ProjectID: "DA-NOHV-8567",
+        ProjectID: "0122118567000",
         PackageNumber: "07",
         PackageName: "Quan trắc lún",
         Price: 719_505_000,
@@ -552,7 +553,7 @@ export const mockBiddingPackages: BiddingPackage[] = [
     },
     {
         PackageID: "PKG-NOHV-08",
-        ProjectID: "DA-NOHV-8567",
+        ProjectID: "0122118567000",
         PackageNumber: "08",
         PackageName: "Kiểm toán công trình",
         Price: 1_195_194_000,
@@ -569,7 +570,7 @@ export const mockBiddingPackages: BiddingPackage[] = [
     },
     {
         PackageID: "PKG-NOHV-09",
-        ProjectID: "DA-NOHV-8567",
+        ProjectID: "0122118567000",
         PackageNumber: "09",
         PackageName: "Thí nghiệm cọc",
         Price: 1_218_805_000,
@@ -586,7 +587,7 @@ export const mockBiddingPackages: BiddingPackage[] = [
     },
     {
         PackageID: "PKG-NOHV-10",
-        ProjectID: "DA-NOHV-8567",
+        ProjectID: "0122118567000",
         PackageNumber: "10",
         PackageName: "Bảo hiểm công trình xây dựng và thiết bị",
         Price: 643_493_000,
@@ -603,7 +604,7 @@ export const mockBiddingPackages: BiddingPackage[] = [
     },
     {
         PackageID: "PKG-NOHV-11",
-        ProjectID: "DA-NOHV-8567",
+        ProjectID: "0122118567000",
         PackageNumber: "11",
         PackageName: "Phòng chống mối",
         Price: 462_486_000,
@@ -620,7 +621,7 @@ export const mockBiddingPackages: BiddingPackage[] = [
     },
     {
         PackageID: "PKG-NOHV-12",
-        ProjectID: "DA-NOHV-8567",
+        ProjectID: "0122118567000",
         PackageNumber: "12",
         PackageName: "Thi công xây dựng công trình",
         Price: 428_692_341_000,
@@ -637,7 +638,7 @@ export const mockBiddingPackages: BiddingPackage[] = [
     },
     {
         PackageID: "PKG-NOHV-13",
-        ProjectID: "DA-NOHV-8567",
+        ProjectID: "0122118567000",
         PackageNumber: "13",
         PackageName: "Cung cấp lắp đặt thiết bị điều hòa không khí",
         Price: 28_288_678_000,
@@ -654,7 +655,7 @@ export const mockBiddingPackages: BiddingPackage[] = [
     },
     {
         PackageID: "PKG-NOHV-14",
-        ProjectID: "DA-NOHV-8567",
+        ProjectID: "0122118567000",
         PackageNumber: "14",
         PackageName: "Cung cấp, lắp đặt thiết bị hệ thống thang máy, thang cuốn",
         Price: 30_416_440_000,
@@ -671,7 +672,7 @@ export const mockBiddingPackages: BiddingPackage[] = [
     },
     {
         PackageID: "PKG-NOHV-15",
-        ProjectID: "DA-NOHV-8567",
+        ProjectID: "0122118567000",
         PackageNumber: "15",
         PackageName: "Cung cấp, lắp đặt thiết bị hệ thống điện nhẹ, âm thanh, camera giám sát",
         Description: "Cung cấp, lắp đặt: thiết bị hệ thống điện nhẹ đồng bộ cho dự án theo thiết kế được duyệt; hệ thống thông tin (mạng, thoại, truyền hình); hệ thống âm thanh đầy đủ hoạt động điều khiển trung tâm; hệ thống quản lý và kiểm soát xe ra vào; hệ camera thống giám sát tòa nhà (thiết kế theo hệ thống camera IP)",
@@ -691,7 +692,7 @@ export const mockBiddingPackages: BiddingPackage[] = [
     },
     {
         PackageID: "PKG-NOHV-16",
-        ProjectID: "DA-NOHV-8567",
+        ProjectID: "0122118567000",
         PackageNumber: "16",
         PackageName: "Cung cấp, lắp đặt thiết bị hệ thống máy phát điện, trạm biến áp",
         Price: 15_991_945_000,
@@ -708,7 +709,7 @@ export const mockBiddingPackages: BiddingPackage[] = [
     },
     {
         PackageID: "PKG-NOHV-17",
-        ProjectID: "DA-NOHV-8567",
+        ProjectID: "0122118567000",
         PackageNumber: "17",
         PackageName: "Cung cấp, lắp đặt hệ thống trang thiết bị nội thất (Bao gồm: trang thiết bị nội thất phòng ở, doanh cụ phòng ăn, thiết bị bếp)",
         Description: "Cung cấp, lắp đặt trang thiết bị nội thất sinh hoạt cho toàn bộ khu nhà ở học viên 380 phòng (bao gồm: giường ngủ, tủ quần áo, bàn ghế làm việc, bàn ghế uống nước, quạt, ti vi, chăn ga gối đệm...); khu sảnh, lễ tân (bàn quầy, vách ngăn); khu nhà bếp (bao gồm 48 bộ bàn ghế phòng ăn và toàn bộ doanh cụ, thiết bị bếp)",
@@ -1680,11 +1681,11 @@ const generateDefaultTasks = (): Task[] => {
 
     // ============================================================
     // COMPREHENSIVE TASK DATA FOR NHÀ Ở HỌC VIÊN
-    // Project: DA-NOHV-8567 - Xây dựng tòa nhà ở học viên
+    // Project: 0122118567000 - Xây dựng tòa nhà ở học viên
     // Nhóm B, 597 tỷ, 2021-2025, ĐÃ HOÀN THÀNH
     // 16 tầng + 2 tầng hầm, 135 Nguyễn Phong Sắc, Cầu Giấy, HN
     // ============================================================
-    const nohvProjectId = 'DA-NOHV-8567';
+    const nohvProjectId = '0122118567000';
 
     // PHASE 1: GIAI ĐOẠN CHUẨN BỊ DỰ ÁN (All completed, 2021)
     tasks.push(

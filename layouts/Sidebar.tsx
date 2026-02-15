@@ -56,7 +56,7 @@ const Sidebar: React.FC<SidebarProps> = ({
 }) => {
   return (
     <div className={`
-            h-full flex flex-col justify-between py-6 bg-white border-r border-gray-100
+            h-full flex flex-col justify-between py-6 bg-white dark:bg-slate-900 border-r border-gray-100 dark:border-slate-800
             transition-all duration-300 ease-out
             ${isCollapsed ? 'w-20 px-2' : 'w-64 px-4'}
         `}>
@@ -71,8 +71,8 @@ const Sidebar: React.FC<SidebarProps> = ({
           </div>
           {!isCollapsed && (
             <div className="animate-fade-in">
-              <h1 className="text-lg font-bold text-gray-800 leading-tight">Ban QLDA ĐTXD CN</h1>
-              <p className="text-xs text-gray-500 font-medium">Học viện CTQG HCM</p>
+              <h1 className="text-lg font-bold text-gray-800 dark:text-slate-100 leading-tight">Ban QLDA ĐTXD CN</h1>
+              <p className="text-xs text-gray-500 dark:text-slate-400 font-medium">Học viện CTQG HCM</p>
             </div>
           )}
         </div>
@@ -90,8 +90,8 @@ const Sidebar: React.FC<SidebarProps> = ({
                                 transition-all duration-200 group relative
                                 ${isCollapsed ? 'justify-center' : ''}
                                 ${isActive
-                  ? 'bg-primary-50 text-primary-600 font-semibold shadow-sm'
-                  : 'text-gray-500 hover:bg-gray-50 hover:text-gray-800'
+                  ? 'bg-primary-50 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400 font-semibold shadow-sm'
+                  : 'text-gray-500 dark:text-slate-400 hover:bg-gray-50 dark:hover:bg-slate-800 hover:text-gray-800 dark:hover:text-slate-200'
                 }
                             `}
             >
@@ -125,7 +125,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                   {isCollapsed && (
                     <span className="
                                             absolute left-full ml-2 px-2 py-1 
-                                            bg-gray-800 text-white text-xs rounded-lg
+                                            bg-gray-800 dark:bg-slate-700 text-white text-xs rounded-lg
                                             opacity-0 group-hover:opacity-100 pointer-events-none
                                             whitespace-nowrap z-50 shadow-lg
                                             transition-opacity duration-200
@@ -141,14 +141,14 @@ const Sidebar: React.FC<SidebarProps> = ({
       </div>
 
       {/* Footer */}
-      <div className="space-y-1 pt-4 border-t border-gray-100">
+      <div className="space-y-1 pt-4 border-t border-gray-100 dark:border-slate-800">
         {/* Collapse Toggle */}
         {onToggleCollapse && (
           <button
             onClick={onToggleCollapse}
             className={`
                             w-full flex items-center gap-3 px-3 py-2.5 rounded-xl
-                            text-gray-400 hover:bg-gray-50 hover:text-gray-600
+                            text-gray-400 dark:text-slate-500 hover:bg-gray-50 dark:hover:bg-slate-800 hover:text-gray-600 dark:hover:text-slate-300
                             transition-all duration-200
                             ${isCollapsed ? 'justify-center' : ''}
                         `}
@@ -170,7 +170,7 @@ const Sidebar: React.FC<SidebarProps> = ({
           to="/settings"
           className={`
                         flex items-center gap-3 px-3 py-2.5 rounded-xl
-                        text-gray-500 hover:bg-gray-50 hover:text-gray-800
+                        text-gray-500 dark:text-slate-400 hover:bg-gray-50 dark:hover:bg-slate-800 hover:text-gray-800 dark:hover:text-slate-200
                         transition-colors
                         ${isCollapsed ? 'justify-center' : ''}
                     `}
@@ -185,7 +185,7 @@ const Sidebar: React.FC<SidebarProps> = ({
           onClick={() => {/* Handle logout */ }}
           className={`
                         w-full flex items-center gap-3 px-3 py-2.5 rounded-xl
-                        text-danger-500 hover:bg-danger-50
+                        text-danger-500 hover:bg-danger-50 dark:hover:bg-danger-900/20
                         transition-colors
                         ${isCollapsed ? 'justify-center' : ''}
                     `}

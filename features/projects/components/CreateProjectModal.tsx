@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { X, Building2, Calendar, DollarSign, MapPin, User, Clock, FileText, HardHat, Search, Shield } from 'lucide-react';
 import { ProjectGroup, InvestmentType, Project } from '../../../types';
-import { generateProjectCode } from '../../../utils/projectCodeGenerator';
+import { generateProjectCode, ConstructionType, PermitType } from '../../../utils/projectCodeGenerator';
 
 interface CreateProjectModalProps {
     isOpen: boolean;
@@ -10,8 +10,12 @@ interface CreateProjectModalProps {
 }
 
 const CONSTRUCTION_TYPES = [
-    'Dân dụng', 'Công nghiệp', 'Giao thông', 'Nông nghiệp & PTNT',
-    'Hạ tầng kỹ thuật', 'Quốc phòng, an ninh'
+    { value: ConstructionType.Civil, label: 'Dân dụng' },
+    { value: ConstructionType.Industrial, label: 'Công nghiệp' },
+    { value: ConstructionType.Transport, label: 'Giao thông' },
+    { value: ConstructionType.Agriculture, label: 'Nông nghiệp & PTNT' },
+    { value: ConstructionType.Infrastructure, label: 'Hạ tầng kỹ thuật' },
+    { value: ConstructionType.Defense, label: 'Quốc phòng, an ninh' },
 ];
 
 const CONSTRUCTION_GRADES = [
@@ -86,14 +90,32 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ isOpen, 
         ReviewContractor: '',
     });
 
-    // Auto-generate Project Code
+    // Auto-generate Project Code theo TT 24/2025/TT-BXD
     useEffect(() => {
         if (isOpen) {
             const year = new Date(formData.StartDate).getFullYear();
-            const code = generateProjectCode(formData.ProvinceCode, formData.GroupCode, formData.InvestmentType, year);
+            // Map ConstructionType string to enum, default to Civil
+            const ctMap: Record<string, ConstructionType> = {
+                'Dân dụng': ConstructionType.Civil,
+                'Công nghiệp': ConstructionType.Industrial,
+                'Giao thông': ConstructionType.Transport,
+                'Nông nghiệp & PTNT': ConstructionType.Agriculture,
+                'Hạ tầng kỹ thuật': ConstructionType.Infrastructure,
+                'Quốc phòng, an ninh': ConstructionType.Defense,
+            };
+            const ct = ctMap[formData.ConstructionType] || ConstructionType.Civil;
+            const code = generateProjectCode(
+                formData.ProvinceCode,
+                formData.GroupCode,
+                formData.InvestmentType,
+                year,
+                undefined, // random sequence
+                ct,
+                PermitType.Standard // default to standard permit
+            );
             setFormData(prev => ({ ...prev, ProjectID: code }));
         }
-    }, [isOpen, formData.GroupCode, formData.InvestmentType, formData.StartDate, formData.ProvinceCode]);
+    }, [isOpen, formData.GroupCode, formData.InvestmentType, formData.StartDate, formData.ProvinceCode, formData.ConstructionType]);
 
     if (!isOpen) return null;
 
@@ -217,7 +239,7 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ isOpen, 
                                 >
                                     <option value="">-- Chọn loại --</option>
                                     {CONSTRUCTION_TYPES.map(t => (
-                                        <option key={t} value={t}>{t}</option>
+                                        <option key={t.value} value={t.label}>{t.label}</option>
                                     ))}
                                 </select>
                             </div>

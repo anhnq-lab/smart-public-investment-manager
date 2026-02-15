@@ -10,12 +10,47 @@ import {
     ProjectStage
 } from '../types';
 
-// ═══════════════════════════════════════════════════════════════
-// PHÂN LOẠI DỰ ÁN
-// ═══════════════════════════════════════════════════════════════
+/**
+ * Xác định nhóm lĩnh vực (Khoản) theo Điều 9 Luật ĐTC 58/2024
+ * @returns 'K2' | 'K3' | 'K4' | 'K5'
+ */
+export function getSectorTier(sector: ProjectSector): 'K2' | 'K3' | 'K4' | 'K5' {
+    switch (sector) {
+        // Khoản 2: GT lớn, CN điện, Dầu khí, Luyện kim, Khu nhà ở
+        case ProjectSector.TransportMajor:
+        case ProjectSector.PowerIndustry:
+        case ProjectSector.OilGas:
+        case ProjectSector.HeavyIndustry:
+        case ProjectSector.ResidentialHousing:
+            return 'K2';
+
+        // Khoản 3: GT khác, Thủy lợi, Viễn thông, Vật liệu XD
+        case ProjectSector.Transport:
+        case ProjectSector.WaterResources:
+        case ProjectSector.Telecom:
+        case ProjectSector.BuildingMaterials:
+            return 'K3';
+
+        // Khoản 4: Nông lâm, Khu đô thị, CN khác
+        case ProjectSector.Agriculture:
+        case ProjectSector.UrbanInfra:
+        case ProjectSector.Industry:
+            return 'K4';
+
+        // Khoản 5: Y tế, GD, Văn hóa, KHCN, khác
+        case ProjectSector.Health:
+        case ProjectSector.Education:
+        case ProjectSector.Culture:
+        case ProjectSector.Technology:
+        case ProjectSector.Other:
+        default:
+            return 'K5';
+    }
+}
 
 /**
- * Tự động phân loại nhóm dự án theo Luật ĐTC 58/2024
+ * Tự động phân loại nhóm dự án theo Luật ĐTC 58/2024/QH15
+ * Căn cứ Điều 8 (QN), 9 (A), 10 (B), 11 (C)
  * @param totalInvestment - Tổng mức đầu tư (VND)
  * @param sector - Lĩnh vực đầu tư
  * @param isNationalImportance - Có phải dự án quan trọng quốc gia không
@@ -26,54 +61,19 @@ export function classifyProject(
     sector: ProjectSector,
     isNationalImportance: boolean = false
 ): ProjectGroup {
-    // Quan trọng quốc gia - theo flag hoặc ngưỡng 30.000 tỷ
+    // Quan trọng quốc gia - Điều 8
     if (isNationalImportance ||
         totalInvestment >= PROJECT_THRESHOLDS_2024.NATIONAL_IMPORTANCE) {
         return ProjectGroup.QN;
     }
 
-    const thresholds = PROJECT_THRESHOLDS_2024;
+    const tier = getSectorTier(sector);
+    const thresholdA = PROJECT_THRESHOLDS_2024.GROUP_A[tier];
+    const thresholdC = PROJECT_THRESHOLDS_2024.GROUP_C[tier];
 
-    switch (sector) {
-        case ProjectSector.Transport:
-        case ProjectSector.Industry:
-            if (totalInvestment >= thresholds.GROUP_A.TRANSPORT_INDUSTRY)
-                return ProjectGroup.A;
-            if (totalInvestment >= thresholds.GROUP_C.TRANSPORT_INDUSTRY)
-                return ProjectGroup.B;
-            return ProjectGroup.C;
-
-        case ProjectSector.WaterResources:
-            if (totalInvestment >= thresholds.GROUP_A.WATER_RESOURCES)
-                return ProjectGroup.A;
-            if (totalInvestment >= thresholds.GROUP_C.WATER_RESOURCES)
-                return ProjectGroup.B;
-            return ProjectGroup.C;
-
-        case ProjectSector.Agriculture:
-            if (totalInvestment >= thresholds.GROUP_A.AGRICULTURE)
-                return ProjectGroup.A;
-            if (totalInvestment >= thresholds.GROUP_C.AGRICULTURE)
-                return ProjectGroup.B;
-            return ProjectGroup.C;
-
-        case ProjectSector.Health:
-        case ProjectSector.Education:
-        case ProjectSector.Technology:
-            if (totalInvestment >= thresholds.GROUP_A.SOCIAL)
-                return ProjectGroup.A;
-            if (totalInvestment >= thresholds.GROUP_C.SOCIAL)
-                return ProjectGroup.B;
-            return ProjectGroup.C;
-
-        default:
-            // Sector.Other - áp dụng ngưỡng thấp nhất (SOCIAL)
-            if (totalInvestment >= thresholds.GROUP_A.SOCIAL)
-                return ProjectGroup.A;
-            if (totalInvestment >= thresholds.GROUP_C.SOCIAL)
-                return ProjectGroup.B;
-            return ProjectGroup.C;
-    }
+    if (totalInvestment >= thresholdA) return ProjectGroup.A;
+    if (totalInvestment >= thresholdC) return ProjectGroup.B;
+    return ProjectGroup.C;
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -164,12 +164,25 @@ export function getStageLabel(stage: ProjectStage): string {
 /** Tên lĩnh vực tiếng Việt */
 export function getSectorLabel(sector: ProjectSector): string {
     const labels: Record<ProjectSector, string> = {
+        // K2
+        [ProjectSector.TransportMajor]: 'Giao thông (trọng điểm)',
+        [ProjectSector.PowerIndustry]: 'Công nghiệp điện',
+        [ProjectSector.OilGas]: 'Khai thác dầu khí',
+        [ProjectSector.HeavyIndustry]: 'Luyện kim, Xi măng, Chế tạo máy',
+        [ProjectSector.ResidentialHousing]: 'Xây dựng khu nhà ở',
+        // K3
         [ProjectSector.Transport]: 'Giao thông',
-        [ProjectSector.Industry]: 'Công nghiệp',
-        [ProjectSector.Agriculture]: 'Nông lâm ngư nghiệp',
         [ProjectSector.WaterResources]: 'Thủy lợi, cấp thoát nước',
+        [ProjectSector.Telecom]: 'Bưu chính, viễn thông',
+        [ProjectSector.BuildingMaterials]: 'Vật liệu xây dựng',
+        // K4
+        [ProjectSector.Agriculture]: 'Nông lâm ngư nghiệp',
+        [ProjectSector.UrbanInfra]: 'Hạ tầng khu đô thị',
+        [ProjectSector.Industry]: 'Công nghiệp',
+        // K5
         [ProjectSector.Health]: 'Y tế',
         [ProjectSector.Education]: 'Giáo dục',
+        [ProjectSector.Culture]: 'Văn hóa, thể thao',
         [ProjectSector.Technology]: 'Khoa học công nghệ',
         [ProjectSector.Other]: 'Khác'
     };

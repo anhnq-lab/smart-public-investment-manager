@@ -33,40 +33,60 @@ export enum ProjectStage {
     Completion = 'Completion'      // GĐ Kết thúc xây dựng
 }
 
-/** Lĩnh vực đầu tư */
+/**
+ * Lĩnh vực đầu tư - theo Điều 9 Luật ĐTC 58/2024/QH15
+ * Phân thành 5 nhóm lĩnh vực (Khoản 1-5 Điều 9) với ngưỡng khác nhau
+ */
 export enum ProjectSector {
-    Transport = 'Transport',           // Giao thông
-    Industry = 'Industry',             // Công nghiệp
-    Agriculture = 'Agriculture',       // Nông lâm ngư nghiệp
-    WaterResources = 'WaterResources', // Thủy lợi, cấp thoát nước
-    Health = 'Health',                 // Y tế
-    Education = 'Education',           // Giáo dục
-    Technology = 'Technology',         // Khoa học công nghệ
-    Other = 'Other'                    // Khác
+    // === Khoản 2 Điều 9: Nhóm A ≥ 4.600 tỷ ===
+    TransportMajor = 'TransportMajor',       // GT: cầu, cảng biển, sân bay, đường sắt, đường QG
+    PowerIndustry = 'PowerIndustry',         // Công nghiệp điện
+    OilGas = 'OilGas',                       // Khai thác dầu khí
+    HeavyIndustry = 'HeavyIndustry',         // Xi măng, Luyện kim, Chế tạo máy
+    ResidentialHousing = 'ResidentialHousing', // Xây dựng khu nhà ở
+
+    // === Khoản 3 Điều 9: Nhóm A ≥ 3.000 tỷ ===
+    Transport = 'Transport',                 // Giao thông (khác K2)
+    WaterResources = 'WaterResources',       // Thủy lợi, cấp thoát nước
+    Telecom = 'Telecom',                     // Bưu chính, viễn thông
+    BuildingMaterials = 'BuildingMaterials', // Sản xuất vật liệu, Kỹ thuật điện
+
+    // === Khoản 4 Điều 9: Nhóm A ≥ 2.000 tỷ ===
+    Agriculture = 'Agriculture',             // Nông lâm ngư nghiệp
+    UrbanInfra = 'UrbanInfra',               // Hạ tầng khu đô thị mới
+    Industry = 'Industry',                   // Công nghiệp (khác K2, K3)
+
+    // === Khoản 5 Điều 9: Nhóm A ≥ 1.600 tỷ ===
+    Health = 'Health',                       // Y tế
+    Education = 'Education',                 // Giáo dục
+    Culture = 'Culture',                     // Văn hóa, thể thao
+    Technology = 'Technology',               // Khoa học công nghệ
+    Other = 'Other'                          // Các lĩnh vực khác
 }
 
 /**
  * Ngưỡng phân loại dự án - Luật Đầu tư công 58/2024/QH15
+ * Căn cứ Điều 8, 9, 10, 11
  * Đơn vị: VND
  */
 export const PROJECT_THRESHOLDS_2024 = {
-    // Quan trọng quốc gia
+    // Quan trọng quốc gia (Điều 8)
     NATIONAL_IMPORTANCE: 30_000_000_000_000, // 30.000 tỷ
 
-    // Nhóm A - theo lĩnh vực
+    // Nhóm A - theo nhóm lĩnh vực (Điều 9)
     GROUP_A: {
-        TRANSPORT_INDUSTRY: 1_600_000_000_000,   // 1.600 tỷ
-        WATER_RESOURCES: 1_200_000_000_000,      // 1.200 tỷ
-        AGRICULTURE: 1_000_000_000_000,          // 1.000 tỷ
-        SOCIAL: 900_000_000_000                  // 900 tỷ (Y tế, GD, KHCN)
+        K2: 4_600_000_000_000,   // 4.600 tỷ - GT lớn, CN điện, Dầu khí, Luyện kim, Khu nhà ở
+        K3: 3_000_000_000_000,   // 3.000 tỷ - GT khác, Thủy lợi, Viễn thông, Vật liệu XD
+        K4: 2_000_000_000_000,   // 2.000 tỷ - Nông lâm, Khu đô thị, CN khác
+        K5: 1_600_000_000_000,   // 1.600 tỷ - Y tế, GD, Văn hóa, KHCN, khác
     },
 
-    // Nhóm C - dưới ngưỡng này
+    // Nhóm B/C - ngưỡng dưới (Điều 10, 11): dưới mức này → Nhóm C
     GROUP_C: {
-        TRANSPORT_INDUSTRY: 240_000_000_000,     // 240 tỷ
-        WATER_RESOURCES: 160_000_000_000,        // 160 tỷ
-        AGRICULTURE: 120_000_000_000,            // 120 tỷ
-        SOCIAL: 90_000_000_000                   // 90 tỷ
+        K2: 240_000_000_000,     // 240 tỷ
+        K3: 160_000_000_000,     // 160 tỷ
+        K4: 120_000_000_000,     // 120 tỷ
+        K5: 90_000_000_000,      // 90 tỷ
     },
 
     // Thời hạn bố trí vốn tối đa (năm)
