@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, RefreshCw, MapPin } from 'lucide-react';
+import { ArrowLeft, RefreshCw, MapPin, Trash2 } from 'lucide-react';
 import { Project, ProjectStatus } from '@/types';
 
 interface ProjectHeaderProps {
@@ -8,9 +8,10 @@ interface ProjectHeaderProps {
     onSync: () => void;
     isSyncing: boolean;
     syncResult: any;
+    onDelete?: () => void;
 }
 
-export const ProjectHeader: React.FC<ProjectHeaderProps> = ({ project, onSync, isSyncing, syncResult }) => {
+export const ProjectHeader: React.FC<ProjectHeaderProps> = ({ project, onSync, isSyncing, syncResult, onDelete }) => {
     const navigate = useNavigate();
 
     return (
@@ -42,6 +43,16 @@ export const ProjectHeader: React.FC<ProjectHeaderProps> = ({ project, onSync, i
                     </button>
                 </div>
 
+                {/* Delete Button */}
+                {onDelete && (
+                    <button
+                        onClick={onDelete}
+                        className="ml-auto p-2 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl transition-all border border-transparent hover:border-red-200 dark:hover:border-red-800 text-gray-400 hover:text-red-600 dark:hover:text-red-400"
+                        title="Xoá dự án"
+                    >
+                        <Trash2 className="w-5 h-5" />
+                    </button>
+                )}
             </div>
         </div>
     );

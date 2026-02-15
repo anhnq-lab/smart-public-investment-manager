@@ -58,6 +58,7 @@ class BimErrorBoundary extends React.Component<
 const ProjectDetail: React.FC = () => {
     const { id } = useParams<{ id: string }>();
     const location = useLocation();
+    const navigate = useNavigate();
 
     // State
     const [project, setProject] = useState<Project | null>(null);
@@ -146,6 +147,18 @@ const ProjectDetail: React.FC = () => {
     if (loading) return <div className="flex h-screen items-center justify-center text-blue-600 dark:text-blue-400">Loading Project...</div>;
     if (!project) return <div className="flex h-screen items-center justify-center font-bold text-gray-500 dark:text-slate-400">Dự án không tồn tại.</div>;
 
+    const handleDeleteProject = async () => {
+        const confirmed = window.confirm(`Bạn có chắc muốn xoá dự án "${project.ProjectName}"?\n\nHành động này không thể hoàn tác. Tất cả dữ liệu liên quan (công việc, tài liệu, gói thầu...) sẽ bị xoá.`);
+        if (!confirmed) return;
+        try {
+            await ProjectService.delete(project.ProjectID);
+            navigate('/projects');
+        } catch (err) {
+            console.error('Delete project failed:', err);
+            alert('Xoá dự án thất bại. Vui lòng thử lại.');
+        }
+    };
+
     return (
         <div className="flex flex-col h-[calc(100vh-120px)] bg-[#F8FAFC] dark:bg-slate-900">
             {/* Fixed Header + Tabs — does NOT scroll */}
@@ -156,6 +169,7 @@ const ProjectDetail: React.FC = () => {
                     onSync={handleSync}
                     isSyncing={isSyncing}
                     syncResult={syncResult}
+                    onDelete={handleDeleteProject}
                 />
 
                 {/* 2. Tab Navigation */}
