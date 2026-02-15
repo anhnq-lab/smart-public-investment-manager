@@ -151,13 +151,36 @@ export const TEMPLATE_REGISTRY: Record<string, TemplateConfig> = {
 
     'mau-03-bc-de-xuat-chu-truong-dt.md': {
         templatePath: 'mau-03-bc-de-xuat-chu-truong-dt.md',
-        label: 'BC đề xuất chủ trương đầu tư',
-        shortLabel: 'Mẫu 03 – BC ĐX CTĐT',
+        label: 'BC đề xuất chủ trương đầu tư (Nhóm B, C)',
+        shortLabel: 'Mẫu 04 – BC ĐX CTĐT',
         category: 'preparation',
         dataContext: ['project'],
         icon: '📑',
-        legalBasis: 'Đ34-35 Luật ĐTC 58',
-        fields: [...projectInfoFields, ...documentFields],
+        legalBasis: 'Mẫu số 04, Phụ lục 2 Luật ĐTC 58/2024',
+        description: 'Báo cáo đề xuất chủ trương đầu tư dự án nhóm B, nhóm C theo Điều 34-35 Luật ĐTC 58/2024',
+        fields: [
+            // === Thông tin văn bản ===
+            { key: 'tenCoQuan', label: 'Tên cơ quan lập', type: 'text', required: true, autoFillFrom: autoProject.investorName, placeholder: 'Ban QLDA ĐTXD chuyên ngành' },
+            { key: 'documentNumber', label: 'Số văn bản', type: 'text', placeholder: '…/BC-BQLDA' },
+            { key: 'documentDate', label: 'Ngày văn bản', type: 'date' },
+            { key: 'locationName', label: 'Nơi lập', type: 'text', placeholder: 'Hà Nội' },
+            { key: 'kinhGui', label: 'Kính gửi (cơ quan QĐ CTĐT)', type: 'text', required: true, autoFillFrom: autoProject.decisionAuthority, placeholder: 'Giám đốc Học viện CTQG HCM' },
+            // === Phần I: Thông tin chung ===
+            { key: 'projectName', label: 'Tên dự án', type: 'text', required: true, autoFillFrom: autoProject.name },
+            { key: 'projectGroup', label: 'Nhóm dự án (B/C)', type: 'select', options: ['B', 'C'], autoFillFrom: autoProject.group },
+            { key: 'capQuyetDinh', label: 'Cấp QĐ đầu tư', type: 'text', autoFillFrom: autoProject.decisionAuthority, placeholder: 'Giám đốc Học viện CTQG HCM' },
+            { key: 'investorName', label: 'Chủ đầu tư', type: 'text', autoFillFrom: autoProject.investorName },
+            { key: 'location', label: 'Địa điểm thực hiện', type: 'text', autoFillFrom: autoProject.location },
+            { key: 'totalInvestment', label: 'Tổng mức đầu tư (VNĐ)', type: 'number', autoFillFrom: autoProject.totalInvestment },
+            { key: 'capitalSource', label: 'Nguồn vốn', type: 'select', autoFillFrom: autoProject.capitalSource, options: ['Ngân sách Nhà nước', 'Ngân sách Trung ương', 'Ngân sách địa phương', 'Vốn ODA', 'Vốn hỗn hợp'] },
+            { key: 'duration', label: 'Thời gian thực hiện', type: 'text', autoFillFrom: autoProject.duration },
+            // === Phần II: Nội dung chủ yếu (Điều 35) ===
+            { key: 'suCanThiet', label: 'Sự cần thiết đầu tư', type: 'textarea', autoFillFrom: autoProject.objective },
+            { key: 'mucTieu', label: 'Mục tiêu đầu tư', type: 'textarea' },
+            { key: 'quyMo', label: 'Quy mô đầu tư', type: 'textarea' },
+            // === Người ký ===
+            ...signerFields,
+        ],
     },
 
     'mau-04-bc-ket-qua-tham-dinh-chu-truong.md': {

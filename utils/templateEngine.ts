@@ -99,6 +99,62 @@ export function replacePlaceholders(
         result = result.replace(/Chủ đầu tư:\s*$/gm, `Chủ đầu tư: ${formData.investorName}`);
     }
 
+    // ── Generic {{placeholder}} replacement ──
+    // Handles new template format with {{key}} placeholders
+    // Special date fields from documentDate
+    if (formData.documentDate) {
+        const d = new Date(formData.documentDate);
+        if (!isNaN(d.getTime())) {
+            result = result.replaceAll('{{ngay}}', String(d.getDate()));
+            result = result.replaceAll('{{thang}}', String(d.getMonth() + 1));
+            result = result.replaceAll('{{nam}}', String(d.getFullYear()));
+        }
+    }
+    // Special: format totalInvestment with currency
+    if (formData.totalInvestment) {
+        const num = parseFloat(formData.totalInvestment.replace(/[,.]/g, ''));
+        if (!isNaN(num)) {
+            result = result.replaceAll('{{tongMucDauTu}}', formatCurrencyVN(num) + ' đồng');
+        }
+    }
+    // Map form field keys to template placeholder names
+    const fieldMapping: Record<string, string> = {
+        tenDuAn: formData.projectName || '',
+        nhomDuAn: formData.projectGroup ? `Nhóm ${formData.projectGroup}` : '',
+        chuDauTu: formData.investorName || '',
+        diaDiemDuAn: formData.location || '',
+        nguonVon: formData.capitalSource || '',
+        thoiGianThucHien: formData.duration || '',
+        tenCoQuan: formData.tenCoQuan || formData.investorName || '',
+        soVanBan: formData.documentNumber || '……',
+        diaDiem: formData.locationName || 'Hà Nội',
+        kinhGui: formData.kinhGui || formData.recipientAuthority || '',
+        capQuyetDinh: formData.capQuyetDinh || '',
+        suCanThiet: formData.suCanThiet || '...',
+        mucTieu: formData.mucTieu || '...',
+        quyMo: formData.quyMo || '...',
+        phanLoaiDuAn: formData.projectGroup ? `Nhóm ${formData.projectGroup}` : '...',
+        chucDanh: formData.signerTitle || 'ĐẠI DIỆN CƠ QUAN',
+        nguoiKy: formData.signerName || '',
+        // Optional fields - default to "..."
+        phanKyDauTu: formData.phanKyDauTu || '...',
+        duKienBoTriVon: formData.duKienBoTriVon || '...',
+        thongTinKhac: formData.thongTinKhac || '',
+        canCuPhapLyKhac: formData.canCuPhapLyKhac || 'Các căn cứ pháp lý khác (có liên quan);',
+        phuongAnThietKe: formData.phuongAnThietKe || '...',
+        soBoTongMuc: formData.soBoTongMuc || '...',
+        tienDo: formData.tienDo || '...',
+        hieuQuaDauTu: formData.hieuQuaDauTu || '...',
+        tacDongMoiTruong: formData.tacDongMoiTruong || '...',
+        phuongAnThuHoiVon: formData.phuongAnThuHoiVon || '...',
+    };
+    for (const [key, value] of Object.entries(fieldMapping)) {
+        result = result.replaceAll(`{{${key}}}`, value || '………');
+    }
+
+    // Catch any remaining {{...}} placeholders not handled above
+    result = result.replace(/\{\{[a-zA-Z]+\}\}/g, '………');
+
     return result;
 }
 

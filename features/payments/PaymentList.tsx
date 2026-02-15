@@ -183,21 +183,21 @@ const PaymentList: React.FC = () => {
                 </div>
 
                 {/* === Toolbar === */}
-                <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
+                <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-gray-100 p-4">
                     <div className="flex flex-col md:flex-row items-center gap-3">
                         <div className="relative w-full md:w-80">
                             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                             <input
                                 type="text"
                                 placeholder="Tìm mã TT, mã HĐ, nhà thầu, Kho bạc..."
-                                className="w-full pl-10 pr-4 py-2.5 text-sm rounded-xl border border-gray-200 bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition-all placeholder:text-gray-400"
+                                className="w-full pl-10 pr-4 py-2.5 text-sm bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-sm dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400 placeholder:text-slate-400 dark:placeholder:text-slate-500 transition-all"
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
                             />
                         </div>
 
                         {/* Status segmented control */}
-                        <div className="flex items-center bg-gray-100 rounded-xl p-1 gap-0.5">
+                        <div className="flex items-center bg-slate-100 dark:bg-slate-700 rounded-xl p-1 gap-0.5">
                             {[
                                 { value: 'all' as const, label: 'Tất cả', count: stats.total },
                                 { value: PaymentStatus.Transferred, label: 'Đã chuyển', count: stats.transferredCount },
@@ -207,8 +207,8 @@ const PaymentList: React.FC = () => {
                                     key={opt.value}
                                     onClick={() => setFilterStatus(opt.value)}
                                     className={`px-3.5 py-2 text-xs font-bold rounded-lg transition-all duration-200 ${filterStatus === opt.value
-                                        ? 'bg-white text-gray-900 shadow-sm'
-                                        : 'text-gray-500 hover:text-gray-700'
+                                        ? 'bg-white dark:bg-slate-600 text-slate-700 dark:text-slate-200 shadow-sm'
+                                        : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-300'
                                         }`}
                                 >
                                     {opt.label}
@@ -241,7 +241,7 @@ const PaymentList: React.FC = () => {
                         </div>
 
                         <div className="ml-auto flex items-center gap-2">
-                            <button className="px-4 py-2.5 text-sm font-medium text-gray-600 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors flex items-center gap-2 hover:shadow-sm">
+                            <button className="px-4 py-2.5 text-sm font-semibold text-slate-800 dark:text-slate-100 bg-white border border-gray-200 rounded-xl hover:bg-slate-50/80 dark:hover:bg-slate-700/50 transition-colors flex items-center gap-2 hover:shadow-sm">
                                 <Download className="w-4 h-4" />
                                 Xuất Excel
                             </button>
@@ -257,19 +257,19 @@ const PaymentList: React.FC = () => {
                 </div>
 
                 {/* === Table === */}
-                <Card className="overflow-hidden border-0 shadow-sm ring-1 ring-gray-100">
+                <Card className="overflow-hidden border-0 shadow-sm ring-1 ring-gray-100 dark:bg-slate-800">
                     <div className="overflow-x-auto">
                         <table className="w-full text-left text-sm">
                             <thead>
-                                <tr className="bg-gradient-to-r from-gray-50 to-gray-100/50 border-b border-gray-100">
-                                    <th className="px-5 py-4 text-[10px] font-extrabold uppercase tracking-[0.15em] text-gray-500">Mã TT</th>
-                                    <th className="px-5 py-4 text-[10px] font-extrabold uppercase tracking-[0.15em] text-gray-500">Hợp đồng</th>
-                                    <th className="px-5 py-4 text-[10px] font-extrabold uppercase tracking-[0.15em] text-gray-500">Nhà thầu</th>
-                                    <th className="px-5 py-4 text-[10px] font-extrabold uppercase tracking-[0.15em] text-gray-500">Dự án</th>
-                                    <th className="px-5 py-4 text-[10px] font-extrabold uppercase tracking-[0.15em] text-gray-500 text-center">Đợt</th>
-                                    <th className="px-5 py-4 text-[10px] font-extrabold uppercase tracking-[0.15em] text-gray-500">Loại</th>
-                                    <th className="px-5 py-4 text-[10px] font-extrabold uppercase tracking-[0.15em] text-gray-500 text-right">Số tiền</th>
-                                    <th className="px-5 py-4 text-[10px] font-extrabold uppercase tracking-[0.15em] text-gray-500 text-center">Trạng thái</th>
+                                <tr className="bg-gradient-to-r from-gray-50 to-gray-100/50 border-b border-slate-100 dark:border-slate-700 dark:from-slate-900 dark:to-slate-800/50">
+                                    <th className="px-5 py-4 text-[10px] font-extrabold uppercase tracking-[0.15em] text-gray-500 dark:text-slate-400">Mã TT</th>
+                                    <th className="px-5 py-4 text-[10px] font-extrabold uppercase tracking-[0.15em] text-gray-500 dark:text-slate-400">Hợp đồng</th>
+                                    <th className="px-5 py-4 text-[10px] font-extrabold uppercase tracking-[0.15em] text-gray-500 dark:text-slate-400">Nhà thầu</th>
+                                    <th className="px-5 py-4 text-[10px] font-extrabold uppercase tracking-[0.15em] text-gray-500 dark:text-slate-400">Dự án</th>
+                                    <th className="px-5 py-4 text-[10px] font-extrabold uppercase tracking-[0.15em] text-gray-500 dark:text-slate-400 text-center">Đợt</th>
+                                    <th className="px-5 py-4 text-[10px] font-extrabold uppercase tracking-[0.15em] text-gray-500 dark:text-slate-400">Loại</th>
+                                    <th className="px-5 py-4 text-[10px] font-extrabold uppercase tracking-[0.15em] text-gray-500 dark:text-slate-400 text-right">Số tiền</th>
+                                    <th className="px-5 py-4 text-[10px] font-extrabold uppercase tracking-[0.15em] text-gray-500 dark:text-slate-400 text-center">Trạng thái</th>
                                     <th className="px-5 py-4 w-10"></th>
                                 </tr>
                             </thead>
@@ -284,16 +284,16 @@ const PaymentList: React.FC = () => {
                                     return (
                                         <tr
                                             key={payment.PaymentID}
-                                            className={`group cursor-pointer transition-all duration-200 hover:bg-blue-50/60 hover:shadow-sm ${isEven ? 'bg-white' : 'bg-gray-50/30'} border-b border-gray-50`}
+                                            className={`group cursor-pointer transition-all duration-200 hover:bg-blue-50/60 hover:shadow-sm ${isEven ? 'bg-white dark:bg-slate-800' : 'bg-gray-50/30 dark:bg-slate-900/30'} border-b border-gray-50 dark:border-slate-700`}
                                             onClick={() => navigate(`/contracts/${encodeURIComponent(payment.ContractID)}`)}
                                         >
                                             {/* Payment ID */}
                                             <td className="px-5 py-4">
                                                 <div className="flex items-center gap-2">
-                                                    <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center ring-1 ring-gray-200">
-                                                        <Hash className="w-3 h-3 text-gray-500" />
+                                                    <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center ring-1 ring-gray-200 dark:from-slate-700 dark:to-slate-800 dark:ring-slate-600">
+                                                        <Hash className="w-3 h-3 text-gray-500 dark:text-slate-400" />
                                                     </div>
-                                                    <span className="font-mono text-xs font-bold text-gray-600">{payment.PaymentID}</span>
+                                                    <span className="font-mono text-xs font-bold text-slate-600 dark:text-slate-300">{payment.PaymentID}</span>
                                                 </div>
                                             </td>
 
@@ -308,10 +308,10 @@ const PaymentList: React.FC = () => {
                                             {/* Contractor */}
                                             <td className="px-5 py-4">
                                                 <div className="flex items-center gap-2">
-                                                    <div className="w-7 h-7 rounded-full bg-gradient-to-br from-slate-100 to-slate-200 flex items-center justify-center ring-1 ring-slate-200 flex-shrink-0">
-                                                        <Building2 className="w-3 h-3 text-slate-500" />
+                                                    <div className="w-7 h-7 rounded-full bg-gradient-to-br from-slate-100 to-slate-200 flex items-center justify-center ring-1 ring-slate-200 dark:from-slate-700 dark:to-slate-800 dark:ring-slate-600 flex-shrink-0">
+                                                        <Building2 className="w-3 h-3 text-slate-500 dark:text-slate-400" />
                                                     </div>
-                                                    <span className="text-gray-700 text-xs max-w-[160px] truncate font-medium" title={contractorName}>
+                                                    <span className="text-gray-700 text-xs max-w-[160px] truncate font-medium dark:text-slate-300" title={contractorName}>
                                                         {contractorName}
                                                     </span>
                                                 </div>
@@ -319,14 +319,14 @@ const PaymentList: React.FC = () => {
 
                                             {/* Project */}
                                             <td className="px-5 py-4">
-                                                <span className="text-gray-500 text-xs max-w-[160px] truncate block" title={projectName}>
+                                                <span className="text-gray-500 text-xs max-w-[160px] truncate block dark:text-slate-400" title={projectName}>
                                                     {projectName}
                                                 </span>
                                             </td>
 
                                             {/* Batch */}
                                             <td className="px-5 py-4 text-center">
-                                                <span className="inline-flex items-center justify-center w-8 h-8 rounded-xl bg-gradient-to-br from-gray-50 to-gray-100 text-xs font-black text-gray-700 ring-1 ring-gray-200">
+                                                <span className="inline-flex items-center justify-center w-8 h-8 rounded-xl bg-gradient-to-br from-gray-50 to-gray-100 text-xs font-black text-gray-700 ring-1 ring-gray-200 dark:from-slate-700 dark:to-slate-800 dark:text-slate-300 dark:ring-slate-600">
                                                     {payment.BatchNo}
                                                 </span>
                                             </td>
@@ -334,12 +334,12 @@ const PaymentList: React.FC = () => {
                                             {/* Type */}
                                             <td className="px-5 py-4">
                                                 {payment.Type === PaymentType.Advance ? (
-                                                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider bg-purple-50 text-purple-700 ring-1 ring-purple-100">
+                                                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider bg-purple-50 text-purple-700 ring-1 ring-purple-100 dark:bg-purple-900/30 dark:text-purple-300 dark:ring-purple-900">
                                                         <Wallet className="w-2.5 h-2.5" />
                                                         Tạm ứng
                                                     </span>
                                                 ) : (
-                                                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider bg-cyan-50 text-cyan-700 ring-1 ring-cyan-100">
+                                                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider bg-cyan-50 text-cyan-700 ring-1 ring-cyan-100 dark:bg-cyan-900/30 dark:text-cyan-300 dark:ring-cyan-900">
                                                         <BarChart3 className="w-2.5 h-2.5" />
                                                         Khối lượng
                                                     </span>
@@ -349,9 +349,9 @@ const PaymentList: React.FC = () => {
                                             {/* Amount */}
                                             <td className="px-5 py-4 text-right">
                                                 <div className="text-right">
-                                                    <span className="font-bold text-gray-900 font-mono text-sm tracking-tight block">{formatCurrency(payment.Amount)}</span>
+                                                    <span className="font-bold text-gray-900 font-mono text-sm tracking-tight block dark:text-slate-100">{formatCurrency(payment.Amount)}</span>
                                                     {contractValue > 0 && (
-                                                        <span className="text-[10px] text-gray-400 font-medium">{payPercent.toFixed(1)}% giá trị HĐ</span>
+                                                        <span className="text-[10px] text-gray-400 font-medium dark:text-slate-500">{payPercent.toFixed(1)}% giá trị HĐ</span>
                                                     )}
                                                 </div>
                                             </td>
@@ -359,12 +359,12 @@ const PaymentList: React.FC = () => {
                                             {/* Status */}
                                             <td className="px-5 py-4 text-center">
                                                 {payment.Status === PaymentStatus.Transferred ? (
-                                                    <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-bold uppercase bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100">
+                                                    <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-bold uppercase bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100 dark:bg-emerald-900/30 dark:text-emerald-300 dark:ring-emerald-900">
                                                         <CheckCircle2 className="w-3 h-3" />
                                                         Đã chuyển
                                                     </span>
                                                 ) : (
-                                                    <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-bold uppercase bg-amber-50 text-amber-700 ring-1 ring-amber-100">
+                                                    <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-bold uppercase bg-amber-50 text-amber-700 ring-1 ring-amber-100 dark:bg-amber-900/30 dark:text-amber-300 dark:ring-amber-900">
                                                         <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span>
                                                         Chờ duyệt
                                                     </span>
@@ -373,8 +373,8 @@ const PaymentList: React.FC = () => {
 
                                             {/* Arrow */}
                                             <td className="px-4 py-4">
-                                                <div className="w-7 h-7 rounded-full bg-gray-50 flex items-center justify-center group-hover:bg-blue-50 group-hover:ring-1 group-hover:ring-blue-200 transition-all">
-                                                    <ChevronRight className="w-4 h-4 text-gray-300 group-hover:text-blue-500 transition-colors" />
+                                                <div className="w-7 h-7 rounded-full bg-gray-50 flex items-center justify-center group-hover:bg-blue-50 group-hover:ring-1 group-hover:ring-blue-200 transition-all dark:bg-slate-700 dark:group-hover:bg-blue-900/20 dark:group-hover:ring-blue-800">
+                                                    <ChevronRight className="w-4 h-4 text-gray-300 group-hover:text-blue-500 transition-colors dark:text-slate-500 dark:group-hover:text-blue-400" />
                                                 </div>
                                             </td>
                                         </tr>
@@ -385,35 +385,35 @@ const PaymentList: React.FC = () => {
                     </div>
 
                     {/* Summary Footer */}
-                    <div className="bg-gradient-to-r from-gray-50 to-emerald-50/30 border-t border-gray-100 px-6 py-4">
+                    <div className="bg-gradient-to-r from-gray-50 to-emerald-50/30 border-t border-gray-100 px-6 py-4 dark:from-slate-900 dark:to-slate-800/30 dark:border-slate-700">
                         <div className="flex items-center justify-between">
                             <div className="flex items-center gap-6">
                                 <div className="flex items-center gap-2">
                                     <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
-                                    <span className="text-xs text-gray-500">Đã chuyển: <span className="font-bold text-emerald-700">{formatCurrency(stats.transferredAmount)}</span></span>
+                                    <span className="text-xs text-gray-500 dark:text-slate-400">Đã chuyển: <span className="font-bold text-emerald-700">{formatCurrency(stats.transferredAmount)}</span></span>
                                 </div>
                                 <div className="flex items-center gap-2">
                                     <Clock className="w-3.5 h-3.5 text-amber-500" />
-                                    <span className="text-xs text-gray-500">Chờ duyệt: <span className="font-bold text-amber-700">{formatCurrency(stats.pendingAmount)}</span></span>
+                                    <span className="text-xs text-gray-500 dark:text-slate-400">Chờ duyệt: <span className="font-bold text-amber-700">{formatCurrency(stats.pendingAmount)}</span></span>
                                 </div>
-                                <div className="w-px h-4 bg-gray-200"></div>
-                                <span className="text-xs text-gray-500">Tổng: <span className="font-bold text-gray-900">{formatCurrency(stats.totalAmount)}</span></span>
+                                <div className="w-px h-4 bg-gray-200 dark:bg-slate-600"></div>
+                                <span className="text-xs text-gray-500 dark:text-slate-400">Tổng: <span className="font-bold text-gray-900 dark:text-slate-100">{formatCurrency(stats.totalAmount)}</span></span>
                             </div>
-                            <span className="text-xs text-gray-400">{filteredPayments.length} phiếu thanh toán</span>
+                            <span className="text-xs text-slate-400 dark:text-slate-500">{filteredPayments.length} phiếu thanh toán</span>
                         </div>
                     </div>
 
                     {filteredPayments.length === 0 && (
                         <div className="p-20 text-center">
-                            <div className="w-20 h-20 rounded-3xl bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center mx-auto mb-5 ring-1 ring-gray-200">
-                                <CreditCard className="w-10 h-10 text-gray-300" />
+                            <div className="w-20 h-20 rounded-3xl bg-gradient-to-br from-gray-50 to-gray-100 dark:from-slate-700 dark:to-slate-800 flex items-center justify-center mx-auto mb-5 ring-1 ring-gray-200 dark:ring-slate-600">
+                                <CreditCard className="w-10 h-10 text-gray-300 dark:text-slate-500" />
                             </div>
                             <p className="text-gray-600 font-bold text-lg">Không tìm thấy phiếu thanh toán</p>
                             <p className="text-gray-400 text-sm mt-2">Thử thay đổi bộ lọc hoặc từ khóa tìm kiếm</p>
                         </div>
                     )}
-                </Card>
-            </div>
+                </Card >
+            </div >
 
             <PaymentForm
                 isOpen={isFormOpen}

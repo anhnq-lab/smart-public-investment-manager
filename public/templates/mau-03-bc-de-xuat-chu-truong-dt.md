@@ -1,50 +1,68 @@
-# MẪU SỐ 03
+# Mẫu số 04
 
-# BÁO CÁO ĐỀ XUẤT CHỦ TRƯƠNG ĐẦU TƯ DỰ ÁN NHÓM B, NHÓM C
+**TÊN CƠ QUAN** | **CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM**
+---|---
+{{tenCoQuan}} | **Độc lập - Tự do - Hạnh phúc**
 
-*(Theo Mẫu số 04 - Phụ lục 2 kèm theo Nghị định số 40/2020/NĐ-CP)*
+Số: {{soVanBan}}
 
----
-
-<p align="center"><strong>BÁO CÁO ĐỀ XUẤT CHỦ TRƯƠNG ĐẦU TƯ</strong></p>
-<p align="center"><strong>Dự án: ………………………………</strong></p>
-
----
-
-**I. SỰ CẦN THIẾT ĐẦU TƯ**
-
-1. Căn cứ pháp lý: ...
-2. Thực trạng, sự cần thiết: ...
-
-**II. MỤC TIÊU, QUY MÔ, ĐỊA ĐIỂM**
-
-1. Mục tiêu đầu tư: ...
-2. Quy mô: ...
-3. Địa điểm, diện tích sử dụng đất: ...
-4. Phân loại dự án (nhóm B/C): ...
-
-**III. DỰ KIẾN TỔNG MỨC ĐẦU TƯ VÀ CƠ CẤU NGUỒN VỐN**
-
-| STT | Nội dung | Kinh phí (triệu đồng) |
-|-----|----------|----------------------|
-| 1 | Chi phí xây dựng | |
-| 2 | Chi phí thiết bị | |
-| 3 | Chi phí QLDA | |
-| 4 | Chi phí tư vấn | |
-| 5 | Chi phí khác | |
-| 6 | Dự phòng | |
-| | **Tổng cộng** | |
-
-Nguồn vốn: ...
-
-**IV. TIẾN ĐỘ THỰC HIỆN, DỰ KIẾN KẾ HOẠCH BỐ TRÍ VỐN**
-
-**V. PHÂN TÍCH HIỆU QUẢ ĐẦU TƯ**
-
-**VI. KIẾN NGHỊ**
+{{diaDiem}}, ngày {{ngay}} tháng {{thang}} năm {{nam}}
 
 ---
 
-| | **CƠ QUAN LẬP BÁO CÁO** |
+## BÁO CÁO
+
+### Đề xuất chủ trương đầu tư dự án {{tenDuAn}}
+
+**Kính gửi:** {{kinhGui}}
+
+Căn cứ Luật Đầu tư công ngày 29 tháng 11 năm 2024;
+
+{{canCuPhapLyKhac}}
+
+{{tenCoQuan}} trình {{kinhGui}} Báo cáo đề xuất chủ trương đầu tư dự án {{tenDuAn}} với các nội dung chính sau:
+
+---
+
+**I. THÔNG TIN CHUNG DỰ ÁN**
+
+1. Tên dự án: {{tenDuAn}}
+2. Dự án nhóm: {{nhomDuAn}}
+3. Cấp quyết định đầu tư dự án: {{capQuyetDinh}}
+4. Tên chủ đầu tư (nếu có): {{chuDauTu}}
+5. Địa điểm thực hiện dự án: {{diaDiemDuAn}}
+6. Dự kiến tổng mức đầu tư dự án: {{tongMucDauTu}}
+   - Nguồn vốn: {{nguonVon}}
+   - Phân kỳ đầu tư: {{phanKyDauTu}}
+   - Dự kiến bố trí vốn: {{duKienBoTriVon}}
+7. Thời gian thực hiện: {{thoiGianThucHien}}
+8. Các thông tin khác (nếu có): {{thongTinKhac}}
+
+**II. NỘI DUNG CHỦ YẾU CỦA DỰ ÁN**
+
+Báo cáo đầy đủ các nội dung quy định tại Điều 35 của Luật Đầu tư công:
+
+1. Sự cần thiết đầu tư: {{suCanThiet}}
+2. Mục tiêu đầu tư: {{mucTieu}}
+3. Quy mô đầu tư: {{quyMo}}
+4. Phân loại dự án: {{phanLoaiDuAn}}
+5. Phương án thiết kế sơ bộ: {{phuongAnThietKe}}
+6. Sơ bộ tổng mức đầu tư: {{soBoTongMuc}}
+7. Tiến độ thực hiện, phân kỳ đầu tư: {{tienDo}}
+8. Phân tích hiệu quả đầu tư: {{hieuQuaDauTu}}
+9. Đánh giá tác động môi trường: {{tacDongMoiTruong}}
+10. Phương án thu hồi vốn (nếu có): {{phuongAnThuHoiVon}}
+
+---
+
+{{tenCoQuan}} trình {{kinhGui}} xem xét, quyết định chủ trương đầu tư dự án {{tenDuAn}}.
+
+---
+
+| Nơi nhận: | **ĐẠI DIỆN CƠ QUAN** |
 |---|---|
-| | *(Ký, ghi rõ họ tên, đóng dấu)* |
+| - Như trên; | {{chucDanh}} |
+| - Cơ quan thẩm định chủ trương đầu tư dự án; | |
+| - Các cơ quan liên quan khác; | *(Ký, ghi rõ họ tên, chức vụ và đóng dấu)* |
+| - Lưu: ………….. | |
+| | {{nguoiKy}} |

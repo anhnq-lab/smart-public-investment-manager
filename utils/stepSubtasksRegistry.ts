@@ -65,7 +65,7 @@ const PREP_POLICY: SubTaskDef[] = [
         estimatedDays: 20,
         legalBasis: 'Đ34-35 Luật ĐTC 58',
         templatePath: 'mau-03-bc-de-xuat-chu-truong-dt.md',
-        templateLabel: 'Mẫu 03 – BC đề xuất chủ trương ĐT',
+        templateLabel: 'Mẫu 04 – BC đề xuất chủ trương ĐT',
     },
     {
         code: 'POLICY_02', title: 'Thẩm định BC đề xuất CTrĐT + nguồn vốn',
