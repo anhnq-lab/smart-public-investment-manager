@@ -2,6 +2,7 @@
 import React from 'react';
 import { HashRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
+import { ThemeProvider } from './context/ThemeContext';
 import MainLayout from './layouts/MainLayout';
 
 // Auth Features
@@ -37,6 +38,7 @@ import PaymentList from './features/payments/PaymentList';
 import DocumentManager from './features/documents/DocumentManager';
 import ReportCenter from './features/reports/ReportCenter';
 import Regulations from './features/regulations/Regulations';
+import Settings from './features/settings/Settings';
 import AuditLogViewer from './features/admin/AuditLogViewer';
 
 import { ToastProvider } from './components/ui/Toast';
@@ -55,56 +57,61 @@ const queryClient = new QueryClient({
 const App: React.FC = () => {
     return (
         <QueryClientProvider client={queryClient}>
-            <AuthProvider>
-                <ToastProvider>
-                    <Router>
-                        <Routes>
-                            <Route path="/login" element={<Login />} />
+            <ThemeProvider>
+                <AuthProvider>
+                    <ToastProvider>
+                        <Router>
+                            <Routes>
+                                <Route path="/login" element={<Login />} />
 
-                            {/* Protected Routes inside MainLayout */}
-                            <Route path="/" element={<MainLayout />}>
-                                <Route index element={<Dashboard />} />
-                                <Route path="my-dashboard" element={<PersonalDashboard />} />
+                                {/* Protected Routes inside MainLayout */}
+                                <Route path="/" element={<MainLayout />}>
+                                    <Route index element={<Dashboard />} />
+                                    <Route path="my-dashboard" element={<PersonalDashboard />} />
 
-                                {/* Projects Routes */}
-                                <Route path="projects" element={<ProjectList />} />
-                                <Route path="projects/:id" element={<ProjectDetail />} />
-                                <Route path="projects/:projectId/packages/:packageId" element={<PackageDetail />} />
+                                    {/* Projects Routes */}
+                                    <Route path="projects" element={<ProjectList />} />
+                                    <Route path="projects/:id" element={<ProjectDetail />} />
+                                    <Route path="projects/:projectId/packages/:packageId" element={<PackageDetail />} />
 
-                                {/* Tasks Routes */}
-                                <Route path="tasks" element={<TaskList />} />
-                                <Route path="tasks/:id" element={<TaskDetail />} />
+                                    {/* Tasks Routes */}
+                                    <Route path="tasks" element={<TaskList />} />
+                                    <Route path="tasks/:id" element={<TaskDetail />} />
 
-                                {/* HR Routes */}
-                                <Route path="employees" element={<EmployeeList />} />
-                                <Route path="employees/:id" element={<EmployeeDetail />} />
+                                    {/* HR Routes */}
+                                    <Route path="employees" element={<EmployeeList />} />
+                                    <Route path="employees/:id" element={<EmployeeDetail />} />
 
-                                {/* Contractor Routes */}
-                                <Route path="contractors" element={<ContractorList />} />
-                                <Route path="contractors/:id" element={<ContractorDetail />} />
+                                    {/* Contractor Routes */}
+                                    <Route path="contractors" element={<ContractorList />} />
+                                    <Route path="contractors/:id" element={<ContractorDetail />} />
 
-                                {/* Contract Routes */}
-                                <Route path="contracts" element={<ContractList />} />
-                                <Route path="contracts/:id" element={<ContractDetail />} />
+                                    {/* Contract Routes */}
+                                    <Route path="contracts" element={<ContractList />} />
+                                    <Route path="contracts/:id" element={<ContractDetail />} />
 
-                                {/* Finance Routes */}
-                                <Route path="payments" element={<PaymentList />} />
+                                    {/* Finance Routes */}
+                                    <Route path="payments" element={<PaymentList />} />
 
-                                {/* Documents & Reports */}
-                                <Route path="documents" element={<DocumentManager />} />
-                                <Route path="reports" element={<ReportCenter />} />
-                                <Route path="regulations" element={<Regulations />} />
+                                    {/* Documents & Reports */}
+                                    <Route path="documents" element={<DocumentManager />} />
+                                    <Route path="reports" element={<ReportCenter />} />
+                                    <Route path="regulations" element={<Regulations />} />
 
-                                {/* Admin */}
-                                <Route path="audit-log" element={<AuditLogViewer />} />
+                                    {/* Admin */}
+                                    <Route path="audit-log" element={<AuditLogViewer />} />
 
-                                {/* Fallback */}
-                                <Route path="*" element={<Navigate to="/" replace />} />
-                            </Route>
-                        </Routes>
-                    </Router>
-                </ToastProvider>
-            </AuthProvider>
+                                    {/* Settings */}
+                                    <Route path="settings" element={<Settings />} />
+
+                                    {/* Fallback */}
+                                    <Route path="*" element={<Navigate to="/" replace />} />
+                                </Route>
+                            </Routes>
+                        </Router>
+                    </ToastProvider>
+                </AuthProvider>
+            </ThemeProvider>
         </QueryClientProvider>
     );
 };
