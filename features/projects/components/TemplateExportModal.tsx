@@ -178,30 +178,30 @@ export const TemplateExportModal: React.FC<TemplateExportModalProps> = ({
     return (
         <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 backdrop-blur-sm"
             onClick={onClose}>
-            <div className="bg-[var(--bg-primary)] rounded-2xl shadow-2xl w-[95vw] max-w-5xl max-h-[92vh] flex flex-col border border-[var(--border-primary)] animate-scale-in"
+            <div className="bg-[#0f172a] rounded-2xl shadow-2xl w-[95vw] max-w-5xl max-h-[92vh] flex flex-col border border-[#334155] animate-scale-in"
                 onClick={e => e.stopPropagation()}>
 
                 {/* ═══════════ HEADER ═══════════ */}
-                <div className="flex items-center justify-between px-6 py-4 border-b border-[var(--border-primary)]">
+                <div className="flex items-center justify-between px-6 py-4 border-b border-[#334155]">
                     <div className="flex items-center gap-3 min-w-0">
                         <div className={`w-11 h-11 rounded-xl bg-gradient-to-br ${categoryGradient} flex items-center justify-center shadow-lg`}>
                             <FileText size={20} className="text-white" />
                         </div>
                         <div className="min-w-0">
-                            <h3 className="text-lg font-bold text-[var(--text-primary)] truncate">
+                            <h3 className="text-lg font-bold text-[#f8fafc] truncate">
                                 {config.icon} {templateLabel || config.label}
                             </h3>
                             <div className="flex items-center gap-2 mt-0.5">
                                 {stepTitle && (
-                                    <span className="text-xs text-[var(--text-tertiary)] truncate max-w-[200px]">
+                                    <span className="text-xs text-[#94a3b8] truncate max-w-[200px]">
                                         📌 {stepTitle}
                                     </span>
                                 )}
-                                <span className="text-xs px-2 py-0.5 rounded-full bg-[var(--bg-tertiary)] text-[var(--text-secondary)]">
+                                <span className="text-xs px-2 py-0.5 rounded-full bg-[#334155] text-[#cbd5e1]">
                                     {getCategoryLabel(config.category)}
                                 </span>
                                 {config.legalBasis && (
-                                    <span className="text-xs text-[var(--text-tertiary)] flex items-center gap-1">
+                                    <span className="text-xs text-[#94a3b8] flex items-center gap-1">
                                         <Scale size={10} /> {config.legalBasis}
                                     </span>
                                 )}
@@ -209,19 +209,19 @@ export const TemplateExportModal: React.FC<TemplateExportModalProps> = ({
                         </div>
                     </div>
                     <button onClick={onClose}
-                        className="p-2 rounded-lg hover:bg-[var(--bg-tertiary)] text-[var(--text-secondary)] transition-colors">
+                        className="p-2 rounded-lg hover:bg-[#334155] text-[#cbd5e1] transition-colors">
                         <X size={18} />
                     </button>
                 </div>
 
                 {/* ═══════════ TAB BAR ═══════════ */}
-                <div className="flex items-center justify-between px-6 py-2 border-b border-[var(--border-primary)] bg-[var(--bg-secondary)]">
+                <div className="flex items-center justify-between px-6 py-2 border-b border-[#334155] bg-[#1e293b]">
                     <div className="flex gap-1">
                         <button
                             onClick={() => setActiveTab('edit')}
                             className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${activeTab === 'edit'
                                     ? 'bg-blue-500/10 text-blue-400 shadow-sm'
-                                    : 'text-[var(--text-tertiary)] hover:text-[var(--text-secondary)] hover:bg-[var(--bg-tertiary)]'
+                                    : 'text-[#94a3b8] hover:text-[#cbd5e1] hover:bg-[#334155]'
                                 }`}
                         >
                             <Edit3 size={14} />
@@ -236,7 +236,7 @@ export const TemplateExportModal: React.FC<TemplateExportModalProps> = ({
                             onClick={() => setActiveTab('preview')}
                             className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${activeTab === 'preview'
                                     ? 'bg-blue-500/10 text-blue-400 shadow-sm'
-                                    : 'text-[var(--text-tertiary)] hover:text-[var(--text-secondary)] hover:bg-[var(--bg-tertiary)]'
+                                    : 'text-[#94a3b8] hover:text-[#cbd5e1] hover:bg-[#334155]'
                                 }`}
                         >
                             <Eye size={14} />
@@ -286,8 +286,8 @@ export const TemplateExportModal: React.FC<TemplateExportModalProps> = ({
                             <div className="space-y-4">
                                 {/* Group fields smartly */}
                                 {groupFields(config.fields).map((group, gi) => (
-                                    <div key={gi} className="p-4 rounded-xl border border-[var(--border-primary)] bg-[var(--bg-secondary)]">
-                                        <h4 className="flex items-center gap-2 font-semibold text-sm text-[var(--text-primary)] mb-3">
+                                    <div key={gi} className="p-4 rounded-xl border border-[#334155] bg-[#1e293b]">
+                                        <h4 className="flex items-center gap-2 font-semibold text-sm text-[#f8fafc] mb-3">
                                             {group.icon}
                                             {group.label}
                                         </h4>
@@ -298,7 +298,7 @@ export const TemplateExportModal: React.FC<TemplateExportModalProps> = ({
 
                                                 return (
                                                     <div key={field.key} className={field.type === 'textarea' ? 'col-span-2' : ''}>
-                                                        <label className="flex items-center gap-1 text-xs font-medium text-[var(--text-secondary)] mb-1">
+                                                        <label className="flex items-center gap-1 text-xs font-medium text-[#cbd5e1] mb-1">
                                                             {field.label}
                                                             {field.required && <span className="text-red-400">*</span>}
                                                             {isAutoFilled && (
@@ -311,7 +311,7 @@ export const TemplateExportModal: React.FC<TemplateExportModalProps> = ({
                                                             <select
                                                                 value={value}
                                                                 onChange={e => handleChange(field.key, e.target.value)}
-                                                                className="w-full px-3 py-2 rounded-lg bg-[var(--bg-primary)] border border-[var(--border-primary)] text-sm text-[var(--text-primary)] focus:ring-2 focus:ring-blue-500/40 focus:border-blue-500/40 transition-colors"
+                                                                className="w-full px-3 py-2 rounded-lg bg-[#0f172a] border border-[#334155] text-sm text-[#f8fafc] focus:ring-2 focus:ring-blue-500/40 focus:border-blue-500/40 transition-colors"
                                                             >
                                                                 <option value="">-- Chọn --</option>
                                                                 {field.options?.map(opt => (
@@ -323,7 +323,7 @@ export const TemplateExportModal: React.FC<TemplateExportModalProps> = ({
                                                                 value={value}
                                                                 onChange={e => handleChange(field.key, e.target.value)}
                                                                 rows={3}
-                                                                className="w-full px-3 py-2 rounded-lg bg-[var(--bg-primary)] border border-[var(--border-primary)] text-sm text-[var(--text-primary)] focus:ring-2 focus:ring-blue-500/40 focus:border-blue-500/40 resize-none transition-colors"
+                                                                className="w-full px-3 py-2 rounded-lg bg-[#0f172a] border border-[#334155] text-sm text-[#f8fafc] focus:ring-2 focus:ring-blue-500/40 focus:border-blue-500/40 resize-none transition-colors"
                                                                 placeholder={field.placeholder || ''}
                                                             />
                                                         ) : (
@@ -331,9 +331,9 @@ export const TemplateExportModal: React.FC<TemplateExportModalProps> = ({
                                                                 type={field.type}
                                                                 value={value}
                                                                 onChange={e => handleChange(field.key, e.target.value)}
-                                                                className={`w-full px-3 py-2 rounded-lg bg-[var(--bg-primary)] border text-sm text-[var(--text-primary)] focus:ring-2 focus:ring-blue-500/40 focus:border-blue-500/40 transition-colors ${isAutoFilled
+                                                                className={`w-full px-3 py-2 rounded-lg bg-[#0f172a] border text-sm text-[#f8fafc] focus:ring-2 focus:ring-blue-500/40 focus:border-blue-500/40 transition-colors ${isAutoFilled
                                                                         ? 'border-emerald-500/30'
-                                                                        : 'border-[var(--border-primary)]'
+                                                                        : 'border-[#334155]'
                                                                     }`}
                                                                 placeholder={field.placeholder || ''}
                                                             />
@@ -366,10 +366,10 @@ export const TemplateExportModal: React.FC<TemplateExportModalProps> = ({
                 </div>
 
                 {/* ═══════════ FOOTER ═══════════ */}
-                <div className="flex items-center justify-between px-6 py-4 border-t border-[var(--border-primary)] bg-[var(--bg-secondary)]">
+                <div className="flex items-center justify-between px-6 py-4 border-t border-[#334155] bg-[#1e293b]">
                     <button
                         onClick={onClose}
-                        className="px-4 py-2 text-[var(--text-secondary)] hover:bg-[var(--bg-tertiary)] rounded-lg transition-colors text-sm"
+                        className="px-4 py-2 text-[#cbd5e1] hover:bg-[#334155] rounded-lg transition-colors text-sm"
                     >
                         Đóng
                     </button>
@@ -378,14 +378,14 @@ export const TemplateExportModal: React.FC<TemplateExportModalProps> = ({
                             <>
                                 <button
                                     onClick={handleCopy}
-                                    className="flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium border border-[var(--border-primary)] text-[var(--text-secondary)] hover:bg-[var(--bg-tertiary)] transition-colors"
+                                    className="flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium border border-[#334155] text-[#cbd5e1] hover:bg-[#334155] transition-colors"
                                 >
                                     {copied ? <Check size={14} className="text-emerald-400" /> : <Copy size={14} />}
                                     {copied ? 'Đã sao chép' : 'Sao chép'}
                                 </button>
                                 <button
                                     onClick={handlePrint}
-                                    className="flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium border border-[var(--border-primary)] text-[var(--text-secondary)] hover:bg-[var(--bg-tertiary)] transition-colors"
+                                    className="flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium border border-[#334155] text-[#cbd5e1] hover:bg-[#334155] transition-colors"
                                 >
                                     <Printer size={14} />
                                     In

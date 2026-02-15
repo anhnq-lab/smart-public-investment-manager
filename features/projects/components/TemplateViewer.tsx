@@ -48,29 +48,29 @@ export const TemplateViewer: React.FC<TemplateViewerProps> = ({
     return (
         <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 backdrop-blur-sm"
             onClick={onClose}>
-            <div className="bg-[var(--bg-primary)] rounded-2xl shadow-2xl w-[90vw] max-w-4xl max-h-[85vh] flex flex-col border border-[var(--border-primary)]"
+            <div className="bg-[#0f172a] rounded-2xl shadow-2xl w-[90vw] max-w-4xl max-h-[85vh] flex flex-col border border-[#334155]"
                 onClick={e => e.stopPropagation()}>
                 {/* Header */}
-                <div className="flex items-center justify-between p-5 border-b border-[var(--border-primary)]">
+                <div className="flex items-center justify-between p-5 border-b border-[#334155]">
                     <div className="flex items-center gap-3">
                         <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500/20 to-cyan-500/20 flex items-center justify-center">
                             <FileText size={20} className="text-blue-400" />
                         </div>
                         <div>
-                            <h3 className="text-lg font-bold text-[var(--text-primary)]">
+                            <h3 className="text-lg font-bold text-[#f8fafc]">
                                 {templateLabel || templatePath}
                             </h3>
-                            <p className="text-xs text-[var(--text-tertiary)]">templates/{templatePath}</p>
+                            <p className="text-xs text-[#94a3b8]">templates/{templatePath}</p>
                         </div>
                     </div>
                     <div className="flex items-center gap-2">
                         <button onClick={handleCopy}
-                            className="p-2 rounded-lg hover:bg-[var(--bg-tertiary)] text-[var(--text-secondary)] transition-colors"
+                            className="p-2 rounded-lg hover:bg-[#334155] text-[#cbd5e1] transition-colors"
                             title="Sao chép nội dung">
                             {copied ? <Check size={16} className="text-green-400" /> : <Copy size={16} />}
                         </button>
                         <button onClick={onClose}
-                            className="p-2 rounded-lg hover:bg-[var(--bg-tertiary)] text-[var(--text-secondary)] transition-colors">
+                            className="p-2 rounded-lg hover:bg-[#334155] text-[#cbd5e1] transition-colors">
                             <X size={18} />
                         </button>
                     </div>
@@ -83,7 +83,7 @@ export const TemplateViewer: React.FC<TemplateViewerProps> = ({
                             <div className="animate-spin w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full" />
                         </div>
                     ) : (
-                        <pre className="whitespace-pre-wrap text-sm text-[var(--text-secondary)] font-mono leading-relaxed">
+                        <pre className="whitespace-pre-wrap text-sm text-[#cbd5e1] font-mono leading-relaxed">
                             {content}
                         </pre>
                     )}
