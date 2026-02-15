@@ -1327,12 +1327,12 @@ const Regulations: React.FC = () => {
     }, [searchQuery]);
 
     return (
-        <div className="flex h-[calc(100vh-100px)] bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden font-sans">
+        <div className="flex h-[calc(100vh-100px)] bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-gray-200 dark:border-slate-700 overflow-hidden font-sans">
 
             {/* LEFT SIDEBAR - NAVIGATION */}
-            <div className="w-80 bg-gray-50/50 border-r border-gray-200 flex flex-col">
-                <div className="p-5 border-b border-gray-100 bg-white">
-                    <h2 className="text-lg font-black text-gray-800 tracking-tight mb-4 flex items-center gap-2">
+            <div className="w-80 bg-gray-50/50 dark:bg-slate-800/50 border-r border-gray-200 dark:border-slate-700 flex flex-col">
+                <div className="p-5 border-b border-gray-100 dark:border-slate-700 bg-white dark:bg-slate-800">
+                    <h2 className="text-lg font-black text-gray-800 dark:text-slate-100 tracking-tight mb-4 flex items-center gap-2">
                         <Gavel className="w-5 h-5 text-blue-600" />
                         Quy chế Nội bộ
                     </h2>
@@ -1343,7 +1343,7 @@ const Regulations: React.FC = () => {
                             placeholder="Tìm điều khoản, quy định..."
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
-                            className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+                            className="w-full pl-10 pr-4 py-2.5 bg-gray-50 dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all text-gray-800 dark:text-slate-100 placeholder-gray-400 dark:placeholder-slate-500"
                         />
                     </div>
                 </div>
@@ -1354,18 +1354,18 @@ const Regulations: React.FC = () => {
                             key={chapter.id}
                             onClick={() => setSelectedChapterId(chapter.id)}
                             className={`w-full text-left p-3 rounded-xl transition-all flex items-start gap-3 group ${selectedChapterId === chapter.id
-                                ? 'bg-blue-50 border border-blue-100 shadow-sm'
-                                : 'hover:bg-gray-100 border border-transparent'
+                                ? 'bg-blue-50 dark:bg-blue-900/30 border border-blue-100 dark:border-blue-800 shadow-sm'
+                                : 'hover:bg-gray-100 dark:hover:bg-slate-700 border border-transparent'
                                 }`}
                         >
-                            <div className={`mt-0.5 p-2 rounded-lg ${selectedChapterId === chapter.id ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-500 group-hover:bg-white'}`}>
+                            <div className={`mt-0.5 p-2 rounded-lg ${selectedChapterId === chapter.id ? 'bg-blue-600 text-white' : 'bg-gray-200 dark:bg-slate-600 text-gray-500 dark:text-slate-400 group-hover:bg-white dark:group-hover:bg-slate-500'}`}>
                                 {chapter.icon ? <chapter.icon className="w-4 h-4" /> : <BookOpen className="w-4 h-4" />}
                             </div>
                             <div className="flex-1 min-w-0">
                                 <p className={`text-[10px] font-bold uppercase tracking-wider mb-0.5 ${selectedChapterId === chapter.id ? 'text-blue-600' : 'text-gray-400'}`}>
                                     {chapter.code}
                                 </p>
-                                <p className={`text-sm font-bold truncate ${selectedChapterId === chapter.id ? 'text-gray-900' : 'text-gray-600'}`}>
+                                <p className={`text-sm font-bold truncate ${selectedChapterId === chapter.id ? 'text-gray-900 dark:text-slate-100' : 'text-gray-600 dark:text-slate-400'}`}>
                                     {chapter.title}
                                 </p>
                             </div>
@@ -1374,39 +1374,39 @@ const Regulations: React.FC = () => {
                     ))}
                 </div>
 
-                <div className="p-4 border-t border-gray-200 bg-gray-50">
+                <div className="p-4 border-t border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800">
                     <div className="flex items-center gap-3">
                         <div className="p-2 bg-emerald-100 text-emerald-700 rounded-full">
                             <CheckCircle2 className="w-4 h-4" />
                         </div>
                         <div className="flex-1">
-                            <p className="text-[10px] font-bold text-gray-500 uppercase">Văn bản hiện hành</p>
-                            <p className="text-xs font-bold text-gray-800">QĐ số 188/QĐ-BQLDA</p>
+                            <p className="text-[10px] font-bold text-gray-500 dark:text-slate-500 uppercase">Văn bản hiện hành</p>
+                            <p className="text-xs font-bold text-gray-800 dark:text-slate-200">QĐ số 188/QĐ-BQLDA</p>
                         </div>
                     </div>
                 </div>
             </div>
 
             {/* RIGHT CONTENT - DETAILS */}
-            <div className="flex-1 flex flex-col bg-white overflow-hidden relative">
+            <div className="flex-1 flex flex-col bg-white dark:bg-slate-800 overflow-hidden relative">
                 {/* Header */}
-                <div className="h-16 border-b border-gray-100 flex items-center justify-between px-8 bg-white shrink-0 z-10 sticky top-0">
+                <div className="h-16 border-b border-gray-100 dark:border-slate-700 flex items-center justify-between px-8 bg-white dark:bg-slate-800 shrink-0 z-10 sticky top-0">
                     <div>
-                        <div className="flex items-center gap-2 text-xs text-gray-400 mb-1">
+                        <div className="flex items-center gap-2 text-xs text-gray-400 dark:text-slate-500 mb-1">
                             <span>Hệ thống Quy chế</span>
                             <ChevronRight className="w-3 h-3" />
                             <span className="font-bold text-blue-600 uppercase">{selectedChapter?.code}</span>
                         </div>
-                        <h1 className="text-lg font-black text-gray-900 uppercase tracking-tight">{selectedChapter?.title}</h1>
+                        <h1 className="text-lg font-black text-gray-900 dark:text-slate-100 uppercase tracking-tight">{selectedChapter?.title}</h1>
                     </div>
                     <div className="flex gap-2">
-                        <button className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-50 rounded-lg transition-all" title="Chia sẻ"><Share2 className="w-5 h-5" /></button>
-                        <button className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-50 rounded-lg transition-all" title="Tùy chọn"><MoreHorizontal className="w-5 h-5" /></button>
+                        <button className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-slate-200 hover:bg-gray-50 dark:hover:bg-slate-700 rounded-lg transition-all" title="Chia sẻ"><Share2 className="w-5 h-5" /></button>
+                        <button className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-slate-200 hover:bg-gray-50 dark:hover:bg-slate-700 rounded-lg transition-all" title="Tùy chọn"><MoreHorizontal className="w-5 h-5" /></button>
                     </div>
                 </div>
 
                 {/* Content Scroll Area */}
-                <div className="flex-1 overflow-y-auto p-8 custom-scrollbar bg-slate-50/50">
+                <div className="flex-1 overflow-y-auto p-8 custom-scrollbar bg-slate-50/50 dark:bg-slate-900/30">
                     <div className="max-w-5xl mx-auto space-y-6 pb-20">
                         {selectedChapter?.articles.map((article, idx) => (
                             <div key={idx} id={article.id} className="group relative transition-all duration-500 animate-in slide-in-from-bottom-2">
@@ -1415,16 +1415,16 @@ const Regulations: React.FC = () => {
                                     <span className="bg-gray-800 text-white text-[10px] font-black px-2 py-1 rounded shadow-sm uppercase tracking-widest">
                                         {article.code}
                                     </span>
-                                    <h3 className="text-lg font-bold text-gray-800">{article.title}</h3>
+                                    <h3 className="text-lg font-bold text-gray-800 dark:text-slate-100">{article.title}</h3>
                                 </div>
 
                                 {/* Content Card */}
-                                <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow relative">
+                                <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow relative">
                                     {/* Action Buttons */}
                                     <div className="absolute top-4 right-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity z-20">
                                         <button
                                             onClick={() => setActiveCommentId(activeCommentId === article.id ? null : article.id)}
-                                            className={`flex items-center gap-1 px-3 py-1.5 rounded-lg transition-all text-xs font-bold ${activeCommentId === article.id ? 'bg-blue-50 text-blue-600' : 'bg-gray-50 text-gray-500 hover:bg-gray-100'}`}
+                                            className={`flex items-center gap-1 px-3 py-1.5 rounded-lg transition-all text-xs font-bold ${activeCommentId === article.id ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-600' : 'bg-gray-50 dark:bg-slate-700 text-gray-500 dark:text-slate-400 hover:bg-gray-100 dark:hover:bg-slate-600'}`}
                                         >
                                             <MessageSquare className="w-3.5 h-3.5" />
                                             {article.comments?.length || 0} Thảo luận
@@ -1432,7 +1432,7 @@ const Regulations: React.FC = () => {
                                     </div>
 
                                     {/* Dynamic Content Rendering */}
-                                    <div className="text-sm text-gray-600 leading-relaxed">
+                                    <div className="text-sm text-gray-600 dark:text-slate-300 leading-relaxed">
                                         {typeof article.content === 'string' ? (
                                             article.content.split('\n').map((line, i) => <p key={i} className="mb-2">{line}</p>)
                                         ) : (
@@ -1442,7 +1442,7 @@ const Regulations: React.FC = () => {
 
                                     {/* Comments Section */}
                                     {(activeCommentId === article.id) && (
-                                        <div className="mt-6 pt-6 border-t border-gray-100 animate-in fade-in">
+                                        <div className="mt-6 pt-6 border-t border-gray-100 dark:border-slate-700 animate-in fade-in">
                                             <h4 className="text-xs font-black text-gray-400 uppercase tracking-widest mb-4">Thảo luận nội bộ</h4>
 
                                             <div className="space-y-4 mb-4">
@@ -1451,9 +1451,9 @@ const Regulations: React.FC = () => {
                                                         <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold text-xs shrink-0">
                                                             {comment.user.charAt(0)}
                                                         </div>
-                                                        <div className="bg-gray-50 rounded-2xl rounded-tl-none p-3 flex-1">
+                                                        <div className="bg-gray-50 dark:bg-slate-700 rounded-2xl rounded-tl-none p-3 flex-1">
                                                             <div className="flex justify-between items-center mb-1">
-                                                                <span className="text-xs font-bold text-gray-800">{comment.user}</span>
+                                                                <span className="text-xs font-bold text-gray-800 dark:text-slate-100">{comment.user}</span>
                                                                 <span className="text-[10px] text-gray-400">{comment.date}</span>
                                                             </div>
                                                             <p className="text-xs text-gray-600">{comment.content}</p>
@@ -1474,7 +1474,7 @@ const Regulations: React.FC = () => {
                                                     <input
                                                         type="text"
                                                         placeholder="Viết ý kiến đóng góp..."
-                                                        className="w-full pl-4 pr-10 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+                                                        className="w-full pl-4 pr-10 py-2.5 bg-gray-50 dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-xl text-xs focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all text-gray-800 dark:text-slate-100 placeholder-gray-400 dark:placeholder-slate-500"
                                                     />
                                                     <button className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 text-blue-600 hover:bg-blue-100 rounded-lg transition-colors">
                                                         <Send className="w-3.5 h-3.5" />

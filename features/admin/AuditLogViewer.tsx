@@ -173,20 +173,20 @@ export const AuditLogViewer: React.FC<AuditLogViewerProps> = ({ isOpen = true, o
             {/* Header */}
             <div className="flex items-center justify-between">
                 <div>
-                    <h2 className="text-2xl font-bold text-gray-800 flex items-center gap-3">
+                    <h2 className="text-2xl font-bold text-gray-800 dark:text-slate-100 flex items-center gap-3">
                         <History className="w-7 h-7 text-blue-600" />
                         Nhật ký hệ thống
                     </h2>
-                    <p className="text-sm text-gray-500 mt-1">Theo dõi mọi hoạt động và thay đổi trong hệ thống</p>
+                    <p className="text-sm text-gray-500 dark:text-slate-400 mt-1">Theo dõi mọi hoạt động và thay đổi trong hệ thống</p>
                 </div>
-                <button className="px-4 py-2 text-sm font-medium text-gray-600 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors flex items-center gap-2">
+                <button className="px-4 py-2 text-sm font-medium text-gray-600 dark:text-slate-300 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-600 rounded-xl hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors flex items-center gap-2">
                     <Download className="w-4 h-4" />
                     Xuất log
                 </button>
             </div>
 
             {/* Filters */}
-            <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm">
+            <div className="bg-white dark:bg-slate-800 p-4 rounded-2xl border border-gray-100 dark:border-slate-700 shadow-sm">
                 <div className="flex flex-wrap gap-4">
                     {/* Search */}
                     <div className="flex-1 min-w-[250px] relative">
@@ -196,7 +196,7 @@ export const AuditLogViewer: React.FC<AuditLogViewerProps> = ({ isOpen = true, o
                             value={searchQuery}
                             onChange={e => setSearchQuery(e.target.value)}
                             placeholder="Tìm kiếm theo tên, ID, chi tiết..."
-                            className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="w-full pl-10 pr-4 py-2.5 border border-gray-200 dark:border-slate-600 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-700 text-gray-800 dark:text-slate-100 placeholder-gray-400 dark:placeholder-slate-500"
                         />
                     </div>
 
@@ -206,7 +206,7 @@ export const AuditLogViewer: React.FC<AuditLogViewerProps> = ({ isOpen = true, o
                         <select
                             value={filterAction}
                             onChange={e => setFilterAction(e.target.value)}
-                            className="px-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="px-3 py-2.5 border border-gray-200 dark:border-slate-600 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-700 text-gray-700 dark:text-slate-200"
                         >
                             <option value="all">Tất cả hành động</option>
                             <option value="CREATE">Tạo mới</option>
@@ -222,7 +222,7 @@ export const AuditLogViewer: React.FC<AuditLogViewerProps> = ({ isOpen = true, o
                     <select
                         value={filterEntity}
                         onChange={e => setFilterEntity(e.target.value)}
-                        className="px-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="px-3 py-2.5 border border-gray-200 dark:border-slate-600 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-700 text-gray-700 dark:text-slate-200"
                     >
                         <option value="all">Tất cả đối tượng</option>
                         <option value="Project">Dự án</option>
@@ -235,10 +235,10 @@ export const AuditLogViewer: React.FC<AuditLogViewerProps> = ({ isOpen = true, o
             </div>
 
             {/* Log Table */}
-            <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+            <div className="bg-white dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-700 shadow-sm overflow-hidden">
                 <div className="overflow-x-auto">
                     <table className="w-full text-sm">
-                        <thead className="bg-gray-50 text-xs uppercase font-bold text-gray-500">
+                        <thead className="bg-gray-50 dark:bg-slate-700/50 text-xs uppercase font-bold text-gray-500 dark:text-slate-400">
                             <tr>
                                 <th className="px-6 py-4 text-left">Thời gian</th>
                                 <th className="px-6 py-4 text-left">Người thực hiện</th>
@@ -248,18 +248,18 @@ export const AuditLogViewer: React.FC<AuditLogViewerProps> = ({ isOpen = true, o
                                 <th className="px-6 py-4 text-left">IP</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-gray-100">
+                        <tbody className="divide-y divide-gray-100 dark:divide-slate-700">
                             {paginatedLogs.map(log => {
                                 const ActionIcon = actionIcons[log.action] || History;
                                 const EntityIcon = entityIcons[log.entityType] || FileText;
 
                                 return (
-                                    <tr key={log.id} className="hover:bg-gray-50/50 transition-colors">
+                                    <tr key={log.id} className="hover:bg-gray-50/50 dark:hover:bg-slate-700/50 transition-colors">
                                         <td className="px-6 py-4">
                                             <div className="flex items-center gap-2">
                                                 <Calendar className="w-4 h-4 text-gray-400" />
                                                 <div>
-                                                    <p className="font-medium text-gray-800">{formatTime(log.timestamp)}</p>
+                                                    <p className="font-medium text-gray-800 dark:text-slate-100">{formatTime(log.timestamp)}</p>
                                                     <p className="text-[10px] text-gray-400">
                                                         {new Date(log.timestamp).toLocaleTimeString('vi-VN')}
                                                     </p>
@@ -268,10 +268,10 @@ export const AuditLogViewer: React.FC<AuditLogViewerProps> = ({ isOpen = true, o
                                         </td>
                                         <td className="px-6 py-4">
                                             <div className="flex items-center gap-2">
-                                                <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                                                <div className="w-8 h-8 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center">
                                                     <User className="w-4 h-4 text-blue-600" />
                                                 </div>
-                                                <span className="font-medium text-gray-700">{getUserName(log.userId)}</span>
+                                                <span className="font-medium text-gray-700 dark:text-slate-200">{getUserName(log.userId)}</span>
                                             </div>
                                         </td>
                                         <td className="px-6 py-4">
@@ -288,13 +288,13 @@ export const AuditLogViewer: React.FC<AuditLogViewerProps> = ({ isOpen = true, o
                                             <div className="flex items-center gap-2">
                                                 <EntityIcon className="w-4 h-4 text-gray-400" />
                                                 <div>
-                                                    <p className="font-medium text-gray-800">{log.entityName}</p>
-                                                    <p className="text-[10px] text-gray-400 font-mono">{log.entityId}</p>
+                                                    <p className="font-medium text-gray-800 dark:text-slate-100">{log.entityName}</p>
+                                                    <p className="text-[10px] text-gray-400 dark:text-slate-500 font-mono">{log.entityId}</p>
                                                 </div>
                                             </div>
                                         </td>
                                         <td className="px-6 py-4">
-                                            <p className="text-gray-600 text-xs max-w-[200px] truncate" title={log.details}>
+                                            <p className="text-gray-600 dark:text-slate-300 text-xs max-w-[200px] truncate" title={log.details}>
                                                 {log.details || '-'}
                                             </p>
                                         </td>
@@ -309,25 +309,25 @@ export const AuditLogViewer: React.FC<AuditLogViewerProps> = ({ isOpen = true, o
                 </div>
 
                 {/* Pagination */}
-                <div className="px-6 py-4 border-t border-gray-100 flex items-center justify-between">
-                    <span className="text-sm text-gray-500">
+                <div className="px-6 py-4 border-t border-gray-100 dark:border-slate-700 flex items-center justify-between">
+                    <span className="text-sm text-gray-500 dark:text-slate-400">
                         Hiển thị {((currentPage - 1) * itemsPerPage) + 1} - {Math.min(currentPage * itemsPerPage, filteredLogs.length)} / {filteredLogs.length} bản ghi
                     </span>
                     <div className="flex items-center gap-2">
                         <button
                             onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
                             disabled={currentPage === 1}
-                            className="p-2 border border-gray-200 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="p-2 border border-gray-200 dark:border-slate-600 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed text-gray-600 dark:text-slate-300"
                         >
                             <ChevronLeft className="w-4 h-4" />
                         </button>
-                        <span className="px-3 py-1 text-sm font-medium">
+                        <span className="px-3 py-1 text-sm font-medium text-gray-700 dark:text-slate-200">
                             {currentPage} / {totalPages || 1}
                         </span>
                         <button
                             onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
                             disabled={currentPage >= totalPages}
-                            className="p-2 border border-gray-200 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="p-2 border border-gray-200 dark:border-slate-600 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed text-gray-600 dark:text-slate-300"
                         >
                             <ChevronRight className="w-4 h-4" />
                         </button>
@@ -341,7 +341,7 @@ export const AuditLogViewer: React.FC<AuditLogViewerProps> = ({ isOpen = true, o
         if (!isOpen) return null;
         return (
             <div className="fixed inset-0 z-[100] flex items-center justify-center p-8 bg-black/60 backdrop-blur-sm">
-                <div className="bg-white w-full max-w-6xl max-h-[90vh] overflow-y-auto rounded-2xl shadow-2xl p-6">
+                <div className="bg-white dark:bg-slate-800 w-full max-w-6xl max-h-[90vh] overflow-y-auto rounded-2xl shadow-2xl p-6">
                     {content}
                 </div>
             </div>
