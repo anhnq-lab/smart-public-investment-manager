@@ -76,6 +76,15 @@ export const KanbanBoardView: React.FC<KanbanBoardViewProps> = ({
             map.set(task.Status, list);
         });
 
+        // Sort each column by StartDate ascending (execution order: earliest first)
+        map.forEach((list, status) => {
+            list.sort((a, b) => {
+                const dateA = a.StartDate ? new Date(a.StartDate).getTime() : (a.DueDate ? new Date(a.DueDate).getTime() : 0);
+                const dateB = b.StartDate ? new Date(b.StartDate).getTime() : (b.DueDate ? new Date(b.DueDate).getTime() : 0);
+                return dateA - dateB;
+            });
+        });
+
         return map;
     }, [tasks]);
 
