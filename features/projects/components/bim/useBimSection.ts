@@ -184,7 +184,7 @@ export function useBimSection(
         if (activeTool === 'clip-y') createClipPlane('y');
         if (activeTool === 'clip-z') createClipPlane('z');
         if (activeTool === 'section-box') createSectionBox();
-    }, [activeTool]);
+    }, [activeTool, createClipPlane, createSectionBox]);
 
     return {
         clipPlaneCount,

@@ -170,7 +170,7 @@ export const BimToolbar: React.FC<BimToolbarProps> = ({
     if (isMobile) {
         return (
             <div className={`
-                absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-1 p-1.5 rounded-2xl z-30
+                absolute bottom-12 left-1/2 -translate-x-1/2 flex items-center gap-1 p-1.5 rounded-2xl z-30
                 backdrop-blur-xl shadow-2xl border
                 ${isDarkMode ? 'bg-slate-800/95 border-slate-700/50' : 'bg-white/95 border-gray-200'}
             `}>
@@ -193,6 +193,15 @@ export const BimToolbar: React.FC<BimToolbarProps> = ({
                 <ToolBtn isDark={isDarkMode} active={activeTool?.startsWith('measure')} onClick={() => onMeasureAction?.('length')} title="Measure" disabled={disabled} badge={measurementCount}>
                     <Ruler className="w-5 h-5" />
                 </ToolBtn>
+                <Divider isDark={isDarkMode} />
+                <label className={`
+                    flex items-center justify-center w-9 h-9 rounded-xl cursor-pointer
+                    transition-all duration-150
+                    ${isDarkMode ? 'text-slate-400 hover:bg-slate-700/50 hover:text-white' : 'text-gray-500 hover:bg-gray-100 hover:text-gray-800'}
+                `} title="Upload IFC">
+                    <FileUp className="w-5 h-5" />
+                    <input type="file" accept=".ifc" className="hidden" onChange={onUpload} />
+                </label>
             </div>
         );
     }

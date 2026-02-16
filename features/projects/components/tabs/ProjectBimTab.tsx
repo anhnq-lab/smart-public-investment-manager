@@ -1,4 +1,5 @@
-import React, { useRef, useEffect, useState, useCallback } from 'react';
+import React, { useRef, useEffect, useState, useCallback, useMemo } from 'react';
+import * as THREE from 'three';
 import { Upload, Loader2, Building2, AlertCircle, CheckCircle } from 'lucide-react';
 import { useTheme } from '../../../../context/ThemeContext';
 
@@ -33,6 +34,7 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
     const [isTablet, setIsTablet] = useState(false);
     const [showShortcuts, setShowShortcuts] = useState(false);
     const [toolbarCollapsed, setToolbarCollapsed] = useState(false);
+    const originalMaterialsRef = useRef(new WeakMap<THREE.Material, THREE.Material>());
 
     // ── Hooks ──────────────────────────────
     const tools = useBimTools();
@@ -96,41 +98,62 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
         return () => container.removeEventListener('click', onClick);
     }, [tools.activeTool, measure.handleMeasureClick]);
 
-    // ── Render mode switching ──────────────
+    // ── Render mode switching (with material caching) ──
     useEffect(() => {
         const scene = engine.worldRef.current?.scene?.three;
         if (!scene) return;
+        const cache = originalMaterialsRef.current;
 
         scene.traverse((obj: any) => {
-            if (!obj.isMesh) return;
-            switch (tools.renderMode) {
-                case 'wireframe':
-                    obj.material = obj.material.clone();
-                    obj.material.wireframe = true;
-                    obj.material.opacity = 1;
-                    obj.material.transparent = false;
-                    break;
-                case 'xray':
-                    obj.material = obj.material.clone();
-                    obj.material.wireframe = false;
-                    obj.material.opacity = 0.15;
-                    obj.material.transparent = true;
-                    obj.material.depthWrite = false;
-                    break;
-                case 'ghosting':
-                    obj.material = obj.material.clone();
-                    obj.material.wireframe = false;
-                    obj.material.opacity = 0.35;
-                    obj.material.transparent = true;
-                    obj.material.depthWrite = false;
-                    break;
-                default: // shading
+            if (!obj.isMesh || !obj.material) return;
+
+            // Cache original material on first use
+            if (!cache.has(obj.material) && tools.renderMode !== 'shading') {
+                cache.set(obj.material, obj.material);
+            }
+
+            if (tools.renderMode === 'shading') {
+                // Restore original
+                const original = cache.get(obj.material);
+                if (original && original !== obj.material) {
+                    obj.material.dispose();
+                    obj.material = original;
+                } else {
                     obj.material.wireframe = false;
                     obj.material.opacity = 1;
                     obj.material.transparent = false;
                     obj.material.depthWrite = true;
+                }
+                return;
+            }
+
+            // Clone only if not already cloned for this mode
+            const orig = cache.get(obj.material) || obj.material;
+            if (!cache.has(orig)) cache.set(orig, orig);
+
+            const cloned = orig.clone();
+            switch (tools.renderMode) {
+                case 'wireframe':
+                    cloned.wireframe = true;
+                    cloned.opacity = 1;
+                    cloned.transparent = false;
+                    break;
+                case 'xray':
+                    cloned.wireframe = false;
+                    cloned.opacity = 0.15;
+                    cloned.transparent = true;
+                    cloned.depthWrite = false;
+                    break;
+                case 'ghosting':
+                    cloned.wireframe = false;
+                    cloned.opacity = 0.35;
+                    cloned.transparent = true;
+                    cloned.depthWrite = false;
                     break;
             }
+            // Dispose previous clone if it's not the original
+            if (obj.material !== orig) obj.material.dispose();
+            obj.material = cloned;
         });
     }, [tools.renderMode, engine.viewerReady]);
 

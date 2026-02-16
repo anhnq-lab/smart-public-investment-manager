@@ -1,12 +1,12 @@
 /**
- * useBimUpload — Upload IFC files, convert to Fragments, load existing models
- * Handles: upload → convert → cache → load. Error recovery with retry.
+ * useBimUpload — Upload IFC files, convert to model, load existing models
+ * Handles: upload → load → cache. Error recovery with retry.
  */
 import { useRef, useState, useCallback } from 'react';
 import * as OBC from '@thatopen/components';
 import * as THREE from 'three';
 import {
-    uploadIFCFile, uploadFragments, getProjectModels,
+    uploadIFCFile, getProjectModels,
     downloadFile, deleteModel, updateModelStatus,
     type BimModel
 } from '../../../../lib/bimStorage';
@@ -57,7 +57,8 @@ export function useBimUpload(
             const models = await getProjectModels(projectID);
             if (models.length === 0) return;
 
-            const readyModels = models.filter(m => m.status === 'ready' && m.frag_path);
+            // Filter models that are ready and have an IFC path
+            const readyModels = models.filter(m => m.status === 'ready' && m.ifc_path);
             if (readyModels.length === 0) {
                 setDisciplineModels(models.map(m => ({ model: m, visible: false })));
                 return;
@@ -67,7 +68,7 @@ export function useBimUpload(
             setStatusMessage(`Đang tải ${readyModels.length} mô hình...`);
 
             const newDisciplineModels: DisciplineModel[] = [];
-            const fragments = componentsRef.current?.get(OBC.FragmentsManager);
+            const ifcLoader = ifcLoaderRef.current;
 
             for (let i = 0; i < readyModels.length; i++) {
                 const m = readyModels[i];
@@ -75,11 +76,22 @@ export function useBimUpload(
                 setStatusMessage(`Đang tải: ${m.file_name} (${i + 1}/${readyModels.length})`);
 
                 try {
-                    const fragData = await downloadFile(m.frag_path!);
-                    if (fragments && worldRef.current) {
-                        const fragModel = (fragments as any).load(new Uint8Array(fragData));
-                        worldRef.current.scene.three.add((fragModel as any).object || fragModel);
-                        newDisciplineModels.push({ model: m, visible: true, fragModel });
+                    // Download raw IFC file
+                    const ifcBuffer = await downloadFile(m.ifc_path!);
+                    const uint8Array = new Uint8Array(ifcBuffer);
+
+                    if (ifcLoader && worldRef.current) {
+                        // Load via IfcLoader
+                        const model = await ifcLoader.load(uint8Array, true, m.file_name);
+
+                        // Store IFC data for property lookups
+                        const modelId = (model as any).modelId || m.file_name;
+                        ifcDataMapRef.current.set(modelId, uint8Array);
+
+                        newDisciplineModels.push({ model: m, visible: true, fragModel: model });
+
+                        // Build spatial tree for this model
+                        onModelLoaded?.(uint8Array);
                     }
                 } catch (err) {
                     console.warn(`Failed to load ${m.file_name}:`, err);
@@ -88,7 +100,7 @@ export function useBimUpload(
             }
 
             // Add non-ready models to the list
-            models.filter(m => m.status !== 'ready' || !m.frag_path).forEach(m => {
+            models.filter(m => m.status !== 'ready' || !m.ifc_path).forEach(m => {
                 newDisciplineModels.push({ model: m, visible: false });
             });
 
@@ -105,7 +117,7 @@ export function useBimUpload(
             setStatus('error');
             setStatusMessage(`Lỗi tải models: ${err.message}`);
         }
-    }, [projectID, componentsRef, worldRef]);
+    }, [projectID, componentsRef, worldRef, ifcLoaderRef, onModelLoaded]);
 
     // ── Upload & Convert IFC ────────────────────────
     const handleFileUpload = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -122,30 +134,23 @@ export function useBimUpload(
             setLoadingProgress(30);
 
             setStatus('converting');
-            setStatusMessage(`Đang convert ${file.name} → Fragments...`);
+            setStatusMessage(`Đang convert ${file.name}...`);
 
             const ifcLoader = componentsRef.current.get(OBC.IfcLoader);
             const buffer = await file.arrayBuffer();
             const uint8Array = new Uint8Array(buffer);
 
             const model = await ifcLoader.load(uint8Array, true, file.name);
-            setLoadingProgress(70);
+            setLoadingProgress(80);
 
             // Store raw IFC data for property lookups
             const modelId = (model as any).modelId || file.name;
             ifcDataMapRef.current.set(modelId, uint8Array);
 
-            // Export fragments for caching
-            const fragments = componentsRef.current.get(OBC.FragmentsManager);
-            const fragData = (fragments as any).export(model);
-            setLoadingProgress(80);
-
-            setStatusMessage('Đang lưu Fragments lên server...');
-            await uploadFragments(record.id, projectID, fragData, file.name);
-            setLoadingProgress(90);
-
+            // Mark model as ready (IFC file already uploaded by uploadIFCFile)
             const elementCount = (model as any).elementCount || 0;
             await updateModelStatus(record.id, 'ready', { element_count: elementCount });
+            setLoadingProgress(90);
 
             setDisciplineModels(prev => [...prev, {
                 model: { ...record, status: 'ready', element_count: elementCount },
@@ -175,7 +180,7 @@ export function useBimUpload(
             setStatus('error');
             setStatusMessage(`Lỗi: ${err.message}`);
         }
-    }, [projectID, componentsRef, worldRef, onModelLoaded]);
+    }, [projectID, componentsRef, worldRef, ifcLoaderRef, onModelLoaded]);
 
     // ── Toggle visibility ───────────────────────────
     const toggleDisciplineVisibility = useCallback((index: number) => {
