@@ -4,7 +4,7 @@ import {
     Upload, Search, Eye, Download, FolderOpen, MoreVertical,
     Calendar, Building2, Target, Coins, Filter, CheckCircle2,
     Clock, AlertCircle, Plus, FileCheck, X, History, PenTool,
-    FileSpreadsheet, FileImage, File as FileIcon, ExternalLink
+    FileSpreadsheet, FileImage, File as FileIcon, ExternalLink, RefreshCw
 } from 'lucide-react';
 import {
     Document, Folder, ISO19650Status, ProjectStage,
@@ -15,6 +15,7 @@ import { useFolders, useDocuments } from '@/hooks/useDocuments';
 import FilePreviewModal from '../FilePreviewModal';
 import { supabase } from '@/lib/supabase';
 import { DOC_CROSS_REFS } from '@/utils/docStepMapping';
+import { GoogleGenerativeAI } from '@google/generative-ai';
 
 interface ProjectDocumentsTabProps {
     projectID: string;
@@ -229,6 +230,7 @@ export const ProjectDocumentsTab: React.FC<ProjectDocumentsTabProps> = ({
     const [expandedDocIdx, setExpandedDocIdx] = useState<string | null>(null);
     const [editingMeta, setEditingMeta] = useState<Record<string, any>>({});
     const [savingMeta, setSavingMeta] = useState(false);
+    const [extractingDoc, setExtractingDoc] = useState<string | null>(null); // docKey being extracted
 
     // Data hooks
     const { data: folders = [] } = useFolders(projectID);
@@ -342,9 +344,45 @@ export const ProjectDocumentsTab: React.FC<ProjectDocumentsTabProps> = ({
         return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(value);
     };
 
-    // Upload handler — saves to Supabase Storage + documents table
-    const handleUpload = (docTypeName?: string) => {
+    /** Extract document metadata using Gemini AI */
+    const extractDocMetadata = async (file: File): Promise<Record<string, string>> => {
+        const apiKey = import.meta.env.VITE_GEMINI_API_KEY || '';
+        if (!apiKey) return {};
+        try {
+            const genAI = new GoogleGenerativeAI(apiKey);
+            const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
+            const buffer = await file.arrayBuffer();
+            const base64 = btoa(
+                new Uint8Array(buffer).reduce((data, byte) => data + String.fromCharCode(byte), '')
+            );
+            const result = await model.generateContent([
+                { inlineData: { mimeType: file.type || 'application/pdf', data: base64 } },
+                {
+                    text: `Bạn là chuyên gia pháp lý xây dựng Việt Nam. Đọc văn bản đính kèm và trích xuất thông tin.
+
+Trả về JSON object với đúng các key:
+{
+  "document_number": "Số hiệu văn bản (VD: 123/QĐ-TTg)",
+  "issue_date": "Ngày ban hành dạng YYYY-MM-DD",
+  "issuing_authority": "Đơn vị / cơ quan ban hành",
+  "notes": "Tóm tắt ngắn gọn nội dung chính (1-2 câu)"
+}
+
+Nếu không tìm thấy, để giá trị rỗng "". CHỈ TRẢ VỀ JSON, KHÔNG markdown.` },
+            ]);
+            const text = result.response.text().trim();
+            const jsonStr = text.replace(/^```json?\s*/i, '').replace(/\s*```$/i, '');
+            return JSON.parse(jsonStr);
+        } catch (err) {
+            console.error('Gemini extract error:', err);
+            return {};
+        }
+    };
+
+    // Upload handler — saves to Supabase Storage + documents table + AI extraction
+    const handleUpload = (docTypeName?: string, docKey?: string) => {
         if (docTypeName) setPendingDocType(docTypeName);
+        if (docKey) setExtractingDoc(docKey); // track which row
         fileInputRef.current?.click();
     };
     const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -368,7 +406,8 @@ export const ProjectDocumentsTab: React.FC<ProjectDocumentsTabProps> = ({
                     ? `${pendingDocType} - ${file.name}`
                     : file.name;
 
-                await (supabase.from('documents') as any).insert({
+                // Insert into DB first
+                const { data: insertedDoc } = await (supabase.from('documents') as any).insert({
                     project_id: projectID,
                     doc_name: finalDocName,
                     storage_path: urlData.publicUrl,
@@ -377,11 +416,13 @@ export const ProjectDocumentsTab: React.FC<ProjectDocumentsTabProps> = ({
                     source: 'manual',
                     is_digitized: true,
                     doc_type: pendingDocType || null,
-                });
+                }).select('doc_id').single();
 
-                // Also add to local state for immediate display
-                const newDoc: Document = {
-                    DocID: Math.floor(Math.random() * 100000),
+                const docId = insertedDoc?.doc_id || Math.floor(Math.random() * 100000);
+
+                // Add to local state for immediate display
+                const newDoc: any = {
+                    DocID: docId,
                     ReferenceID: projectID,
                     ProjectID: projectID,
                     Category: DocCategory.Legal,
@@ -392,16 +433,49 @@ export const ProjectDocumentsTab: React.FC<ProjectDocumentsTabProps> = ({
                     Version: 'P01.01',
                     Size: `${(file.size / 1024).toFixed(0)} KB`,
                     ISOStatus: ISO19650Status.S0,
-                    isLocal: true,
-                    fileObj: file,
+                    source: 'manual',
                 };
-                setUploadedDocs(prev => [newDoc, ...prev]);
+                setDbDocs(prev => [newDoc, ...prev]);
+
+                // AI extraction — run in background
+                const currentDocKey = extractingDoc;
+                if (currentDocKey) {
+                    setExtractingDoc(currentDocKey); // show spinner
+                    try {
+                        const extracted = await extractDocMetadata(file);
+                        if (extracted && Object.keys(extracted).length > 0) {
+                            // Save extracted metadata to DB
+                            const metaUpdate: any = {};
+                            if (extracted.document_number) metaUpdate.document_number = extracted.document_number;
+                            if (extracted.issue_date) metaUpdate.issue_date = extracted.issue_date;
+                            if (extracted.issuing_authority) metaUpdate.issuing_authority = extracted.issuing_authority;
+                            if (extracted.notes) metaUpdate.notes = extracted.notes;
+
+                            if (Object.keys(metaUpdate).length > 0) {
+                                await (supabase.from('documents') as any)
+                                    .update(metaUpdate)
+                                    .eq('doc_id', docId);
+                            }
+
+                            // Update local state & expand
+                            setDbDocs(prev => prev.map(d =>
+                                d.DocID === docId ? { ...d, ...metaUpdate } : d
+                            ));
+                            setEditingMeta(prev => ({ ...prev, [currentDocKey]: { ...extracted } }));
+                            setExpandedDocIdx(currentDocKey);
+                        }
+                    } catch {
+                        // Extraction failed — user can fill manually
+                    }
+                    setExtractingDoc(null);
+                }
             } catch (err) {
                 console.error('Upload failed:', err);
             }
         }
         e.target.value = '';
         setPendingDocType('');
+        setExtractingDoc(null);
     };
 
     // Save document metadata
@@ -779,13 +853,19 @@ export const ProjectDocumentsTab: React.FC<ProjectDocumentsTabProps> = ({
                                                             ) : (
                                                                 <>
                                                                     <span className="text-xs px-2.5 py-1 bg-gray-100 dark:bg-slate-700 text-gray-400 dark:text-slate-500 rounded-lg font-medium">Chưa có</span>
-                                                                    <button
-                                                                        onClick={(e) => { e.stopPropagation(); handleUpload(docType.name); }}
-                                                                        className="p-1.5 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-all"
-                                                                        title="Tải lên văn bản"
-                                                                    >
-                                                                        <Plus className="w-4 h-4" />
-                                                                    </button>
+                                                                    {extractingDoc === docKey ? (
+                                                                        <span className="text-xs px-3 py-1.5 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-lg font-bold flex items-center gap-1.5 animate-pulse">
+                                                                            <RefreshCw className="w-3.5 h-3.5 animate-spin" /> Đang trích xuất...
+                                                                        </span>
+                                                                    ) : (
+                                                                        <button
+                                                                            onClick={(e) => { e.stopPropagation(); handleUpload(docType.name, docKey); }}
+                                                                            className="p-1.5 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-all"
+                                                                            title="Tải lên văn bản"
+                                                                        >
+                                                                            <Plus className="w-4 h-4" />
+                                                                        </button>
+                                                                    )}
                                                                 </>
                                                             )}
                                                         </div>
