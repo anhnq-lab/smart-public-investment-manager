@@ -334,10 +334,14 @@ export const BimToolbar: React.FC<BimToolbarProps> = ({
             <Divider isDark={isDarkMode} />
 
             {/* ── Extras ──── */}
-            <label className="cursor-pointer">
-                <ToolBtn isDark={isDarkMode} title="Upload IFC">
-                    <FileUp className="w-4 h-4" />
-                </ToolBtn>
+            <label
+                className={`
+                    relative w-9 h-9 flex items-center justify-center rounded-lg transition-all duration-150 cursor-pointer
+                    ${isDarkMode ? 'text-slate-400 hover:bg-white/10 hover:text-white' : 'text-gray-500 hover:bg-gray-200 hover:text-gray-800'}
+                `}
+                title="Upload IFC"
+            >
+                <FileUp className="w-4 h-4" />
                 <input type="file" accept=".ifc" className="hidden" onChange={onUpload} />
             </label>
             <ToolBtn isDark={isDarkMode} onClick={onScreenshot} title="Screenshot" disabled={disabled}>
