@@ -457,12 +457,32 @@ export const ProjectComplianceTab: React.FC<ProjectComplianceTabProps> = ({ proj
                 (data as any[]).forEach((row: any) => {
                     if (row.tt24_field) {
                         const source = row.source || 'unknown';
+                        // Find the TT24 row that matches this tt24_field to map metadata
+                        const matchedRow = rows.find(r => `doc_${r.stt}_${r.label}` === row.tt24_field);
+                        // Map document metadata to subField keys
+                        const extractedData: Record<string, string> = {};
+                        if (matchedRow?.subFields) {
+                            matchedRow.subFields.forEach(sf => {
+                                const sfLabel = sf.label.toLowerCase();
+                                if (sfLabel.includes('số') && row.document_number) {
+                                    extractedData[sf.key] = row.document_number;
+                                } else if (sfLabel.includes('ngày') && row.issue_date) {
+                                    extractedData[sf.key] = row.issue_date;
+                                } else if ((sfLabel.includes('cq') || sfLabel.includes('cơ quan') || sfLabel.includes('phê duyệt')) && row.issuing_authority) {
+                                    extractedData[sf.key] = row.issuing_authority;
+                                } else if (sfLabel.includes('tổng mức') && row.notes) {
+                                    // notes may contain investment amount
+                                    extractedData[sf.key] = row.notes;
+                                }
+                            });
+                        }
                         existing[row.tt24_field] = {
                             file: null as any,
                             fileName: source === 'task'
                                 ? `📋 ${row.doc_name}` // Show task origin
                                 : row.doc_name?.replace('[TT24] ', '').split(' - ').pop() || row.doc_name,
                             status: 'done',
+                            extractedData: Object.keys(extractedData).length > 0 ? extractedData : undefined,
                         };
                     }
                 });
@@ -470,7 +490,7 @@ export const ProjectComplianceTab: React.FC<ProjectComplianceTabProps> = ({ proj
             }
         };
         loadExisting();
-    }, [project.ProjectID]);
+    }, [project.ProjectID, rows]);
 
     // Editing state for data fields
     const [editingData, setEditingData] = useState(false);
@@ -554,7 +574,26 @@ export const ProjectComplianceTab: React.FC<ProjectComplianceTabProps> = ({ proj
                     [key]: { file, fileName: file.name, status: 'done', extractedData: extracted },
                 }));
 
-                // Auto-save extracted data to project
+                // Save extracted metadata to documents table (for persistence)
+                const docMetaUpdate: Record<string, string> = {};
+                row.subFields?.forEach(sf => {
+                    const val = extracted[sf.key];
+                    if (!val) return;
+                    const sfLabel = sf.label.toLowerCase();
+                    if (sfLabel.includes('số')) docMetaUpdate.document_number = val;
+                    else if (sfLabel.includes('ngày')) docMetaUpdate.issue_date = val;
+                    else if (sfLabel.includes('cq') || sfLabel.includes('cơ quan') || sfLabel.includes('phê duyệt'))
+                        docMetaUpdate.issuing_authority = val;
+                    else if (sfLabel.includes('tổng mức')) docMetaUpdate.notes = val;
+                });
+                if (Object.keys(docMetaUpdate).length > 0) {
+                    await (supabase.from('documents') as any)
+                        .update(docMetaUpdate)
+                        .eq('project_id', project.ProjectID)
+                        .eq('tt24_field', key);
+                }
+
+                // Also try to save to project (for fields that exist)
                 const projectUpdate: Record<string, any> = {};
                 for (const [fieldKey, value] of Object.entries(extracted)) {
                     if (value && fieldKey in project) {
