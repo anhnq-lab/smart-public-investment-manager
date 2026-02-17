@@ -456,7 +456,13 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({
             [TaskStatus.Done]: TaskStatus.Todo
         };
         const newStatus = statusCycle[task.Status] || TaskStatus.InProgress;
-        handleSaveTask({ ...task, Status: newStatus });
+        // Auto-sync progress with status
+        let newProgress = task.ProgressPercent || 0;
+        if (newStatus === TaskStatus.Done) newProgress = 100;
+        else if (newStatus === TaskStatus.Review && newProgress < 100) newProgress = 100;
+        else if (newStatus === TaskStatus.InProgress && newProgress === 0) newProgress = 25;
+        else if (newStatus === TaskStatus.Todo) newProgress = 0;
+        handleSaveTask({ ...task, Status: newStatus, ProgressPercent: newProgress } as any);
     };
 
     const handleStatusChange = (taskId: string, newStatus: TaskStatus) => {
@@ -473,6 +479,32 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({
     };
 
     const handleSaveTask = async (taskData: Partial<Task>) => {
+        // ── Auto-derive status from progress ──
+        const progress = taskData.ProgressPercent ?? (taskData as any).Progress ?? 0;
+        if (taskData.ProgressPercent !== undefined || (taskData as any).Progress !== undefined) {
+            // Only auto-derive if status wasn't explicitly changed in this call
+            const currentTask = tasks.find(t => t.TaskID === taskData.TaskID);
+            const statusExplicitlyChanged = taskData.Status !== undefined && taskData.Status !== currentTask?.Status;
+            if (!statusExplicitlyChanged) {
+                if (progress === 100) {
+                    taskData.Status = TaskStatus.Review; // 100% → Đang kiểm tra (chờ GĐ duyệt)
+                } else if (progress >= 1) {
+                    taskData.Status = TaskStatus.InProgress; // 1-99% → Đang thực hiện
+                } else {
+                    taskData.Status = TaskStatus.Todo; // 0% → Chưa bắt đầu
+                }
+            }
+        }
+        // ── Auto-sync progress when status is set explicitly ──
+        if (taskData.Status === TaskStatus.Done && (progress < 100)) {
+            taskData.ProgressPercent = 100;
+            (taskData as any).Progress = 100;
+        }
+        if (taskData.Status === TaskStatus.Todo && progress > 0) {
+            taskData.ProgressPercent = 0;
+            (taskData as any).Progress = 0;
+        }
+
         let updatedTask: Task;
 
         if (taskData.TaskID && !taskData.TaskID.startsWith('NEW_')) {

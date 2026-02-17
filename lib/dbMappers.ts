@@ -330,6 +330,7 @@ export const dbToTask = (row: any): Task => ({
     ActualStartDate: row.actual_start_date || '',
     ActualEndDate: row.actual_end_date || '',
     Progress: row.progress || 0,
+    ProgressPercent: row.progress || 0,
 });
 
 export const taskToDb = (t: Partial<Task>) => ({
@@ -352,6 +353,7 @@ export const taskToDb = (t: Partial<Task>) => ({
     ...(t.ApproverID !== undefined && { approver_id: t.ApproverID }),
     ...(t.EstimatedCost !== undefined && { estimated_cost: t.EstimatedCost }),
     ...(t.Progress !== undefined && { progress: t.Progress }),
+    ...(t.ProgressPercent !== undefined && { progress: t.ProgressPercent }),
 });
 
 // ============================================================

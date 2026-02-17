@@ -112,8 +112,8 @@ export const ProjectTaskModal: React.FC<ProjectTaskModalProps> = ({
                         type="button"
                         onClick={() => setActiveTab('basic')}
                         className={`px-4 py-2.5 text-sm font-medium transition-colors border-b-2 -mb-px ${activeTab === 'basic'
-                                ? 'text-blue-600 border-blue-600'
-                                : 'text-gray-500 border-transparent hover:text-gray-700'
+                            ? 'text-blue-600 border-blue-600'
+                            : 'text-gray-500 border-transparent hover:text-gray-700'
                             }`}
                     >
                         Thông tin cơ bản
@@ -122,8 +122,8 @@ export const ProjectTaskModal: React.FC<ProjectTaskModalProps> = ({
                         type="button"
                         onClick={() => setActiveTab('advanced')}
                         className={`px-4 py-2.5 text-sm font-medium transition-colors border-b-2 -mb-px ${activeTab === 'advanced'
-                                ? 'text-blue-600 border-blue-600'
-                                : 'text-gray-500 border-transparent hover:text-gray-700'
+                            ? 'text-blue-600 border-blue-600'
+                            : 'text-gray-500 border-transparent hover:text-gray-700'
                             }`}
                     >
                         Nâng cao
@@ -187,7 +187,14 @@ export const ProjectTaskModal: React.FC<ProjectTaskModalProps> = ({
                                 <div className="space-y-1.5">
                                     <ProgressSlider
                                         value={formData.ProgressPercent || 0}
-                                        onChange={(value) => setFormData({ ...formData, ProgressPercent: value })}
+                                        onChange={(value) => {
+                                            // Auto-derive status from progress
+                                            let newStatus = formData.Status;
+                                            if (value === 100) newStatus = TaskStatus.Review;
+                                            else if (value >= 1) newStatus = TaskStatus.InProgress;
+                                            else newStatus = TaskStatus.Todo;
+                                            setFormData({ ...formData, ProgressPercent: value, Status: newStatus });
+                                        }}
                                     />
                                 </div>
 
@@ -228,7 +235,15 @@ export const ProjectTaskModal: React.FC<ProjectTaskModalProps> = ({
                                         <select
                                             className="w-full px-3 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none bg-white text-sm"
                                             value={formData.Status}
-                                            onChange={e => setFormData({ ...formData, Status: e.target.value as TaskStatus })}
+                                            onChange={e => {
+                                                const newStatus = e.target.value as TaskStatus;
+                                                let newProgress = formData.ProgressPercent || 0;
+                                                if (newStatus === TaskStatus.Done) newProgress = 100;
+                                                else if (newStatus === TaskStatus.Todo) newProgress = 0;
+                                                else if (newStatus === TaskStatus.InProgress && newProgress === 0) newProgress = 25;
+                                                else if (newStatus === TaskStatus.Review && newProgress < 100) newProgress = 100;
+                                                setFormData({ ...formData, Status: newStatus, ProgressPercent: newProgress });
+                                            }}
                                         >
                                             <option value={TaskStatus.Todo}>Chưa bắt đầu</option>
                                             <option value={TaskStatus.InProgress}>Đang thực hiện</option>

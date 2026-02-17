@@ -159,9 +159,21 @@ export function useBimEngine(
                 });
                 ifcLoaderRef.current = ifcLoader;
 
+                // Setup Raycasters (required before Highlighter - per official docs)
+                const raycasters = components.get(OBC.Raycasters);
+                raycasters.get(world);
+
                 // Setup Highlighter for selection + hover
                 const highlighter = components.get(OBCF.Highlighter);
-                highlighter.setup({ world });
+                highlighter.setup({
+                    world,
+                    selectMaterialDefinition: {
+                        color: new THREE.Color('#4fc3f7'),
+                        opacity: 0.5,
+                        transparent: true,
+                        renderedFaces: 0,
+                    },
+                });
 
                 // Track camera rotation for ViewCube
                 world.camera.controls.addEventListener('update', () => {

@@ -83,11 +83,11 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
     useEffect(() => {
         if (engine.viewerReady && !modelsLoaded) {
             setModelsLoaded(true);
-            upload.loadExistingModels();
-            // Fit camera after a delay to let models load
-            setTimeout(() => {
-                engine.fitAll();
-            }, 2000);
+            (async () => {
+                await upload.loadExistingModels();
+                // Fit camera after models are loaded
+                setTimeout(() => engine.fitAll(), 500);
+            })();
         }
     }, [engine.viewerReady, modelsLoaded]);
 

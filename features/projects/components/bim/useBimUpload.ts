@@ -28,7 +28,7 @@ export interface BimUploadAPI {
     ifcDataMapRef: React.MutableRefObject<Map<string, Uint8Array>>;
     // Actions
     handleFileUpload: (e: React.ChangeEvent<HTMLInputElement>) => void;
-    loadExistingModels: () => void;
+    loadExistingModels: () => Promise<void>;
     toggleDisciplineVisibility: (index: number) => void;
     handleDeleteModel: (index: number) => void;
     retryFailedModel: (index: number) => void;
