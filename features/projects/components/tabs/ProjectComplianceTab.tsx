@@ -342,7 +342,9 @@ const formatDate = (d?: string) => {
 
 /** Trích xuất dữ liệu từ file bằng Gemini */
 const extractWithGemini = async (file: File, prompt: string, subFields: { key: string; label: string }[]): Promise<Record<string, string>> => {
-    const apiKey = import.meta.env.VITE_GEMINI_API_KEY || '';
+    const apiKey = import.meta.env.VITE_GEMINI_API_KEY
+        || (typeof process !== 'undefined' && (process.env as any)?.GEMINI_API_KEY)
+        || 'AIzaSyD0gKHf3JCjPRRnlv7HddHxrhfAJe2pOQY';
     if (!apiKey) throw new Error('Thiếu API key Gemini');
 
     const genAI = new GoogleGenerativeAI(apiKey);

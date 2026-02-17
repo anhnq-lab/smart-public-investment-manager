@@ -346,7 +346,9 @@ export const ProjectDocumentsTab: React.FC<ProjectDocumentsTabProps> = ({
 
     /** Extract document metadata using Gemini AI */
     const extractDocMetadata = async (file: File): Promise<Record<string, string>> => {
-        const apiKey = import.meta.env.VITE_GEMINI_API_KEY || '';
+        const apiKey = import.meta.env.VITE_GEMINI_API_KEY
+            || (typeof process !== 'undefined' && (process.env as any)?.GEMINI_API_KEY)
+            || 'AIzaSyD0gKHf3JCjPRRnlv7HddHxrhfAJe2pOQY';
         if (!apiKey) return {};
         try {
             const genAI = new GoogleGenerativeAI(apiKey);
@@ -637,7 +639,7 @@ Nếu không tìm thấy, để giá trị rỗng "". CHỈ TRẢ VỀ JSON, KH�
                             )}
                         </div>
                         <button
-                            onClick={handleUpload}
+                            onClick={() => handleUpload()}
                             className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold rounded-lg transition-colors shadow-sm shadow-blue-200"
                         >
                             <Upload className="w-4 h-4" />
@@ -1103,7 +1105,7 @@ Nếu không tìm thấy, để giá trị rỗng "". CHỈ TRẢ VỀ JSON, KH�
                                     </p>
                                     {!searchQuery && (
                                         <button
-                                            onClick={handleUpload}
+                                            onClick={() => handleUpload()}
                                             className="flex items-center gap-2 px-4 py-2 bg-blue-50 text-blue-600 rounded-lg text-xs font-bold hover:bg-blue-100 transition-colors"
                                         >
                                             <Upload className="w-3.5 h-3.5" /> Tải lên ngay
