@@ -172,15 +172,6 @@ export function useBimUpload(
                 box.getBoundingSphere(sphere);
                 camera.controls.fitToSphere(sphere, true);
 
-                // Adjust grid Y to match model bottom — fixes "floor below ground" issue
-                const scene = worldRef.current.scene.three;
-                scene.traverse((obj: THREE.Object3D) => {
-                    if ((obj as any).isGridHelper || obj.userData?.isGrid ||
-                        obj.constructor?.name === 'GridHelper' ||
-                        (obj.type === 'GridHelper')) {
-                        obj.position.y = box.min.y;
-                    }
-                });
             }
 
             setStatus('success');

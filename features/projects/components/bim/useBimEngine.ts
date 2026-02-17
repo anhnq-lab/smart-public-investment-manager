@@ -108,10 +108,6 @@ export function useBimEngine(
 
                 await components.init();
 
-                // Grid
-                const grids = components.get(OBC.Grids);
-                grids.create(world);
-
                 // Initialize FragmentsManager — load worker
                 const fragments = components.get(OBC.FragmentsManager);
                 let workerUrl: string;
