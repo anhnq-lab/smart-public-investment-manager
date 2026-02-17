@@ -186,6 +186,26 @@ export function useBimEngine(
                 if (!disposed) {
                     setViewerReady(true);
                     setInitError(null);
+
+                    // Auto-resize renderer when container size changes (fullscreen, window resize)
+                    const container = containerRef.current!;
+                    const resizeObserver = new ResizeObserver(() => {
+                        if (disposed) return;
+                        const w = container.clientWidth;
+                        const h = container.clientHeight;
+                        if (w === 0 || h === 0) return;
+                        const threeRenderer = (worldRef.current?.renderer as any)?.three;
+                        const threeCamera = worldRef.current?.camera?.three;
+                        if (threeRenderer) {
+                            threeRenderer.setSize(w, h);
+                        }
+                        if (threeCamera && 'aspect' in threeCamera) {
+                            (threeCamera as THREE.PerspectiveCamera).aspect = w / h;
+                            (threeCamera as THREE.PerspectiveCamera).updateProjectionMatrix();
+                        }
+                    });
+                    resizeObserver.observe(container);
+                    resizeObserverRef = resizeObserver;
                 }
             } catch (err: any) {
                 console.error('Viewer init error:', err);
@@ -195,10 +215,12 @@ export function useBimEngine(
             }
         };
 
+        let resizeObserverRef: ResizeObserver | null = null;
         init();
 
         return () => {
             disposed = true;
+            if (resizeObserverRef) resizeObserverRef.disconnect();
             ifcLoaderRef.current = null;
             if (componentsRef.current) {
                 componentsRef.current.dispose();
