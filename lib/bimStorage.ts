@@ -50,10 +50,18 @@ async function resumableUpload(
     onProgress?: (percent: number) => void
 ): Promise<void> {
     const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-    const { data: { session } } = await supabase!.auth.getSession();
-    const token = session?.access_token;
+    const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-    if (!token) throw new Error('Bạn cần đăng nhập để upload file lớn');
+    // Use auth session token if available, otherwise fall back to anon key
+    let token = anonKey;
+    try {
+        const { data: { session } } = await supabase!.auth.getSession();
+        if (session?.access_token) {
+            token = session.access_token;
+        }
+    } catch {
+        // No auth session — use anon key for public bucket
+    }
 
     return new Promise((resolve, reject) => {
         const upload = new tus.Upload(file, {
