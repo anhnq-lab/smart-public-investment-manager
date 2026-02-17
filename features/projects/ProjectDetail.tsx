@@ -124,7 +124,7 @@ const ProjectDetail: React.FC = () => {
                         FullName: e.full_name || '',
                         Department: e.department || '',
                         Position: e.position || '',
-                        Role: memberRows.find((m: any) => m.employee_id === e.employee_id)?.role || 'Thành viên',
+                        Role: (memberRows.find((m: any) => m.employee_id === e.employee_id)?.role || 'Thành viên') as any,
                         Email: e.email || '',
                         Phone: e.phone || '',
                         JoinDate: e.join_date || '',
