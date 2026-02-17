@@ -17,6 +17,7 @@ import { BimPropertiesPanel } from '../bim/BimPropertiesPanel';
 import { BimModelTree } from '../bim/BimModelTree';
 import { BimViewCube } from '../bim/BimViewCube';
 import { BimShortcutsModal } from '../bim/BimShortcutsModal';
+import { BimSectionPanel } from '../bim/BimSectionPanel';
 
 // ── Types ───────────────────────────────────────────
 interface ProjectBimTabProps {
@@ -59,7 +60,7 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
         engine.componentsRef, engine.worldRef, engine.ifcLoaderRef, upload.ifcDataMapRef,
         () => tools.toggleRightPanel('properties'),
     );
-    const section = useBimSection(engine.worldRef, tools.activeTool);
+    const section = useBimSection(engine.worldRef, containerRef, tools.activeTool);
     const measure = useBimMeasure(engine.worldRef, containerRef, tools.activeTool);
 
     const hasModels = upload.disciplineModels.length > 0;
@@ -429,6 +430,23 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
                 onClose={() => setShowShortcuts(false)}
                 isDarkMode={isDark}
             />
+
+            {/* Section Box Controls Panel */}
+            {section.sectionBoxActive && !isMobile && (
+                <BimSectionPanel
+                    sectionBoxBounds={section.sectionBoxBounds}
+                    onUpdatePlane={section.updateSectionPlane}
+                    onReset={section.resetSectionBox}
+                    onRemove={() => {
+                        section.removeSectionBox();
+                        tools.activateTool('select');
+                    }}
+                    onClose={() => {
+                        section.removeSectionBox();
+                        tools.activateTool('select');
+                    }}
+                />
+            )}
 
             {/* Right Panel — Properties */}
             {tools.rightPanel === 'properties' && !isMobile && (

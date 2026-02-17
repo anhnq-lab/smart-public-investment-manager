@@ -828,7 +828,7 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({
                                                                 <th className="px-2 py-1.5 text-left font-medium w-8"></th>
                                                                 <th className="px-2 py-1.5 text-left font-medium">Công việc</th>
                                                                 <th className="px-2 py-1.5 text-center font-medium w-16">Tiến độ</th>
-                                                                <th className="px-2 py-1.5 text-left font-medium w-20 hidden sm:table-cell">Phụ trách</th>
+                                                                <th className="px-2 py-1.5 text-left font-medium w-32 hidden sm:table-cell">Phụ trách</th>
                                                                 <th className="px-2 py-1.5 text-left font-medium w-24 hidden sm:table-cell">Hạn</th>
                                                                 <th className="px-2 py-1.5 text-center font-medium w-16">Ưu tiên</th>
                                                                 <th className="px-2 py-1.5 text-center font-medium w-16">Tài liệu</th>
@@ -881,8 +881,8 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({
                                                                     {/* Assignee */}
                                                                     <td className="px-2 py-2 text-gray-500 hidden sm:table-cell">
                                                                         {t.AssigneeID && (
-                                                                            <span className="flex items-center gap-1">
-                                                                                <User className="w-3 h-3" />
+                                                                            <span className="flex items-center gap-1 truncate max-w-[120px]" title={t.AssigneeID}>
+                                                                                <User className="w-3 h-3 shrink-0" />
                                                                                 {t.AssigneeID}
                                                                             </span>
                                                                         )}
