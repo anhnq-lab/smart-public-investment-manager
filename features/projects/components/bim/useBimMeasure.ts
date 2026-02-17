@@ -27,6 +27,18 @@ export function useBimMeasure(
     containerRef: React.RefObject<HTMLDivElement | null>,
     activeTool: ActiveTool,
 ): BimMeasureAPI {
+    // Smart unit formatting
+    const formatDistance = (meters: number): string => {
+        if (meters < 0.01) return `${(meters * 1000).toFixed(1)} mm`;
+        if (meters < 1) return `${(meters * 100).toFixed(1)} cm`;
+        return `${meters.toFixed(3)} m`;
+    };
+    const formatArea = (sqMeters: number): string => {
+        if (sqMeters < 0.01) return `${(sqMeters * 1e6).toFixed(0)} mm²`;
+        if (sqMeters < 1) return `${(sqMeters * 1e4).toFixed(1)} cm²`;
+        return `${sqMeters.toFixed(3)} m²`;
+    };
+
     const measurementsRef = useRef<MeasurementEntry[]>([]);
     const [measurementCount, setMeasurementCount] = useState(0);
     const activeMeasurementRef = useRef<{ points: THREE.Vector3[]; type: 'length' | 'area' } | null>(null);
@@ -46,16 +58,23 @@ export function useBimMeasure(
         );
 
         raycasterRef.current.setFromCamera(mouse, world.camera.three);
+        // Set precision for better point accuracy
+        raycasterRef.current.params.Line = { threshold: 0.05 };
+        raycasterRef.current.params.Points = { threshold: 0.05 };
         const intersects = raycasterRef.current.intersectObjects(world.scene.three.children, true);
 
         for (const hit of intersects) {
-            // Skip helpers, grids, and measurement objects
+            // Skip non-model objects
             if (hit.object.userData?.isMeasurement ||
                 hit.object.userData?.isClipHelper ||
                 hit.object.userData?.isSectionBox ||
-                hit.object.userData?.isGrid) continue;
-            // Skip non-visible
+                hit.object.userData?.isGrid ||
+                hit.object.userData?.isViewCube ||
+                hit.object instanceof THREE.Sprite ||
+                hit.object instanceof THREE.Line) continue;
+            // Skip non-visible or transparent helpers
             if (!hit.object.visible) continue;
+            if ((hit.object as any).material?.opacity < 0.1) continue;
 
             return hit.point.clone();
         }
@@ -99,26 +118,38 @@ export function useBimMeasure(
         scene.add(s2);
         objects.push(s2);
 
-        // Label via sprite
+        // Label via sprite — high resolution for readability
+        const label = formatDistance(distance);
         const canvas = document.createElement('canvas');
-        canvas.width = 256;
-        canvas.height = 64;
+        canvas.width = 512;
+        canvas.height = 128;
         const ctx = canvas.getContext('2d')!;
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
-        ctx.roundRect(0, 0, 256, 64, 8);
+        // Background pill
+        ctx.fillStyle = 'rgba(0, 20, 40, 0.85)';
+        ctx.beginPath();
+        ctx.roundRect(16, 16, 480, 96, 16);
         ctx.fill();
+        // Border
+        ctx.strokeStyle = 'rgba(0, 255, 255, 0.6)';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.roundRect(16, 16, 480, 96, 16);
+        ctx.stroke();
+        // Text
         ctx.fillStyle = '#00ffff';
-        ctx.font = 'bold 28px monospace';
+        ctx.font = 'bold 48px system-ui, sans-serif';
         ctx.textAlign = 'center';
-        ctx.fillText(`${distance.toFixed(3)} m`, 128, 42);
+        ctx.textBaseline = 'middle';
+        ctx.fillText(label, 256, 64);
 
         const texture = new THREE.CanvasTexture(canvas);
-        const spriteMat = new THREE.SpriteMaterial({ map: texture, depthTest: false });
+        texture.minFilter = THREE.LinearFilter;
+        const spriteMat = new THREE.SpriteMaterial({ map: texture, depthTest: false, transparent: true });
         const sprite = new THREE.Sprite(spriteMat);
         const midPoint = new THREE.Vector3().addVectors(p1, p2).multiplyScalar(0.5);
-        midPoint.y += 0.3;
+        midPoint.y += 0.4;
         sprite.position.copy(midPoint);
-        sprite.scale.set(2, 0.5, 1);
+        sprite.scale.set(2.5, 0.625, 1);
         sprite.userData = { isMeasurement: true, measureId: id };
         scene.add(sprite);
         objects.push(sprite);
@@ -164,29 +195,41 @@ export function useBimMeasure(
             objects.push(s);
         }
 
-        // Label
+        // Label — high resolution
+        const label = formatArea(area);
         const canvas = document.createElement('canvas');
-        canvas.width = 256;
-        canvas.height = 64;
+        canvas.width = 512;
+        canvas.height = 128;
         const ctx = canvas.getContext('2d')!;
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
-        ctx.roundRect(0, 0, 256, 64, 8);
+        // Background pill
+        ctx.fillStyle = 'rgba(0, 30, 20, 0.85)';
+        ctx.beginPath();
+        ctx.roundRect(16, 16, 480, 96, 16);
         ctx.fill();
+        // Border
+        ctx.strokeStyle = 'rgba(68, 255, 136, 0.6)';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.roundRect(16, 16, 480, 96, 16);
+        ctx.stroke();
+        // Text
         ctx.fillStyle = '#44ff88';
-        ctx.font = 'bold 28px monospace';
+        ctx.font = 'bold 48px system-ui, sans-serif';
         ctx.textAlign = 'center';
-        ctx.fillText(`${area.toFixed(3)} m²`, 128, 42);
+        ctx.textBaseline = 'middle';
+        ctx.fillText(label, 256, 64);
 
         const texture = new THREE.CanvasTexture(canvas);
-        const spriteMat = new THREE.SpriteMaterial({ map: texture, depthTest: false });
+        texture.minFilter = THREE.LinearFilter;
+        const spriteMat = new THREE.SpriteMaterial({ map: texture, depthTest: false, transparent: true });
         const sprite = new THREE.Sprite(spriteMat);
         // Center of polygon
         const center = new THREE.Vector3();
         points.forEach(p => center.add(p));
         center.divideScalar(points.length);
-        center.y += 0.3;
+        center.y += 0.4;
         sprite.position.copy(center);
-        sprite.scale.set(2, 0.5, 1);
+        sprite.scale.set(2.5, 0.625, 1);
         sprite.userData = { isMeasurement: true, measureId: id };
         scene.add(sprite);
         objects.push(sprite);

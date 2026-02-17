@@ -12,7 +12,9 @@ export interface BimModel {
     status: 'uploading' | 'converting' | 'ready' | 'error';
     element_count: number | null;
     error_message: string | null;
+    uploaded_by: string | null;
     created_at: string;
+    updated_at: string | null;
 }
 
 const BUCKET = 'bim-models';
@@ -74,7 +76,7 @@ export async function uploadIFCFile(
 
     await sb.from('bim_models').update({ status: 'converting' }).eq('id', record.id);
     onProgress?.(100);
-    return record;
+    return record as BimModel;
 }
 
 /**
@@ -131,7 +133,7 @@ export async function getProjectModels(projectId: string): Promise<BimModel[]> {
         .order('created_at', { ascending: false });
 
     if (error) throw new Error(`Fetch error: ${error.message}`);
-    return data || [];
+    return (data || []) as BimModel[];
 }
 
 /**
