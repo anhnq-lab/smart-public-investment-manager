@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, useState, useCallback, useMemo } from 'react';
 import * as THREE from 'three';
-import { Upload, Loader2, Building2, AlertCircle, CheckCircle } from 'lucide-react';
+import { Upload, Loader2, Building2, AlertCircle, CheckCircle, Maximize2, Minimize2 } from 'lucide-react';
 import { useTheme } from '../../../../context/ThemeContext';
 
 // BIM hooks
@@ -44,6 +44,8 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
     const [showShortcuts, setShowShortcuts] = useState(false);
     const [toolbarCollapsed, setToolbarCollapsed] = useState(false);
     const [modelsLoaded, setModelsLoaded] = useState(false);
+    const [isFullscreen, setIsFullscreen] = useState(false);
+    const wrapperRef = useRef<HTMLDivElement>(null);
     const originalMaterialsRef = useRef(new WeakMap<THREE.Material, THREE.Material>());
 
     // ── Hooks ──────────────────────────────
@@ -180,10 +182,34 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
         });
     }, [tools.renderMode, engine.viewerReady]);
 
+    // ── Fullscreen toggle ──────────────────
+    const toggleFullscreen = useCallback(async () => {
+        try {
+            if (!document.fullscreenElement) {
+                await wrapperRef.current?.requestFullscreen();
+            } else {
+                await document.exitFullscreen();
+            }
+        } catch { /* user denied or not supported */ }
+    }, []);
+
+    useEffect(() => {
+        const handleChange = () => setIsFullscreen(!!document.fullscreenElement);
+        document.addEventListener('fullscreenchange', handleChange);
+        return () => document.removeEventListener('fullscreenchange', handleChange);
+    }, []);
+
     // ── Keyboard shortcuts ─────────────────
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
             if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+
+            // F11 for fullscreen
+            if (e.key === 'F11') {
+                e.preventDefault();
+                toggleFullscreen();
+                return;
+            }
 
             switch (e.key) {
                 case '0': engine.setView('iso'); break;
@@ -223,7 +249,7 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
         };
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
-    }, [engine, tools, selection, section, measure]);
+    }, [engine, tools, selection, section, measure, toggleFullscreen]);
 
     // ── Section tool handlers for toolbar ──
     const handleSectionAction = useCallback((action: string) => {
@@ -278,7 +304,10 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
 
     // ── RENDER ──────────────────────────────
     return (
-        <div className={`relative w-full h-full overflow-hidden ${isDark ? 'bg-slate-900' : 'bg-gray-50'} ${cursorClass}`}>
+        <div
+            ref={wrapperRef}
+            className={`relative w-full overflow-hidden ${cursorClass} ${isFullscreen ? 'h-screen' : 'h-full'} ${isDark ? 'bg-slate-900' : 'bg-gray-50'}`}
+        >
             {/* Active tool indicator bar */}
             {activeToolLabel && (
                 <div className={`
@@ -348,6 +377,27 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
                     isDarkMode={isDark}
                     onSetView={engine.setView}
                 />
+            )}
+
+            {/* Fullscreen toggle button */}
+            {engine.viewerReady && (
+                <button
+                    onClick={toggleFullscreen}
+                    title={isFullscreen ? 'Thoát toàn màn hình (F11)' : 'Xem toàn màn hình (F11)'}
+                    className={`
+                        absolute top-2 right-2 z-30 w-9 h-9 flex items-center justify-center rounded-xl
+                        backdrop-blur-md shadow-lg border transition-all duration-200
+                        ${tools.rightPanel === 'properties' && !isMobile ? 'right-[21rem]' : 'right-2'}
+                        ${isFullscreen
+                            ? 'bg-blue-500/20 text-blue-400 border-blue-500/50 hover:bg-blue-500/30'
+                            : isDark
+                                ? 'bg-slate-800/80 text-slate-400 border-slate-700 hover:bg-slate-700/80 hover:text-white'
+                                : 'bg-white/80 text-gray-500 border-gray-200 hover:bg-gray-100 hover:text-gray-800'
+                        }
+                    `}
+                >
+                    {isFullscreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
+                </button>
             )}
 
             {/* Toolbar */}
@@ -466,6 +516,13 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
                     {hasModels && (
                         <span>📦 {upload.disciplineModels.length} models</span>
                     )}
+                    <button
+                        onClick={toggleFullscreen}
+                        className={`flex items-center gap-1 transition-colors ${isDark ? 'hover:text-slate-300' : 'hover:text-gray-600'}`}
+                    >
+                        {isFullscreen ? <Minimize2 className="w-3 h-3" /> : <Maximize2 className="w-3 h-3" />}
+                        <span>{isFullscreen ? 'Thoát toàn màn hình' : 'Toàn màn hình'}</span>
+                    </button>
                     <span className="opacity-50">Press <kbd className="bg-gray-600 px-1 rounded">?</kbd> for shortcuts</span>
                 </div>
             </div>
