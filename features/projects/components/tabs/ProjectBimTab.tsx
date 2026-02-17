@@ -361,7 +361,8 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
     return (
         <div
             ref={wrapperRef}
-            className={`relative w-full overflow-hidden ${cursorClass} ${isFullscreen ? 'h-screen' : 'h-full'} ${isDark ? 'bg-slate-900' : 'bg-gray-50'}`}
+            className={`relative w-full overflow-hidden ${cursorClass} ${isFullscreen ? '' : 'h-full'} ${isDark ? 'bg-slate-900' : 'bg-gray-50'}`}
+            style={isFullscreen ? { width: '100vw', height: '100vh' } : undefined}
         >
             {/* Active tool indicator bar */}
             {activeToolLabel && (
