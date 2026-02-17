@@ -194,14 +194,34 @@ export function useBimEngine(
                         const w = container.clientWidth;
                         const h = container.clientHeight;
                         if (w === 0 || h === 0) return;
-                        const threeRenderer = (worldRef.current?.renderer as any)?.three;
+
+                        const rendererObj = worldRef.current?.renderer as any;
+                        const threeRenderer = rendererObj?.three;
                         const threeCamera = worldRef.current?.camera?.three;
+
+                        // 1. Resize Three.js renderer
                         if (threeRenderer) {
                             threeRenderer.setSize(w, h);
                         }
+
+                        // 2. Directly resize ALL canvas elements in container
+                        const canvases = container.querySelectorAll('canvas');
+                        canvases.forEach((canvas: HTMLCanvasElement) => {
+                            canvas.width = w * (window.devicePixelRatio || 1);
+                            canvas.height = h * (window.devicePixelRatio || 1);
+                            canvas.style.width = '100%';
+                            canvas.style.height = '100%';
+                        });
+
+                        // 3. Update camera aspect
                         if (threeCamera && 'aspect' in threeCamera) {
                             (threeCamera as THREE.PerspectiveCamera).aspect = w / h;
                             (threeCamera as THREE.PerspectiveCamera).updateProjectionMatrix();
+                        }
+
+                        // 4. Try OBC renderer resize method
+                        if (rendererObj?.resize) {
+                            rendererObj.resize();
                         }
                     });
                     resizeObserver.observe(container);

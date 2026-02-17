@@ -230,23 +230,46 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
     }, []);
 
     useEffect(() => {
+        const forceResize = () => {
+            const container = containerRef.current;
+            if (!container) return;
+            const w = container.clientWidth;
+            const h = container.clientHeight;
+            if (w === 0 || h === 0) return;
+
+            const rendererObj = engine.worldRef.current?.renderer as any;
+            const threeRenderer = rendererObj?.three;
+            const camera = engine.worldRef.current?.camera?.three;
+
+            // Resize Three.js renderer
+            if (threeRenderer) threeRenderer.setSize(w, h);
+
+            // Directly resize canvas elements
+            container.querySelectorAll('canvas').forEach((c: HTMLCanvasElement) => {
+                c.width = w * (window.devicePixelRatio || 1);
+                c.height = h * (window.devicePixelRatio || 1);
+                c.style.width = '100%';
+                c.style.height = '100%';
+            });
+
+            // Update camera
+            if (camera && 'aspect' in camera) {
+                (camera as THREE.PerspectiveCamera).aspect = w / h;
+                (camera as THREE.PerspectiveCamera).updateProjectionMatrix();
+            }
+
+            // Try OBC resize
+            if (rendererObj?.resize) rendererObj.resize();
+        };
+
         const handleChange = () => {
             setIsFullscreen(!!document.fullscreenElement);
-            // Force renderer resize after fullscreen toggle
-            setTimeout(() => {
-                const renderer = (engine.worldRef.current?.renderer as any)?.three;
-                const camera = engine.worldRef.current?.camera?.three;
-                const container = containerRef.current;
-                if (renderer && container) {
-                    const w = container.clientWidth;
-                    const h = container.clientHeight;
-                    renderer.setSize(w, h);
-                    if (camera && 'aspect' in camera) {
-                        (camera as THREE.PerspectiveCamera).aspect = w / h;
-                        (camera as THREE.PerspectiveCamera).updateProjectionMatrix();
-                    }
-                }
-            }, 100);
+            // Multiple attempts to handle browser transition timing
+            setTimeout(forceResize, 50);
+            setTimeout(forceResize, 200);
+            setTimeout(forceResize, 500);
+            // Also dispatch window resize for any OBC internal listeners
+            setTimeout(() => window.dispatchEvent(new Event('resize')), 100);
         };
         document.addEventListener('fullscreenchange', handleChange);
         return () => document.removeEventListener('fullscreenchange', handleChange);
