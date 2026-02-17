@@ -10,7 +10,7 @@ import {
     ArrowRight, Grid3X3, Axis3D, Sun, Moon, RotateCcw,
     EyeOff, Focus, Download, Trash2, CircleDot, PenTool,
     Layers, TreePine, PanelLeft, PanelRight, ChevronDown, ChevronUp,
-    Slice, ScanLine, BoxSelect, Pipette, Waypoints, FileUp, Crosshair
+    Slice, ScanLine, BoxSelect, Pipette, Waypoints, FileUp, Crosshair, GripVertical
 } from 'lucide-react';
 import { useTheme } from '../../../../context/ThemeContext';
 import type { ActiveTool, RenderMode, PanelView, BimToolsAPI } from './useBimTools';
@@ -180,6 +180,48 @@ export const BimToolbar: React.FC<BimToolbarProps> = ({
     const { activeTool, renderMode, leftPanel, rightPanel } = tools;
     const disabled = !viewerReady || !hasModels;
 
+    // ── Drag state ──
+    const toolbarRef = React.useRef<HTMLDivElement>(null);
+    const [dragPos, setDragPos] = React.useState<{ x: number; y: number } | null>(null);
+    const dragState = React.useRef<{ dragging: boolean; startX: number; startY: number; origX: number; origY: number }>({
+        dragging: false, startX: 0, startY: 0, origX: 0, origY: 0,
+    });
+
+    const handleDragStart = React.useCallback((e: React.PointerEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const el = toolbarRef.current;
+        if (!el) return;
+        const rect = el.getBoundingClientRect();
+        dragState.current = {
+            dragging: true,
+            startX: e.clientX,
+            startY: e.clientY,
+            origX: rect.left,
+            origY: rect.top,
+        };
+        (e.target as HTMLElement).setPointerCapture(e.pointerId);
+    }, []);
+
+    const handleDragMove = React.useCallback((e: React.PointerEvent) => {
+        if (!dragState.current.dragging) return;
+        const dx = e.clientX - dragState.current.startX;
+        const dy = e.clientY - dragState.current.startY;
+        setDragPos({
+            x: dragState.current.origX + dx,
+            y: dragState.current.origY + dy,
+        });
+    }, []);
+
+    const handleDragEnd = React.useCallback((e: React.PointerEvent) => {
+        dragState.current.dragging = false;
+        (e.target as HTMLElement).releasePointerCapture(e.pointerId);
+    }, []);
+
+    const resetPosition = React.useCallback(() => {
+        setDragPos(null);
+    }, []);
+
     if (isMobile) {
         return (
             <div className={`
@@ -240,11 +282,32 @@ export const BimToolbar: React.FC<BimToolbarProps> = ({
     }
 
     return (
-        <div className={`
-            absolute bottom-12 left-1/2 -translate-x-1/2 flex items-center gap-0.5 px-2 py-1.5 rounded-xl z-30
-            backdrop-blur-xl shadow-2xl border transition-all
-            ${isDarkMode ? 'bg-slate-800/95 border-slate-700/50' : 'bg-white/95 border-gray-200'}
-        `}>
+        <div
+            ref={toolbarRef}
+            className={`
+                ${dragPos ? 'fixed' : 'absolute bottom-12 left-1/2 -translate-x-1/2'}
+                flex items-center gap-0.5 px-2 py-1.5 rounded-xl z-30
+                backdrop-blur-xl shadow-2xl border transition-shadow
+                ${isDarkMode ? 'bg-slate-800/95 border-slate-700/50' : 'bg-white/95 border-gray-200'}
+            `}
+            style={dragPos ? { left: dragPos.x, top: dragPos.y } : undefined}
+        >
+            {/* ── Drag Handle ──── */}
+            <div
+                onPointerDown={handleDragStart}
+                onPointerMove={handleDragMove}
+                onPointerUp={handleDragEnd}
+                onDoubleClick={resetPosition}
+                className={`
+                    flex items-center justify-center w-5 h-9 rounded-lg cursor-grab active:cursor-grabbing
+                    transition-colors mr-0.5 shrink-0
+                    ${isDarkMode ? 'text-slate-600 hover:text-slate-400 hover:bg-white/5' : 'text-gray-300 hover:text-gray-500 hover:bg-gray-100'}
+                `}
+                title="Kéo di chuyển (double-click để reset)"
+            >
+                <GripVertical className="w-3.5 h-3.5" />
+            </div>
+
             {/* ── Navigate ──── */}
             <ToolBtn isDark={isDarkMode} active={activeTool === 'select'} onClick={() => tools.activateTool('select')} title="Select" shortcut="V">
                 <MousePointer2 className="w-4 h-4" />
