@@ -370,6 +370,7 @@ const extractWithGemini = async (file: File, prompt: string, subFields: { key: s
 
 Trả về KẾT QUẢ DƯỚI DẠNG JSON object với đúng các key sau: {${fieldsList}}.
 Nếu không tìm thấy thông tin cho field nào, để giá trị là chuỗi rỗng "".
+Ngày tháng phải ở dạng YYYY-MM-DD (ví dụ: 2024-03-15).
 CHỈ TRẢ VỀ JSON, KHÔNG có markdown hay text khác.`,
         },
     ]);
@@ -569,21 +570,37 @@ export const ProjectComplianceTab: React.FC<ProjectComplianceTabProps> = ({ proj
         }
 
         if (row.extractPrompt && row.subFields) {
+            let extracted: Record<string, string> = {};
             try {
-                const extracted = await extractWithGemini(file, row.extractPrompt, row.subFields as { key: string; label: string }[]);
+                extracted = await extractWithGemini(file, row.extractPrompt, row.subFields as { key: string; label: string }[]);
                 setUploads(prev => ({
                     ...prev,
                     [key]: { file, fileName: file.name, status: 'done', extractedData: extracted },
                 }));
+            } catch (err) {
+                console.error('Extract error:', err);
+                setUploads(prev => ({
+                    ...prev,
+                    [key]: { file, fileName: file.name, status: 'error', errorMsg: `Lỗi trích xuất: ${(err as Error)?.message || 'unknown'}. Vui lòng nhập thủ công.` },
+                }));
+                return; // Don't try to save if extraction failed
+            }
 
-                // Save extracted metadata to documents table (for persistence)
+            // Persist extracted data to DB — separate try/catch so extraction data isn't lost
+            try {
                 const docMetaUpdate: Record<string, string> = {};
                 row.subFields?.forEach(sf => {
                     const val = extracted[sf.key];
                     if (!val) return;
                     const sfLabel = sf.label.toLowerCase();
                     if (sfLabel.includes('số')) docMetaUpdate.document_number = val;
-                    else if (sfLabel.includes('ngày')) docMetaUpdate.issue_date = val;
+                    else if (sfLabel.includes('ngày')) {
+                        // Convert Vietnamese date (dd/MM/yyyy) to ISO (YYYY-MM-DD) for PostgreSQL date column
+                        let dateVal = val;
+                        const vnMatch = val.match(/^(\d{1,2})[/\-.](\d{1,2})[/\-.](\d{4})$/);
+                        if (vnMatch) dateVal = `${vnMatch[3]}-${vnMatch[2].padStart(2, '0')}-${vnMatch[1].padStart(2, '0')}`;
+                        docMetaUpdate.issue_date = dateVal;
+                    }
                     else if (sfLabel.includes('cq') || sfLabel.includes('cơ quan') || sfLabel.includes('phê duyệt'))
                         docMetaUpdate.issuing_authority = val;
                     else if (sfLabel.includes('tổng mức')) docMetaUpdate.notes = val;
@@ -606,12 +623,9 @@ export const ProjectComplianceTab: React.FC<ProjectComplianceTabProps> = ({ proj
                     await ProjectService.update(project.ProjectID, projectUpdate as Partial<Project>);
                     onUpdate(projectUpdate as Partial<Project>);
                 }
-            } catch (err) {
-                console.error('Extract error:', err);
-                setUploads(prev => ({
-                    ...prev,
-                    [key]: { file, fileName: file.name, status: 'error', errorMsg: 'Lỗi trích xuất, vui lòng nhập thủ công.' },
-                }));
+            } catch (saveErr) {
+                console.warn('TT24 metadata save failed (non-critical, data still shown):', saveErr);
+                // Don't set error status — extraction data is already saved in state
             }
         } else {
             setUploads(prev => ({ ...prev, [key]: { file, fileName: file.name, status: 'done' } }));
