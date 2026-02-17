@@ -23,6 +23,15 @@ interface ProjectBimTabProps {
     projectID: string;
 }
 
+// ── Cursor class for active tool ────────────────────
+function getCursorClass(activeTool: string | null): string {
+    if (!activeTool) return '';
+    if (activeTool.startsWith('clip') || activeTool === 'section-box') return 'cursor-crosshair';
+    if (activeTool.startsWith('measure')) return 'cursor-crosshair';
+    if (activeTool === 'select') return 'cursor-default';
+    return '';
+}
+
 // ── Component ───────────────────────────────────────
 export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
     const containerRef = useRef<HTMLDivElement>(null);
@@ -34,6 +43,7 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
     const [isTablet, setIsTablet] = useState(false);
     const [showShortcuts, setShowShortcuts] = useState(false);
     const [toolbarCollapsed, setToolbarCollapsed] = useState(false);
+    const [modelsLoaded, setModelsLoaded] = useState(false);
     const originalMaterialsRef = useRef(new WeakMap<THREE.Material, THREE.Material>());
 
     // ── Hooks ──────────────────────────────
@@ -51,6 +61,7 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
     const measure = useBimMeasure(engine.worldRef, containerRef, tools.activeTool);
 
     const hasModels = upload.disciplineModels.length > 0;
+    const cursorClass = getCursorClass(tools.activeTool);
 
     // ── Responsive check ───────────────────
     useEffect(() => {
@@ -68,12 +79,24 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
         return () => window.removeEventListener('resize', check);
     }, []);
 
-    // ── Load existing models ───────────────
+    // ── Load existing models + fit camera ──
     useEffect(() => {
-        if (engine.viewerReady) {
+        if (engine.viewerReady && !modelsLoaded) {
+            setModelsLoaded(true);
             upload.loadExistingModels();
+            // Fit camera after a delay to let models load
+            setTimeout(() => {
+                engine.fitAll();
+            }, 2000);
         }
-    }, [engine.viewerReady]);
+    }, [engine.viewerReady, modelsLoaded]);
+
+    // ── Auto-open model tree when models exist ──
+    useEffect(() => {
+        if (hasModels && !isMobile && tools.leftPanel === 'none') {
+            tools.toggleLeftPanel('tree');
+        }
+    }, [hasModels]);
 
     // ── Setup highlighter events ───────────
     useEffect(() => {
@@ -240,11 +263,44 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
         }
     };
 
+    // ── Active tool indicator ──────────────
+    const activeToolLabel = useMemo(() => {
+        switch (tools.activeTool) {
+            case 'clip-x': return '✂ Clip X';
+            case 'clip-y': return '✂ Clip Y';
+            case 'clip-z': return '✂ Clip Z';
+            case 'section-box': return '📦 Section Box';
+            case 'measure-length': return '📏 Measure Length — Click to add points';
+            case 'measure-area': return '📐 Measure Area — Click to add points';
+            default: return null;
+        }
+    }, [tools.activeTool]);
+
     // ── RENDER ──────────────────────────────
     return (
-        <div className={`relative w-full h-full overflow-hidden ${isDark ? 'bg-slate-900' : 'bg-gray-50'}`}>
+        <div className={`relative w-full h-full overflow-hidden ${isDark ? 'bg-slate-900' : 'bg-gray-50'} ${cursorClass}`}>
+            {/* Active tool indicator bar */}
+            {activeToolLabel && (
+                <div className={`
+                    absolute top-2 left-1/2 -translate-x-1/2 z-30 px-4 py-1.5 rounded-full
+                    flex items-center gap-2 text-xs font-medium
+                    backdrop-blur-md shadow-lg border
+                    ${isDark ? 'bg-blue-900/60 text-blue-300 border-blue-700/50' : 'bg-blue-50/90 text-blue-700 border-blue-200'}
+                `}>
+                    <span>{activeToolLabel}</span>
+                    <button
+                        onClick={() => tools.activateTool('select')}
+                        className={`px-2 py-0.5 rounded text-[10px] font-bold transition-colors
+                            ${isDark ? 'bg-slate-700/80 hover:bg-slate-600 text-slate-300' : 'bg-white hover:bg-gray-100 text-gray-600'}
+                        `}
+                    >
+                        ESC
+                    </button>
+                </div>
+            )}
+
             {/* Status bar */}
-            {upload.status !== 'idle' && (
+            {upload.status !== 'idle' && !activeToolLabel && (
                 <div className={`
                     absolute top-2 left-1/2 -translate-x-1/2 z-30 px-4 py-2 rounded-xl flex items-center gap-2
                     shadow-lg backdrop-blur-md text-xs font-medium
@@ -365,6 +421,18 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
                                 onChange={upload.handleFileUpload}
                             />
                         </label>
+                    </div>
+                </div>
+            )}
+
+            {/* Loading skeleton */}
+            {!engine.viewerReady && !engine.initError && (
+                <div className="absolute inset-0 flex items-center justify-center z-10">
+                    <div className="text-center">
+                        <Loader2 className={`w-10 h-10 mx-auto mb-3 animate-spin ${isDark ? 'text-blue-400' : 'text-blue-500'}`} />
+                        <p className={`text-sm font-medium ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
+                            Đang khởi tạo BIM Engine...
+                        </p>
                     </div>
                 </div>
             )}

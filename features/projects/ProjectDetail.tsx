@@ -1,11 +1,11 @@
-import React, { useState, useEffect, useMemo, Suspense } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { ProjectService } from '@/services/ProjectService';
 import { NationalGatewayService, SyncResult } from '@/services/NationalGatewayService';
 import { Project, Employee, ProjectStage } from '@/types';
 import { useTasks, useUpdateTask } from '@/hooks/useTasks';
 import { useBiddingPackages } from '@/hooks/useBiddingPackages';
-import { mockEmployees } from '@/mockData';
+import { supabase } from '@/lib/supabase';
 import { ProjectHeader } from './components/ProjectHeader';
 import { ProjectInfoTab } from './components/tabs/ProjectInfoTab';
 import { ProjectPlanTab } from './components/tabs/ProjectPlanTab';
@@ -97,11 +97,52 @@ const ProjectDetail: React.FC = () => {
     // Get bidding packages for this project
     const { data: packages = [] } = useBiddingPackages(project?.ProjectID || '');
 
-    // Get project members (filtered from mockEmployees by project.Members)
-    const projectMembers = useMemo<Employee[]>(() => {
-        if (!project?.Members) return mockEmployees.slice(0, 3); // Demo: show 3 employees if no Members
-        return mockEmployees.filter(emp => project.Members?.includes(emp.EmployeeID));
-    }, [project?.Members]);
+    // Get project members from project_members table
+    const [projectMembers, setProjectMembers] = useState<Employee[]>([]);
+    useEffect(() => {
+        if (!project?.ProjectID) return;
+        const loadMembers = async () => {
+            try {
+                // Load from project_members table joined with employees
+                const { data: memberRows, error } = await supabase
+                    .from('project_members')
+                    .select('employee_id, role')
+                    .eq('project_id', project.ProjectID);
+                if (error || !memberRows || memberRows.length === 0) {
+                    setProjectMembers([]);
+                    return;
+                }
+                // Fetch employee details
+                const empIds = memberRows.map((m: any) => m.employee_id);
+                const { data: empData } = await supabase
+                    .from('employees')
+                    .select('*')
+                    .in('employee_id', empIds);
+                if (empData && empData.length > 0) {
+                    const members: Employee[] = empData.map((e: any) => ({
+                        EmployeeID: e.employee_id,
+                        FullName: e.full_name || '',
+                        Department: e.department || '',
+                        Position: e.position || '',
+                        Role: memberRows.find((m: any) => m.employee_id === e.employee_id)?.role || 'Thành viên',
+                        Email: e.email || '',
+                        Phone: e.phone || '',
+                        JoinDate: e.join_date || '',
+                        Status: e.status || 'active',
+                        AvatarUrl: e.avatar_url || '',
+                        Username: e.username || e.full_name || '',
+                    }));
+                    setProjectMembers(members);
+                } else {
+                    setProjectMembers([]);
+                }
+            } catch (err) {
+                console.error('Failed to load project members:', err);
+                setProjectMembers([]);
+            }
+        };
+        loadMembers();
+    }, [project?.ProjectID]);
 
     // Sync Handler
     const handleSync = async () => {

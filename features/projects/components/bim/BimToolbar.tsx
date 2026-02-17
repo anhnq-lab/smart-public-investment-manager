@@ -1,6 +1,7 @@
 /**
  * BimToolbar — Professional floating toolbar for BIM Viewer
  * Grouped tools: Navigate, Section, Measure, Display, Actions
+ * Fixed: dropdown close-on-outside, proper cursor, clear active states
  */
 import React, { useState, useRef, useEffect } from 'react';
 import {
@@ -53,7 +54,7 @@ const ToolBtn: React.FC<{
         className={`
             relative w-9 h-9 flex items-center justify-center rounded-lg transition-all duration-150
             ${active
-                ? 'bg-blue-500/20 text-blue-400 ring-1 ring-blue-500/50 shadow-[0_0_8px_rgba(59,130,246,0.15)]'
+                ? 'bg-blue-500/20 text-blue-400 ring-1 ring-blue-500/50 shadow-[0_0_8px_rgba(59,130,246,0.2)]'
                 : danger
                     ? isDark ? 'text-red-400 hover:bg-red-500/10' : 'text-red-500 hover:bg-red-50'
                     : isDark ? 'text-slate-400 hover:bg-white/10 hover:text-white' : 'text-gray-500 hover:bg-gray-200 hover:text-gray-800'
@@ -90,11 +91,20 @@ const ToolDropdown: React.FC<{
     const ref = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
+        if (!open) return;
         const handler = (e: MouseEvent) => {
-            if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+            if (ref.current && !ref.current.contains(e.target as Node)) {
+                setOpen(false);
+            }
         };
-        if (open) document.addEventListener('mousedown', handler);
-        return () => document.removeEventListener('mousedown', handler);
+        // Use setTimeout to avoid immediate close on the click that opened
+        const timer = setTimeout(() => {
+            document.addEventListener('mousedown', handler);
+        }, 10);
+        return () => {
+            clearTimeout(timer);
+            document.removeEventListener('mousedown', handler);
+        };
     }, [open]);
 
     return (
@@ -112,8 +122,8 @@ const ToolDropdown: React.FC<{
             </button>
             {open && (
                 <div className={`
-                    absolute top-full left-0 mt-1.5 min-w-[200px] rounded-xl border shadow-2xl z-50
-                    animate-in fade-in slide-in-from-top-2 duration-150
+                    absolute bottom-full left-1/2 -translate-x-1/2 mb-2 min-w-[200px] rounded-xl border shadow-2xl z-50
+                    py-1 overflow-hidden
                     ${isDark ? 'bg-slate-800 border-slate-700' : 'bg-white border-gray-200'}
                 `}>
                     {items.map((item, i) => (
@@ -134,6 +144,9 @@ const ToolDropdown: React.FC<{
                             >
                                 <span className="w-5 h-5 flex items-center justify-center shrink-0">{item.icon}</span>
                                 <span className="flex-1 text-left">{item.label}</span>
+                                {item.active && (
+                                    <span className="w-1.5 h-1.5 rounded-full bg-blue-400 shrink-0" />
+                                )}
                                 {item.shortcut && (
                                     <kbd className={`text-[10px] font-mono px-1.5 py-0.5 rounded ${isDark ? 'bg-slate-700 text-slate-400' : 'bg-gray-100 text-gray-400'}`}>
                                         {item.shortcut}
@@ -206,7 +219,7 @@ export const BimToolbar: React.FC<BimToolbarProps> = ({
         );
     }
 
-    // Collapsed state — show a small floating pill button
+    // Collapsed state
     if (isCollapsed) {
         return (
             <button

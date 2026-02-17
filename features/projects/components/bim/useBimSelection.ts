@@ -384,8 +384,10 @@ export function useBimSelection(
 
         return () => {
             disposed = true;
-            highlighter.events.select.onHighlight.delete(onHighlight);
-            highlighter.events.select.onClear.delete(onClear);
+            try {
+                (highlighter.events.select.onHighlight as any).remove?.(onHighlight);
+                (highlighter.events.select.onClear as any).remove?.(onClear);
+            } catch { /* cleanup silently */ }
         };
     }, [componentsRef, ifcLoaderRef, ifcDataMapRef, extractProperties, onPanelOpen, findIfcData]);
 
