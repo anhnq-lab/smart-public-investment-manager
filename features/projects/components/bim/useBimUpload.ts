@@ -84,9 +84,10 @@ export function useBimUpload(
                         // Load via IfcLoader
                         const model = await ifcLoader.load(uint8Array, true, m.file_name);
 
-                        // Store IFC data for property lookups
-                        const modelId = (model as any).modelId || m.file_name;
-                        ifcDataMapRef.current.set(modelId, uint8Array);
+                        // Store IFC data using FragmentsGroup UUID (matches Highlighter events)
+                        const groupUuid = (model as any).uuid || (model as any).id;
+                        if (groupUuid) ifcDataMapRef.current.set(groupUuid, uint8Array);
+                        ifcDataMapRef.current.set(m.file_name, uint8Array);
 
                         newDisciplineModels.push({ model: m, visible: true, fragModel: model });
 
@@ -143,9 +144,10 @@ export function useBimUpload(
             const model = await ifcLoader.load(uint8Array, true, file.name);
             setLoadingProgress(80);
 
-            // Store raw IFC data for property lookups
-            const modelId = (model as any).modelId || file.name;
-            ifcDataMapRef.current.set(modelId, uint8Array);
+            // Store IFC data using FragmentsGroup UUID (matches Highlighter events)
+            const groupUuid = (model as any).uuid || (model as any).id;
+            if (groupUuid) ifcDataMapRef.current.set(groupUuid, uint8Array);
+            ifcDataMapRef.current.set(file.name, uint8Array);
 
             // Mark model as ready (IFC file already uploaded by uploadIFCFile)
             const elementCount = (model as any).elementCount || 0;

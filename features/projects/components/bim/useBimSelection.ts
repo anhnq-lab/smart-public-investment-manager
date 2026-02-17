@@ -1,10 +1,11 @@
 /**
  * useBimSelection — Element selection, property extraction, spatial tree, visibility management
- * Handles: Highlighter events, web-ifc property parsing, relations, classifications, hide/isolate/show
+ * Handles: Highlighter events (select + hover), web-ifc property parsing, relations, classifications
  */
 import { useRef, useState, useCallback } from 'react';
 import * as OBC from '@thatopen/components';
 import * as OBCF from '@thatopen/components-front';
+import * as THREE from 'three';
 import type { SelectedElement, PropertySetGroup, PropertyItem, RelationItem, ClassificationItem } from './BimPropertiesPanel';
 import type { SpatialNode, TypeGroup } from './BimModelTree';
 
@@ -77,6 +78,19 @@ export function useBimSelection(
     const [typeGroups, setTypeGroups] = useState<TypeGroup[]>([]);
     const hiddenMeshesRef = useRef<Set<string>>(new Set());
 
+    // ── Find IFC data — try direct key match, then iterate all entries ──
+    const findIfcData = useCallback((modelId: string): Uint8Array | null => {
+        // Direct match (UUID or filename)
+        const direct = ifcDataMapRef.current.get(modelId);
+        if (direct) return direct;
+
+        // Try all entries (fallback for key format mismatches)
+        for (const [, data] of ifcDataMapRef.current) {
+            return data;
+        }
+        return null;
+    }, [ifcDataMapRef]);
+
     // ── Extract properties from web-ifc ─────────────
     const extractProperties = useCallback(async (
         ifcApi: any, modelID: number, expressID: number
@@ -92,6 +106,17 @@ export function useBimSelection(
         const materials: string[] = [];
         const relations: RelationItem[] = [];
         const classifications: ClassificationItem[] = [];
+
+        // --- Basic identity info as a property set ---
+        const identityProps: PropertyItem[] = [
+            { name: 'Express ID', value: String(expressID) },
+            { name: 'IFC Type', value: type },
+        ];
+        if (globalId) identityProps.push({ name: 'GlobalId', value: globalId });
+        if (line?.Description?.value) identityProps.push({ name: 'Description', value: line.Description.value });
+        if (line?.ObjectType?.value) identityProps.push({ name: 'Object Type', value: line.ObjectType.value });
+        if (line?.Tag?.value) identityProps.push({ name: 'Tag', value: line.Tag.value });
+        propertySets.push({ name: 'Identity', properties: identityProps });
 
         // --- PropertySets & QuantitySets ---
         try {
@@ -187,9 +212,8 @@ export function useBimSelection(
             }
         } catch { /* skip */ }
 
-        // --- Relations (IfcRelConnectsElements, IfcRelVoidsElement, IfcRelFillsElement) ---
+        // --- Relations ---
         try {
-            // IfcRelVoidsElement
             const voidRelIds = ifcApi.GetLineIDsWithType(modelID, IFC_TYPES.IFCRELVOIDSELEMENT);
             for (let i = 0; i < voidRelIds.size(); i++) {
                 const relId = voidRelIds.get(i);
@@ -222,7 +246,6 @@ export function useBimSelection(
                 } catch { /* skip */ }
             }
 
-            // IfcRelFillsElement
             const fillRelIds = ifcApi.GetLineIDsWithType(modelID, IFC_TYPES.IFCRELFILLSELEMENT);
             for (let i = 0; i < fillRelIds.size(); i++) {
                 const relId = fillRelIds.get(i);
@@ -309,17 +332,26 @@ export function useBimSelection(
                 const ifcLoader = ifcLoaderRef.current;
                 if (!ifcLoader) return;
 
-                for (const [modelId, expressIDs] of Object.entries(modelIdMap)) {
-                    if (!expressIDs || (expressIDs as Set<number>).size === 0) continue;
-                    const expressID = Array.from(expressIDs as Set<number>)[0];
+                // The modelIdMap from Highlighter: keys are FragmentsGroup UUIDs
+                // values are Set<number> of expressIDs
+                const entries = modelIdMap instanceof Map
+                    ? Array.from(modelIdMap.entries())
+                    : Object.entries(modelIdMap);
 
-                    const ifcData = ifcDataMapRef.current.get(modelId);
+                for (const [modelId, expressIDs] of entries) {
+                    const idSet = expressIDs as Set<number>;
+                    if (!idSet || idSet.size === 0) continue;
+                    const expressID = Array.from(idSet)[0];
+
+                    // Find IFC data using flexible key lookup
+                    const ifcData = findIfcData(String(modelId));
                     if (!ifcData) {
+                        // Fallback: show basic info
                         setSelectedElement({
                             id: String(expressID),
                             name: `Element #${expressID}`,
                             type: 'Unknown',
-                            propertySets: [],
+                            propertySets: [{ name: 'Identity', properties: [{ name: 'Express ID', value: String(expressID) }] }],
                             materials: [],
                         });
                         onPanelOpen?.();
@@ -355,7 +387,7 @@ export function useBimSelection(
             highlighter.events.select.onHighlight.delete(onHighlight);
             highlighter.events.select.onClear.delete(onClear);
         };
-    }, [componentsRef, ifcLoaderRef, ifcDataMapRef, extractProperties, onPanelOpen]);
+    }, [componentsRef, ifcLoaderRef, ifcDataMapRef, extractProperties, onPanelOpen, findIfcData]);
 
     // ── Select from tree → set info + lookup properties ──
     const handleSelectElementFromTree = useCallback(async (expressId: number) => {
@@ -380,6 +412,16 @@ export function useBimSelection(
                     const element = await extractProperties(ifcLoader.webIfc, mID, expressId);
                     setSelectedElement(element);
                     onPanelOpen?.();
+
+                    // Try to highlight in 3D scene
+                    try {
+                        const components = componentsRef.current;
+                        if (components) {
+                            const highlighter = components.get(OBCF.Highlighter);
+                            highlighter.clear('select');
+                        }
+                    } catch { /* ignore highlight errors */ }
+
                     return;
                 } finally {
                     ifcLoader.webIfc.CloseModel(mID);
@@ -398,7 +440,7 @@ export function useBimSelection(
             materials: [],
         });
         onPanelOpen?.();
-    }, [ifcLoaderRef, ifcDataMapRef, extractProperties, onPanelOpen]);
+    }, [ifcLoaderRef, ifcDataMapRef, extractProperties, onPanelOpen, componentsRef]);
 
     // ── Visibility: Isolate, Hide, Show All ─────────
     const handleIsolateSelected = useCallback(() => {
@@ -407,7 +449,6 @@ export function useBimSelection(
         worldRef.current.scene.three.traverse((obj: any) => {
             if (obj.isMesh) {
                 const meshId = obj.uuid;
-                // Check if this mesh relates to selected expressID
                 const isSelected = obj.userData?.expressID === Number(selectedId);
                 obj.visible = isSelected;
                 if (!isSelected) hiddenMeshesRef.current.add(meshId);
@@ -439,7 +480,6 @@ export function useBimSelection(
         setTypeGroups(prev => prev.map(g => {
             if (g.type === type) {
                 const newVisible = !g.visible;
-                // Toggle visibility of all meshes of this type
                 if (worldRef.current) {
                     worldRef.current.scene.three.traverse((obj: any) => {
                         if (obj.isMesh) {
@@ -522,7 +562,6 @@ export function useBimSelection(
                                 elements.push({ id, name: el?.Name?.value || `#${id}` });
                             } catch { elements.push({ id, name: `#${id}` }); }
                         }
-                        // Merge duplicates (some types have same TypeCode)
                         const existing = typeMap.get(ct.name);
                         if (existing) {
                             existing.push(...elements);
@@ -548,7 +587,15 @@ export function useBimSelection(
 
     const clearSelection = useCallback(() => {
         setSelectedElement(null);
-    }, []);
+        // Also clear highlighter
+        try {
+            const components = componentsRef.current;
+            if (components) {
+                const highlighter = components.get(OBCF.Highlighter);
+                highlighter.clear('select');
+            }
+        } catch { /* ignore */ }
+    }, [componentsRef]);
 
     return {
         selectedElement,

@@ -1,6 +1,7 @@
 /**
  * useBimEngine — Init & manage That Open Engine lifecycle
  * Handles: Components init, World (Scene/Camera/Renderer), Grid, Highlighter, IfcLoader, Fragments
+ * Professional lighting, gradient background, smooth camera
  */
 import { useRef, useEffect, useState, useCallback } from 'react';
 import * as OBC from '@thatopen/components';
@@ -18,6 +19,7 @@ export interface BimEngineAPI {
     setView: (view: string) => void;
     fitAll: () => void;
     takeScreenshot: () => void;
+    zoomToObject: (object: THREE.Object3D) => void;
 }
 
 export function useBimEngine(
@@ -52,30 +54,68 @@ export function useBimEngine(
 
                 world.scene = new OBC.SimpleScene(components);
                 world.scene.setup();
-                (world.scene.three as THREE.Scene).background = new THREE.Color(
-                    isDarkMode ? 0x0f172a : 0xf1f5f9
+
+                // ── Professional lighting ──────────────────
+                const scene = world.scene.three as THREE.Scene;
+
+                // Gradient background
+                const bgColor = isDarkMode ? 0x0f172a : 0xf0f4f8;
+                scene.background = new THREE.Color(bgColor);
+
+                // Hemisphere light for ambient fill
+                const hemiLight = new THREE.HemisphereLight(
+                    isDarkMode ? 0x607080 : 0xb0c4de,  // sky
+                    isDarkMode ? 0x202830 : 0x808090,    // ground
+                    isDarkMode ? 1.0 : 0.8
                 );
+                scene.add(hemiLight);
 
+                // Key directional light (warm, from top-right-front)
+                const keyLight = new THREE.DirectionalLight(
+                    isDarkMode ? 0xd0d8e8 : 0xffffff,
+                    isDarkMode ? 1.5 : 1.2
+                );
+                keyLight.position.set(50, 80, 40);
+                keyLight.castShadow = false;
+                scene.add(keyLight);
+
+                // Fill light (cooler, from opposite side)
+                const fillLight = new THREE.DirectionalLight(
+                    isDarkMode ? 0x6080a0 : 0x8090a0,
+                    isDarkMode ? 0.4 : 0.3
+                );
+                fillLight.position.set(-30, 20, -20);
+                scene.add(fillLight);
+
+                // Renderer setup
                 world.renderer = new OBCF.PostproductionRenderer(components, containerRef.current!);
-                world.camera = new OBC.SimpleCamera(components);
-                (world.camera as OBC.SimpleCamera).controls.setLookAt(15, 15, 15, 0, 0, 0);
-
-                // Enable clipping on renderer
                 const renderer = (world.renderer as any).three;
                 if (renderer) {
                     renderer.localClippingEnabled = true;
+                    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+                    renderer.toneMappingExposure = isDarkMode ? 1.2 : 1.0;
+                    renderer.outputColorSpace = THREE.SRGBColorSpace;
                 }
+
+                // Camera with smooth controls
+                world.camera = new OBC.SimpleCamera(components);
+                const camera = world.camera as OBC.SimpleCamera;
+                camera.controls.setLookAt(15, 15, 15, 0, 0, 0);
+
+                // Smooth camera controls
+                camera.controls.smoothTime = 0.35;
+                camera.controls.draggingSmoothTime = 0.15;
 
                 await components.init();
 
+                // Grid
                 const grids = components.get(OBC.Grids);
                 grids.create(world);
 
-                // Initialize FragmentsManager — load worker locally
+                // Initialize FragmentsManager — load worker
                 const fragments = components.get(OBC.FragmentsManager);
                 let workerUrl: string;
                 try {
-                    // Try local worker first
                     const localWorkerResp = await fetch('/workers/fragment-worker.mjs');
                     if (localWorkerResp.ok) {
                         const workerBlob = await localWorkerResp.blob();
@@ -85,7 +125,6 @@ export function useBimEngine(
                         throw new Error('Local worker not found');
                     }
                 } catch {
-                    // Fallback to GitHub CDN
                     const fetchedWorker = await fetch('https://thatopen.github.io/engine_fragment/resources/worker.mjs');
                     const workerBlob = await fetchedWorker.blob();
                     const workerFile = new File([workerBlob], 'worker.mjs', { type: 'text/javascript' });
@@ -120,7 +159,7 @@ export function useBimEngine(
                 });
                 ifcLoaderRef.current = ifcLoader;
 
-                // Setup Highlighter
+                // Setup Highlighter for selection + hover
                 const highlighter = components.get(OBCF.Highlighter);
                 highlighter.setup({ world });
 
@@ -162,26 +201,62 @@ export function useBimEngine(
 
     // ── Dark mode sync ──────────────────────────────
     useEffect(() => {
-        if (worldRef.current?.scene) {
-            (worldRef.current.scene.three as THREE.Scene).background = new THREE.Color(
-                isDarkMode ? 0x0f172a : 0xf1f5f9
-            );
+        const scene = worldRef.current?.scene?.three as THREE.Scene | undefined;
+        if (!scene) return;
+
+        scene.background = new THREE.Color(isDarkMode ? 0x0f172a : 0xf0f4f8);
+
+        // Update lights
+        scene.traverse((obj) => {
+            if (obj instanceof THREE.HemisphereLight) {
+                obj.color.set(isDarkMode ? 0x607080 : 0xb0c4de);
+                obj.groundColor.set(isDarkMode ? 0x202830 : 0x808090);
+                obj.intensity = isDarkMode ? 1.0 : 0.8;
+            }
+            if (obj instanceof THREE.DirectionalLight) {
+                if (obj.position.x > 0) {
+                    // Key light
+                    obj.color.set(isDarkMode ? 0xd0d8e8 : 0xffffff);
+                    obj.intensity = isDarkMode ? 1.5 : 1.2;
+                } else {
+                    // Fill light
+                    obj.color.set(isDarkMode ? 0x6080a0 : 0x8090a0);
+                    obj.intensity = isDarkMode ? 0.4 : 0.3;
+                }
+            }
+        });
+
+        // Update renderer tone mapping
+        const renderer = (worldRef.current?.renderer as any)?.three;
+        if (renderer) {
+            renderer.toneMappingExposure = isDarkMode ? 1.2 : 1.0;
         }
     }, [isDarkMode]);
 
     // ── Camera views ────────────────────────────────
     const setView = useCallback((view: string) => {
         const camera = worldRef.current?.camera as OBC.SimpleCamera | undefined;
-        if (!camera) return;
-        const d = 30;
+        const scene = worldRef.current?.scene;
+        if (!camera || !scene) return;
+
+        // Calculate model center for better view positioning
+        const box = new THREE.Box3().setFromObject(scene.three);
+        const center = new THREE.Vector3();
+        const size = new THREE.Vector3();
+        if (!box.isEmpty()) {
+            box.getCenter(center);
+            box.getSize(size);
+        }
+        const d = Math.max(size.length() * 0.8, 30);
+
         switch (view) {
-            case 'iso': camera.controls.setLookAt(d, d, d, 0, 0, 0, true); break;
-            case 'top': camera.controls.setLookAt(0, d * 2, 0, 0, 0, 0, true); break;
-            case 'bottom': camera.controls.setLookAt(0, -d * 2, 0, 0, 0, 0, true); break;
-            case 'front': camera.controls.setLookAt(0, 0, d * 2, 0, 0, 0, true); break;
-            case 'back': camera.controls.setLookAt(0, 0, -d * 2, 0, 0, 0, true); break;
-            case 'right': camera.controls.setLookAt(d * 2, 0, 0, 0, 0, 0, true); break;
-            case 'left': camera.controls.setLookAt(-d * 2, 0, 0, 0, 0, 0, true); break;
+            case 'iso': camera.controls.setLookAt(center.x + d, center.y + d, center.z + d, center.x, center.y, center.z, true); break;
+            case 'top': camera.controls.setLookAt(center.x, center.y + d * 1.5, center.z, center.x, center.y, center.z, true); break;
+            case 'bottom': camera.controls.setLookAt(center.x, center.y - d * 1.5, center.z, center.x, center.y, center.z, true); break;
+            case 'front': camera.controls.setLookAt(center.x, center.y, center.z + d * 1.5, center.x, center.y, center.z, true); break;
+            case 'back': camera.controls.setLookAt(center.x, center.y, center.z - d * 1.5, center.x, center.y, center.z, true); break;
+            case 'right': camera.controls.setLookAt(center.x + d * 1.5, center.y, center.z, center.x, center.y, center.z, true); break;
+            case 'left': camera.controls.setLookAt(center.x - d * 1.5, center.y, center.z, center.x, center.y, center.z, true); break;
         }
     }, []);
 
@@ -193,6 +268,18 @@ export function useBimEngine(
         if (box.isEmpty()) return;
         const sphere = new THREE.Sphere();
         box.getBoundingSphere(sphere);
+        camera.controls.fitToSphere(sphere, true);
+    }, []);
+
+    const zoomToObject = useCallback((object: THREE.Object3D) => {
+        const camera = worldRef.current?.camera as OBC.SimpleCamera | undefined;
+        if (!camera) return;
+        const box = new THREE.Box3().setFromObject(object);
+        if (box.isEmpty()) return;
+        const sphere = new THREE.Sphere();
+        box.getBoundingSphere(sphere);
+        // Zoom in closer than fitAll
+        sphere.radius *= 1.2;
         camera.controls.fitToSphere(sphere, true);
     }, []);
 
@@ -222,5 +309,6 @@ export function useBimEngine(
         setView,
         fitAll,
         takeScreenshot,
+        zoomToObject,
     };
 }

@@ -56,71 +56,89 @@ export const FilePreviewModal: React.FC<FilePreviewModalProps> = ({ file, onClos
 
                 {/* Content */}
                 <div className="flex-1 overflow-auto p-8 flex justify-center bg-[#525659]">
-                    {f.isLocal && (isPDF || isImage) ? (
-                        <div className="bg-white w-full h-full rounded-sm shadow-2xl overflow-hidden flex flex-col relative">
-                            {isPDF ? (
-                                <iframe
-                                    src={`${blobUrl}#toolbar=0`}
-                                    className="w-full h-full border-0"
-                                    title="Local PDF Viewer"
-                                />
-                            ) : (
-                                <div className="flex-1 overflow-auto bg-gray-100 flex items-center justify-center p-4">
-                                    <img src={blobUrl!} className="max-w-full max-h-full object-contain shadow-lg" alt="Preview" />
+                    {(() => {
+                        // Determine the viewable URL
+                        const viewUrl = blobUrl || f.storage_path || f.StoragePath || f.url || null;
+                        const canViewPDF = isPDF && viewUrl;
+                        const canViewImage = isImage && viewUrl;
+
+                        if (canViewPDF) {
+                            return (
+                                <div className="bg-white w-full h-full rounded-sm shadow-2xl overflow-hidden flex flex-col relative">
+                                    <iframe
+                                        src={`${viewUrl}#toolbar=0`}
+                                        className="w-full h-full border-0"
+                                        title="PDF Viewer"
+                                    />
                                 </div>
-                            )}
-                        </div>
-                    ) : isExcel ? (
-                        <div className="bg-white w-full max-w-5xl shadow-2xl rounded-sm overflow-hidden flex flex-col h-fit">
-                            <div className="bg-[#217346] text-white px-4 py-1 text-xs font-medium uppercase tracking-tighter">Microsoft Excel Viewer</div>
-                            <div className="overflow-x-auto p-4">
-                                <p className="text-gray-500 text-xs italic mb-4">Mô phỏng bảng tính cho file: {f.name || f.title}</p>
-                                <table className="w-full border-collapse text-[12px]">
-                                    <thead>
-                                        <tr className="bg-[#E6E6E6] text-gray-600 text-center">
-                                            <th className="border border-gray-300 w-10 py-1"></th>
-                                            <th className="border border-gray-300 px-4 py-1 uppercase">A</th>
-                                            <th className="border border-gray-300 px-4 py-1 uppercase">B</th>
-                                            <th className="border border-gray-300 px-4 py-1 uppercase">C</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {[1, 2, 3, 4, 5].map(row => (
-                                            <tr key={row}>
-                                                <td className="bg-[#E6E6E6] border border-gray-300 text-center py-1">{row}</td>
-                                                <td className="border border-gray-200 px-3 py-1 bg-white"></td>
-                                                <td className="border border-gray-200 px-3 py-1 bg-white"></td>
-                                                <td className="border border-gray-200 px-3 py-1 bg-white"></td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    ) : (
-                        <div className="bg-white w-full max-w-[800px] min-h-[1100px] shadow-2xl p-[60px] text-gray-800 font-serif leading-relaxed">
-                            <div className="flex justify-between mb-12 italic text-sm">
-                                <div>BAN QLDA ĐẦU TƯ CÔNG<br /><b>SỐ: {f.code || f.number || '00/BQL'}</b></div>
-                                <div className="text-right">CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM<br />Độc lập - Tự do - Hạnh phúc</div>
-                            </div>
-                            <div className="text-center mb-10">
-                                <h2 className="text-xl font-bold uppercase tracking-widest">{f.title || f.name || 'VĂN BẢN TRÌNH DUYỆT'}</h2>
-                            </div>
-                            <div className="space-y-6 text-justify">
-                                <p className="p-4 bg-blue-50 text-blue-800 rounded-xl text-sm border border-blue-100 font-sans italic">
-                                    Hệ thống hiện tại hỗ trợ hiển thị nội dung thực cho file PDF và Hình ảnh (JPG, PNG).
-                                    Đối với định dạng Office (.docx, .xlsx), vui lòng tải xuống để xem hoặc sử dụng trình xem chuyên dụng.
-                                </p>
-                                <p>Căn cứ tình hình triển khai thực tế của dự án, Ban Quản lý báo cáo nội dung sau:</p>
-                                <div className="h-4 bg-gray-50 rounded w-full animate-pulse"></div>
-                                <div className="h-4 bg-gray-50 rounded w-3/4 animate-pulse"></div>
-                                <div className="mt-20 flex justify-between">
-                                    <div className="text-center font-bold">NGƯỜI LẬP BIỂU</div>
-                                    <div className="text-center font-bold">GIÁM ĐỐC BAN</div>
+                            );
+                        }
+
+                        if (canViewImage) {
+                            return (
+                                <div className="bg-white w-full h-full rounded-sm shadow-2xl overflow-hidden flex items-center justify-center p-4 bg-gray-100">
+                                    <img src={viewUrl} className="max-w-full max-h-full object-contain shadow-lg" alt="Preview" />
+                                </div>
+                            );
+                        }
+
+                        if (isExcel) {
+                            return (
+                                <div className="bg-white w-full max-w-5xl shadow-2xl rounded-sm overflow-hidden flex flex-col h-fit">
+                                    <div className="bg-[#217346] text-white px-4 py-1 text-xs font-medium uppercase tracking-tighter">Microsoft Excel Viewer</div>
+                                    <div className="overflow-x-auto p-6">
+                                        <p className="text-gray-500 text-sm mb-4">
+                                            Để xem nội dung file Excel, vui lòng tải xuống.
+                                        </p>
+                                        {viewUrl && (
+                                            <a href={viewUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg text-sm font-bold">
+                                                <Download className="w-4 h-4" /> Tải xuống
+                                            </a>
+                                        )}
+                                    </div>
+                                </div>
+                            );
+                        }
+
+                        // Fallback — try to embed if we have a URL
+                        if (viewUrl) {
+                            return (
+                                <div className="bg-white w-full h-full rounded-sm shadow-2xl overflow-hidden flex flex-col relative">
+                                    <iframe
+                                        src={viewUrl}
+                                        className="w-full h-full border-0"
+                                        title="Document Viewer"
+                                    />
+                                </div>
+                            );
+                        }
+
+                        // No URL available — show placeholder
+                        return (
+                            <div className="bg-white w-full max-w-[800px] min-h-[1100px] shadow-2xl p-[60px] text-gray-800 font-serif leading-relaxed">
+                                <div className="flex justify-between mb-12 italic text-sm">
+                                    <div>BAN QLDA ĐẦU TƯ CÔNG<br /><b>SỐ: {f.code || f.number || '00/BQL'}</b></div>
+                                    <div className="text-right">CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM<br />Độc lập - Tự do - Hạnh phúc</div>
+                                </div>
+                                <div className="text-center mb-10">
+                                    <h2 className="text-xl font-bold uppercase tracking-widest">{f.title || f.name || 'VĂN BẢN TRÌNH DUYỆT'}</h2>
+                                </div>
+                                <div className="space-y-6 text-justify">
+                                    <p className="p-4 bg-blue-50 text-blue-800 rounded-xl text-sm border border-blue-100 font-sans italic">
+                                        Hệ thống hiện tại hỗ trợ hiển thị nội dung thực cho file PDF và Hình ảnh (JPG, PNG).
+                                        Đối với định dạng Office (.docx, .xlsx), vui lòng tải xuống để xem hoặc sử dụng trình xem chuyên dụng.
+                                    </p>
+                                    <p>Căn cứ tình hình triển khai thực tế của dự án, Ban Quản lý báo cáo nội dung sau:</p>
+                                    <div className="h-4 bg-gray-50 rounded w-full animate-pulse"></div>
+                                    <div className="h-4 bg-gray-50 rounded w-3/4 animate-pulse"></div>
+                                    <div className="mt-20 flex justify-between">
+                                        <div className="text-center font-bold">NGƯỜI LẬP BIỂU</div>
+                                        <div className="text-center font-bold">GIÁM ĐỐC BAN</div>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    )}
+                        );
+                    })()}
                 </div>
             </div>
         </div>
