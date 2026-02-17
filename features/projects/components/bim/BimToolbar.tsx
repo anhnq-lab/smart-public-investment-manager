@@ -10,7 +10,7 @@ import {
     ArrowRight, Grid3X3, Axis3D, Sun, Moon, RotateCcw,
     EyeOff, Focus, Download, Trash2, CircleDot, PenTool,
     Layers, TreePine, PanelLeft, PanelRight, ChevronDown, ChevronUp,
-    Slice, ScanLine, BoxSelect, Pipette, Waypoints, FileUp
+    Slice, ScanLine, BoxSelect, Pipette, Waypoints, FileUp, Crosshair
 } from 'lucide-react';
 import { useTheme } from '../../../../context/ThemeContext';
 import type { ActiveTool, RenderMode, PanelView, BimToolsAPI } from './useBimTools';
@@ -279,11 +279,12 @@ export const BimToolbar: React.FC<BimToolbarProps> = ({
                 isDark={isDarkMode}
                 disabled={disabled}
                 trigger={
-                    <ToolBtn isDark={isDarkMode} active={activeTool?.startsWith('clip') || activeTool === 'section-box'} title="Section Tools" disabled={disabled} badge={clipPlaneCount}>
+                    <ToolBtn isDark={isDarkMode} active={activeTool?.startsWith('clip') || activeTool === 'section-box' || activeTool === 'section-plane'} title="Section Tools" disabled={disabled} badge={clipPlaneCount}>
                         <Scissors className="w-4 h-4" />
                     </ToolBtn>
                 }
                 items={[
+                    { id: 'section-plane', icon: <Crosshair className="w-4 h-4 text-amber-400" />, label: 'Section Plane (Click Surface)', active: activeTool === 'section-plane', onClick: () => onSectionAction?.('section-plane') },
                     { id: 'clip-x', icon: <ScanLine className="w-4 h-4 text-red-400" />, label: 'Clip X (YZ Plane)', active: activeTool === 'clip-x', onClick: () => onSectionAction?.('clip-x') },
                     { id: 'clip-y', icon: <ScanLine className="w-4 h-4 text-green-400" />, label: 'Clip Y (XZ Plane)', active: activeTool === 'clip-y', onClick: () => onSectionAction?.('clip-y') },
                     { id: 'clip-z', icon: <ScanLine className="w-4 h-4 text-blue-400" />, label: 'Clip Z (XY Plane)', active: activeTool === 'clip-z', onClick: () => onSectionAction?.('clip-z') },

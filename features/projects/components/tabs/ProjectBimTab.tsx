@@ -109,7 +109,7 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
         }
     }, [engine.viewerReady]);
 
-    // ── Measurement click handler ──────────
+    // ── Measurement + Section Plane click handler ──────────
     useEffect(() => {
         const container = containerRef.current;
         if (!container) return;
@@ -118,11 +118,46 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
             if (tools.activeTool === 'measure-length' || tools.activeTool === 'measure-area') {
                 measure.handleMeasureClick(e);
             }
+
+            // Section Plane: click on model surface to create clip plane
+            if (tools.activeTool === 'section-plane') {
+                const rect = container.getBoundingClientRect();
+                const ndc = new THREE.Vector2(
+                    ((e.clientX - rect.left) / rect.width) * 2 - 1,
+                    -((e.clientY - rect.top) / rect.height) * 2 + 1,
+                );
+                const camera = engine.worldRef.current?.camera?.three;
+                const scene = engine.worldRef.current?.scene?.three;
+                if (!camera || !scene) return;
+
+                const raycaster = new THREE.Raycaster();
+                raycaster.setFromCamera(ndc, camera);
+
+                // Collect model meshes only (skip helpers, handles, etc)
+                const meshes: THREE.Mesh[] = [];
+                scene.traverse((obj: THREE.Object3D) => {
+                    if (obj.userData?.isSectionBox || obj.userData?.isSectionHandle || obj.userData?.isClipHelper) return;
+                    if (obj.userData?.isMeasurement || obj.userData?.isGrid || obj.userData?.isViewCube) return;
+                    if ((obj as any).isMesh && obj.visible) meshes.push(obj as THREE.Mesh);
+                });
+
+                const intersects = raycaster.intersectObjects(meshes, false);
+                if (intersects.length > 0) {
+                    const hit = intersects[0];
+                    if (hit.face) {
+                        // Get world-space face normal
+                        const normalMatrix = new THREE.Matrix3().getNormalMatrix(hit.object.matrixWorld);
+                        const worldNormal = hit.face.normal.clone().applyMatrix3(normalMatrix).normalize();
+                        section.createFreeClipPlane(hit.point, worldNormal);
+                        tools.activateTool('select'); // Switch back to select after placing
+                    }
+                }
+            }
         };
 
         container.addEventListener('click', onClick);
         return () => container.removeEventListener('click', onClick);
-    }, [tools.activeTool, measure.handleMeasureClick]);
+    }, [tools.activeTool, measure.handleMeasureClick, engine.worldRef, section, tools]);
 
     // ── Render mode switching (with material caching) ──
     useEffect(() => {
@@ -259,6 +294,7 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
             case 'clip-y': tools.activateTool('clip-y'); break;
             case 'clip-z': tools.activateTool('clip-z'); break;
             case 'section-box': tools.activateTool('section-box'); break;
+            case 'section-plane': tools.activateTool('section-plane'); break;
             case 'clear':
                 section.clearAllClipPlanes();
                 tools.activateTool('select');
@@ -297,6 +333,7 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
             case 'clip-y': return '✂ Clip Y';
             case 'clip-z': return '✂ Clip Z';
             case 'section-box': return '📦 Section Box';
+            case 'section-plane': return '✂ Section Plane — Click bề mặt mô hình';
             case 'measure-length': return '📏 Measure Length — Click to add points';
             case 'measure-area': return '📐 Measure Area — Click to add points';
             default: return null;

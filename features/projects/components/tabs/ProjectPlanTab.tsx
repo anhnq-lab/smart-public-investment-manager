@@ -20,6 +20,7 @@ import { SubTaskDetailModal } from '../SubTaskDetailModal';
 import { TaskService } from '@/services/TaskService';
 import { supabase } from '@/lib/supabase';
 import { findByStepCode, buildTT24Key } from '@/utils/docStepMapping';
+import { mockEmployees } from '@/mockData';
 
 interface ProjectPlanTabProps {
     tasks: Task[];
@@ -168,6 +169,15 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({
     const queryClient = useQueryClient();
     // Dynamic phases based on project group
     const DECREE_175_PHASES = useMemo(() => getProjectPhases(groupCode, isODA), [groupCode, isODA]);
+
+    // Employee name lookup map
+    const employeeNameMap = useMemo(() => {
+        const map: Record<string, string> = {};
+        const allEmps = employees.length > 0 ? employees : mockEmployees;
+        allEmps.forEach(e => { map[e.EmployeeID] = e.FullName; });
+        return map;
+    }, [employees]);
+
     // 1. Local Tasks State (Optimistic UI)
     const [tasks, setTasks] = useState<Task[]>(initialTasks);
 
@@ -881,9 +891,9 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({
                                                                     {/* Assignee */}
                                                                     <td className="px-2 py-2 text-gray-500 hidden sm:table-cell">
                                                                         {t.AssigneeID && (
-                                                                            <span className="flex items-center gap-1 truncate max-w-[120px]" title={t.AssigneeID}>
+                                                                            <span className="flex items-center gap-1 truncate max-w-[120px]" title={employeeNameMap[t.AssigneeID] || t.AssigneeID}>
                                                                                 <User className="w-3 h-3 shrink-0" />
-                                                                                {t.AssigneeID}
+                                                                                {employeeNameMap[t.AssigneeID] || t.AssigneeID}
                                                                             </span>
                                                                         )}
                                                                     </td>

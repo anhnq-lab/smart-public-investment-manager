@@ -2,11 +2,12 @@
  * useBimSection — Professional Section Box with interactive draggable face handles
  * 
  * Features:
- * - 6 interactive face handles (color-coded X=red, Y=green, Z=blue)
+ * - 6 interactive face handles (small center-of-face indicators, color-coded)
  * - Drag-to-move: mousedown on handle → drag → updates clip plane realtime
  * - Hover highlight with cursor change
  * - Wireframe box updates in realtime
  * - Single clip planes (X/Y/Z) also draggable
+ * - Free section plane: click on model surface → create clip at face normal
  * - Camera orbit disabled during drag
  */
 import { useRef, useState, useCallback, useEffect } from 'react';
@@ -16,13 +17,14 @@ import type { ActiveTool } from './useBimTools';
 // ── Types ─────────────────────────────────────────────
 interface ClipPlaneEntry {
     id: string;
-    axis: 'x' | 'y' | 'z';
-    direction: 'positive' | 'negative'; // which side the normal points
+    axis: 'x' | 'y' | 'z' | 'free';
+    direction: 'positive' | 'negative';
     plane: THREE.Plane;
-    handle: THREE.Mesh;       // draggable face mesh
-    position: number;         // current position along axis
-    minBound: number;         // min allowed position
-    maxBound: number;         // max allowed position
+    handle: THREE.Mesh;
+    position: number;
+    minBound: number;
+    maxBound: number;
+    normal: THREE.Vector3; // for free planes
 }
 
 interface SectionBoxState {
@@ -40,6 +42,7 @@ export interface BimSectionAPI {
     sectionBoxBounds: { min: THREE.Vector3; max: THREE.Vector3 } | null;
     isDragging: boolean;
     createClipPlane: (axis: 'x' | 'y' | 'z') => void;
+    createFreeClipPlane: (point: THREE.Vector3, normal: THREE.Vector3) => void;
     clearAllClipPlanes: () => void;
     createSectionBox: () => void;
     removeSectionBox: () => void;
@@ -50,15 +53,35 @@ export interface BimSectionAPI {
 
 // ── Colors ────────────────────────────────────────────
 const FACE_COLORS = {
-    x: { normal: 0xff4444, hover: 0xff6666, drag: 0xff8888 },
-    y: { normal: 0x44ff44, hover: 0x66ff66, drag: 0x88ff88 },
+    x: { normal: 0xff4444, hover: 0xff7777, drag: 0xffaaaa },
+    y: { normal: 0x44cc44, hover: 0x66ee66, drag: 0x88ff88 },
     z: { normal: 0x4488ff, hover: 0x66aaff, drag: 0x88ccff },
+    free: { normal: 0xffaa00, hover: 0xffcc44, drag: 0xffdd88 },
 };
 
-const HANDLE_OPACITY_NORMAL = 0.12;
-const HANDLE_OPACITY_HOVER = 0.3;
-const HANDLE_OPACITY_DRAG = 0.45;
+const HANDLE_SIZE_RATIO = 0.15; // 15% of face size — small indicator
+const HANDLE_OPACITY_NORMAL = 0.4;
+const HANDLE_OPACITY_HOVER = 0.7;
+const HANDLE_OPACITY_DRAG = 0.85;
 const WIREFRAME_COLOR = 0xffaa00;
+
+// ── Helpers ──────────────────────────────────────────
+function getModelBounds(scene: THREE.Scene): THREE.Box3 {
+    const box = new THREE.Box3();
+    scene.traverse((obj: THREE.Object3D) => {
+        if (obj.userData?.isSectionBox || obj.userData?.isSectionHandle || obj.userData?.isClipHelper) return;
+        if (obj.userData?.isMeasurement || obj.userData?.isGrid || obj.userData?.isViewCube) return;
+        if ((obj as any).isMesh && obj.visible) {
+            const mesh = obj as THREE.Mesh;
+            if (!mesh.geometry.boundingBox) mesh.geometry.computeBoundingBox();
+            if (mesh.geometry.boundingBox) {
+                const worldBox = mesh.geometry.boundingBox.clone().applyMatrix4(mesh.matrixWorld);
+                box.union(worldBox);
+            }
+        }
+    });
+    return box;
+}
 
 // ── Hook ──────────────────────────────────────────────
 export function useBimSection(
@@ -74,14 +97,14 @@ export function useBimSection(
     const [sectionBoxBounds, setSectionBoxBounds] = useState<{ min: THREE.Vector3; max: THREE.Vector3 } | null>(null);
     const [isDragging, setIsDragging] = useState(false);
 
-    // Drag state refs (no re-renders during drag)
+    // Drag state refs
     const dragRef = useRef<{
         active: boolean;
         entry: ClipPlaneEntry | null;
-        startMouse: THREE.Vector2;
         startPosition: number;
         axisVec: THREE.Vector3;
-        plane: THREE.Plane; // drag plane for projection
+        dragPlane: THREE.Plane;
+        dragStartPoint: THREE.Vector3;
     } | null>(null);
     const hoveredHandleRef = useRef<THREE.Mesh | null>(null);
     const raycasterRef = useRef(new THREE.Raycaster());
@@ -100,50 +123,70 @@ export function useBimSection(
         renderer.localClippingEnabled = allPlanes.length > 0;
     }, [worldRef]);
 
-    // ── Create a face handle mesh ──
-    const createFaceHandle = useCallback((
-        axis: 'x' | 'y' | 'z',
-        direction: 'positive' | 'negative',
-        position: number,
-        size: THREE.Vector3,
+    // ── Create a small center-of-face handle ──
+    const createHandleMesh = useCallback((
+        axis: 'x' | 'y' | 'z' | 'free',
+        faceWidth: number,
+        faceHeight: number,
         id: string,
     ): THREE.Mesh => {
-        // Face dimensions based on axis
-        let width: number, height: number;
-        let rotation = new THREE.Euler();
-        switch (axis) {
-            case 'x': width = size.z; height = size.y; rotation.set(0, Math.PI / 2, 0); break;
-            case 'y': width = size.x; height = size.z; rotation.set(-Math.PI / 2, 0, 0); break;
-            case 'z': width = size.x; height = size.y; break;
-        }
+        // Small square handle at face center
+        const handleW = Math.max(faceWidth * HANDLE_SIZE_RATIO, 0.3);
+        const handleH = Math.max(faceHeight * HANDLE_SIZE_RATIO, 0.3);
 
-        const geometry = new THREE.PlaneGeometry(width, height);
+        const geometry = new THREE.PlaneGeometry(handleW, handleH);
+        const colors = FACE_COLORS[axis] || FACE_COLORS.free;
         const material = new THREE.MeshBasicMaterial({
-            color: FACE_COLORS[axis].normal,
+            color: colors.normal,
             transparent: true,
             opacity: HANDLE_OPACITY_NORMAL,
             side: THREE.DoubleSide,
             depthWrite: false,
+            depthTest: false,
         });
 
         const mesh = new THREE.Mesh(geometry, material);
-        mesh.rotation.copy(rotation);
-        mesh.userData = {
-            isSectionHandle: true,
-            handleId: id,
-            axis,
-            direction,
-        };
-
-        // Render order to always show handles on top
         mesh.renderOrder = 999;
+        mesh.userData = { isSectionHandle: true, handleId: id, axis };
+
+        // Add a border ring (wireframe outline)
+        const borderGeo = new THREE.EdgesGeometry(new THREE.PlaneGeometry(handleW, handleH));
+        const borderMat = new THREE.LineBasicMaterial({
+            color: colors.normal,
+            transparent: true,
+            opacity: 0.8,
+            depthTest: false,
+        });
+        const border = new THREE.LineSegments(borderGeo, borderMat);
+        border.renderOrder = 1000;
+        mesh.add(border);
+
+        // Add directional arrow (small triangle)
+        const arrowSize = Math.min(handleW, handleH) * 0.3;
+        const arrowGeo = new THREE.BufferGeometry();
+        const vertices = new Float32Array([
+            0, arrowSize, 0,
+            -arrowSize * 0.5, 0, 0,
+            arrowSize * 0.5, 0, 0,
+        ]);
+        arrowGeo.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
+        const arrowMat = new THREE.MeshBasicMaterial({
+            color: 0xffffff,
+            transparent: true,
+            opacity: 0.9,
+            side: THREE.DoubleSide,
+            depthTest: false,
+        });
+        const arrow = new THREE.Mesh(arrowGeo, arrowMat);
+        arrow.renderOrder = 1001;
+        mesh.add(arrow);
 
         return mesh;
     }, []);
 
-    // ── Position a handle at its current clip position ──
+    // ── Position a handle ──
     const positionHandle = useCallback((entry: ClipPlaneEntry, boxState: SectionBoxState) => {
-        const { axis, direction, position, handle } = entry;
+        const { axis, position, handle } = entry;
         const center = new THREE.Vector3()
             .addVectors(boxState.min, boxState.max)
             .multiplyScalar(0.5);
@@ -151,33 +194,45 @@ export function useBimSection(
         switch (axis) {
             case 'x':
                 handle.position.set(position, center.y, center.z);
+                handle.rotation.set(0, Math.PI / 2, 0);
                 break;
             case 'y':
                 handle.position.set(center.x, position, center.z);
+                handle.rotation.set(-Math.PI / 2, 0, 0);
                 break;
             case 'z':
                 handle.position.set(center.x, center.y, position);
+                handle.rotation.set(0, 0, 0);
                 break;
         }
+
+        // Scale is identity since we create handles at the correct size already
+        // Just update the handle position
     }, []);
 
-    // ── Update wireframe box to match current bounds ──
+    // ── Update wireframe box ──
     const updateWireframe = useCallback((boxState: SectionBoxState) => {
         const scene = worldRef.current?.scene?.three;
-        if (!scene || !boxState.wireframe) return;
+        if (!scene) return;
 
-        // Remove old wireframe
-        scene.remove(boxState.wireframe);
-        boxState.wireframe.geometry.dispose();
+        if (boxState.wireframe) {
+            scene.remove(boxState.wireframe);
+            boxState.wireframe.geometry.dispose();
+            (boxState.wireframe.material as THREE.Material).dispose();
+        }
 
-        // Create new wireframe from current bounds
         const size = new THREE.Vector3().subVectors(boxState.max, boxState.min);
         const center = new THREE.Vector3().addVectors(boxState.min, boxState.max).multiplyScalar(0.5);
         const boxGeom = new THREE.BoxGeometry(size.x, size.y, size.z);
         const edges = new THREE.EdgesGeometry(boxGeom);
         const wireframe = new THREE.LineSegments(
             edges,
-            new THREE.LineBasicMaterial({ color: WIREFRAME_COLOR, linewidth: 2, transparent: true, opacity: 0.8 })
+            new THREE.LineBasicMaterial({
+                color: WIREFRAME_COLOR,
+                transparent: true,
+                opacity: 0.7,
+                depthTest: false,
+            })
         );
         wireframe.position.copy(center);
         wireframe.userData = { isSectionBox: true };
@@ -186,27 +241,37 @@ export function useBimSection(
         boxState.wireframe = wireframe;
     }, [worldRef]);
 
-    // ── Update bounds from entries ──
+    // ── Sync bounds from entries ──
     const syncBoundsFromEntries = useCallback((boxState: SectionBoxState) => {
         for (const entry of boxState.entries) {
             const { axis, direction, position } = entry;
+            if (axis === 'free') continue;
             if (direction === 'positive') {
-                // positive normal → clips above → this is the min side
-                switch (axis) {
-                    case 'x': boxState.min.x = position; break;
-                    case 'y': boxState.min.y = position; break;
-                    case 'z': boxState.min.z = position; break;
-                }
+                boxState.min[axis] = position;
             } else {
-                // negative normal → clips below → this is the max side
-                switch (axis) {
-                    case 'x': boxState.max.x = position; break;
-                    case 'y': boxState.max.y = position; break;
-                    case 'z': boxState.max.z = position; break;
-                }
+                boxState.max[axis] = position;
             }
         }
         setSectionBoxBounds({ min: boxState.min.clone(), max: boxState.max.clone() });
+    }, []);
+
+    // ── Remove section box visuals ──
+    const removeSectionBoxVisuals = useCallback((scene: THREE.Scene, boxState: SectionBoxState) => {
+        for (const entry of boxState.entries) {
+            scene.remove(entry.handle);
+            entry.handle.geometry.dispose();
+            (entry.handle.material as THREE.Material).dispose();
+        }
+        if (boxState.wireframe) {
+            scene.remove(boxState.wireframe);
+            boxState.wireframe.geometry.dispose();
+            (boxState.wireframe.material as THREE.Material).dispose();
+        }
+        const toRemove: THREE.Object3D[] = [];
+        scene.traverse((obj: THREE.Object3D) => {
+            if (obj.userData?.isSectionBox) toRemove.push(obj);
+        });
+        toRemove.forEach(obj => scene.remove(obj));
     }, []);
 
     // ── Create Section Box ──
@@ -214,20 +279,12 @@ export function useBimSection(
         const scene = worldRef.current?.scene?.three;
         if (!scene) return;
 
-        // Clean up existing
+        // Clean existing
         if (sectionBoxRef.current) {
             removeSectionBoxVisuals(scene, sectionBoxRef.current);
         }
 
-        // Calculate model bounding box (skip helpers)
-        const box = new THREE.Box3();
-        scene.traverse((obj: THREE.Object3D) => {
-            if (obj.userData?.isSectionBox || obj.userData?.isSectionHandle || obj.userData?.isClipHelper) return;
-            if (obj.userData?.isMeasurement || obj.userData?.isGrid || obj.userData?.isViewCube) return;
-            if ((obj as any).isMesh && obj.visible) {
-                box.expandByObject(obj);
-            }
-        });
+        const box = getModelBounds(scene);
         if (box.isEmpty()) return;
 
         const size = box.getSize(new THREE.Vector3());
@@ -236,55 +293,62 @@ export function useBimSection(
         const max = box.max.clone().add(size.clone().multiplyScalar(expand));
         const handleSize = new THREE.Vector3().subVectors(max, min);
 
-        // Create 6 entries: positive normal (min side), negative normal (max side)
-        const entries: ClipPlaneEntry[] = [
-            // X axis
-            {
-                id: 'sbox-x+', axis: 'x', direction: 'positive',
-                plane: new THREE.Plane(new THREE.Vector3(1, 0, 0), -min.x),
-                handle: createFaceHandle('x', 'positive', min.x, handleSize, 'sbox-x+'),
-                position: min.x, minBound: min.x - size.x, maxBound: max.x,
-            },
-            {
-                id: 'sbox-x-', axis: 'x', direction: 'negative',
-                plane: new THREE.Plane(new THREE.Vector3(-1, 0, 0), max.x),
-                handle: createFaceHandle('x', 'negative', max.x, handleSize, 'sbox-x-'),
-                position: max.x, minBound: min.x, maxBound: max.x + size.x,
-            },
-            // Y axis
-            {
-                id: 'sbox-y+', axis: 'y', direction: 'positive',
-                plane: new THREE.Plane(new THREE.Vector3(0, 1, 0), -min.y),
-                handle: createFaceHandle('y', 'positive', min.y, handleSize, 'sbox-y+'),
-                position: min.y, minBound: min.y - size.y, maxBound: max.y,
-            },
-            {
-                id: 'sbox-y-', axis: 'y', direction: 'negative',
-                plane: new THREE.Plane(new THREE.Vector3(0, -1, 0), max.y),
-                handle: createFaceHandle('y', 'negative', max.y, handleSize, 'sbox-y-'),
-                position: max.y, minBound: min.y, maxBound: max.y + size.y,
-            },
-            // Z axis
-            {
-                id: 'sbox-z+', axis: 'z', direction: 'positive',
-                plane: new THREE.Plane(new THREE.Vector3(0, 0, 1), -min.z),
-                handle: createFaceHandle('z', 'positive', min.z, handleSize, 'sbox-z+'),
-                position: min.z, minBound: min.z - size.z, maxBound: max.z,
-            },
-            {
-                id: 'sbox-z-', axis: 'z', direction: 'negative',
-                plane: new THREE.Plane(new THREE.Vector3(0, 0, -1), max.z),
-                handle: createFaceHandle('z', 'negative', max.z, handleSize, 'sbox-z-'),
-                position: max.z, minBound: min.z, maxBound: max.z + size.z,
-            },
+        const makeFaceSize = (axis: 'x' | 'y' | 'z'): [number, number] => {
+            switch (axis) {
+                case 'x': return [handleSize.z, handleSize.y];
+                case 'y': return [handleSize.x, handleSize.z];
+                case 'z': return [handleSize.x, handleSize.y];
+            }
+        };
+
+        const entries: ClipPlaneEntry[] = [];
+        const axes: Array<{ axis: 'x' | 'y' | 'z'; posId: string; negId: string }> = [
+            { axis: 'x', posId: 'sbox-x+', negId: 'sbox-x-' },
+            { axis: 'y', posId: 'sbox-y+', negId: 'sbox-y-' },
+            { axis: 'z', posId: 'sbox-z+', negId: 'sbox-z-' },
         ];
+
+        for (const { axis, posId, negId } of axes) {
+            const [fw, fh] = makeFaceSize(axis);
+            const normalPos = new THREE.Vector3();
+            const normalNeg = new THREE.Vector3();
+            normalPos[axis] = 1;
+            normalNeg[axis] = -1;
+
+            // Positive normal (clips geometry above min → this is the min face)
+            entries.push({
+                id: posId, axis, direction: 'positive',
+                plane: new THREE.Plane(normalPos.clone(), -min[axis]),
+                handle: createHandleMesh(axis, fw, fh, posId),
+                position: min[axis],
+                minBound: min[axis] - size[axis],
+                maxBound: max[axis],
+                normal: normalPos.clone(),
+            });
+
+            // Negative normal (clips geometry below max → this is the max face)
+            entries.push({
+                id: negId, axis, direction: 'negative',
+                plane: new THREE.Plane(normalNeg.clone(), max[axis]),
+                handle: createHandleMesh(axis, fw, fh, negId),
+                position: max[axis],
+                minBound: min[axis],
+                maxBound: max[axis] + size[axis],
+                normal: normalNeg.clone(),
+            });
+        }
 
         // Create wireframe
         const boxGeom = new THREE.BoxGeometry(handleSize.x, handleSize.y, handleSize.z);
         const edges = new THREE.EdgesGeometry(boxGeom);
         const wireframe = new THREE.LineSegments(
             edges,
-            new THREE.LineBasicMaterial({ color: WIREFRAME_COLOR, linewidth: 2, transparent: true, opacity: 0.8 })
+            new THREE.LineBasicMaterial({
+                color: WIREFRAME_COLOR,
+                transparent: true,
+                opacity: 0.7,
+                depthTest: false,
+            })
         );
         const center = new THREE.Vector3().addVectors(min, max).multiplyScalar(0.5);
         wireframe.position.copy(center);
@@ -292,17 +356,13 @@ export function useBimSection(
         wireframe.renderOrder = 998;
         scene.add(wireframe);
 
-        // Build state
         const boxState: SectionBoxState = {
-            min: min.clone(),
-            max: max.clone(),
-            originalMin: min.clone(),
-            originalMax: max.clone(),
-            wireframe,
-            entries,
+            min: min.clone(), max: max.clone(),
+            originalMin: min.clone(), originalMax: max.clone(),
+            wireframe, entries,
         };
 
-        // Add handles to scene and position them
+        // Add handles and position them
         for (const entry of entries) {
             positionHandle(entry, boxState);
             scene.add(entry.handle);
@@ -313,29 +373,7 @@ export function useBimSection(
         setSectionBoxBounds({ min: min.clone(), max: max.clone() });
         setClipPlaneCount(prev => prev + 6);
         applyClipPlanes();
-    }, [worldRef, createFaceHandle, positionHandle, applyClipPlanes]);
-
-    // ── Remove section box visuals ──
-    const removeSectionBoxVisuals = useCallback((scene: THREE.Scene, boxState: SectionBoxState) => {
-        // Remove handles
-        for (const entry of boxState.entries) {
-            scene.remove(entry.handle);
-            entry.handle.geometry.dispose();
-            (entry.handle.material as THREE.Material).dispose();
-        }
-        // Remove wireframe
-        if (boxState.wireframe) {
-            scene.remove(boxState.wireframe);
-            boxState.wireframe.geometry.dispose();
-            (boxState.wireframe.material as THREE.Material).dispose();
-        }
-        // Remove any leftover section box objects
-        const toRemove: THREE.Object3D[] = [];
-        scene.traverse((obj: THREE.Object3D) => {
-            if (obj.userData?.isSectionBox) toRemove.push(obj);
-        });
-        toRemove.forEach(obj => scene.remove(obj));
-    }, []);
+    }, [worldRef, createHandleMesh, positionHandle, removeSectionBoxVisuals, applyClipPlanes]);
 
     // ── Remove section box ──
     const removeSectionBox = useCallback(() => {
@@ -350,42 +388,46 @@ export function useBimSection(
         applyClipPlanes();
     }, [worldRef, removeSectionBoxVisuals, applyClipPlanes]);
 
-    // ── Create single clip plane ──
+    // ── Create single clip plane (axis-aligned) ──
     const createClipPlane = useCallback((axis: 'x' | 'y' | 'z') => {
         const scene = worldRef.current?.scene?.three;
         if (!scene) return;
 
-        const box = new THREE.Box3();
-        scene.traverse((obj: THREE.Object3D) => {
-            if (obj.userData?.isSectionBox || obj.userData?.isSectionHandle || obj.userData?.isClipHelper) return;
-            if (obj.userData?.isMeasurement || obj.userData?.isGrid) return;
-            if ((obj as any).isMesh && obj.visible) box.expandByObject(obj);
-        });
+        const box = getModelBounds(scene);
         if (box.isEmpty()) return;
 
         const center = new THREE.Vector3();
         box.getCenter(center);
         const size = box.getSize(new THREE.Vector3());
 
-        let normal: THREE.Vector3;
-        let position: number;
-        switch (axis) {
-            case 'x': normal = new THREE.Vector3(1, 0, 0); position = center.x; break;
-            case 'y': normal = new THREE.Vector3(0, 1, 0); position = center.y; break;
-            case 'z': normal = new THREE.Vector3(0, 0, 1); position = center.z; break;
-        }
+        const normal = new THREE.Vector3();
+        normal[axis] = 1;
+        const position = center[axis];
 
-        const plane = new THREE.Plane(normal, -position);
+        const plane = new THREE.Plane(normal.clone(), -position);
         const id = `clip-${axis}-${Date.now()}`;
 
-        // Create draggable handle
-        const handleSize = size.clone();
-        const handle = createFaceHandle(axis, 'positive', position, handleSize, id);
-        // Position the handle
+        // Handle dimensions based on axis
+        let fw: number, fh: number;
         switch (axis) {
-            case 'x': handle.position.set(position, center.y, center.z); break;
-            case 'y': handle.position.set(center.x, position, center.z); break;
-            case 'z': handle.position.set(center.x, center.y, position); break;
+            case 'x': fw = size.z; fh = size.y; break;
+            case 'y': fw = size.x; fh = size.z; break;
+            case 'z': fw = size.x; fh = size.y; break;
+        }
+
+        const handle = createHandleMesh(axis, fw, fh, id);
+        switch (axis) {
+            case 'x':
+                handle.position.set(position, center.y, center.z);
+                handle.rotation.set(0, Math.PI / 2, 0);
+                break;
+            case 'y':
+                handle.position.set(center.x, position, center.z);
+                handle.rotation.set(-Math.PI / 2, 0, 0);
+                break;
+            case 'z':
+                handle.position.set(center.x, center.y, position);
+                break;
         }
         handle.userData.isClipHelper = true;
         scene.add(handle);
@@ -394,24 +436,108 @@ export function useBimSection(
             id, axis, direction: 'positive', plane, handle, position,
             minBound: box.min[axis] - size[axis],
             maxBound: box.max[axis] + size[axis],
+            normal: normal.clone(),
         };
 
         clipPlanesRef.current.push(entry);
         setClipPlaneCount(clipPlanesRef.current.length + (sectionBoxRef.current?.entries.length || 0));
         applyClipPlanes();
-    }, [worldRef, createFaceHandle, applyClipPlanes]);
+    }, [worldRef, createHandleMesh, applyClipPlanes]);
+
+    // ── Create free section plane (click on surface) ──
+    const createFreeClipPlane = useCallback((point: THREE.Vector3, faceNormal: THREE.Vector3) => {
+        const scene = worldRef.current?.scene?.three;
+        if (!scene) return;
+
+        const normal = faceNormal.clone().normalize();
+        const constant = -point.dot(normal);
+        const plane = new THREE.Plane(normal.clone(), constant);
+        const id = `clip-free-${Date.now()}`;
+
+        // Create a disc/circle handle at the point
+        const box = getModelBounds(scene);
+        const modelSize = box.getSize(new THREE.Vector3()).length();
+        const discRadius = modelSize * 0.08; // 8% of model size
+
+        const geometry = new THREE.CircleGeometry(discRadius, 32);
+        const colors = FACE_COLORS.free;
+        const material = new THREE.MeshBasicMaterial({
+            color: colors.normal,
+            transparent: true,
+            opacity: HANDLE_OPACITY_NORMAL,
+            side: THREE.DoubleSide,
+            depthWrite: false,
+            depthTest: false,
+        });
+
+        const handle = new THREE.Mesh(geometry, material);
+        handle.position.copy(point);
+
+        // Orient the disc to align with the face normal
+        const up = new THREE.Vector3(0, 0, 1);
+        const quaternion = new THREE.Quaternion().setFromUnitVectors(up, normal);
+        handle.quaternion.copy(quaternion);
+
+        handle.renderOrder = 999;
+        handle.userData = { isSectionHandle: true, handleId: id, axis: 'free' };
+
+        // Add border ring
+        const ringGeo = new THREE.RingGeometry(discRadius * 0.95, discRadius, 32);
+        const ringMat = new THREE.MeshBasicMaterial({
+            color: colors.normal,
+            transparent: true,
+            opacity: 0.9,
+            side: THREE.DoubleSide,
+            depthTest: false,
+        });
+        const ring = new THREE.Mesh(ringGeo, ringMat);
+        ring.renderOrder = 1000;
+        handle.add(ring);
+
+        // Add normal direction arrow
+        const arrowLen = discRadius * 0.6;
+        const arrowGeo = new THREE.ConeGeometry(discRadius * 0.15, arrowLen, 8);
+        const arrowMat = new THREE.MeshBasicMaterial({
+            color: 0xffffff,
+            transparent: true,
+            opacity: 0.9,
+            depthTest: false,
+        });
+        const arrow = new THREE.Mesh(arrowGeo, arrowMat);
+        arrow.position.z = arrowLen * 0.5;
+        arrow.rotation.x = Math.PI / 2;
+        handle.add(arrow);
+
+        scene.add(handle);
+
+        // Determine drag bounds along the normal
+        const projMin = box.min.dot(normal);
+        const projMax = box.max.dot(normal);
+        const range = Math.abs(projMax - projMin);
+
+        const entry: ClipPlaneEntry = {
+            id, axis: 'free', direction: 'positive',
+            plane, handle,
+            position: point.dot(normal),
+            minBound: Math.min(projMin, projMax) - range,
+            maxBound: Math.max(projMin, projMax) + range,
+            normal: normal.clone(),
+        };
+
+        clipPlanesRef.current.push(entry);
+        setClipPlaneCount(clipPlanesRef.current.length + (sectionBoxRef.current?.entries.length || 0));
+        applyClipPlanes();
+    }, [worldRef, applyClipPlanes]);
 
     // ── Clear all ──
     const clearAllClipPlanes = useCallback(() => {
         const scene = worldRef.current?.scene?.three;
         if (scene) {
-            // Remove single clip handles
             for (const cp of clipPlanesRef.current) {
                 scene.remove(cp.handle);
                 cp.handle.geometry.dispose();
                 (cp.handle.material as THREE.Material).dispose();
             }
-            // Remove section box
             if (sectionBoxRef.current) {
                 removeSectionBoxVisuals(scene, sectionBoxRef.current);
             }
@@ -438,27 +564,22 @@ export function useBimSection(
         const entry = boxState.entries.find(e => e.id === id);
         if (!entry) return;
 
-        // Clamp to bounds
         const clamped = Math.max(entry.minBound, Math.min(entry.maxBound, newPosition));
         entry.position = clamped;
 
-        // Update clip plane constant
         if (entry.direction === 'positive') {
             entry.plane.constant = -clamped;
         } else {
             entry.plane.constant = clamped;
         }
 
-        // Update handle position
         positionHandle(entry, boxState);
-
-        // Sync bounds and wireframe
         syncBoundsFromEntries(boxState);
         updateWireframe(boxState);
         applyClipPlanes();
     }, [positionHandle, syncBoundsFromEntries, updateWireframe, applyClipPlanes]);
 
-    // ── Reset section box to original bounds ──
+    // ── Reset section box ──
     const resetSectionBox = useCallback(() => {
         const boxState = sectionBoxRef.current;
         if (!boxState) return;
@@ -468,6 +589,7 @@ export function useBimSection(
 
         for (const entry of boxState.entries) {
             const { axis, direction } = entry;
+            if (axis === 'free') continue;
             if (direction === 'positive') {
                 entry.position = boxState.originalMin[axis];
                 entry.plane.constant = -boxState.originalMin[axis];
@@ -483,13 +605,13 @@ export function useBimSection(
         applyClipPlanes();
     }, [positionHandle, syncBoundsFromEntries, updateWireframe, applyClipPlanes]);
 
-    // ── Flip a clip plane direction ──
+    // ── Flip clip plane ──
     const flipClipPlane = useCallback((id: string) => {
-        // For single clip planes
         const entry = clipPlanesRef.current.find(e => e.id === id);
         if (entry) {
             entry.plane.normal.negate();
             entry.plane.constant = -entry.plane.constant;
+            entry.normal.negate();
             applyClipPlanes();
         }
     }, [applyClipPlanes]);
@@ -504,7 +626,6 @@ export function useBimSection(
         const scene = world.scene?.three;
         if (!camera || !scene) return;
 
-        // Collect all handle meshes
         const getHandles = (): THREE.Mesh[] => {
             const handles: THREE.Mesh[] = [];
             clipPlanesRef.current.forEach(cp => handles.push(cp.handle));
@@ -514,9 +635,9 @@ export function useBimSection(
 
         const findEntry = (mesh: THREE.Mesh): ClipPlaneEntry | null => {
             const id = mesh.userData.handleId;
-            const single = clipPlanesRef.current.find(e => e.id === id);
-            if (single) return single;
-            return sectionBoxRef.current?.entries.find(e => e.id === id) || null;
+            return clipPlanesRef.current.find(e => e.id === id)
+                || sectionBoxRef.current?.entries.find(e => e.id === id)
+                || null;
         };
 
         const getNDC = (e: MouseEvent): THREE.Vector2 => {
@@ -529,27 +650,17 @@ export function useBimSection(
 
         const setHandleAppearance = (mesh: THREE.Mesh, state: 'normal' | 'hover' | 'drag') => {
             const mat = mesh.material as THREE.MeshBasicMaterial;
-            const axis = mesh.userData.axis as 'x' | 'y' | 'z';
-            const colors = FACE_COLORS[axis];
+            const axis = (mesh.userData.axis || 'free') as 'x' | 'y' | 'z' | 'free';
+            const colors = FACE_COLORS[axis] || FACE_COLORS.free;
             switch (state) {
-                case 'normal':
-                    mat.color.setHex(colors.normal);
-                    mat.opacity = HANDLE_OPACITY_NORMAL;
-                    break;
-                case 'hover':
-                    mat.color.setHex(colors.hover);
-                    mat.opacity = HANDLE_OPACITY_HOVER;
-                    break;
-                case 'drag':
-                    mat.color.setHex(colors.drag);
-                    mat.opacity = HANDLE_OPACITY_DRAG;
-                    break;
+                case 'normal': mat.color.setHex(colors.normal); mat.opacity = HANDLE_OPACITY_NORMAL; break;
+                case 'hover': mat.color.setHex(colors.hover); mat.opacity = HANDLE_OPACITY_HOVER; break;
+                case 'drag': mat.color.setHex(colors.drag); mat.opacity = HANDLE_OPACITY_DRAG; break;
             }
         };
 
-        // ── HOVER ──
+        // ── HOVER + DRAG MOVE ──
         const onMouseMove = (e: MouseEvent) => {
-            // If dragging, handle drag move
             if (dragRef.current?.active) {
                 onDragMove(e);
                 return;
@@ -558,19 +669,35 @@ export function useBimSection(
             const ndc = getNDC(e);
             raycasterRef.current.setFromCamera(ndc, camera);
             const handles = getHandles();
-            if (handles.length === 0) return;
+            if (handles.length === 0) {
+                if (hoveredHandleRef.current) {
+                    setHandleAppearance(hoveredHandleRef.current, 'normal');
+                    hoveredHandleRef.current = null;
+                    container.style.cursor = '';
+                }
+                return;
+            }
 
-            const intersects = raycasterRef.current.intersectObjects(handles, false);
-
-            if (intersects.length > 0) {
-                const hit = intersects[0].object as THREE.Mesh;
-                if (hoveredHandleRef.current !== hit) {
-                    // Un-hover previous
-                    if (hoveredHandleRef.current) {
-                        setHandleAppearance(hoveredHandleRef.current, 'normal');
+            const intersects = raycasterRef.current.intersectObjects(handles, true);
+            // Find the first parent that is a handle
+            let hitHandle: THREE.Mesh | null = null;
+            for (const inter of intersects) {
+                let obj: THREE.Object3D | null = inter.object;
+                while (obj) {
+                    if (obj.userData?.isSectionHandle) {
+                        hitHandle = obj as THREE.Mesh;
+                        break;
                     }
-                    hoveredHandleRef.current = hit;
-                    setHandleAppearance(hit, 'hover');
+                    obj = obj.parent;
+                }
+                if (hitHandle) break;
+            }
+
+            if (hitHandle) {
+                if (hoveredHandleRef.current !== hitHandle) {
+                    if (hoveredHandleRef.current) setHandleAppearance(hoveredHandleRef.current, 'normal');
+                    hoveredHandleRef.current = hitHandle;
+                    setHandleAppearance(hitHandle, 'hover');
                     container.style.cursor = 'grab';
                 }
             } else {
@@ -584,61 +711,66 @@ export function useBimSection(
 
         // ── DRAG START ──
         const onMouseDown = (e: MouseEvent) => {
-            if (e.button !== 0) return; // left click only
+            if (e.button !== 0) return;
 
             const ndc = getNDC(e);
             raycasterRef.current.setFromCamera(ndc, camera);
             const handles = getHandles();
             if (handles.length === 0) return;
 
-            const intersects = raycasterRef.current.intersectObjects(handles, false);
-            if (intersects.length === 0) return;
+            const intersects = raycasterRef.current.intersectObjects(handles, true);
+            let hitHandle: THREE.Mesh | null = null;
+            let hitPoint: THREE.Vector3 | null = null;
+            for (const inter of intersects) {
+                let obj: THREE.Object3D | null = inter.object;
+                while (obj) {
+                    if (obj.userData?.isSectionHandle) {
+                        hitHandle = obj as THREE.Mesh;
+                        hitPoint = inter.point;
+                        break;
+                    }
+                    obj = obj.parent;
+                }
+                if (hitHandle) break;
+            }
 
-            const hit = intersects[0].object as THREE.Mesh;
-            const entry = findEntry(hit);
+            if (!hitHandle || !hitPoint) return;
+            const entry = findEntry(hitHandle);
             if (!entry) return;
 
             e.stopPropagation();
             e.preventDefault();
 
-            // Determine drag axis vector
-            let axisVec: THREE.Vector3;
-            switch (entry.axis) {
-                case 'x': axisVec = new THREE.Vector3(1, 0, 0); break;
-                case 'y': axisVec = new THREE.Vector3(0, 1, 0); break;
-                case 'z': axisVec = new THREE.Vector3(0, 0, 1); break;
-            }
+            // Axis direction for dragging
+            const axisVec = entry.normal.clone();
 
-            // Create a drag plane perpendicular to the camera but containing the axis
+            // Create drag plane perpendicular to camera that contains the axis
             const cameraDir = new THREE.Vector3();
             camera.getWorldDirection(cameraDir);
-            const dragPlaneNormal = new THREE.Vector3().crossVectors(axisVec, cameraDir).cross(axisVec).normalize();
+            let dragPlaneNormal = new THREE.Vector3().crossVectors(axisVec, cameraDir).cross(axisVec).normalize();
             if (dragPlaneNormal.lengthSq() < 0.001) {
-                // Camera is looking along the axis — use camera up as fallback
                 dragPlaneNormal.crossVectors(axisVec, camera.up).cross(axisVec).normalize();
             }
 
             const dragPlane = new THREE.Plane();
-            dragPlane.setFromNormalAndCoplanarPoint(dragPlaneNormal, intersects[0].point);
+            dragPlane.setFromNormalAndCoplanarPoint(dragPlaneNormal, hitPoint);
 
             dragRef.current = {
                 active: true,
                 entry,
-                startMouse: ndc.clone(),
                 startPosition: entry.position,
                 axisVec,
-                plane: dragPlane,
+                dragPlane,
+                dragStartPoint: hitPoint.clone(),
             };
 
-            setHandleAppearance(hit, 'drag');
+            setHandleAppearance(hitHandle, 'drag');
             container.style.cursor = 'grabbing';
             setIsDragging(true);
 
-            // Disable camera orbit
+            // Disable orbit
             const controls = world.camera?.controls;
-            if (controls) {
-                (controls as any).enabled = false;
-            }
+            if (controls) (controls as any).enabled = false;
         };
 
         // ── DRAG MOVE ──
@@ -649,38 +781,42 @@ export function useBimSection(
             const ndc = getNDC(e);
             raycasterRef.current.setFromCamera(ndc, camera);
 
-            // Intersect with the drag plane
             const intersection = new THREE.Vector3();
-            const ray = raycasterRef.current.ray;
-            if (!ray.intersectPlane(drag.plane, intersection)) return;
+            if (!raycasterRef.current.ray.intersectPlane(drag.dragPlane, intersection)) return;
 
-            // Project intersection onto the axis to get new position
-            const originPoint = drag.entry.handle.position.clone();
-            originPoint[drag.entry.axis] = drag.startPosition;
-            const delta = intersection.clone().sub(originPoint);
-            const newPosition = drag.startPosition + delta.dot(drag.axisVec);
+            // Project delta onto axis
+            const delta = intersection.clone().sub(drag.dragStartPoint);
+            const axisDelta = delta.dot(drag.axisVec);
+            const newPosition = drag.startPosition + axisDelta;
 
             // Clamp
             const clamped = Math.max(drag.entry.minBound, Math.min(drag.entry.maxBound, newPosition));
             drag.entry.position = clamped;
 
             // Update clip plane
-            if (drag.entry.direction === 'positive') {
+            if (drag.entry.axis === 'free') {
                 drag.entry.plane.constant = -clamped;
+                // Move handle along normal
+                const offset = clamped - drag.startPosition;
+                drag.entry.handle.position.copy(
+                    drag.dragStartPoint.clone().add(drag.axisVec.clone().multiplyScalar(offset))
+                );
             } else {
-                drag.entry.plane.constant = clamped;
-            }
+                if (drag.entry.direction === 'positive') {
+                    drag.entry.plane.constant = -clamped;
+                } else {
+                    drag.entry.plane.constant = clamped;
+                }
 
-            // Update handle visual position
-            const boxState = sectionBoxRef.current;
-            if (boxState) {
-                positionHandle(drag.entry, boxState);
-                syncBoundsFromEntries(boxState);
-                updateWireframe(boxState);
-            } else {
-                // Single clip plane
-                const handle = drag.entry.handle;
-                handle.position[drag.entry.axis] = clamped;
+                const boxState = sectionBoxRef.current;
+                if (boxState) {
+                    positionHandle(drag.entry, boxState);
+                    syncBoundsFromEntries(boxState);
+                    updateWireframe(boxState);
+                } else {
+                    // Single clip plane handle
+                    drag.entry.handle.position[drag.entry.axis as 'x' | 'y' | 'z'] = clamped;
+                }
             }
 
             applyClipPlanes();
@@ -691,23 +827,18 @@ export function useBimSection(
             const drag = dragRef.current;
             if (!drag?.active) return;
 
-            if (drag.entry) {
-                setHandleAppearance(drag.entry.handle, 'normal');
-            }
-
+            if (drag.entry) setHandleAppearance(drag.entry.handle, 'normal');
             dragRef.current = null;
             setIsDragging(false);
             container.style.cursor = '';
 
-            // Re-enable camera orbit
+            // Re-enable orbit
             const controls = world.camera?.controls;
-            if (controls) {
-                (controls as any).enabled = true;
-            }
+            if (controls) (controls as any).enabled = true;
         };
 
         container.addEventListener('mousemove', onMouseMove);
-        container.addEventListener('mousedown', onMouseDown, true); // capture phase
+        container.addEventListener('mousedown', onMouseDown, true);
         window.addEventListener('mouseup', onMouseUp);
 
         return () => {
@@ -724,6 +855,7 @@ export function useBimSection(
         if (activeTool === 'clip-y') createClipPlane('y');
         if (activeTool === 'clip-z') createClipPlane('z');
         if (activeTool === 'section-box') createSectionBox();
+        // 'section-plane' is handled by click events in ProjectBimTab
     }, [activeTool, createClipPlane, createSectionBox]);
 
     return {
@@ -732,6 +864,7 @@ export function useBimSection(
         sectionBoxBounds,
         isDragging,
         createClipPlane,
+        createFreeClipPlane,
         clearAllClipPlanes,
         createSectionBox,
         removeSectionBox,

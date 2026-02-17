@@ -7,7 +7,7 @@ import { useState, useCallback, useRef } from 'react';
 // ── Tool Types ──────────────────────────────────────
 export type ActiveTool =
     | 'select'
-    | 'clip-x' | 'clip-y' | 'clip-z' | 'section-box'
+    | 'clip-x' | 'clip-y' | 'clip-z' | 'section-box' | 'section-plane'
     | 'measure-length' | 'measure-area'
     | 'isolate' | 'hide-selected'
     | null;
