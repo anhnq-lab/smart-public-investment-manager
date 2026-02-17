@@ -59,10 +59,11 @@ const FACE_COLORS = {
     free: { normal: 0xffaa00, hover: 0xffcc44, drag: 0xffdd88 },
 };
 
-const HANDLE_SIZE_RATIO = 0.15; // 15% of face size — small indicator
-const HANDLE_OPACITY_NORMAL = 0.4;
-const HANDLE_OPACITY_HOVER = 0.7;
-const HANDLE_OPACITY_DRAG = 0.85;
+const HANDLE_MAX_SIZE = 1.5; // Fixed max 1.5m — never larger
+const HANDLE_MIN_SIZE = 0.5; // Fixed min 0.5m
+const HANDLE_OPACITY_NORMAL = 0.5;
+const HANDLE_OPACITY_HOVER = 0.85;
+const HANDLE_OPACITY_DRAG = 1.0;
 const WIREFRAME_COLOR = 0xffaa00;
 
 // ── Helpers ──────────────────────────────────────────
@@ -123,16 +124,15 @@ export function useBimSection(
         renderer.localClippingEnabled = allPlanes.length > 0;
     }, [worldRef]);
 
-    // ── Create a small center-of-face handle ──
     const createHandleMesh = useCallback((
         axis: 'x' | 'y' | 'z' | 'free',
-        faceWidth: number,
-        faceHeight: number,
+        _faceWidth: number,
+        _faceHeight: number,
         id: string,
     ): THREE.Mesh => {
-        // Small square handle at face center
-        const handleW = Math.max(faceWidth * HANDLE_SIZE_RATIO, 0.3);
-        const handleH = Math.max(faceHeight * HANDLE_SIZE_RATIO, 0.3);
+        // FIXED small size handle — never larger than HANDLE_MAX_SIZE
+        const handleW = Math.min(Math.max(_faceWidth * 0.06, HANDLE_MIN_SIZE), HANDLE_MAX_SIZE);
+        const handleH = Math.min(Math.max(_faceHeight * 0.06, HANDLE_MIN_SIZE), HANDLE_MAX_SIZE);
 
         const geometry = new THREE.PlaneGeometry(handleW, handleH);
         const colors = FACE_COLORS[axis] || FACE_COLORS.free;
@@ -149,25 +149,13 @@ export function useBimSection(
         mesh.renderOrder = 999;
         mesh.userData = { isSectionHandle: true, handleId: id, axis };
 
-        // Add a border ring (wireframe outline)
-        const borderGeo = new THREE.EdgesGeometry(new THREE.PlaneGeometry(handleW, handleH));
-        const borderMat = new THREE.LineBasicMaterial({
-            color: colors.normal,
-            transparent: true,
-            opacity: 0.8,
-            depthTest: false,
-        });
-        const border = new THREE.LineSegments(borderGeo, borderMat);
-        border.renderOrder = 1000;
-        mesh.add(border);
-
-        // Add directional arrow (small triangle)
-        const arrowSize = Math.min(handleW, handleH) * 0.3;
+        // Small arrow indicator (no border wireframe — avoids line noise)
+        const arrowSize = Math.min(handleW, handleH) * 0.35;
         const arrowGeo = new THREE.BufferGeometry();
         const vertices = new Float32Array([
-            0, arrowSize, 0,
-            -arrowSize * 0.5, 0, 0,
-            arrowSize * 0.5, 0, 0,
+            0, arrowSize * 0.7, 0,
+            -arrowSize * 0.4, -arrowSize * 0.3, 0,
+            arrowSize * 0.4, -arrowSize * 0.3, 0,
         ]);
         arrowGeo.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
         const arrowMat = new THREE.MeshBasicMaterial({
