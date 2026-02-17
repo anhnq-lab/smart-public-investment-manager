@@ -17,6 +17,7 @@ import { BimPropertiesPanel } from '../bim/BimPropertiesPanel';
 import { BimModelTree } from '../bim/BimModelTree';
 import { BimViewCube } from '../bim/BimViewCube';
 import { BimShortcutsModal } from '../bim/BimShortcutsModal';
+import { FacilityManagementPanel } from '../bim/FacilityManagementPanel';
 import { BimSectionPanel } from '../bim/BimSectionPanel';
 
 // ── Types ───────────────────────────────────────────
@@ -46,6 +47,7 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
     const [toolbarCollapsed, setToolbarCollapsed] = useState(false);
     const [modelsLoaded, setModelsLoaded] = useState(false);
     const [isFullscreen, setIsFullscreen] = useState(false);
+    const [bottomTab, setBottomTab] = useState<'properties' | 'operations'>('properties');
     const wrapperRef = useRef<HTMLDivElement>(null);
     const originalMaterialsRef = useRef(new WeakMap<THREE.Material, THREE.Material>());
 
@@ -580,26 +582,62 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
                 )}
             </div>
 
-            {/* ─── BOTTOM: Properties & Info Panel ─── */}
-            {engine.viewerReady && hasModels && (
+            {/* ─── BOTTOM: Tabbed Panel (Properties + Operations) ─── */}
+            {engine.viewerReady && (
                 <div className={`
                     shrink-0 border-t
                     ${isDark ? 'bg-slate-800 border-slate-700' : 'bg-white border-gray-200'}
                 `}>
-                    {/* Bottom panel header with model stats */}
+                    {/* Tab bar + stats */}
                     <div className={`
-                        flex items-center justify-between px-4 h-9
-                        text-[11px] font-medium
-                        ${isDark ? 'text-slate-400' : 'text-gray-500'}
+                        flex items-center justify-between px-4 h-10
+                        text-[11px] font-medium border-b
+                        ${isDark ? 'text-slate-400 border-slate-700/50' : 'text-gray-500 border-gray-100'}
                     `}>
-                        <div className="flex items-center gap-4">
-                            <span className="flex items-center gap-1">🏗️ That Open Engine v3</span>
-                            <span className="flex items-center gap-1">📦 {upload.disciplineModels.length} models</span>
-                            {section.clipPlaneCount > 0 && (
-                                <span className="text-cyan-500">✂ {section.clipPlaneCount} clips</span>
-                            )}
-                            {measure.measurementCount > 0 && (
-                                <span className="text-cyan-500">📐 {measure.measurementCount} measures</span>
+                        <div className="flex items-center gap-1">
+                            {/* Tab: Thông tin đối tượng */}
+                            <button
+                                onClick={() => setBottomTab('properties')}
+                                className={`
+                                    flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all
+                                    ${bottomTab === 'properties'
+                                        ? isDark
+                                            ? 'bg-blue-500/15 text-blue-400 ring-1 ring-blue-500/30'
+                                            : 'bg-blue-50 text-blue-600 ring-1 ring-blue-200'
+                                        : isDark ? 'text-slate-400 hover:text-slate-300 hover:bg-white/5' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100'
+                                    }
+                                `}
+                            >
+                                🏗️ Thông tin đối tượng
+                            </button>
+                            {/* Tab: Quản lý vận hành */}
+                            <button
+                                onClick={() => setBottomTab('operations')}
+                                className={`
+                                    flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all
+                                    ${bottomTab === 'operations'
+                                        ? isDark
+                                            ? 'bg-blue-500/15 text-blue-400 ring-1 ring-blue-500/30'
+                                            : 'bg-blue-50 text-blue-600 ring-1 ring-blue-200'
+                                        : isDark ? 'text-slate-400 hover:text-slate-300 hover:bg-white/5' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100'
+                                    }
+                                `}
+                            >
+                                🔧 Quản lý vận hành
+                            </button>
+
+                            {/* Model stats (only when models loaded) */}
+                            {hasModels && (
+                                <>
+                                    <div className={`h-4 w-px mx-2 ${isDark ? 'bg-slate-700' : 'bg-gray-200'}`} />
+                                    <span className="flex items-center gap-1 text-[10px]">📦 {upload.disciplineModels.length} models</span>
+                                    {section.clipPlaneCount > 0 && (
+                                        <span className="text-cyan-500 text-[10px]">✂ {section.clipPlaneCount} clips</span>
+                                    )}
+                                    {measure.measurementCount > 0 && (
+                                        <span className="text-cyan-500 text-[10px]">📐 {measure.measurementCount} measures</span>
+                                    )}
+                                </>
                             )}
                         </div>
                         <div className="flex items-center gap-3">
@@ -614,19 +652,38 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
                         </div>
                     </div>
 
-                    {/* Properties content */}
+                    {/* Tab content */}
                     <div className={`
-                        px-4 pb-3 overflow-y-auto
+                        overflow-y-auto
                         ${isFullscreen ? 'max-h-[35vh]' : 'max-h-[280px]'}
                     `}>
-                        <BimPropertiesPanel
-                            selectedElement={selection.selectedElement}
-                            isDarkMode={isDark}
-                            isMobile={isMobile}
-                            onClose={() => { }}
-                            onHighlightElement={(id) => selection.handleSelectElementFromTree(Number(id))}
-                            isBottomPanel={true}
-                        />
+                        {bottomTab === 'properties' && (
+                            <div className="px-4 pb-3">
+                                {hasModels ? (
+                                    <BimPropertiesPanel
+                                        selectedElement={selection.selectedElement}
+                                        isDarkMode={isDark}
+                                        isMobile={isMobile}
+                                        onClose={() => { }}
+                                        onHighlightElement={(id) => selection.handleSelectElementFromTree(Number(id))}
+                                        isBottomPanel={true}
+                                    />
+                                ) : (
+                                    <div className="flex flex-col items-center justify-center py-6 text-center">
+                                        <p className={`text-xs ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>
+                                            Upload model BIM để xem thông tin đối tượng
+                                        </p>
+                                    </div>
+                                )}
+                            </div>
+                        )}
+                        {bottomTab === 'operations' && (
+                            <FacilityManagementPanel
+                                projectId={projectID}
+                                isDarkMode={isDark}
+                                isMobile={isMobile}
+                            />
+                        )}
                     </div>
                 </div>
             )}

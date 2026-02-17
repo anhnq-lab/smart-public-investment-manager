@@ -492,6 +492,80 @@ export type Database = {
                 }
                 Relationships: []
             }
+            facility_assets: {
+                Row: {
+                    asset_code: string | null
+                    asset_id: string
+                    asset_name: string
+                    bim_element_id: string | null
+                    category: string | null
+                    condition: string | null
+                    created_at: string | null
+                    install_date: string | null
+                    last_maintenance: string | null
+                    location: string | null
+                    maintenance_cycle_days: number | null
+                    manufacturer: string | null
+                    model: string | null
+                    next_maintenance: string | null
+                    notes: string | null
+                    project_id: string
+                    status: string | null
+                    updated_at: string | null
+                    warranty_expiry: string | null
+                }
+                Insert: {
+                    asset_code?: string | null
+                    asset_id?: string
+                    asset_name: string
+                    bim_element_id?: string | null
+                    category?: string | null
+                    condition?: string | null
+                    created_at?: string | null
+                    install_date?: string | null
+                    last_maintenance?: string | null
+                    location?: string | null
+                    maintenance_cycle_days?: number | null
+                    manufacturer?: string | null
+                    model?: string | null
+                    next_maintenance?: string | null
+                    notes?: string | null
+                    project_id: string
+                    status?: string | null
+                    updated_at?: string | null
+                    warranty_expiry?: string | null
+                }
+                Update: {
+                    asset_code?: string | null
+                    asset_id?: string
+                    asset_name?: string
+                    bim_element_id?: string | null
+                    category?: string | null
+                    condition?: string | null
+                    created_at?: string | null
+                    install_date?: string | null
+                    last_maintenance?: string | null
+                    location?: string | null
+                    maintenance_cycle_days?: number | null
+                    manufacturer?: string | null
+                    model?: string | null
+                    next_maintenance?: string | null
+                    notes?: string | null
+                    project_id?: string
+                    status?: string | null
+                    updated_at?: string | null
+                    warranty_expiry?: string | null
+                }
+                Relationships: [
+                    {
+                        foreignKeyName: "facility_assets_project_id_fkey"
+                        columns: ["project_id"]
+                        isOneToOne: false
+                        referencedRelation: "projects"
+                        referencedColumns: ["project_id"]
+                    },
+                ]
+            }
             feasibility_studies: {
                 Row: {
                     approval_authority: string | null
