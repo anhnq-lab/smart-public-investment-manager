@@ -129,10 +129,15 @@ export function useBimUpload(
         try {
             setStatus('loading');
             setStatusMessage(`Đang upload ${file.name} (${(file.size / 1024 / 1024).toFixed(1)} MB)...`);
-            setLoadingProgress(10);
+            setLoadingProgress(5);
 
-            const record = await uploadIFCFile(projectID, file);
-            setLoadingProgress(30);
+            // Pass progress callback for real-time tracking (especially for large files)
+            const record = await uploadIFCFile(projectID, file, (pct) => {
+                // Upload phase takes 0-60% of total progress
+                setLoadingProgress(Math.round(pct * 0.6));
+                setStatusMessage(`Đang upload ${file.name}... ${pct}%`);
+            });
+            setLoadingProgress(60);
 
             setStatus('converting');
             setStatusMessage(`Đang convert ${file.name}...`);
@@ -142,7 +147,7 @@ export function useBimUpload(
             const uint8Array = new Uint8Array(buffer);
 
             const model = await ifcLoader.load(uint8Array, true, file.name);
-            setLoadingProgress(80);
+            setLoadingProgress(85);
 
             // Store IFC data using FragmentsGroup UUID (matches Highlighter events)
             const groupUuid = (model as any).uuid || (model as any).id;
