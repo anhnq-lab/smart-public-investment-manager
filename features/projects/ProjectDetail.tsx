@@ -235,8 +235,8 @@ const ProjectDetail: React.FC = () => {
                 </div>
             </div>
 
-            {/* 3. Scrollable Tab Content */}
-            <div className="flex-1 overflow-y-auto px-4 py-6 min-h-0">
+            {/* 3. Tab Content */}
+            <div className={`flex-1 min-h-0 ${activeTab === 'bim' ? '' : 'overflow-y-auto px-4 py-6'}`}>
                 {activeTab === 'info' && (
                     <ProjectInfoTab
                         project={project}
