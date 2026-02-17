@@ -56,6 +56,7 @@ interface BimPropertiesPanelProps {
     isMobile: boolean;
     onClose: () => void;
     onHighlightElement?: (id: string) => void;
+    isBottomPanel?: boolean;
 }
 
 // ── Quantity unit detection ──────────────────────────
@@ -94,7 +95,7 @@ function getQuantityIcon(name: string) {
 
 // ── Component ────────────────────────────────────────
 export const BimPropertiesPanel: React.FC<BimPropertiesPanelProps> = ({
-    selectedElement, isDarkMode, isMobile, onClose, onHighlightElement
+    selectedElement, isDarkMode, isMobile, onClose, onHighlightElement, isBottomPanel = false
 }) => {
     const [activeTab, setActiveTab] = useState<PropertiesTab>('properties');
     const [searchQuery, setSearchQuery] = useState('');
@@ -183,17 +184,19 @@ export const BimPropertiesPanel: React.FC<BimPropertiesPanelProps> = ({
 
     return (
         <div className={`
-            ${isMobile ? 'absolute inset-y-0 right-0 z-30 w-80' : 'relative w-72'}
-            ${isDarkMode ? 'bg-slate-800/95 border-slate-700/50' : 'bg-white border-gray-200'}
-            border-l flex flex-col shrink-0 backdrop-blur-xl
+            ${isBottomPanel ? 'w-full' : isMobile ? 'absolute inset-y-0 right-0 z-30 w-80' : 'relative w-72'}
+            ${isBottomPanel ? '' : isDarkMode ? 'bg-slate-800/95 border-slate-700/50' : !isBottomPanel ? 'bg-white border-gray-200' : ''}
+            ${isBottomPanel ? '' : 'border-l'} flex flex-col shrink-0 ${isBottomPanel ? '' : 'backdrop-blur-xl'}
         `}>
-            {/* Header */}
-            <div className={`p-3 border-b flex items-center justify-between ${isDarkMode ? 'border-slate-700/30' : 'border-gray-200'}`}>
-                <span className={`text-xs font-bold uppercase tracking-wide ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}>Properties</span>
-                <button onClick={onClose} className={`p-1 rounded-lg ${isDarkMode ? 'text-slate-500 hover:text-white hover:bg-white/10' : 'text-gray-400 hover:text-gray-700 hover:bg-gray-100'}`}>
-                    <X className="w-4 h-4" />
-                </button>
-            </div>
+            {/* Header — hidden in bottom panel mode */}
+            {!isBottomPanel && (
+                <div className={`p-3 border-b flex items-center justify-between ${isDarkMode ? 'border-slate-700/30' : 'border-gray-200'}`}>
+                    <span className={`text-xs font-bold uppercase tracking-wide ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}>Properties</span>
+                    <button onClick={onClose} className={`p-1 rounded-lg ${isDarkMode ? 'text-slate-500 hover:text-white hover:bg-white/10' : 'text-gray-400 hover:text-gray-700 hover:bg-gray-100'}`}>
+                        <X className="w-4 h-4" />
+                    </button>
+                </div>
+            )}
 
             {selectedElement ? (
                 <>
