@@ -38,6 +38,25 @@ export const TaskService = {
     },
 
     saveTask: async (task: Task): Promise<Task> => {
+        const today = new Date().toISOString().split('T')[0];
+
+        // Auto-set ActualStartDate when task first starts
+        const progress = task.ProgressPercent ?? 0;
+        if (progress > 0 && !task.ActualStartDate) {
+            task.ActualStartDate = today;
+        }
+
+        // Auto-set ActualEndDate when progress reaches 100%
+        if (progress >= 100) {
+            if (!task.ActualEndDate) task.ActualEndDate = today;
+            if (task.Status !== 'Done') {
+                task.Status = 'Done' as any;
+            }
+        } else if (task.ActualEndDate && progress < 100) {
+            // Clear ActualEndDate if progress drops below 100%
+            task.ActualEndDate = '';
+        }
+
         const row = taskToDb(task);
 
         const { data, error } = await supabase

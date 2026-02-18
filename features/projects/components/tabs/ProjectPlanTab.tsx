@@ -898,9 +898,16 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({
                                                                         )}
                                                                     </td>
 
-                                                                    {/* Due Date */}
+                                                                    {/* Due Date + Completion Date */}
                                                                     <td className={`px-2 py-2 hidden sm:table-cell ${isOverdue(t) ? 'text-red-600 font-semibold' : 'text-gray-400'}`}>
-                                                                        {t.DueDate && new Date(t.DueDate).toLocaleDateString('vi-VN')}
+                                                                        {t.Status === TaskStatus.Done && t.ActualEndDate ? (
+                                                                            <span className="flex items-center gap-1 text-emerald-600 font-medium" title={`Hoàn thành: ${new Date(t.ActualEndDate).toLocaleDateString('vi-VN')}`}>
+                                                                                <CheckCircle2 className="w-3 h-3" />
+                                                                                {new Date(t.ActualEndDate).toLocaleDateString('vi-VN')}
+                                                                            </span>
+                                                                        ) : (
+                                                                            t.DueDate && new Date(t.DueDate).toLocaleDateString('vi-VN')
+                                                                        )}
                                                                     </td>
 
                                                                     {/* Priority */}

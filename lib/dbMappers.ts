@@ -352,6 +352,8 @@ export const taskToDb = (t: Partial<Task>) => ({
     ...(t.PredecessorTaskID !== undefined && { predecessor_task_id: t.PredecessorTaskID }),
     ...(t.ApproverID !== undefined && { approver_id: t.ApproverID }),
     ...(t.EstimatedCost !== undefined && { estimated_cost: t.EstimatedCost }),
+    ...(t.ActualStartDate !== undefined && { actual_start_date: t.ActualStartDate }),
+    ...(t.ActualEndDate !== undefined && { actual_end_date: t.ActualEndDate }),
     ...(t.Progress !== undefined && { progress: t.Progress }),
     ...(t.ProgressPercent !== undefined && { progress: t.ProgressPercent }),
 });
