@@ -11,6 +11,7 @@ import { useBimUpload } from '../bim/useBimUpload';
 import { useBimSelection } from '../bim/useBimSelection';
 import { useBimSection } from '../bim/useBimSection';
 import { useBimMeasure } from '../bim/useBimMeasure';
+import { useBimKeyboard } from '../bim/useBimKeyboard';
 
 // BIM components
 import { BimToolbar } from '../bim/BimToolbar';
@@ -65,6 +66,15 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
     );
     const section = useBimSection(engine.worldRef, engine.componentsRef, containerRef, tools.activeTool);
     const measure = useBimMeasure(engine.worldRef, containerRef, tools.activeTool);
+
+    // Keyboard navigation: WASD orbit, arrows, 1-7 views, F fit, +/- zoom
+    useBimKeyboard({
+        containerRef,
+        worldRef: engine.worldRef,
+        setView: engine.setView,
+        fitAll: engine.fitAll,
+        activateTool: tools.activateTool,
+    });
 
     const hasModels = upload.disciplineModels.length > 0;
     const cursorClass = getCursorClass(tools.activeTool);
@@ -444,9 +454,10 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
                 {/* ViewCube */}
                 {engine.viewerReady && !isMobile && (
                     <BimViewCube
-                        cameraRotation={engine.cameraRotation}
+                        cameraQuaternion={engine.cameraQuaternion}
                         isDarkMode={isDark}
                         onSetView={engine.setView}
+                        onOrbit={engine.orbit}
                     />
                 )}
 
