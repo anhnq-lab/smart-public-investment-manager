@@ -1,5 +1,6 @@
 import React, { useRef, useEffect, useState, useCallback, useMemo } from 'react';
 import * as THREE from 'three';
+import * as OBC from '@thatopen/components';
 import { Upload, Loader2, Building2, AlertCircle, CheckCircle, Maximize2, Minimize2 } from 'lucide-react';
 import { useTheme } from '../../../../context/ThemeContext';
 
@@ -120,54 +121,51 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
             if (tools.activeTool === 'measure-length' || tools.activeTool === 'measure-area') {
                 measure.handleMeasureClick(e);
             }
+        };
 
-            // Section Plane: click on model surface to create clip plane
-            if (tools.activeTool === 'section-plane') {
-                const camera = engine.worldRef.current?.camera?.three;
-                const scene = engine.worldRef.current?.scene?.three;
-                if (!camera || !scene) return;
+        // Section Plane uses mousedown to fire BEFORE the OBC highlighter's click handler
+        const onMouseDown = async (e: MouseEvent) => {
+            if (tools.activeTool !== 'section-plane') return;
+            if (e.button !== 0) return; // left click only
 
-                const rect = container.getBoundingClientRect();
-                const ndc = new THREE.Vector2(
-                    ((e.clientX - rect.left) / rect.width) * 2 - 1,
-                    -((e.clientY - rect.top) / rect.height) * 2 + 1,
-                );
+            const components = engine.componentsRef.current;
+            const world = engine.worldRef.current;
+            const camera = world?.camera?.three;
+            if (!components || !world || !camera) return;
 
-                const raycaster = new THREE.Raycaster();
-                raycaster.setFromCamera(ndc, camera);
+            try {
+                // Use OBC's fragment-aware raycaster
+                const raycasters = components.get(OBC.Raycasters);
+                const raycaster = raycasters.get(world);
+                const result = await raycaster.castRay();
 
-                // Use recursive intersect on scene.children (works with OBC fragments/InstancedMesh)
-                const intersects = raycaster.intersectObjects(scene.children, true);
-
-                for (const hit of intersects) {
-                    // Skip non-model objects (helpers, handles, measurements, etc)
-                    if (hit.object.userData?.isSectionBox || hit.object.userData?.isSectionHandle || hit.object.userData?.isClipHelper) continue;
-                    if (hit.object.userData?.isMeasurement || hit.object.userData?.isGrid || hit.object.userData?.isViewCube) continue;
-                    if (hit.object instanceof THREE.Sprite || hit.object instanceof THREE.Line) continue;
-                    if (!hit.object.visible) continue;
-                    if ((hit.object as any).material?.opacity < 0.1) continue;
-
-                    if (hit.face) {
+                if (result) {
+                    let normal: THREE.Vector3;
+                    if (result.face) {
                         // Get world-space face normal
-                        const normalMatrix = new THREE.Matrix3().getNormalMatrix(hit.object.matrixWorld);
-                        const worldNormal = hit.face.normal.clone().applyMatrix3(normalMatrix).normalize();
-                        section.createFreeClipPlane(hit.point, worldNormal);
-                        tools.activateTool('select');
+                        const normalMatrix = new THREE.Matrix3().getNormalMatrix(result.object.matrixWorld);
+                        normal = result.face.normal.clone().applyMatrix3(normalMatrix).normalize();
                     } else {
-                        // Fallback for InstancedMesh without face data: use camera-facing normal
-                        const camDir = new THREE.Vector3();
-                        camera.getWorldDirection(camDir);
-                        section.createFreeClipPlane(hit.point, camDir.negate());
-                        tools.activateTool('select');
+                        // Fallback: camera-facing normal
+                        normal = new THREE.Vector3();
+                        camera.getWorldDirection(normal);
+                        normal.negate();
                     }
-                    break; // Only use the first valid hit
+                    section.createFreeClipPlane(result.point.clone(), normal);
+                    tools.activateTool('select');
                 }
+            } catch (err) {
+                console.warn('Section plane raycast error:', err);
             }
         };
 
         container.addEventListener('click', onClick);
-        return () => container.removeEventListener('click', onClick);
-    }, [tools.activeTool, measure.handleMeasureClick, engine.worldRef, section, tools]);
+        container.addEventListener('mousedown', onMouseDown);
+        return () => {
+            container.removeEventListener('click', onClick);
+            container.removeEventListener('mousedown', onMouseDown);
+        };
+    }, [tools.activeTool, measure.handleMeasureClick, engine.worldRef, engine.componentsRef, section, tools]);
 
     // ── Render mode switching (with material caching) ──
     useEffect(() => {
