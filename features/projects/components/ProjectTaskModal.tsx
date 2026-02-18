@@ -183,6 +183,40 @@ export const ProjectTaskModal: React.FC<ProjectTaskModalProps> = ({
                                     </div>
                                 </div>
 
+                                {/* Actual Start/End Dates - show when task has progress */}
+                                {((formData.ProgressPercent || 0) > 0 || formData.ActualStartDate || formData.ActualEndDate) && (
+                                    <div className="grid grid-cols-2 gap-4 p-3 bg-emerald-50 rounded-lg border border-emerald-200">
+                                        <div className="space-y-1.5">
+                                            <label className="text-sm font-semibold text-emerald-700 flex items-center gap-2">
+                                                <Calendar className="w-4 h-4 text-emerald-500" /> Ngày bắt đầu thực tế
+                                            </label>
+                                            <div className="relative">
+                                                <input
+                                                    type="date"
+                                                    className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-emerald-300 focus:ring-2 focus:ring-emerald-500 outline-none bg-white"
+                                                    value={formData.ActualStartDate ? new Date(formData.ActualStartDate).toISOString().split('T')[0] : ''}
+                                                    onChange={e => setFormData({ ...formData, ActualStartDate: e.target.value || '' })}
+                                                />
+                                                <Calendar className="w-4 h-4 text-emerald-400 absolute left-3 top-3" />
+                                            </div>
+                                        </div>
+                                        <div className="space-y-1.5">
+                                            <label className="text-sm font-semibold text-emerald-700 flex items-center gap-2">
+                                                <CheckSquare className="w-4 h-4 text-emerald-500" /> Ngày hoàn thành thực tế
+                                            </label>
+                                            <div className="relative">
+                                                <input
+                                                    type="date"
+                                                    className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-emerald-300 focus:ring-2 focus:ring-emerald-500 outline-none bg-white"
+                                                    value={formData.ActualEndDate ? new Date(formData.ActualEndDate).toISOString().split('T')[0] : ''}
+                                                    onChange={e => setFormData({ ...formData, ActualEndDate: e.target.value || '' })}
+                                                />
+                                                <Calendar className="w-4 h-4 text-emerald-400 absolute left-3 top-3" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+
                                 {/* Progress */}
                                 <div className="space-y-1.5">
                                     <ProgressSlider

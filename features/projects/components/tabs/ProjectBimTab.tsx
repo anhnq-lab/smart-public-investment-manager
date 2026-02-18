@@ -63,7 +63,7 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
         engine.componentsRef, engine.worldRef, engine.ifcLoaderRef, upload.ifcDataMapRef,
         () => tools.toggleRightPanel('properties'),
     );
-    const section = useBimSection(engine.worldRef, containerRef, tools.activeTool);
+    const section = useBimSection(engine.worldRef, engine.componentsRef, containerRef, tools.activeTool);
     const measure = useBimMeasure(engine.worldRef, containerRef, tools.activeTool);
 
     const hasModels = upload.disciplineModels.length > 0;
@@ -123,49 +123,31 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
             }
         };
 
-        // Section Plane uses mousedown to fire BEFORE the OBC highlighter's click handler
-        const onMouseDown = async (e: MouseEvent) => {
+        // Section Plane: use OBC Clipper's create() which handles raycasting + plane creation
+        const onDblClick = async () => {
             if (tools.activeTool !== 'section-plane') return;
-            if (e.button !== 0) return; // left click only
-
             const components = engine.componentsRef.current;
             const world = engine.worldRef.current;
-            const camera = world?.camera?.three;
-            if (!components || !world || !camera) return;
+            if (!components || !world) return;
 
             try {
-                // Use OBC's fragment-aware raycaster
-                const raycasters = components.get(OBC.Raycasters);
-                const raycaster = raycasters.get(world);
-                const result = await raycaster.castRay();
-
-                if (result) {
-                    let normal: THREE.Vector3;
-                    if (result.face) {
-                        // Get world-space face normal
-                        const normalMatrix = new THREE.Matrix3().getNormalMatrix(result.object.matrixWorld);
-                        normal = result.face.normal.clone().applyMatrix3(normalMatrix).normalize();
-                    } else {
-                        // Fallback: camera-facing normal
-                        normal = new THREE.Vector3();
-                        camera.getWorldDirection(normal);
-                        normal.negate();
-                    }
-                    section.createFreeClipPlane(result.point.clone(), normal);
+                const clipper = components.get(OBC.Clipper);
+                const plane = await clipper.create(world);
+                if (plane) {
                     tools.activateTool('select');
                 }
             } catch (err) {
-                console.warn('Section plane raycast error:', err);
+                console.warn('Section plane creation error:', err);
             }
         };
 
         container.addEventListener('click', onClick);
-        container.addEventListener('mousedown', onMouseDown);
+        container.addEventListener('dblclick', onDblClick);
         return () => {
             container.removeEventListener('click', onClick);
-            container.removeEventListener('mousedown', onMouseDown);
+            container.removeEventListener('dblclick', onDblClick);
         };
-    }, [tools.activeTool, measure.handleMeasureClick, engine.worldRef, engine.componentsRef, section, tools]);
+    }, [tools.activeTool, measure.handleMeasureClick, engine.worldRef, engine.componentsRef, tools]);
 
     // ── Render mode switching (with material caching) ──
     useEffect(() => {
