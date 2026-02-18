@@ -123,36 +123,44 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
 
             // Section Plane: click on model surface to create clip plane
             if (tools.activeTool === 'section-plane') {
+                const camera = engine.worldRef.current?.camera?.three;
+                const scene = engine.worldRef.current?.scene?.three;
+                if (!camera || !scene) return;
+
                 const rect = container.getBoundingClientRect();
                 const ndc = new THREE.Vector2(
                     ((e.clientX - rect.left) / rect.width) * 2 - 1,
                     -((e.clientY - rect.top) / rect.height) * 2 + 1,
                 );
-                const camera = engine.worldRef.current?.camera?.three;
-                const scene = engine.worldRef.current?.scene?.three;
-                if (!camera || !scene) return;
 
                 const raycaster = new THREE.Raycaster();
                 raycaster.setFromCamera(ndc, camera);
 
-                // Collect model meshes only (skip helpers, handles, etc)
-                const meshes: THREE.Mesh[] = [];
-                scene.traverse((obj: THREE.Object3D) => {
-                    if (obj.userData?.isSectionBox || obj.userData?.isSectionHandle || obj.userData?.isClipHelper) return;
-                    if (obj.userData?.isMeasurement || obj.userData?.isGrid || obj.userData?.isViewCube) return;
-                    if ((obj as any).isMesh && obj.visible) meshes.push(obj as THREE.Mesh);
-                });
+                // Use recursive intersect on scene.children (works with OBC fragments/InstancedMesh)
+                const intersects = raycaster.intersectObjects(scene.children, true);
 
-                const intersects = raycaster.intersectObjects(meshes, false);
-                if (intersects.length > 0) {
-                    const hit = intersects[0];
+                for (const hit of intersects) {
+                    // Skip non-model objects (helpers, handles, measurements, etc)
+                    if (hit.object.userData?.isSectionBox || hit.object.userData?.isSectionHandle || hit.object.userData?.isClipHelper) continue;
+                    if (hit.object.userData?.isMeasurement || hit.object.userData?.isGrid || hit.object.userData?.isViewCube) continue;
+                    if (hit.object instanceof THREE.Sprite || hit.object instanceof THREE.Line) continue;
+                    if (!hit.object.visible) continue;
+                    if ((hit.object as any).material?.opacity < 0.1) continue;
+
                     if (hit.face) {
                         // Get world-space face normal
                         const normalMatrix = new THREE.Matrix3().getNormalMatrix(hit.object.matrixWorld);
                         const worldNormal = hit.face.normal.clone().applyMatrix3(normalMatrix).normalize();
                         section.createFreeClipPlane(hit.point, worldNormal);
-                        tools.activateTool('select'); // Switch back to select after placing
+                        tools.activateTool('select');
+                    } else {
+                        // Fallback for InstancedMesh without face data: use camera-facing normal
+                        const camDir = new THREE.Vector3();
+                        camera.getWorldDirection(camDir);
+                        section.createFreeClipPlane(hit.point, camDir.negate());
+                        tools.activateTool('select');
                     }
+                    break; // Only use the first valid hit
                 }
             }
         };

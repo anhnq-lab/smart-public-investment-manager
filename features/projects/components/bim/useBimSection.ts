@@ -60,11 +60,11 @@ const PLANE_COLORS = {
     borderHover: 0x8e24aa, // darker purple for border
 };
 
-const HANDLE_OPACITY_NORMAL = 0.15;
-const HANDLE_OPACITY_HOVER = 0.30;
-const HANDLE_OPACITY_DRAG = 0.40;
-const BORDER_OPACITY_NORMAL = 0.6;
-const BORDER_OPACITY_HOVER = 0.9;
+const HANDLE_OPACITY_NORMAL = 0.22;
+const HANDLE_OPACITY_HOVER = 0.45;
+const HANDLE_OPACITY_DRAG = 0.55;
+const BORDER_OPACITY_NORMAL = 0.7;
+const BORDER_OPACITY_HOVER = 1.0;
 const WIREFRAME_COLOR = 0xffaa00;
 
 // ── Helpers ──────────────────────────────────────────
