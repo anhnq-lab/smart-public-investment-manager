@@ -60,11 +60,20 @@ const PLANE_COLORS = {
     borderHover: 0x8e24aa, // darker purple for border
 };
 
-const HANDLE_OPACITY_NORMAL = 0.22;
-const HANDLE_OPACITY_HOVER = 0.45;
-const HANDLE_OPACITY_DRAG = 0.55;
-const BORDER_OPACITY_NORMAL = 0.7;
+const HANDLE_OPACITY_NORMAL = 0.45;
+const HANDLE_OPACITY_HOVER = 0.70;
+const HANDLE_OPACITY_DRAG = 0.85;
+const BORDER_OPACITY_NORMAL = 0.8;
 const BORDER_OPACITY_HOVER = 1.0;
+
+// Handle sizing
+const HANDLE_SIZE_RATIO = 0.15; // 15% of face dimension
+const HANDLE_MIN = 1.5;          // min 1.5m
+const HANDLE_MAX = 5.0;          // max 5m
+const FREE_HANDLE_RATIO = 0.10;  // 10% of model diagonal
+const FREE_HANDLE_MIN = 1.5;
+const FREE_HANDLE_MAX = 5.0;
+
 const WIREFRAME_COLOR = 0xffaa00;
 
 // ── Helpers ──────────────────────────────────────────
@@ -131,8 +140,11 @@ export function useBimSection(
         faceHeight: number,
         id: string,
     ): THREE.Mesh => {
-        // Full-size transparent plane filling the entire face (BIMcollab-style)
-        const geometry = new THREE.PlaneGeometry(faceWidth, faceHeight);
+        // Small clamped rectangle handle
+        const handleW = Math.min(Math.max(faceWidth * HANDLE_SIZE_RATIO, HANDLE_MIN), HANDLE_MAX);
+        const handleH = Math.min(Math.max(faceHeight * HANDLE_SIZE_RATIO, HANDLE_MIN), HANDLE_MAX);
+
+        const geometry = new THREE.PlaneGeometry(handleW, handleH);
         const material = new THREE.MeshBasicMaterial({
             color: PLANE_COLORS.normal,
             transparent: true,
@@ -146,7 +158,7 @@ export function useBimSection(
         mesh.renderOrder = 999;
         mesh.userData = { isSectionHandle: true, handleId: id, axis };
 
-        // Edge border wireframe for visual definition
+        // Border wireframe
         const edgesGeo = new THREE.EdgesGeometry(geometry);
         const edgesMat = new THREE.LineBasicMaterial({
             color: PLANE_COLORS.border,
@@ -159,19 +171,25 @@ export function useBimSection(
         edges.userData = { isBorderEdge: true };
         mesh.add(edges);
 
-        // Center move indicator — small double-arrow icon
-        const indicatorSize = Math.min(faceWidth, faceHeight) * 0.06;
-        const indGeo = new THREE.RingGeometry(indicatorSize * 0.4, indicatorSize, 6);
-        const indMat = new THREE.MeshBasicMaterial({
+        // Small arrow indicator showing drag direction
+        const arrowSize = Math.min(handleW, handleH) * 0.3;
+        const arrowGeo = new THREE.BufferGeometry();
+        const verts = new Float32Array([
+            0, arrowSize * 0.5, 0,
+            -arrowSize * 0.3, -arrowSize * 0.2, 0,
+            arrowSize * 0.3, -arrowSize * 0.2, 0,
+        ]);
+        arrowGeo.setAttribute('position', new THREE.BufferAttribute(verts, 3));
+        const arrowMat = new THREE.MeshBasicMaterial({
             color: 0xffffff,
             transparent: true,
-            opacity: 0.6,
+            opacity: 0.8,
             side: THREE.DoubleSide,
             depthTest: false,
         });
-        const indicator = new THREE.Mesh(indGeo, indMat);
-        indicator.renderOrder = 1001;
-        mesh.add(indicator);
+        const arrow = new THREE.Mesh(arrowGeo, arrowMat);
+        arrow.renderOrder = 1001;
+        mesh.add(arrow);
 
         return mesh;
     }, []);
@@ -446,12 +464,12 @@ export function useBimSection(
         const plane = new THREE.Plane(normal.clone(), constant);
         const id = `clip-free-${Date.now()}`;
 
-        // Create a large transparent disc at the point (BIMcollab-style)
+        // Small rectangle handle at the click point
         const box = getModelBounds(scene);
         const modelSize = box.getSize(new THREE.Vector3()).length();
-        const discRadius = modelSize * 0.30; // 30% of model size — large visible plane
+        const handleSide = Math.min(Math.max(modelSize * FREE_HANDLE_RATIO, FREE_HANDLE_MIN), FREE_HANDLE_MAX);
 
-        const geometry = new THREE.CircleGeometry(discRadius, 64);
+        const geometry = new THREE.PlaneGeometry(handleSide, handleSide);
         const material = new THREE.MeshBasicMaterial({
             color: PLANE_COLORS.normal,
             transparent: true,
@@ -464,7 +482,7 @@ export function useBimSection(
         const handle = new THREE.Mesh(geometry, material);
         handle.position.copy(point);
 
-        // Orient the disc to align with the face normal
+        // Orient to align with the face normal
         const up = new THREE.Vector3(0, 0, 1);
         const quaternion = new THREE.Quaternion().setFromUnitVectors(up, normal);
         handle.quaternion.copy(quaternion);
@@ -472,7 +490,7 @@ export function useBimSection(
         handle.renderOrder = 999;
         handle.userData = { isSectionHandle: true, handleId: id, axis: 'free' };
 
-        // Edge border ring
+        // Border wireframe
         const edgesGeo = new THREE.EdgesGeometry(geometry);
         const edgesMat = new THREE.LineBasicMaterial({
             color: PLANE_COLORS.border,
@@ -485,13 +503,13 @@ export function useBimSection(
         edges.userData = { isBorderEdge: true };
         handle.add(edges);
 
-        // Normal direction arrow indicator
-        const arrowLen = discRadius * 0.15;
-        const arrowGeo = new THREE.ConeGeometry(discRadius * 0.04, arrowLen, 8);
+        // Small arrow showing clip direction
+        const arrowLen = handleSide * 0.2;
+        const arrowGeo = new THREE.ConeGeometry(handleSide * 0.06, arrowLen, 8);
         const arrowMat = new THREE.MeshBasicMaterial({
             color: 0xffffff,
             transparent: true,
-            opacity: 0.6,
+            opacity: 0.8,
             depthTest: false,
         });
         const arrow = new THREE.Mesh(arrowGeo, arrowMat);
