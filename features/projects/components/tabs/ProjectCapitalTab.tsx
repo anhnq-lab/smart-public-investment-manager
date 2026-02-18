@@ -3,12 +3,20 @@ import { useQuery } from '@tanstack/react-query';
 import ProjectService from '../../../../services/ProjectService';
 
 import { formatCurrency } from '../../../../utils/format';
-import { Disbursement, CapitalAllocation } from '../../../../types';
+import { Disbursement, CapitalAllocation, CapitalPlan } from '../../../../types';
 import {
     Coins, TrendingUp, Wallet, AlertTriangle,
     Calendar, FileText, Landmark, DollarSign, FileDown,
-    ArrowDownUp, Receipt, RefreshCcw, RotateCcw
+    ArrowDownUp, Receipt, RefreshCcw, RotateCcw,
+    Plus, Pencil, Trash2
 } from 'lucide-react';
+import { CapitalPlanModal } from '../CapitalPlanModal';
+import { DisbursementModal } from '../DisbursementModal';
+import {
+    useCapitalPlans,
+    useCreateCapitalPlan, useUpdateCapitalPlan, useDeleteCapitalPlan,
+    useCreateDisbursement, useUpdateDisbursement, useDeleteDisbursement,
+} from '../../../../hooks/useCapital';
 import {
     BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
     ResponsiveContainer, Cell, PieChart, Pie, Legend
@@ -55,7 +63,75 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
         queryFn: () => ProjectService.getCapitalInfo(projectID)
     });
 
+    // Capital plans for linking in DisbursementModal
+    const { data: capitalPlans = [] } = useCapitalPlans(projectID);
+
     const [disbursementFilter, setDisbursementFilter] = useState<DisbursementFilter>('all');
+
+    // ── CRUD State ──
+    const [planModalOpen, setPlanModalOpen] = useState(false);
+    const [editingPlan, setEditingPlan] = useState<CapitalPlan | null>(null);
+    const [disbModalOpen, setDisbModalOpen] = useState(false);
+    const [editingDisb, setEditingDisb] = useState<Disbursement | null>(null);
+    const [deleteConfirm, setDeleteConfirm] = useState<{ type: 'plan' | 'disb'; id: string } | null>(null);
+
+    // ── Mutations ──
+    const createPlan = useCreateCapitalPlan();
+    const updatePlan = useUpdateCapitalPlan();
+    const deletePlan = useDeleteCapitalPlan();
+    const createDisb = useCreateDisbursement();
+    const updateDisb = useUpdateDisbursement();
+    const deleteDisb = useDeleteDisbursement();
+
+    // ── Handlers: Capital Plans ──
+    const handleSavePlan = (planData: Omit<CapitalPlan, 'PlanID'>) => {
+        if (editingPlan) {
+            updatePlan.mutate({ planId: editingPlan.PlanID, updates: planData, projectId: projectID }, {
+                onSuccess: () => { setPlanModalOpen(false); setEditingPlan(null); },
+            });
+        } else {
+            createPlan.mutate(planData, {
+                onSuccess: () => { setPlanModalOpen(false); },
+            });
+        }
+    };
+
+    const handleEditPlan = (plan: CapitalPlan) => {
+        setEditingPlan(plan);
+        setPlanModalOpen(true);
+    };
+
+    // ── Handlers: Disbursements ──
+    const handleSaveDisb = (disbData: Omit<Disbursement, 'DisbursementID'>) => {
+        if (editingDisb) {
+            updateDisb.mutate({ id: editingDisb.DisbursementID, updates: disbData, projectId: projectID }, {
+                onSuccess: () => { setDisbModalOpen(false); setEditingDisb(null); },
+            });
+        } else {
+            createDisb.mutate(disbData, {
+                onSuccess: () => { setDisbModalOpen(false); },
+            });
+        }
+    };
+
+    const handleEditDisb = (d: Disbursement) => {
+        setEditingDisb(d);
+        setDisbModalOpen(true);
+    };
+
+    // ── Handler: Delete ──
+    const handleConfirmDelete = () => {
+        if (!deleteConfirm) return;
+        if (deleteConfirm.type === 'plan') {
+            deletePlan.mutate({ planId: deleteConfirm.id, projectId: projectID }, {
+                onSuccess: () => setDeleteConfirm(null),
+            });
+        } else {
+            deleteDisb.mutate({ id: deleteConfirm.id, projectId: projectID }, {
+                onSuccess: () => setDeleteConfirm(null),
+            });
+        }
+    };
 
     // Safe destructure — hooks must always run regardless of data
     const allocations = data?.allocations ?? [];
@@ -300,6 +376,12 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
                         <Calendar className="w-4 h-4 text-blue-600" />
                         Kế hoạch vốn (Luật ĐTC 2024 - 58/2024/QH15)
                     </h3>
+                    <button
+                        onClick={() => { setEditingPlan(null); setPlanModalOpen(true); }}
+                        className="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-lg shadow-sm flex items-center gap-1.5 transition-all"
+                    >
+                        <Plus className="w-3.5 h-3.5" /> Bổ sung vốn
+                    </button>
                 </div>
                 <div className="overflow-x-auto">
                     <table className="w-full text-sm text-left">
@@ -311,6 +393,7 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
                                 <th className="px-6 py-3 text-right">Đã giải ngân</th>
                                 <th className="px-6 py-3">Tỷ lệ</th>
                                 <th className="px-6 py-3">Nguồn</th>
+                                <th className="px-6 py-3 text-center w-24">Thao tác</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-50 dark:divide-slate-700">
@@ -352,6 +435,33 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
                                             {SOURCE_LABELS[a.Source] || a.Source}
                                         </span>
                                     </td>
+                                    <td className="px-6 py-4 text-center">
+                                        <div className="flex items-center justify-center gap-1">
+                                            <button
+                                                onClick={() => handleEditPlan({
+                                                    PlanID: a.AllocationID,
+                                                    ProjectID: projectID,
+                                                    Year: a.Year,
+                                                    Amount: a.Amount,
+                                                    Source: a.Source,
+                                                    DecisionNumber: a.DecisionNumber,
+                                                    DateAssigned: a.DateAssigned,
+                                                    DisbursedAmount: a.disbursed,
+                                                })}
+                                                className="p-1.5 hover:bg-blue-50 dark:hover:bg-blue-900/30 text-gray-400 hover:text-blue-600 rounded-lg transition-colors"
+                                                title="Sửa"
+                                            >
+                                                <Pencil className="w-3.5 h-3.5" />
+                                            </button>
+                                            <button
+                                                onClick={() => setDeleteConfirm({ type: 'plan', id: a.AllocationID })}
+                                                className="p-1.5 hover:bg-red-50 dark:hover:bg-red-900/30 text-gray-400 hover:text-red-600 rounded-lg transition-colors"
+                                                title="Xóa"
+                                            >
+                                                <Trash2 className="w-3.5 h-3.5" />
+                                            </button>
+                                        </div>
+                                    </td>
                                 </tr>
                             ))}
                             {/* Tổng cộng */}
@@ -368,6 +478,7 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
                                         {summary.disbursementRate}%
                                     </span>
                                 </td>
+                                <td className="px-6 py-3"></td>
                                 <td className="px-6 py-3"></td>
                             </tr>
                         </tbody>
@@ -404,6 +515,12 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
                                 </button>
                             ))}
                         </div>
+                        <button
+                            onClick={() => { setEditingDisb(null); setDisbModalOpen(true); }}
+                            className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-lg shadow-sm flex items-center gap-1.5 transition-all"
+                        >
+                            <Plus className="w-3.5 h-3.5" /> Đề nghị thanh toán
+                        </button>
                     </div>
                 </div>
                 <div className="overflow-x-auto">
@@ -418,6 +535,7 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
                                 <th className="px-4 py-3 text-right">Số tiền</th>
                                 <th className="px-4 py-3 text-right">Lũy kế TT</th>
                                 <th className="px-4 py-3 text-center">Trạng thái</th>
+                                <th className="px-4 py-3 text-center w-20">Thao tác</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-50 dark:divide-slate-700">
@@ -472,11 +590,29 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
                                                 d.Status === 'Pending' ? 'Chờ duyệt' : 'Từ chối'}
                                         </span>
                                     </td>
+                                    <td className="px-4 py-3.5 text-center">
+                                        <div className="flex items-center justify-center gap-1">
+                                            <button
+                                                onClick={() => handleEditDisb(d)}
+                                                className="p-1.5 hover:bg-blue-50 dark:hover:bg-blue-900/30 text-gray-400 hover:text-blue-600 rounded-lg transition-colors"
+                                                title="Sửa"
+                                            >
+                                                <Pencil className="w-3.5 h-3.5" />
+                                            </button>
+                                            <button
+                                                onClick={() => setDeleteConfirm({ type: 'disb', id: d.DisbursementID })}
+                                                className="p-1.5 hover:bg-red-50 dark:hover:bg-red-900/30 text-gray-400 hover:text-red-600 rounded-lg transition-colors"
+                                                title="Xóa"
+                                            >
+                                                <Trash2 className="w-3.5 h-3.5" />
+                                            </button>
+                                        </div>
+                                    </td>
                                 </tr>
                             ))}
                             {filteredDisbursements.length === 0 && (
                                 <tr>
-                                    <td colSpan={8} className="px-6 py-8 text-center text-gray-400 dark:text-slate-500 text-sm">
+                                    <td colSpan={9} className="px-6 py-8 text-center text-gray-400 dark:text-slate-500 text-sm">
                                         Không có giao dịch nào cho bộ lọc này
                                     </td>
                                 </tr>
@@ -543,6 +679,62 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
                     </button>
                 </div>
             </div>
+
+            {/* ════════════════════════════════════════════
+                MODALS
+               ════════════════════════════════════════════ */}
+            <CapitalPlanModal
+                isOpen={planModalOpen}
+                onClose={() => { setPlanModalOpen(false); setEditingPlan(null); }}
+                onSave={handleSavePlan}
+                editingPlan={editingPlan}
+                projectID={projectID}
+                isSaving={createPlan.isPending || updatePlan.isPending}
+            />
+
+            <DisbursementModal
+                isOpen={disbModalOpen}
+                onClose={() => { setDisbModalOpen(false); setEditingDisb(null); }}
+                onSave={handleSaveDisb}
+                editing={editingDisb}
+                projectID={projectID}
+                capitalPlans={capitalPlans}
+                isSaving={createDisb.isPending || updateDisb.isPending}
+            />
+
+            {/* Delete Confirmation Dialog */}
+            {deleteConfirm && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm" onClick={() => setDeleteConfirm(null)}>
+                    <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full max-w-sm mx-4 p-6 border border-gray-200 dark:border-slate-700" onClick={e => e.stopPropagation()}>
+                        <div className="flex items-center gap-3 mb-4">
+                            <div className="p-2 bg-red-100 dark:bg-red-900/30 rounded-lg">
+                                <Trash2 className="w-5 h-5 text-red-600" />
+                            </div>
+                            <h3 className="text-lg font-bold text-gray-800 dark:text-slate-100">
+                                Xác nhận xóa
+                            </h3>
+                        </div>
+                        <p className="text-sm text-gray-600 dark:text-slate-400 mb-6">
+                            Bạn có chắc chắn muốn xóa {deleteConfirm.type === 'plan' ? 'kế hoạch vốn' : 'bút toán giải ngân'} này? Hành động không thể hoàn tác.
+                        </p>
+                        <div className="flex justify-end gap-3">
+                            <button
+                                onClick={() => setDeleteConfirm(null)}
+                                className="px-4 py-2 text-sm font-medium text-gray-600 dark:text-slate-400 bg-gray-100 dark:bg-slate-700 rounded-lg hover:bg-gray-200 dark:hover:bg-slate-600 transition-colors"
+                            >
+                                Hủy
+                            </button>
+                            <button
+                                onClick={handleConfirmDelete}
+                                disabled={deletePlan.isPending || deleteDisb.isPending}
+                                className="px-4 py-2 text-sm font-bold text-white bg-red-600 rounded-lg hover:bg-red-700 disabled:opacity-50 transition-all"
+                            >
+                                {(deletePlan.isPending || deleteDisb.isPending) ? 'Đang xóa...' : 'Xóa'}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
