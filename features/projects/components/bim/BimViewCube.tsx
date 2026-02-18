@@ -1,73 +1,147 @@
 /**
- * BimViewCube — 3D Orientation cube widget (CSS3D implementation)
- * Clickable faces, edges, and corners for camera navigation
- * Compact 80x80px widget at top-right corner of the viewport
+ * BimViewCube — 3D Orientation cube that syncs with camera
+ * 
+ * - Rotates in real-time with camera orbit
+ * - Click faces/edges to navigate to standard views
+ * - Drag on cube to orbit the camera
+ * - Professional styling matching Autodesk Viewer / BIMcollab
  */
-import React, { useState, useMemo } from 'react';
+import React, { useState, useCallback, useRef, useEffect } from 'react';
+import * as THREE from 'three';
 
 interface BimViewCubeProps {
     isDarkMode: boolean;
-    cameraRotation?: { x: number; y: number; z: number }; // Euler angles in degrees
+    cameraQuaternion?: THREE.Quaternion; // from camera.three.quaternion
     onSetView: (view: string) => void;
+    onOrbit?: (deltaAzimuth: number, deltaPolar: number) => void;
 }
 
-// Face labels
+// Face definitions with labels (Vietnamese + English)
 const FACES: Array<{ id: string; label: string; transform: string }> = [
-    { id: 'front', label: 'Front', transform: 'translateZ(30px)' },
-    { id: 'back', label: 'Back', transform: 'rotateY(180deg) translateZ(30px)' },
-    { id: 'right', label: 'Right', transform: 'rotateY(90deg) translateZ(30px)' },
-    { id: 'left', label: 'Left', transform: 'rotateY(-90deg) translateZ(30px)' },
-    { id: 'top', label: 'Top', transform: 'rotateX(90deg) translateZ(30px)' },
-    { id: 'bottom', label: 'Btm', transform: 'rotateX(-90deg) translateZ(30px)' },
+    { id: 'front', label: 'FRONT', transform: 'translateZ(35px)' },
+    { id: 'back', label: 'BACK', transform: 'rotateY(180deg) translateZ(35px)' },
+    { id: 'right', label: 'RIGHT', transform: 'rotateY(90deg) translateZ(35px)' },
+    { id: 'left', label: 'LEFT', transform: 'rotateY(-90deg) translateZ(35px)' },
+    { id: 'top', label: 'TOP', transform: 'rotateX(90deg) translateZ(35px)' },
+    { id: 'bottom', label: 'BTM', transform: 'rotateX(-90deg) translateZ(35px)' },
 ];
+
+// CSS matrix3d from Three.js quaternion (inverse for ViewCube)
+function quaternionToCSS3D(q: THREE.Quaternion): string {
+    // The ViewCube shows the world from the camera's perspective
+    // We need the inverse rotation so the cube faces match world orientation
+    const m = new THREE.Matrix4();
+    const invQ = q.clone().invert();
+    m.makeRotationFromQuaternion(invQ);
+    const e = m.elements;
+    // CSS matrix3d uses column-major order, same as Three.js
+    return `matrix3d(${e[0]},${e[1]},${e[2]},${e[3]},${e[4]},${e[5]},${e[6]},${e[7]},${e[8]},${e[9]},${e[10]},${e[11]},${e[12]},${e[13]},${e[14]},${e[15]})`;
+}
 
 export const BimViewCube: React.FC<BimViewCubeProps> = ({
     isDarkMode,
-    cameraRotation = { x: -30, y: 45, z: 0 },
-    onSetView
+    cameraQuaternion,
+    onSetView,
+    onOrbit,
 }) => {
     const [hoveredFace, setHoveredFace] = useState<string | null>(null);
+    const [isDragging, setIsDragging] = useState(false);
+    const dragRef = useRef<{ startX: number; startY: number } | null>(null);
+    const cubeRef = useRef<HTMLDivElement>(null);
 
-    const cubeTransform = useMemo(() => {
-        return `rotateX(${cameraRotation.x}deg) rotateY(${cameraRotation.y}deg) rotateZ(${cameraRotation.z}deg)`;
-    }, [cameraRotation]);
+    // Compute cube CSS transform from camera quaternion
+    const cubeTransform = cameraQuaternion
+        ? quaternionToCSS3D(cameraQuaternion)
+        : 'rotateX(-30deg) rotateY(45deg)';
+
+    // ── Drag to orbit ──
+    const handleMouseDown = useCallback((e: React.MouseEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+        dragRef.current = { startX: e.clientX, startY: e.clientY };
+        setIsDragging(true);
+    }, []);
+
+    useEffect(() => {
+        if (!isDragging) return;
+
+        const handleMouseMove = (e: MouseEvent) => {
+            if (!dragRef.current || !onOrbit) return;
+            const dx = e.clientX - dragRef.current.startX;
+            const dy = e.clientY - dragRef.current.startY;
+            dragRef.current = { startX: e.clientX, startY: e.clientY };
+            // Convert pixel movement to orbit angles (degrees)
+            onOrbit(dx * 0.5, dy * 0.5);
+        };
+
+        const handleMouseUp = () => {
+            dragRef.current = null;
+            setIsDragging(false);
+        };
+
+        window.addEventListener('mousemove', handleMouseMove);
+        window.addEventListener('mouseup', handleMouseUp);
+        return () => {
+            window.removeEventListener('mousemove', handleMouseMove);
+            window.removeEventListener('mouseup', handleMouseUp);
+        };
+    }, [isDragging, onOrbit]);
+
+    const handleFaceClick = useCallback((faceId: string) => {
+        if (!isDragging) {
+            onSetView(faceId);
+        }
+    }, [isDragging, onSetView]);
+
+    const faceStyle = (faceId: string): React.CSSProperties => ({
+        transform: FACES.find(f => f.id === faceId)?.transform,
+        backfaceVisibility: 'hidden' as const,
+        left: '5px',
+        top: '5px',
+    });
+
+    const baseClasses = isDarkMode
+        ? 'bg-slate-800/80 border-slate-600/40 text-slate-300'
+        : 'bg-white/85 border-gray-300/60 text-gray-500';
+
+    const hoverClasses = isDarkMode
+        ? 'bg-cyan-500/40 border-cyan-400/70 text-white shadow-[0_0_10px_rgba(6,182,212,0.4)]'
+        : 'bg-cyan-100 border-cyan-400 text-cyan-700';
 
     return (
-        <div className="absolute top-16 right-3 z-20" style={{ perspective: '400px', width: '80px', height: '80px' }}>
+        <div
+            className="absolute top-16 right-3 z-20"
+            style={{
+                perspective: '400px',
+                width: '80px',
+                height: '80px',
+                cursor: isDragging ? 'grabbing' : 'grab',
+            }}
+            onMouseDown={handleMouseDown}
+        >
             {/* Cube container */}
             <div
+                ref={cubeRef}
                 className="relative w-full h-full"
                 style={{
                     transformStyle: 'preserve-3d',
                     transform: cubeTransform,
-                    transition: 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+                    transition: isDragging ? 'none' : 'transform 0.3s cubic-bezier(0.25, 0.1, 0.25, 1)',
                 }}
             >
                 {FACES.map(face => (
                     <div
                         key={face.id}
-                        onClick={() => onSetView(face.id)}
+                        onClick={(e) => { e.stopPropagation(); handleFaceClick(face.id); }}
                         onMouseEnter={() => setHoveredFace(face.id)}
                         onMouseLeave={() => setHoveredFace(null)}
                         className={`
-                            absolute w-[60px] h-[60px] flex items-center justify-center cursor-pointer
+                            absolute w-[70px] h-[70px] flex items-center justify-center
                             border text-[9px] font-bold uppercase tracking-wider select-none
-                            transition-all duration-150
-                            ${hoveredFace === face.id
-                                ? isDarkMode
-                                    ? 'bg-blue-500/30 border-blue-400/60 text-blue-300 shadow-[0_0_12px_rgba(59,130,246,0.3)]'
-                                    : 'bg-blue-100 border-blue-300 text-blue-700'
-                                : isDarkMode
-                                    ? 'bg-slate-800/90 border-slate-600/50 text-slate-400'
-                                    : 'bg-white/90 border-gray-300 text-gray-500'
-                            }
+                            transition-all duration-150 rounded-[3px]
+                            ${hoveredFace === face.id ? hoverClasses : baseClasses}
                         `}
-                        style={{
-                            transform: face.transform,
-                            backfaceVisibility: 'hidden',
-                            left: '10px',
-                            top: '10px',
-                        }}
+                        style={faceStyle(face.id)}
                     >
                         {face.label}
                     </div>
@@ -75,7 +149,7 @@ export const BimViewCube: React.FC<BimViewCubeProps> = ({
             </div>
 
             {/* Axis indicators */}
-            <div className="absolute bottom-0 left-0 flex items-center gap-1 text-[8px] font-bold">
+            <div className="absolute -bottom-1 left-1 flex items-center gap-1.5 text-[8px] font-bold opacity-80">
                 <span className="text-red-400">X</span>
                 <span className="text-green-400">Y</span>
                 <span className="text-blue-400">Z</span>

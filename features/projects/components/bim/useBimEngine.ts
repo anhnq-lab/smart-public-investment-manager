@@ -13,13 +13,14 @@ export interface BimEngineAPI {
     worldRef: React.MutableRefObject<OBC.World | null>;
     ifcLoaderRef: React.MutableRefObject<OBC.IfcLoader | null>;
     viewerReady: boolean;
-    cameraRotation: { x: number; y: number; z: number };
+    cameraQuaternion: THREE.Quaternion;
     initError: string | null;
     // Camera actions
     setView: (view: string) => void;
     fitAll: () => void;
     takeScreenshot: () => void;
     zoomToObject: (object: THREE.Object3D) => void;
+    orbit: (deltaAzimuth: number, deltaPolar: number) => void;
 }
 
 export function useBimEngine(
@@ -31,7 +32,7 @@ export function useBimEngine(
     const ifcLoaderRef = useRef<OBC.IfcLoader | null>(null);
 
     const [viewerReady, setViewerReady] = useState(false);
-    const [cameraRotation, setCameraRotation] = useState({ x: -30, y: 45, z: 0 });
+    const [cameraQuaternion, setCameraQuaternion] = useState(() => new THREE.Quaternion());
     const [initError, setInitError] = useState<string | null>(null);
 
     // ── Initialize engine ───────────────────────────
@@ -171,16 +172,16 @@ export function useBimEngine(
                     },
                 });
 
-                // Track camera rotation for ViewCube
+                // Track camera quaternion for ViewCube
+                let lastQStr = '';
                 world.camera.controls.addEventListener('update', () => {
                     if (disposed) return;
-                    const cam = world.camera.three;
-                    const euler = new THREE.Euler().setFromQuaternion(cam.quaternion, 'YXZ');
-                    setCameraRotation({
-                        x: THREE.MathUtils.radToDeg(euler.x),
-                        y: THREE.MathUtils.radToDeg(euler.y),
-                        z: THREE.MathUtils.radToDeg(euler.z),
-                    });
+                    const q = world.camera.three.quaternion;
+                    const qStr = `${q.x.toFixed(4)},${q.y.toFixed(4)},${q.z.toFixed(4)},${q.w.toFixed(4)}`;
+                    if (qStr !== lastQStr) {
+                        lastQStr = qStr;
+                        setCameraQuaternion(q.clone());
+                    }
                 });
 
                 if (!disposed) {
@@ -349,16 +350,25 @@ export function useBimEngine(
         }
     }, []);
 
+    // ── ViewCube drag → orbit camera ─────────────
+    const orbit = useCallback((deltaAzimuthDeg: number, deltaPolarDeg: number) => {
+        const camera = worldRef.current?.camera as OBC.SimpleCamera | undefined;
+        if (!camera) return;
+        const deg2rad = Math.PI / 180;
+        camera.controls.rotate(deltaAzimuthDeg * deg2rad, deltaPolarDeg * deg2rad, true);
+    }, []);
+
     return {
         componentsRef,
         worldRef,
         ifcLoaderRef,
         viewerReady,
-        cameraRotation,
+        cameraQuaternion,
         initError,
         setView,
         fitAll,
         takeScreenshot,
         zoomToObject,
+        orbit,
     };
 }

@@ -532,7 +532,52 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({
 
         // Persist to DB
         try {
-            await TaskService.saveTask(updatedTask);
+            const savedTask = await TaskService.saveTask(updatedTask);
+
+            // ── Auto-propagate ActualEndDate → next task's ActualStartDate ──
+            if (savedTask.ActualEndDate) {
+                const successorTasks: Task[] = [];
+
+                // 1. Find tasks linked by PredecessorTaskID
+                const predecessorSuccessors = tasks.filter(t =>
+                    t.PredecessorTaskID === savedTask.TaskID && !t.ActualStartDate
+                );
+                successorTasks.push(...predecessorSuccessors);
+
+                // 2. Find the next task in same TimelineStep (by StartDate order)
+                if (savedTask.TimelineStep) {
+                    const sameStepTasks = tasks
+                        .filter(t => t.TimelineStep === savedTask.TimelineStep && t.TaskID !== savedTask.TaskID)
+                        .sort((a, b) => {
+                            const dateA = a.StartDate ? new Date(a.StartDate).getTime() : 0;
+                            const dateB = b.StartDate ? new Date(b.StartDate).getTime() : 0;
+                            return dateA - dateB;
+                        });
+                    const currentIdx = sameStepTasks.findIndex(t => {
+                        const tStart = t.StartDate ? new Date(t.StartDate).getTime() : 0;
+                        const savedStart = savedTask.StartDate ? new Date(savedTask.StartDate).getTime() : 0;
+                        return tStart > savedStart;
+                    });
+                    if (currentIdx >= 0 && !sameStepTasks[currentIdx].ActualStartDate) {
+                        const nextTask = sameStepTasks[currentIdx];
+                        if (!successorTasks.some(t => t.TaskID === nextTask.TaskID)) {
+                            successorTasks.push(nextTask);
+                        }
+                    }
+                }
+
+                // Update successor tasks
+                for (const successor of successorTasks) {
+                    const updated = { ...successor, ActualStartDate: savedTask.ActualEndDate };
+                    try {
+                        await TaskService.saveTask(updated);
+                        setTasks(prev => prev.map(t => t.TaskID === updated.TaskID ? updated : t));
+                    } catch (err) {
+                        console.error('Failed to propagate ActualStartDate:', err);
+                    }
+                }
+            }
+
             queryClient.invalidateQueries({ queryKey: ['tasks'] });
         } catch (err) {
             console.error('Failed to save task:', err);
