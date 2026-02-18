@@ -59,40 +59,39 @@ export function useBimKeyboard({
         }
 
         const deg2rad = Math.PI / 180;
-        const shiftHeld = keys.has('ShiftLeft') || keys.has('ShiftRight');
 
-        if (shiftHeld) {
-            // ── Pan (Shift + WASD/Arrows) — truck the camera ──
-            let truckX = 0;
-            let truckY = 0;
-            if (keys.has('KeyA') || keys.has('ArrowLeft')) truckX += PAN_SPEED;
-            if (keys.has('KeyD') || keys.has('ArrowRight')) truckX -= PAN_SPEED;
-            if (keys.has('KeyW') || keys.has('ArrowUp')) truckY += PAN_SPEED;
-            if (keys.has('KeyS') || keys.has('ArrowDown')) truckY -= PAN_SPEED;
-            if (truckX !== 0 || truckY !== 0) {
-                controls.truck(truckX, truckY, true);
-            }
-        } else {
-            // ── Orbit (WASD or Arrow keys) ──
-            let azimuth = 0;
-            let polar = 0;
-
-            if (keys.has('KeyA') || keys.has('ArrowLeft')) azimuth += ORBIT_SPEED * deg2rad;
-            if (keys.has('KeyD') || keys.has('ArrowRight')) azimuth -= ORBIT_SPEED * deg2rad;
-            if (keys.has('KeyW') || keys.has('ArrowUp')) polar += ORBIT_SPEED * deg2rad;
-            if (keys.has('KeyS') || keys.has('ArrowDown')) polar -= ORBIT_SPEED * deg2rad;
-
-            if (azimuth !== 0 || polar !== 0) {
-                controls.rotate(azimuth, polar, true);
-            }
+        // ── WASD: FPS-style movement ──
+        // W = forward (dolly in), S = backward (dolly out)
+        if (keys.has('KeyW')) {
+            controls.forward(PAN_SPEED, true);
         }
-
-        // ── Roll (Q / E) ──
+        if (keys.has('KeyS')) {
+            controls.forward(-PAN_SPEED, true);
+        }
+        // A = strafe left, D = strafe right
+        if (keys.has('KeyA')) {
+            controls.truck(-PAN_SPEED, 0, true);
+        }
+        if (keys.has('KeyD')) {
+            controls.truck(PAN_SPEED, 0, true);
+        }
+        // Q = down, E = up
         if (keys.has('KeyQ')) {
-            controls.rotate(ORBIT_SPEED * deg2rad * 0.5, 0, true);
+            controls.truck(0, PAN_SPEED, true);
         }
         if (keys.has('KeyE')) {
-            controls.rotate(-ORBIT_SPEED * deg2rad * 0.5, 0, true);
+            controls.truck(0, -PAN_SPEED, true);
+        }
+
+        // ── Arrow keys: Orbit camera ──
+        let azimuth = 0;
+        let polar = 0;
+        if (keys.has('ArrowLeft')) azimuth += ORBIT_SPEED * deg2rad;
+        if (keys.has('ArrowRight')) azimuth -= ORBIT_SPEED * deg2rad;
+        if (keys.has('ArrowUp')) polar += ORBIT_SPEED * deg2rad;
+        if (keys.has('ArrowDown')) polar -= ORBIT_SPEED * deg2rad;
+        if (azimuth !== 0 || polar !== 0) {
+            controls.rotate(azimuth, polar, true);
         }
 
         // ── Zoom (+/-) ──
@@ -169,8 +168,7 @@ export function useBimKeyboard({
             // ── Continuous keys (WASD, arrows, Q, E, +, -) ──
             if (['KeyW', 'KeyA', 'KeyS', 'KeyD', 'KeyQ', 'KeyE',
                 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight',
-                'Equal', 'Minus', 'NumpadAdd', 'NumpadSubtract',
-                'ShiftLeft', 'ShiftRight'].includes(code)) {
+                'Equal', 'Minus', 'NumpadAdd', 'NumpadSubtract'].includes(code)) {
                 e.preventDefault();
                 keysPressed.current.add(code);
             }
