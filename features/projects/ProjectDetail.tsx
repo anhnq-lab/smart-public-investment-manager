@@ -1,5 +1,6 @@
 import React, { useState, useEffect, Suspense } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
+import { useQueryClient } from '@tanstack/react-query';
 import { ProjectService } from '@/services/ProjectService';
 import { NationalGatewayService, SyncResult } from '@/services/NationalGatewayService';
 import { Project, Employee, ProjectStage } from '@/types';
@@ -59,6 +60,7 @@ const ProjectDetail: React.FC = () => {
     const { id } = useParams<{ id: string }>();
     const location = useLocation();
     const navigate = useNavigate();
+    const queryClient = useQueryClient();
 
     // State
     const [project, setProject] = useState<Project | null>(null);
@@ -189,10 +191,15 @@ const ProjectDetail: React.FC = () => {
     if (!project) return <div className="flex h-screen items-center justify-center font-bold text-gray-500 dark:text-slate-400">Dự án không tồn tại.</div>;
 
     const handleDeleteProject = async () => {
-        const confirmed = window.confirm(`Bạn có chắc muốn xoá dự án "${project.ProjectName}"?\n\nHành động này không thể hoàn tác. Tất cả dữ liệu liên quan (công việc, tài liệu, gói thầu...) sẽ bị xoá.`);
+        const confirmed = window.confirm(`Bạn có chắc muốn xoá dự án "${project.ProjectName}"?\n\nHành động này không thể hoàn tác. Tất cả dữ liệu liên quan (công việc, tài liệu, gói thầu, hợp đồng, vốn, giải ngân...) sẽ bị xoá.`);
         if (!confirmed) return;
         try {
             await ProjectService.delete(project.ProjectID);
+            // Invalidate all project-related caches so lists update immediately
+            await queryClient.invalidateQueries({ queryKey: ['projects'] });
+            queryClient.removeQueries({ queryKey: ['project-capital', project.ProjectID] });
+            queryClient.removeQueries({ queryKey: ['capital-plans', project.ProjectID] });
+            queryClient.removeQueries({ queryKey: ['disbursements', project.ProjectID] });
             navigate('/projects');
         } catch (err) {
             console.error('Delete project failed:', err);
