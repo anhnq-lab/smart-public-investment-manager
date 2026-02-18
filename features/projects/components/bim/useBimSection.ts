@@ -51,19 +51,20 @@ export interface BimSectionAPI {
     flipClipPlane: (id: string) => void;
 }
 
-// ── Colors ────────────────────────────────────────────
-const FACE_COLORS = {
-    x: { normal: 0xff4444, hover: 0xff7777, drag: 0xffaaaa },
-    y: { normal: 0x44cc44, hover: 0x66ee66, drag: 0x88ff88 },
-    z: { normal: 0x4488ff, hover: 0x66aaff, drag: 0x88ccff },
-    free: { normal: 0xffaa00, hover: 0xffcc44, drag: 0xffdd88 },
+// ── Colors (BIMcollab-style: cyan → purple) ──────────
+const PLANE_COLORS = {
+    normal: 0x00bcd4,   // cyan
+    hover: 0x9c27b0,   // purple
+    drag: 0x7b1fa2,   // deep purple
+    border: 0x00acc1,   // darker cyan for border
+    borderHover: 0x8e24aa, // darker purple for border
 };
 
-const HANDLE_MAX_SIZE = 1.5; // Fixed max 1.5m — never larger
-const HANDLE_MIN_SIZE = 0.5; // Fixed min 0.5m
-const HANDLE_OPACITY_NORMAL = 0.5;
-const HANDLE_OPACITY_HOVER = 0.85;
-const HANDLE_OPACITY_DRAG = 1.0;
+const HANDLE_OPACITY_NORMAL = 0.15;
+const HANDLE_OPACITY_HOVER = 0.30;
+const HANDLE_OPACITY_DRAG = 0.40;
+const BORDER_OPACITY_NORMAL = 0.6;
+const BORDER_OPACITY_HOVER = 0.9;
 const WIREFRAME_COLOR = 0xffaa00;
 
 // ── Helpers ──────────────────────────────────────────
@@ -126,18 +127,14 @@ export function useBimSection(
 
     const createHandleMesh = useCallback((
         axis: 'x' | 'y' | 'z' | 'free',
-        _faceWidth: number,
-        _faceHeight: number,
+        faceWidth: number,
+        faceHeight: number,
         id: string,
     ): THREE.Mesh => {
-        // FIXED small size handle — never larger than HANDLE_MAX_SIZE
-        const handleW = Math.min(Math.max(_faceWidth * 0.06, HANDLE_MIN_SIZE), HANDLE_MAX_SIZE);
-        const handleH = Math.min(Math.max(_faceHeight * 0.06, HANDLE_MIN_SIZE), HANDLE_MAX_SIZE);
-
-        const geometry = new THREE.PlaneGeometry(handleW, handleH);
-        const colors = FACE_COLORS[axis] || FACE_COLORS.free;
+        // Full-size transparent plane filling the entire face (BIMcollab-style)
+        const geometry = new THREE.PlaneGeometry(faceWidth, faceHeight);
         const material = new THREE.MeshBasicMaterial({
-            color: colors.normal,
+            color: PLANE_COLORS.normal,
             transparent: true,
             opacity: HANDLE_OPACITY_NORMAL,
             side: THREE.DoubleSide,
@@ -149,25 +146,32 @@ export function useBimSection(
         mesh.renderOrder = 999;
         mesh.userData = { isSectionHandle: true, handleId: id, axis };
 
-        // Small arrow indicator (no border wireframe — avoids line noise)
-        const arrowSize = Math.min(handleW, handleH) * 0.35;
-        const arrowGeo = new THREE.BufferGeometry();
-        const vertices = new Float32Array([
-            0, arrowSize * 0.7, 0,
-            -arrowSize * 0.4, -arrowSize * 0.3, 0,
-            arrowSize * 0.4, -arrowSize * 0.3, 0,
-        ]);
-        arrowGeo.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
-        const arrowMat = new THREE.MeshBasicMaterial({
+        // Edge border wireframe for visual definition
+        const edgesGeo = new THREE.EdgesGeometry(geometry);
+        const edgesMat = new THREE.LineBasicMaterial({
+            color: PLANE_COLORS.border,
+            transparent: true,
+            opacity: BORDER_OPACITY_NORMAL,
+            depthTest: false,
+        });
+        const edges = new THREE.LineSegments(edgesGeo, edgesMat);
+        edges.renderOrder = 1000;
+        edges.userData = { isBorderEdge: true };
+        mesh.add(edges);
+
+        // Center move indicator — small double-arrow icon
+        const indicatorSize = Math.min(faceWidth, faceHeight) * 0.06;
+        const indGeo = new THREE.RingGeometry(indicatorSize * 0.4, indicatorSize, 6);
+        const indMat = new THREE.MeshBasicMaterial({
             color: 0xffffff,
             transparent: true,
-            opacity: 0.9,
+            opacity: 0.6,
             side: THREE.DoubleSide,
             depthTest: false,
         });
-        const arrow = new THREE.Mesh(arrowGeo, arrowMat);
-        arrow.renderOrder = 1001;
-        mesh.add(arrow);
+        const indicator = new THREE.Mesh(indGeo, indMat);
+        indicator.renderOrder = 1001;
+        mesh.add(indicator);
 
         return mesh;
     }, []);
@@ -442,15 +446,14 @@ export function useBimSection(
         const plane = new THREE.Plane(normal.clone(), constant);
         const id = `clip-free-${Date.now()}`;
 
-        // Create a disc/circle handle at the point
+        // Create a large transparent disc at the point (BIMcollab-style)
         const box = getModelBounds(scene);
         const modelSize = box.getSize(new THREE.Vector3()).length();
-        const discRadius = modelSize * 0.08; // 8% of model size
+        const discRadius = modelSize * 0.30; // 30% of model size — large visible plane
 
-        const geometry = new THREE.CircleGeometry(discRadius, 32);
-        const colors = FACE_COLORS.free;
+        const geometry = new THREE.CircleGeometry(discRadius, 64);
         const material = new THREE.MeshBasicMaterial({
-            color: colors.normal,
+            color: PLANE_COLORS.normal,
             transparent: true,
             opacity: HANDLE_OPACITY_NORMAL,
             side: THREE.DoubleSide,
@@ -469,26 +472,26 @@ export function useBimSection(
         handle.renderOrder = 999;
         handle.userData = { isSectionHandle: true, handleId: id, axis: 'free' };
 
-        // Add border ring
-        const ringGeo = new THREE.RingGeometry(discRadius * 0.95, discRadius, 32);
-        const ringMat = new THREE.MeshBasicMaterial({
-            color: colors.normal,
+        // Edge border ring
+        const edgesGeo = new THREE.EdgesGeometry(geometry);
+        const edgesMat = new THREE.LineBasicMaterial({
+            color: PLANE_COLORS.border,
             transparent: true,
-            opacity: 0.9,
-            side: THREE.DoubleSide,
+            opacity: BORDER_OPACITY_NORMAL,
             depthTest: false,
         });
-        const ring = new THREE.Mesh(ringGeo, ringMat);
-        ring.renderOrder = 1000;
-        handle.add(ring);
+        const edges = new THREE.LineSegments(edgesGeo, edgesMat);
+        edges.renderOrder = 1000;
+        edges.userData = { isBorderEdge: true };
+        handle.add(edges);
 
-        // Add normal direction arrow
-        const arrowLen = discRadius * 0.6;
-        const arrowGeo = new THREE.ConeGeometry(discRadius * 0.15, arrowLen, 8);
+        // Normal direction arrow indicator
+        const arrowLen = discRadius * 0.15;
+        const arrowGeo = new THREE.ConeGeometry(discRadius * 0.04, arrowLen, 8);
         const arrowMat = new THREE.MeshBasicMaterial({
             color: 0xffffff,
             transparent: true,
-            opacity: 0.9,
+            opacity: 0.6,
             depthTest: false,
         });
         const arrow = new THREE.Mesh(arrowGeo, arrowMat);
@@ -638,13 +641,20 @@ export function useBimSection(
 
         const setHandleAppearance = (mesh: THREE.Mesh, state: 'normal' | 'hover' | 'drag') => {
             const mat = mesh.material as THREE.MeshBasicMaterial;
-            const axis = (mesh.userData.axis || 'free') as 'x' | 'y' | 'z' | 'free';
-            const colors = FACE_COLORS[axis] || FACE_COLORS.free;
+            // Unified BIMcollab-style colors: cyan → purple
             switch (state) {
-                case 'normal': mat.color.setHex(colors.normal); mat.opacity = HANDLE_OPACITY_NORMAL; break;
-                case 'hover': mat.color.setHex(colors.hover); mat.opacity = HANDLE_OPACITY_HOVER; break;
-                case 'drag': mat.color.setHex(colors.drag); mat.opacity = HANDLE_OPACITY_DRAG; break;
+                case 'normal': mat.color.setHex(PLANE_COLORS.normal); mat.opacity = HANDLE_OPACITY_NORMAL; break;
+                case 'hover': mat.color.setHex(PLANE_COLORS.hover); mat.opacity = HANDLE_OPACITY_HOVER; break;
+                case 'drag': mat.color.setHex(PLANE_COLORS.drag); mat.opacity = HANDLE_OPACITY_DRAG; break;
             }
+            // Also update border edge colors
+            mesh.traverse((child: THREE.Object3D) => {
+                if (child.userData?.isBorderEdge && child instanceof THREE.LineSegments) {
+                    const edgeMat = child.material as THREE.LineBasicMaterial;
+                    edgeMat.color.setHex(state === 'normal' ? PLANE_COLORS.border : PLANE_COLORS.borderHover);
+                    edgeMat.opacity = state === 'normal' ? BORDER_OPACITY_NORMAL : BORDER_OPACITY_HOVER;
+                }
+            });
         };
 
         // ── HOVER + DRAG MOVE ──
