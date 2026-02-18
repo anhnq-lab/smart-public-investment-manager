@@ -59,24 +59,36 @@ export function useBimKeyboard({
         }
 
         const deg2rad = Math.PI / 180;
+        const shiftHeld = keys.has('ShiftLeft') || keys.has('ShiftRight');
 
-        // ── Orbit (WASD or Arrow keys) ──
-        let azimuth = 0;
-        let polar = 0;
+        if (shiftHeld) {
+            // ── Pan (Shift + WASD/Arrows) — truck the camera ──
+            let truckX = 0;
+            let truckY = 0;
+            if (keys.has('KeyA') || keys.has('ArrowLeft')) truckX += PAN_SPEED;
+            if (keys.has('KeyD') || keys.has('ArrowRight')) truckX -= PAN_SPEED;
+            if (keys.has('KeyW') || keys.has('ArrowUp')) truckY += PAN_SPEED;
+            if (keys.has('KeyS') || keys.has('ArrowDown')) truckY -= PAN_SPEED;
+            if (truckX !== 0 || truckY !== 0) {
+                controls.truck(truckX, truckY, true);
+            }
+        } else {
+            // ── Orbit (WASD or Arrow keys) ──
+            let azimuth = 0;
+            let polar = 0;
 
-        if (keys.has('KeyA') || keys.has('ArrowLeft')) azimuth += ORBIT_SPEED * deg2rad;
-        if (keys.has('KeyD') || keys.has('ArrowRight')) azimuth -= ORBIT_SPEED * deg2rad;
-        if (keys.has('KeyW') || keys.has('ArrowUp')) polar += ORBIT_SPEED * deg2rad;
-        if (keys.has('KeyS') || keys.has('ArrowDown')) polar -= ORBIT_SPEED * deg2rad;
+            if (keys.has('KeyA') || keys.has('ArrowLeft')) azimuth += ORBIT_SPEED * deg2rad;
+            if (keys.has('KeyD') || keys.has('ArrowRight')) azimuth -= ORBIT_SPEED * deg2rad;
+            if (keys.has('KeyW') || keys.has('ArrowUp')) polar += ORBIT_SPEED * deg2rad;
+            if (keys.has('KeyS') || keys.has('ArrowDown')) polar -= ORBIT_SPEED * deg2rad;
 
-        if (azimuth !== 0 || polar !== 0) {
-            controls.rotate(azimuth, polar, true);
+            if (azimuth !== 0 || polar !== 0) {
+                controls.rotate(azimuth, polar, true);
+            }
         }
 
         // ── Roll (Q / E) ──
         if (keys.has('KeyQ')) {
-            controls.rotate(0, 0, true);
-            // camera-controls doesn't support roll; use azimuth as fallback
             controls.rotate(ORBIT_SPEED * deg2rad * 0.5, 0, true);
         }
         if (keys.has('KeyE')) {
@@ -89,19 +101,6 @@ export function useBimKeyboard({
         }
         if (keys.has('Minus') || keys.has('NumpadSubtract')) {
             controls.dolly(ZOOM_SPEED, true);
-        }
-
-        // ── Pan (Shift + WASD) — handled via truck ──
-        if (keys.has('ShiftLeft') || keys.has('ShiftRight')) {
-            let truckX = 0;
-            let truckY = 0;
-            if (keys.has('KeyA') || keys.has('ArrowLeft')) truckX += PAN_SPEED;
-            if (keys.has('KeyD') || keys.has('ArrowRight')) truckX -= PAN_SPEED;
-            if (keys.has('KeyW') || keys.has('ArrowUp')) truckY += PAN_SPEED;
-            if (keys.has('KeyS') || keys.has('ArrowDown')) truckY -= PAN_SPEED;
-            if (truckX !== 0 || truckY !== 0) {
-                controls.truck(truckX, truckY, true);
-            }
         }
 
         animFrameRef.current = requestAnimationFrame(animate);

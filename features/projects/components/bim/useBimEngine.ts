@@ -107,6 +107,13 @@ export function useBimEngine(
                 camera.controls.smoothTime = 0.35;
                 camera.controls.draggingSmoothTime = 0.15;
 
+                // Mouse button mapping (professional BIM style):
+                // Left = orbit, Middle = pan, Right = orbit, Scroll = zoom
+                const CC = (camera.controls as any).constructor;
+                if (CC?.ACTION) {
+                    camera.controls.mouseButtons.middle = CC.ACTION.TRUCK;
+                }
+
                 await components.init();
 
                 // Initialize FragmentsManager — load worker
