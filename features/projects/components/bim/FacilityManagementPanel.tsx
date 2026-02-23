@@ -71,6 +71,7 @@ export const FacilityManagementPanel: React.FC<FacilityManagementPanelProps> = (
     const [editingAsset, setEditingAsset] = useState<FacilityAsset | null>(null);
     const [form, setForm] = useState<Partial<FacilityAssetInsert>>(EMPTY_FORM);
     const [error, setError] = useState<string | null>(null);
+    const [successMsg, setSuccessMsg] = useState<string | null>(null);
 
     // ── Load assets ──────────────────────────
     const loadAssets = useCallback(async () => {
@@ -164,10 +165,12 @@ export const FacilityManagementPanel: React.FC<FacilityManagementPanelProps> = (
     };
 
     const handleDelete = async (assetId: string) => {
-        if (!confirm('Xóa tài sản này?')) return;
+        if (!confirm('Bạn chắc chắn muốn xóa tài sản này? Thao tác không thể hoàn tác.')) return;
         try {
             await deleteAsset(assetId);
             await loadAssets();
+            setSuccessMsg('Đã xóa tài sản');
+            setTimeout(() => setSuccessMsg(null), 3000);
         } catch (err: any) {
             setError(err.message);
         }
@@ -195,6 +198,12 @@ export const FacilityManagementPanel: React.FC<FacilityManagementPanelProps> = (
                 <div className="mx-4 mt-2 px-3 py-2 rounded-lg bg-red-500/10 border border-red-500/30 text-red-400 text-xs flex items-center justify-between">
                     <span>{error}</span>
                     <button onClick={() => setError(null)}><X className="w-3 h-3" /></button>
+                </div>
+            )}
+            {successMsg && (
+                <div className={`mx-4 mt-2 px-3 py-2 rounded-lg text-xs flex items-center justify-between ${isDarkMode ? 'bg-emerald-500/10 border border-emerald-500/30 text-emerald-400' : 'bg-emerald-50 border border-emerald-200 text-emerald-600'}`}>
+                    <span className="flex items-center gap-1.5"><CheckCircle2 className="w-3.5 h-3.5" />{successMsg}</span>
+                    <button onClick={() => setSuccessMsg(null)}><X className="w-3 h-3" /></button>
                 </div>
             )}
 
@@ -225,12 +234,16 @@ export const FacilityManagementPanel: React.FC<FacilityManagementPanelProps> = (
                             if (extracting) return;
                             setExtracting(true);
                             setError(null);
+                            setSuccessMsg(null);
                             try {
                                 const count = await onExtractFromBIM();
                                 if (count > 0) {
                                     await loadAssets();
+                                    setSuccessMsg(`Đã tìm thấy và lưu ${count} tài sản từ mô hình BIM`);
+                                    setTimeout(() => setSuccessMsg(null), 5000);
                                 } else {
-                                    setError('Không tìm thấy thiết bị mới từ mô hình BIM');
+                                    setSuccessMsg('Không tìm thấy thiết bị mới (có thể đã quét trước đó)');
+                                    setTimeout(() => setSuccessMsg(null), 4000);
                                 }
                             } catch (err: any) {
                                 setError(`Lỗi: ${err.message}`);
@@ -240,10 +253,10 @@ export const FacilityManagementPanel: React.FC<FacilityManagementPanelProps> = (
                         }}
                         disabled={extracting}
                         className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[11px] font-bold transition-colors mr-1.5 ${extracting
-                                ? 'opacity-50 cursor-wait'
-                                : isDarkMode
-                                    ? 'bg-emerald-600/20 text-emerald-400 hover:bg-emerald-600/30 border border-emerald-500/30'
-                                    : 'bg-emerald-50 text-emerald-600 hover:bg-emerald-100 border border-emerald-200'
+                            ? 'opacity-50 cursor-wait'
+                            : isDarkMode
+                                ? 'bg-emerald-600/20 text-emerald-400 hover:bg-emerald-600/30 border border-emerald-500/30'
+                                : 'bg-emerald-50 text-emerald-600 hover:bg-emerald-100 border border-emerald-200'
                             }`}
                         title="Quét thiết bị từ mô hình IFC đã tải"
                     >
@@ -404,18 +417,49 @@ export const FacilityManagementPanel: React.FC<FacilityManagementPanelProps> = (
                             </p>
                             <p className={`text-xs mb-3 ${isDarkMode ? 'text-slate-600' : 'text-gray-400'}`}>
                                 {assets.length === 0
-                                    ? 'Thêm tài sản thiết bị cần quản lý vận hành'
+                                    ? (onExtractFromBIM
+                                        ? 'Bấm "Quét từ BIM" để tự động trích xuất thiết bị từ mô hình IFC'
+                                        : 'Tải mô hình IFC trước, sau đó quét thiết bị từ BIM'
+                                    )
                                     : 'Thử thay đổi bộ lọc hoặc từ khóa tìm kiếm'
                                 }
                             </p>
-                            {assets.length === 0 && (
-                                <button
-                                    onClick={openAddForm}
-                                    className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-500 hover:bg-blue-600 text-white rounded-lg text-xs font-medium transition-colors"
-                                >
-                                    <Plus className="w-3.5 h-3.5" /> Thêm tài sản đầu tiên
-                                </button>
-                            )}
+                            <div className="flex items-center gap-2">
+                                {assets.length === 0 && onExtractFromBIM && (
+                                    <button
+                                        onClick={async () => {
+                                            if (extracting) return;
+                                            setExtracting(true);
+                                            setSuccessMsg(null);
+                                            try {
+                                                const count = await onExtractFromBIM();
+                                                if (count > 0) {
+                                                    await loadAssets();
+                                                    setSuccessMsg(`Đã trích xuất ${count} tài sản từ BIM`);
+                                                    setTimeout(() => setSuccessMsg(null), 5000);
+                                                }
+                                            } catch { /* ignore */ }
+                                            finally { setExtracting(false); }
+                                        }}
+                                        disabled={extracting}
+                                        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${isDarkMode
+                                            ? 'bg-emerald-600/20 text-emerald-400 hover:bg-emerald-600/30 border border-emerald-500/30'
+                                            : 'bg-emerald-50 text-emerald-600 hover:bg-emerald-100 border border-emerald-200'
+                                            }`}
+                                    >
+                                        {extracting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Download className="w-3.5 h-3.5" />}
+                                        {extracting ? 'Đang quét...' : 'Quét từ BIM'}
+                                    </button>
+                                )}
+                                {assets.length === 0 && (
+                                    <button
+                                        onClick={openAddForm}
+                                        className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-500 hover:bg-blue-600 text-white rounded-lg text-xs font-medium transition-colors"
+                                    >
+                                        <Plus className="w-3.5 h-3.5" /> Thêm thủ công
+                                    </button>
+                                )}
+                            </div>
                         </div>
                     )}
                 </div>

@@ -115,6 +115,46 @@ function categorizeByIfcType(ifcType: string): string {
 }
 
 /**
+ * Extract CIC_FacilityManagement properties for an element.
+ * Returns map of CIC_FM_* property names to their values.
+ */
+function extractCicFmProps(
+    ifcApi: WEBIFC.IfcAPI, modelID: number, expressID: number
+): Record<string, string> {
+    const result: Record<string, string> = {};
+    try {
+        const relIds = ifcApi.GetLineIDsWithType(modelID, 4186316022); // IFCRELDEFINESBYPROPERTIES
+        for (let i = 0; i < relIds.size(); i++) {
+            const relId = relIds.get(i);
+            const rel = ifcApi.GetLine(modelID, relId, false);
+            if (!rel?.RelatedObjects) continue;
+            const related = Array.isArray(rel.RelatedObjects) ? rel.RelatedObjects : [rel.RelatedObjects];
+            if (!related.some((r: any) => (r?.value ?? r) === expressID)) continue;
+            const psetId = rel.RelatingPropertyDefinition?.value;
+            if (!psetId) continue;
+            const pset = ifcApi.GetLine(modelID, psetId, false);
+            if (!pset?.Name?.value) continue;
+            const psetName = pset.Name.value as string;
+            if (!psetName.startsWith('CIC_') && !psetName.includes('Facility')) continue;
+            if (pset.HasProperties) {
+                const props = Array.isArray(pset.HasProperties) ? pset.HasProperties : [pset.HasProperties];
+                for (const propRef of props) {
+                    const propId = propRef?.value ?? propRef;
+                    if (!propId) continue;
+                    try {
+                        const prop = ifcApi.GetLine(modelID, propId, false);
+                        if (prop?.Name?.value && prop?.NominalValue?.value !== undefined) {
+                            result[prop.Name.value] = String(prop.NominalValue.value);
+                        }
+                    } catch { /* skip */ }
+                }
+            }
+        }
+    } catch { /* skip */ }
+    return result;
+}
+
+/**
  * Tự động tìm và lưu Tài sản / Thiết bị từ mô hình IFC.
  * 
  * Chiến lược 2 lớp:
@@ -175,21 +215,24 @@ export async function extractFacilityAssetsFromIFC(
                             const name = line.Name?.value || line.LongName?.value || `${typeName} #${id}`;
                             const tag = line.Tag?.value || '';
 
+                            // Try to get CIC_FM properties
+                            const cicFm = extractCicFmProps(ifcApi, modelID, id);
+
                             assetsToInsert.push({
                                 project_id: projectId,
                                 asset_name: name,
-                                asset_code: tag || `BIM-${id}`,
-                                category,
-                                location: null,
-                                manufacturer: null,
-                                model: null,
+                                asset_code: cicFm['CIC_FM_AssetCode'] || tag || `BIM-${id}`,
+                                category: cicFm['CIC_FM_Category'] || category,
+                                location: cicFm['CIC_FM_Location'] || null,
+                                manufacturer: cicFm['CIC_FM_Manufacturer'] || null,
+                                model: cicFm['CIC_FM_Model'] || null,
                                 install_date: null,
                                 warranty_expiry: null,
                                 last_maintenance: null,
                                 next_maintenance: null,
-                                maintenance_cycle_days: 180,
-                                status: 'Active',
-                                condition: 'Good',
+                                maintenance_cycle_days: cicFm['CIC_FM_MaintenanceCycle'] ? parseInt(cicFm['CIC_FM_MaintenanceCycle']) : 180,
+                                status: (cicFm['CIC_FM_Status'] as any) || 'Active',
+                                condition: (cicFm['CIC_FM_Condition'] as any) || 'Good',
                                 notes: `IFC: ${typeName}`,
                                 bim_element_id: String(id)
                             });
@@ -224,21 +267,25 @@ export async function extractFacilityAssetsFromIFC(
                             if (!category) continue;
 
                             seenIds.add(id);
+
+                            // Try to get CIC_FM properties
+                            const cicFm = extractCicFmProps(ifcApi, modelID, id);
+
                             assetsToInsert.push({
                                 project_id: projectId,
                                 asset_name: name || `${objectType} #${id}`,
-                                asset_code: tag || `BIM-${id}`,
-                                category,
-                                location: null,
-                                manufacturer: null,
-                                model: null,
+                                asset_code: cicFm['CIC_FM_AssetCode'] || tag || `BIM-${id}`,
+                                category: cicFm['CIC_FM_Category'] || category,
+                                location: cicFm['CIC_FM_Location'] || null,
+                                manufacturer: cicFm['CIC_FM_Manufacturer'] || null,
+                                model: cicFm['CIC_FM_Model'] || null,
                                 install_date: null,
                                 warranty_expiry: null,
                                 last_maintenance: null,
                                 next_maintenance: null,
-                                maintenance_cycle_days: 180,
-                                status: 'Active',
-                                condition: 'Good',
+                                maintenance_cycle_days: cicFm['CIC_FM_MaintenanceCycle'] ? parseInt(cicFm['CIC_FM_MaintenanceCycle']) : 180,
+                                status: (cicFm['CIC_FM_Status'] as any) || 'Active',
+                                condition: (cicFm['CIC_FM_Condition'] as any) || 'Good',
                                 notes: `IFC: ${typeName} | ObjectType: ${objectType}`,
                                 bim_element_id: String(id)
                             });

@@ -132,13 +132,12 @@ export function useBimSelection(
     function getIfcTypeName(typeCode: number): string {
         const found = COMMON_IFC_TYPES.find(t => t.code === typeCode);
         if (found) return found.name;
-        // Fallback: try from ifcLoader
-        try {
-            const ifcLoader = ifcLoaderRef.current;
-            if (ifcLoader?.webIfc) {
-                return ifcLoader.webIfc.GetNameFromTypeCode(typeCode) || 'Unknown';
-            }
-        } catch { /* ignore */ }
+        // Fallback: try from standalone IfcAPI (sync check only)
+        if (_standaloneIfcApi) {
+            try {
+                return _standaloneIfcApi.GetNameFromTypeCode(typeCode) || 'Unknown';
+            } catch { /* ignore */ }
+        }
         return 'Unknown';
     }
 
@@ -370,7 +369,6 @@ export function useBimSelection(
 
                     // Step 1: Try official API — model.getItemsData()
                     const model = fragments.list.get(String(modelId));
-                    console.log('[Selection] Step 1: model found:', !!model, 'hasGetItemsData:', typeof (model as any)?.getItemsData);
                     let element: SelectedElement | null = null;
 
                     if (model && typeof (model as any).getItemsData === 'function') {
@@ -404,25 +402,24 @@ export function useBimSelection(
                         setSelectedElement(element);
                         onPanelOpen?.();
 
-                        // Async enrichment
-                        console.log('[Selection] Step 3: Starting extractFullProperties...');
+                        // Async enrichment — replaces initial Identity set with full property data
                         extractFullProperties(expressID).then(extra => {
-                            console.log('[Selection] Step 3 DONE. Extra propertySets:', extra.propertySets?.length, 'materials:', extra.materials?.length);
                             if (disposed) return;
                             setSelectedElement(prev => {
                                 if (!prev || prev.id !== String(expressID)) return prev;
+                                // Merge: if extra has propertySets, replace initial Identity-only set
+                                const mergedPsets = extra.propertySets && extra.propertySets.length > 0
+                                    ? [...prev.propertySets.filter(ps => ps.name !== 'Identity'), ...extra.propertySets]
+                                    : prev.propertySets;
                                 return {
                                     ...prev,
-                                    propertySets: [
-                                        ...prev.propertySets,
-                                        ...(extra.propertySets || []),
-                                    ],
+                                    propertySets: mergedPsets,
                                     materials: [...new Set([...prev.materials, ...(extra.materials || [])])],
                                     relations: extra.relations || prev.relations,
                                     classifications: extra.classifications || prev.classifications,
                                 };
                             });
-                        }).catch((err) => { console.warn('[Selection] ❌ Enrichment failed:', err); });
+                        }).catch((err) => { console.warn('[Selection] Enrichment failed:', err); });
                     }
                     break; // Process first selected element only
                 }
@@ -479,25 +476,21 @@ export function useBimSelection(
         const extra = await extractFullProperties(expressId);
         setSelectedElement(prev => {
             if (!prev || prev.id !== String(expressId)) return prev;
-            // Also try to get name/type from web-ifc
-            const ifcLoader = ifcLoaderRef.current;
-            let enrichedName = prev.name;
-            let enrichedType = prev.type;
-            // Name/type enrichment handled by extractFullProperties above
+            // Merge: replace initial Identity-only set with full data
+            const mergedPsets = extra.propertySets && extra.propertySets.length > 0
+                ? [...prev.propertySets.filter(ps => ps.name !== 'Identity'), ...extra.propertySets]
+                : prev.propertySets;
             return {
                 ...prev,
-                name: enrichedName,
-                type: enrichedType,
-                propertySets: [
-                    ...prev.propertySets,
-                    ...(extra.propertySets || []),
-                ],
+                name: extra.propertySets ? prev.name : prev.name,
+                type: prev.type,
+                propertySets: mergedPsets,
                 materials: [...new Set([...prev.materials, ...(extra.materials || [])])],
                 relations: extra.relations || prev.relations,
                 classifications: extra.classifications || prev.classifications,
             };
         });
-    }, [ifcLoaderRef, ifcDataMapRef, extractFullProperties, onPanelOpen, componentsRef]);
+    }, [ifcDataMapRef, extractFullProperties, onPanelOpen, componentsRef]);
 
     // ═══════════════════════════════════════════════════
     // VISIBILITY — using FragmentsManager for reliability
