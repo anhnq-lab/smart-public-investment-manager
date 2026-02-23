@@ -283,9 +283,9 @@ export const BimModelTree: React.FC<BimModelTreeProps> = ({
 
     return (
         <div className={`
-            ${isMobile ? 'absolute inset-y-0 left-0 z-30 w-72' : 'relative w-64'}
+            ${isMobile ? 'absolute inset-y-0 left-0 z-30 w-72 border-r' : 'w-full h-full'}
             ${isDarkMode ? 'bg-slate-800/95 border-slate-700/50' : 'bg-white border-gray-200'}
-            border-r flex flex-col shrink-0 backdrop-blur-xl
+            flex flex-col shrink-0 backdrop-blur-xl
         `}>
             {/* Header */}
             <div className={`p-3 border-b flex items-center justify-between ${isDarkMode ? 'border-slate-700/30' : 'border-gray-200'}`}>

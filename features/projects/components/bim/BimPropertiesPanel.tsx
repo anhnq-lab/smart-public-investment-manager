@@ -184,9 +184,9 @@ export const BimPropertiesPanel: React.FC<BimPropertiesPanelProps> = ({
 
     return (
         <div className={`
-            ${isBottomPanel ? 'w-full' : isMobile ? 'absolute inset-y-0 right-0 z-30 w-80' : 'relative w-72'}
-            ${isBottomPanel ? '' : isDarkMode ? 'bg-slate-800/95 border-slate-700/50' : !isBottomPanel ? 'bg-white border-gray-200' : ''}
-            ${isBottomPanel ? '' : 'border-l'} flex flex-col shrink-0 ${isBottomPanel ? '' : 'backdrop-blur-xl'}
+            ${isBottomPanel ? 'w-full' : isMobile ? 'absolute inset-y-0 right-0 z-30 w-80' : 'w-full h-full'}
+            ${isBottomPanel ? '' : isDarkMode ? 'bg-slate-800/95 border-slate-700/50' : 'bg-white border-gray-200'}
+            flex flex-col shrink-0 ${isBottomPanel ? '' : 'backdrop-blur-xl'}
         `}>
             {/* Header — hidden in bottom panel mode */}
             {!isBottomPanel && (
