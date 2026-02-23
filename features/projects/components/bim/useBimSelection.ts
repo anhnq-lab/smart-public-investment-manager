@@ -130,7 +130,13 @@ export function useBimSelection(
         expressID: number
     ): Promise<Partial<SelectedElement>> => {
         const ifcLoader = ifcLoaderRef.current;
-        if (!ifcLoader?.webIfc) return {};
+        console.log('[Selection] extractFullProperties for expressID:', expressID);
+        console.log('[Selection] ifcLoader:', !!ifcLoader, 'webIfc:', !!ifcLoader?.webIfc);
+        console.log('[Selection] ifcDataMap size:', ifcDataMapRef.current.size);
+        if (!ifcLoader?.webIfc) {
+            console.warn('[Selection] ❌ No webIfc available for property extraction');
+            return {};
+        }
 
         // Try all available IFC data
         for (const [, ifcData] of ifcDataMapRef.current) {
@@ -393,7 +399,7 @@ export function useBimSelection(
                                     classifications: extra.classifications || prev.classifications,
                                 };
                             });
-                        }).catch(() => { /* silently ignore enrichment failures */ });
+                        }).catch((err) => { console.warn('[Selection] ❌ Enrichment failed:', err); });
                     }
                     break; // Process first selected element only
                 }
