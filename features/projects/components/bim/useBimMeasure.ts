@@ -1,26 +1,21 @@
 /**
- * useBimMeasure — Measurement tools using OBC Raycasters + scene overlays
- * Handles: Point-to-point length measurement, area measurement with polygon
- * Uses OBC.Raycasters.castRay() (async) with position parameter for proper fragment intersection
- * Interaction: DOUBLE-CLICK to place measurement points
+ * useBimMeasure — Professional measurement using OBC LengthMeasurement + AreaMeasurement
+ * Features:
+ * - Built-in vertex snapping (GraphicVertexPicker)
+ * - Professional dimension lines with labels, endpoints, projection lines
+ * - Free mode + Edge mode for length
+ * - Free mode + Square mode for area
+ * - Auto disable Highlighter while measuring (no highlight on click conflicts)
+ * - Single-click to place points
  */
 import React, { useRef, useState, useCallback, useEffect } from 'react';
-import * as THREE from 'three';
 import * as OBC from '@thatopen/components';
+import * as OBCF from '@thatopen/components-front';
 import type { ActiveTool } from './useBimTools';
-
-interface MeasurementEntry {
-    id: string;
-    type: 'length' | 'area';
-    points: THREE.Vector3[];
-    value: number;
-    unit: string;
-    objects: THREE.Object3D[];
-}
 
 export interface BimMeasureAPI {
     measurementCount: number;
-    activeMeasurement: { points: THREE.Vector3[]; type: 'length' | 'area' } | null;
+    activeMeasurement: null;
     handleMeasureClick: (event: MouseEvent) => void;
     clearAllMeasurements: () => void;
 }
@@ -31,315 +26,147 @@ export function useBimMeasure(
     activeTool: ActiveTool,
     componentsRef?: React.MutableRefObject<OBC.Components | null>,
 ): BimMeasureAPI {
-    const formatDistance = (meters: number): string => {
-        if (meters < 0.01) return `${(meters * 1000).toFixed(1)} mm`;
-        if (meters < 1) return `${(meters * 100).toFixed(1)} cm`;
-        return `${meters.toFixed(3)} m`;
-    };
-    const formatArea = (sqMeters: number): string => {
-        if (sqMeters < 0.01) return `${(sqMeters * 1e6).toFixed(0)} mm²`;
-        if (sqMeters < 1) return `${(sqMeters * 1e4).toFixed(1)} cm²`;
-        return `${sqMeters.toFixed(3)} m²`;
-    };
-
-    const measurementsRef = useRef<MeasurementEntry[]>([]);
     const [measurementCount, setMeasurementCount] = useState(0);
-    const activeMeasurementRef = useRef<{ points: THREE.Vector3[]; type: 'length' | 'area' } | null>(null);
-    const [activeMeasurement, setActiveMeasurement] = useState<{ points: THREE.Vector3[]; type: 'length' | 'area' } | null>(null);
+    const lengthMeasureRef = useRef<OBCF.LengthMeasurement | null>(null);
+    const areaMeasureRef = useRef<OBCF.AreaMeasurement | null>(null);
+    const highlighterRef = useRef<OBCF.Highlighter | null>(null);
+    const wasHighlighterEnabledRef = useRef(true);
+    const initDoneRef = useRef(false);
 
-    // ── Convert mouse event to normalized screen position ──
-    const getMousePosition = useCallback((event: MouseEvent): THREE.Vector2 | null => {
-        const container = containerRef.current;
-        if (!container) return null;
-        const rect = container.getBoundingClientRect();
-        return new THREE.Vector2(
-            ((event.clientX - rect.left) / rect.width) * 2 - 1,
-            -((event.clientY - rect.top) / rect.height) * 2 + 1
-        );
-    }, [containerRef]);
-
-    // ── Raycast to find point on model surface ──────
-    // Uses OBC SimpleRaycaster which handles fragments properly
-    const raycastPoint = useCallback(async (event: MouseEvent): Promise<THREE.Vector3 | null> => {
-        const world = worldRef.current;
-        if (!world) return null;
-
-        const mousePos = getMousePosition(event);
-        if (!mousePos) return null;
-
-        // Method 1: OBC Raycasters — handles fragment geometry
-        if (componentsRef?.current) {
-            try {
-                const raycasters = componentsRef.current.get(OBC.Raycasters);
-                const raycaster = raycasters.get(world);
-                if (raycaster) {
-                    // castRay is ASYNC and accepts { position } to override mouse
-                    const result = await raycaster.castRay({ position: mousePos });
-                    if (result) {
-                        console.log('[Measure] ✅ OBC hit at:', result.point.x.toFixed(2), result.point.y.toFixed(2), result.point.z.toFixed(2));
-                        return result.point.clone();
-                    }
-                    console.log('[Measure] OBC ray cast - no hit');
-                }
-            } catch (err) {
-                console.warn('[Measure] OBC raycaster error:', err);
-            }
-        }
-
-        // Method 2: castRayToObjects with world.meshes
-        if (componentsRef?.current) {
-            try {
-                const raycasters = componentsRef.current.get(OBC.Raycasters);
-                const raycaster = raycasters.get(world);
-                if (raycaster && world.meshes) {
-                    const meshArray = Array.from(world.meshes);
-                    if (meshArray.length > 0) {
-                        const result = raycaster.castRayToObjects(meshArray, mousePos);
-                        if (result) {
-                            console.log('[Measure] ✅ castRayToObjects hit at:', result.point.x.toFixed(2), result.point.y.toFixed(2), result.point.z.toFixed(2));
-                            return result.point.clone();
-                        }
-                    }
-                }
-            } catch (err) {
-                console.warn('[Measure] castRayToObjects error:', err);
-            }
-        }
-
-        // Method 3: Fallback raw THREE.Raycaster on scene children
-        try {
-            const raycaster = new THREE.Raycaster();
-            raycaster.setFromCamera(mousePos, world.camera.three);
-            const intersects = raycaster.intersectObjects(world.scene.three.children, true);
-            for (const hit of intersects) {
-                if (hit.object.userData?.isMeasurement ||
-                    hit.object.userData?.isClipHelper ||
-                    hit.object.userData?.isSectionBox ||
-                    hit.object instanceof THREE.Sprite ||
-                    hit.object instanceof THREE.Line) continue;
-                if (!hit.object.visible) continue;
-                console.log('[Measure] ✅ THREE fallback hit at:', hit.point.x.toFixed(2), hit.point.y.toFixed(2), hit.point.z.toFixed(2));
-                return hit.point.clone();
-            }
-        } catch (err) {
-            console.warn('[Measure] THREE raycaster error:', err);
-        }
-
-        console.log('[Measure] ❌ No intersection found');
-        return null;
-    }, [worldRef, componentsRef, getMousePosition]);
-
-    // ── Create measurement line + label ─────────────
-    const createLengthVisual = useCallback((p1: THREE.Vector3, p2: THREE.Vector3, id: string): THREE.Object3D[] => {
-        const scene = worldRef.current?.scene?.three;
-        if (!scene) return [];
-
-        const objects: THREE.Object3D[] = [];
-        const distance = p1.distanceTo(p2);
-
-        // Dashed line
-        const geometry = new THREE.BufferGeometry().setFromPoints([p1, p2]);
-        const material = new THREE.LineDashedMaterial({ color: 0x00ffff, dashSize: 0.2, gapSize: 0.1, linewidth: 2 });
-        const line = new THREE.Line(geometry, material);
-        line.computeLineDistances();
-        line.userData = { isMeasurement: true, measureId: id };
-        scene.add(line);
-        objects.push(line);
-
-        // Point markers
-        const sphereGeom = new THREE.SphereGeometry(0.08, 12, 12);
-        const sphereMat = new THREE.MeshBasicMaterial({ color: 0x00ffff });
-        for (const pt of [p1, p2]) {
-            const s = new THREE.Mesh(sphereGeom, sphereMat);
-            s.position.copy(pt);
-            s.userData = { isMeasurement: true, measureId: id };
-            scene.add(s);
-            objects.push(s);
-        }
-
-        // Label sprite
-        const label = formatDistance(distance);
-        const canvas = document.createElement('canvas');
-        canvas.width = 512; canvas.height = 128;
-        const ctx = canvas.getContext('2d')!;
-        ctx.fillStyle = 'rgba(0, 20, 40, 0.85)';
-        ctx.beginPath(); ctx.roundRect(16, 16, 480, 96, 16); ctx.fill();
-        ctx.strokeStyle = 'rgba(0, 255, 255, 0.6)';
-        ctx.lineWidth = 2;
-        ctx.beginPath(); ctx.roundRect(16, 16, 480, 96, 16); ctx.stroke();
-        ctx.fillStyle = '#00ffff';
-        ctx.font = 'bold 48px system-ui, sans-serif';
-        ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-        ctx.fillText(label, 256, 64);
-
-        const texture = new THREE.CanvasTexture(canvas);
-        texture.minFilter = THREE.LinearFilter;
-        const spriteMat = new THREE.SpriteMaterial({ map: texture, depthTest: false, transparent: true });
-        const sprite = new THREE.Sprite(spriteMat);
-        const midPoint = new THREE.Vector3().addVectors(p1, p2).multiplyScalar(0.5);
-        midPoint.y += 0.4;
-        sprite.position.copy(midPoint);
-        sprite.scale.set(2.5, 0.625, 1);
-        sprite.userData = { isMeasurement: true, measureId: id };
-        scene.add(sprite);
-        objects.push(sprite);
-
-        return objects;
-    }, [worldRef]);
-
-    // ── Create area measurement visual ──────────────
-    const createAreaVisual = useCallback((points: THREE.Vector3[], id: string): THREE.Object3D[] => {
-        const scene = worldRef.current?.scene?.three;
-        if (!scene || points.length < 3) return [];
-
-        const objects: THREE.Object3D[] = [];
-        let area = 0;
-        for (let i = 0; i < points.length; i++) {
-            const j = (i + 1) % points.length;
-            const cross = new THREE.Vector3().crossVectors(
-                points[i].clone().sub(points[0]),
-                points[j].clone().sub(points[0])
-            );
-            area += cross.length() / 2;
-        }
-
-        // Polygon edges
-        const edgePoints = [...points, points[0]];
-        const lineGeom = new THREE.BufferGeometry().setFromPoints(edgePoints);
-        const lineMat = new THREE.LineBasicMaterial({ color: 0x44ff88, linewidth: 2 });
-        const line = new THREE.Line(lineGeom, lineMat);
-        line.userData = { isMeasurement: true, measureId: id };
-        scene.add(line);
-        objects.push(line);
-
-        // Point markers
-        const sphereGeom = new THREE.SphereGeometry(0.06, 8, 8);
-        const sphereMat = new THREE.MeshBasicMaterial({ color: 0x44ff88 });
-        for (const pt of points) {
-            const s = new THREE.Mesh(sphereGeom, sphereMat);
-            s.position.copy(pt);
-            s.userData = { isMeasurement: true, measureId: id };
-            scene.add(s);
-            objects.push(s);
-        }
-
-        // Label
-        const label = formatArea(area);
-        const canvas = document.createElement('canvas');
-        canvas.width = 512; canvas.height = 128;
-        const ctx = canvas.getContext('2d')!;
-        ctx.fillStyle = 'rgba(0, 30, 20, 0.85)';
-        ctx.beginPath(); ctx.roundRect(16, 16, 480, 96, 16); ctx.fill();
-        ctx.strokeStyle = 'rgba(68, 255, 136, 0.6)';
-        ctx.lineWidth = 2;
-        ctx.beginPath(); ctx.roundRect(16, 16, 480, 96, 16); ctx.stroke();
-        ctx.fillStyle = '#44ff88';
-        ctx.font = 'bold 48px system-ui, sans-serif';
-        ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-        ctx.fillText(label, 256, 64);
-
-        const texture = new THREE.CanvasTexture(canvas);
-        texture.minFilter = THREE.LinearFilter;
-        const spriteMat = new THREE.SpriteMaterial({ map: texture, depthTest: false, transparent: true });
-        const sprite = new THREE.Sprite(spriteMat);
-        const center = new THREE.Vector3();
-        points.forEach(p => center.add(p));
-        center.divideScalar(points.length);
-        center.y += 0.4;
-        sprite.position.copy(center);
-        sprite.scale.set(2.5, 0.625, 1);
-        sprite.userData = { isMeasurement: true, measureId: id };
-        scene.add(sprite);
-        objects.push(sprite);
-
-        return objects;
-    }, [worldRef]);
-
-    // ── Handle double-click for measurement (ASYNC because castRay is async) ──
-    const handleMeasureClick = useCallback((event: MouseEvent) => {
-        const isMeasuring = activeTool === 'measure-length' || activeTool === 'measure-area';
-        if (!isMeasuring) return;
-
-        // raycastPoint is async, so we fire-and-forget with proper handling
-        (async () => {
-            const point = await raycastPoint(event);
-            if (!point) {
-                console.warn('[Measure] Không tìm thấy điểm giao cắt');
-                return;
-            }
-
-            const type = activeTool === 'measure-length' ? 'length' : 'area';
-
-            if (!activeMeasurementRef.current || activeMeasurementRef.current.type !== type) {
-                activeMeasurementRef.current = { points: [point], type };
-                setActiveMeasurement({ points: [point], type });
-                console.log(`[Measure] 📍 Điểm 1 — ${type}`);
-                return;
-            }
-
-            const active = activeMeasurementRef.current;
-            active.points.push(point);
-            setActiveMeasurement({ ...active, points: [...active.points] });
-
-            if (type === 'length' && active.points.length === 2) {
-                const id = `measure-${Date.now()}`;
-                const objs = createLengthVisual(active.points[0], active.points[1], id);
-                const distance = active.points[0].distanceTo(active.points[1]);
-                console.log(`[Measure] ✅ Khoảng cách: ${formatDistance(distance)}`);
-                measurementsRef.current.push({ id, type: 'length', points: [...active.points], value: distance, unit: 'm', objects: objs });
-                setMeasurementCount(measurementsRef.current.length);
-                activeMeasurementRef.current = null;
-                setActiveMeasurement(null);
-            } else if (type === 'area' && active.points.length >= 3) {
-                const first = active.points[0];
-                const last = active.points[active.points.length - 1];
-                if (active.points.length > 3 && first.distanceTo(last) < 0.5) {
-                    active.points.pop();
-                    const id = `measure-${Date.now()}`;
-                    const objs = createAreaVisual(active.points, id);
-                    let area = 0;
-                    for (let i = 0; i < active.points.length; i++) {
-                        const j = (i + 1) % active.points.length;
-                        const cross = new THREE.Vector3().crossVectors(
-                            active.points[i].clone().sub(active.points[0]),
-                            active.points[j].clone().sub(active.points[0])
-                        );
-                        area += cross.length() / 2;
-                    }
-                    measurementsRef.current.push({ id, type: 'area', points: [...active.points], value: area, unit: 'm²', objects: objs });
-                    setMeasurementCount(measurementsRef.current.length);
-                    activeMeasurementRef.current = null;
-                    setActiveMeasurement(null);
-                }
-            }
-        })();
-    }, [activeTool, raycastPoint, createLengthVisual, createAreaVisual]);
-
-    // ── Clear all measurements ──────────────────────
-    const clearAllMeasurements = useCallback(() => {
-        const scene = worldRef.current?.scene?.three;
-        if (scene) {
-            measurementsRef.current.forEach(m => {
-                m.objects.forEach(obj => scene.remove(obj));
-            });
-        }
-        measurementsRef.current = [];
-        setMeasurementCount(0);
-        activeMeasurementRef.current = null;
-        setActiveMeasurement(null);
-    }, [worldRef]);
-
-    // ── Reset active measurement when tool changes ──
+    // ── Initialize measurement components ──
     useEffect(() => {
-        if (activeTool !== 'measure-length' && activeTool !== 'measure-area') {
-            activeMeasurementRef.current = null;
-            setActiveMeasurement(null);
+        const components = componentsRef?.current;
+        const world = worldRef.current;
+        if (!components || !world || initDoneRef.current) return;
+
+        try {
+            // LengthMeasurement
+            const lengthMeasure = components.get(OBCF.LengthMeasurement);
+            lengthMeasure.world = world;
+            lengthMeasure.enabled = false;
+            lengthMeasureRef.current = lengthMeasure;
+
+            // AreaMeasurement
+            const areaMeasure = components.get(OBCF.AreaMeasurement);
+            areaMeasure.world = world;
+            areaMeasure.enabled = false;
+            areaMeasureRef.current = areaMeasure;
+
+            // Highlighter
+            try {
+                const highlighter = components.get(OBCF.Highlighter);
+                highlighterRef.current = highlighter;
+            } catch {
+                console.warn('[Measure] Highlighter not available');
+            }
+
+            initDoneRef.current = true;
+            console.log('[Measure] ✅ OBC LengthMeasurement + AreaMeasurement initialized');
+        } catch (err) {
+            console.error('[Measure] Failed to initialize:', err);
         }
-    }, [activeTool]);
+    }, [componentsRef?.current, worldRef.current]);
+
+    // ── Toggle measurement mode on/off ──
+    useEffect(() => {
+        const lengthMeasure = lengthMeasureRef.current;
+        const areaMeasure = areaMeasureRef.current;
+        const highlighter = highlighterRef.current;
+
+        const isMeasuringLength = activeTool === 'measure-length';
+        const isMeasuringArea = activeTool === 'measure-area';
+        const isMeasuring = isMeasuringLength || isMeasuringArea;
+
+        // Enable/disable length measurement
+        if (lengthMeasure) {
+            if (isMeasuringLength) {
+                lengthMeasure.enabled = true;
+            } else {
+                lengthMeasure.enabled = false;
+                try { lengthMeasure.endCreation(); } catch { }
+            }
+        }
+
+        // Enable/disable area measurement
+        if (areaMeasure) {
+            if (isMeasuringArea) {
+                areaMeasure.enabled = true;
+            } else {
+                areaMeasure.enabled = false;
+                try { areaMeasure.endCreation(); } catch { }
+            }
+        }
+
+        // Disable/restore Highlighter
+        if (highlighter) {
+            if (isMeasuring) {
+                wasHighlighterEnabledRef.current = highlighter.enabled;
+                highlighter.enabled = false;
+                if (highlighter.config) {
+                    highlighter.config.autoHighlightOnClick = false;
+                }
+            } else {
+                highlighter.enabled = wasHighlighterEnabledRef.current;
+                if (highlighter.config) {
+                    highlighter.config.autoHighlightOnClick = true;
+                }
+            }
+        }
+
+        // Cursor
+        const container = containerRef.current;
+        if (container) {
+            container.style.cursor = isMeasuring ? 'crosshair' : '';
+        }
+    }, [activeTool, containerRef]);
+
+    // ── Handle click (OBC handles events internally, this is for manual trigger) ──
+    const handleMeasureClick = useCallback(async () => {
+        // OBC LengthMeasurement/AreaMeasurement handle their own click events
+        // This callback is kept for API compatibility but may not be needed
+        const lengthMeasure = lengthMeasureRef.current;
+        const areaMeasure = areaMeasureRef.current;
+
+        const lengthCount = lengthMeasure?.list?.size ?? 0;
+        const areaCount = areaMeasure?.list?.size ?? 0;
+        setMeasurementCount(lengthCount + areaCount);
+    }, []);
+
+    // ── Clear all measurements ──
+    const clearAllMeasurements = useCallback(() => {
+        // Clear length measurements
+        const lengthMeasure = lengthMeasureRef.current;
+        if (lengthMeasure?.list) {
+            try {
+                for (const [, dim] of lengthMeasure.list) {
+                    try { dim.dispose(); } catch { }
+                }
+                lengthMeasure.list.clear();
+            } catch (err) {
+                console.warn('[Measure] Length clear error:', err);
+            }
+        }
+
+        // Clear area measurements
+        const areaMeasure = areaMeasureRef.current;
+        if (areaMeasure?.list) {
+            try {
+                for (const [, area] of areaMeasure.list) {
+                    try { (area as any).dispose?.(); } catch { }
+                }
+                areaMeasure.list.clear();
+            } catch (err) {
+                console.warn('[Measure] Area clear error:', err);
+            }
+        }
+
+        setMeasurementCount(0);
+        console.log('[Measure] All measurements cleared');
+    }, []);
 
     return {
         measurementCount,
-        activeMeasurement,
+        activeMeasurement: null,
         handleMeasureClick,
         clearAllMeasurements,
     };

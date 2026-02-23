@@ -127,23 +127,14 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
         }
     }, [engine.viewerReady]);
 
-    // ── Measurement + Section Plane — use DOUBLE-CLICK ──────────
-    // Single-click is consumed by OBC Highlighter for element selection,
-    // so we use double-click for both measure points and section-plane creation
+    // ── Section Plane — use DOUBLE-CLICK ──────────
+    // OBC LengthMeasurement handles its own click events when enabled
     useEffect(() => {
         const container = containerRef.current;
         if (!container) return;
 
-        const onDblClick = async (e: MouseEvent) => {
-            // Priority 1: Measure tools
-            if (tools.activeTool === 'measure-length' || tools.activeTool === 'measure-area') {
-                e.preventDefault();
-                e.stopPropagation();
-                measure.handleMeasureClick(e);
-                return;
-            }
-
-            // Priority 2: Section Plane
+        const onDblClick = async () => {
+            // Section Plane: double-click to create
             if (tools.activeTool === 'section-plane') {
                 const components = engine.componentsRef.current;
                 const world = engine.worldRef.current;
@@ -165,7 +156,7 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
         return () => {
             container.removeEventListener('dblclick', onDblClick);
         };
-    }, [tools.activeTool, measure.handleMeasureClick, engine.worldRef, engine.componentsRef, tools]);
+    }, [tools.activeTool, engine.worldRef, engine.componentsRef, tools]);
 
     // ── Render mode switching (with material caching) ──
     useEffect(() => {
