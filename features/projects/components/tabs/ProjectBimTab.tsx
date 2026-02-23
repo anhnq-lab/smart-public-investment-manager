@@ -128,34 +128,43 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
         }
     }, [engine.viewerReady]);
 
-    // ── Measurement click + Section Plane dblclick ──────────
-    // OBC LengthMeasurement needs create() called on each click
+    // ── Double-click: Measure + Section Plane ──────────
+    // OBC docs: container.ondblclick = () => measurer.create()
+    // Highlighter disabled via useBimMeasure when measuring
     useEffect(() => {
         const container = containerRef.current;
         const components = engine.componentsRef.current;
         if (!container || !components) return;
 
-        // Click → create measurement point
-        const onClick = async () => {
+        const onDblClick = async (e: MouseEvent) => {
+            // Measure Length: dblclick → create()
             if (tools.activeTool === 'measure-length') {
+                e.preventDefault();
+                e.stopPropagation();
                 try {
-                    const lengthMeasure = components.get(OBCF.LengthMeasurement);
-                    await lengthMeasure.create();
+                    const measurer = components.get(OBCF.LengthMeasurement);
+                    await measurer.create();
+                    console.log('[Measure] create() called, list size:', measurer.list.size);
                 } catch (err) {
                     console.warn('[Measure] Length create error:', err);
                 }
-            } else if (tools.activeTool === 'measure-area') {
+                return;
+            }
+
+            // Measure Area: dblclick → create()
+            if (tools.activeTool === 'measure-area') {
+                e.preventDefault();
+                e.stopPropagation();
                 try {
-                    const areaMeasure = components.get(OBCF.AreaMeasurement);
-                    await areaMeasure.create();
+                    const measurer = components.get(OBCF.AreaMeasurement);
+                    await measurer.create();
                 } catch (err) {
                     console.warn('[Measure] Area create error:', err);
                 }
+                return;
             }
-        };
 
-        // Double-click → section plane
-        const onDblClick = async () => {
+            // Section Plane: dblclick → clipper.create()
             if (tools.activeTool === 'section-plane') {
                 const world = engine.worldRef.current;
                 if (!world) return;
@@ -169,24 +178,20 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
             }
         };
 
-        // Delete key → delete last measurement
+        // Delete/Backspace → delete measurement under cursor (OBC built-in)
         const onKeyDown = (e: KeyboardEvent) => {
-            if (e.key === 'Delete' && (tools.activeTool === 'measure-length' || tools.activeTool === 'measure-area')) {
-                try {
-                    if (tools.activeTool === 'measure-length') {
-                        components.get(OBCF.LengthMeasurement).delete();
-                    } else {
-                        components.get(OBCF.AreaMeasurement).delete();
-                    }
-                } catch { }
+            if (e.code === 'Delete' || e.code === 'Backspace') {
+                if (tools.activeTool === 'measure-length') {
+                    try { components.get(OBCF.LengthMeasurement).delete(); } catch { }
+                } else if (tools.activeTool === 'measure-area') {
+                    try { components.get(OBCF.AreaMeasurement).delete(); } catch { }
+                }
             }
         };
 
-        container.addEventListener('click', onClick);
         container.addEventListener('dblclick', onDblClick);
         window.addEventListener('keydown', onKeyDown);
         return () => {
-            container.removeEventListener('click', onClick);
             container.removeEventListener('dblclick', onDblClick);
             window.removeEventListener('keydown', onKeyDown);
         };
@@ -432,8 +437,8 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
             case 'clip-z': return '✂ Clip Z';
             case 'section-box': return '📦 Section Box';
             case 'section-plane': return '✂ Section Plane — Click bề mặt mô hình';
-            case 'measure-length': return '📏 Đo khoảng cách — Click chọn điểm, tự động bắt đỉnh';
-            case 'measure-area': return '📐 Đo diện tích — Click chọn vùng, double-click hoàn thành';
+            case 'measure-length': return '📏 Đo khoảng cách — Double-click chọn 2 điểm, tự bắt đỉnh';
+            case 'measure-area': return '📐 Đo diện tích — Double-click chọn đỉnh, ESC kết thúc';
             default: return null;
         }
     }, [tools.activeTool]);

@@ -1,16 +1,18 @@
 /**
  * useBimMeasure — Professional measurement using OBC LengthMeasurement + AreaMeasurement
- * Features:
- * - Built-in vertex snapping (GraphicVertexPicker)
- * - Professional dimension lines with labels, endpoints, projection lines
- * - Free mode + Edge mode for length
- * - Free mode + Square mode for area
- * - Auto disable Highlighter while measuring (no highlight on click conflicts)
- * - Single-click to place points
+ * 
+ * Setup: OBC docs — https://docs.thatopen.com/Tutorials/Components/Front/LengthMeasurement
+ * - container.ondblclick = () => measurer.create()       ← dblclick gọi create()
+ * - measurer.snappings = [FRAGS.SnappingClass.POINT]     ← snap vertex
+ * - Highlighter.enabled = false khi measuring             ← tránh xung đột
+ * 
+ * Features: snap-to-vertex, dimension lines, projection lines, auto labels
  */
 import React, { useRef, useState, useCallback, useEffect } from 'react';
+import * as THREE from 'three';
 import * as OBC from '@thatopen/components';
 import * as OBCF from '@thatopen/components-front';
+import * as FRAGS from '@thatopen/fragments';
 import type { ActiveTool } from './useBimTools';
 
 export interface BimMeasureAPI {
@@ -27,11 +29,8 @@ export function useBimMeasure(
     componentsRef?: React.MutableRefObject<OBC.Components | null>,
 ): BimMeasureAPI {
     const [measurementCount, setMeasurementCount] = useState(0);
-    const lengthMeasureRef = useRef<OBCF.LengthMeasurement | null>(null);
-    const areaMeasureRef = useRef<OBCF.AreaMeasurement | null>(null);
-    const highlighterRef = useRef<OBCF.Highlighter | null>(null);
-    const wasHighlighterEnabledRef = useRef(true);
     const initDoneRef = useRef(false);
+    const highlighterWasEnabledRef = useRef(true);
 
     // ── Initialize measurement components ──
     useEffect(() => {
@@ -40,129 +39,118 @@ export function useBimMeasure(
         if (!components || !world || initDoneRef.current) return;
 
         try {
-            // LengthMeasurement
-            const lengthMeasure = components.get(OBCF.LengthMeasurement);
-            lengthMeasure.world = world;
-            lengthMeasure.enabled = false;
-            lengthMeasureRef.current = lengthMeasure;
-
-            // AreaMeasurement
-            const areaMeasure = components.get(OBCF.AreaMeasurement);
-            areaMeasure.world = world;
-            areaMeasure.enabled = false;
-            areaMeasureRef.current = areaMeasure;
-
-            // Highlighter
+            // Length Measurement
+            const measurer = components.get(OBCF.LengthMeasurement);
+            measurer.world = world;
+            measurer.color = new THREE.Color('#00d4ff');  // Cyan
+            measurer.enabled = false;
+            // Set snap to vertices for precision
             try {
-                const highlighter = components.get(OBCF.Highlighter);
-                highlighterRef.current = highlighter;
-            } catch {
-                console.warn('[Measure] Highlighter not available');
-            }
+                (measurer as any).snappings = [FRAGS.SnappingClass.POINT];
+            } catch { /* snappings may not exist in this version */ }
+
+            // Area Measurement
+            const areaMeasurer = components.get(OBCF.AreaMeasurement);
+            areaMeasurer.world = world;
+            areaMeasurer.enabled = false;
 
             initDoneRef.current = true;
             console.log('[Measure] ✅ OBC LengthMeasurement + AreaMeasurement initialized');
         } catch (err) {
-            console.error('[Measure] Failed to initialize:', err);
+            console.error('[Measure] Init failed:', err);
         }
     }, [componentsRef?.current, worldRef.current]);
 
-    // ── Toggle measurement mode on/off ──
+    // ── Toggle measurement mode: enable/disable + supppress Highlighter ──
     useEffect(() => {
-        const lengthMeasure = lengthMeasureRef.current;
-        const areaMeasure = areaMeasureRef.current;
-        const highlighter = highlighterRef.current;
+        const components = componentsRef?.current;
+        if (!components) return;
 
         const isMeasuringLength = activeTool === 'measure-length';
         const isMeasuringArea = activeTool === 'measure-area';
         const isMeasuring = isMeasuringLength || isMeasuringArea;
 
-        // Enable/disable length measurement
-        if (lengthMeasure) {
+        try {
+            // Enable/disable Length
+            const measurer = components.get(OBCF.LengthMeasurement);
             if (isMeasuringLength) {
-                lengthMeasure.enabled = true;
+                measurer.enabled = true;
             } else {
-                lengthMeasure.enabled = false;
-                try { lengthMeasure.endCreation(); } catch { }
+                measurer.enabled = false;
+                try { measurer.endCreation(); } catch { }
             }
-        }
 
-        // Enable/disable area measurement
-        if (areaMeasure) {
+            // Enable/disable Area
+            const areaMeasurer = components.get(OBCF.AreaMeasurement);
             if (isMeasuringArea) {
-                areaMeasure.enabled = true;
+                areaMeasurer.enabled = true;
             } else {
-                areaMeasure.enabled = false;
-                try { areaMeasure.endCreation(); } catch { }
+                areaMeasurer.enabled = false;
+                try { areaMeasurer.endCreation(); } catch { }
             }
-        }
+        } catch { }
 
-        // Disable/restore Highlighter
-        if (highlighter) {
+        // Suppress Highlighter during measuring
+        try {
+            const highlighter = components.get(OBCF.Highlighter);
             if (isMeasuring) {
-                wasHighlighterEnabledRef.current = highlighter.enabled;
+                highlighterWasEnabledRef.current = highlighter.enabled;
                 highlighter.enabled = false;
-                if (highlighter.config) {
+                // Disable internal event listeners (OBC Highlighter binds mousedown/mouseup)
+                try { highlighter.eventManager.setActive(false); } catch { }
+                try {
                     highlighter.config.autoHighlightOnClick = false;
-                }
+                    highlighter.config.selectEnabled = false;
+                } catch { }
+                console.log('[Measure] Highlighter DISABLED');
             } else {
-                highlighter.enabled = wasHighlighterEnabledRef.current;
-                if (highlighter.config) {
+                highlighter.enabled = highlighterWasEnabledRef.current;
+                try { highlighter.eventManager.setActive(true); } catch { }
+                try {
                     highlighter.config.autoHighlightOnClick = true;
-                }
+                    highlighter.config.selectEnabled = true;
+                } catch { }
             }
-        }
+        } catch { }
 
         // Cursor
         const container = containerRef.current;
         if (container) {
             container.style.cursor = isMeasuring ? 'crosshair' : '';
         }
-    }, [activeTool, containerRef]);
+    }, [activeTool, componentsRef?.current, containerRef]);
 
-    // ── Handle click (OBC handles events internally, this is for manual trigger) ──
-    const handleMeasureClick = useCallback(async () => {
-        // OBC LengthMeasurement/AreaMeasurement handle their own click events
-        // This callback is kept for API compatibility but may not be needed
-        const lengthMeasure = lengthMeasureRef.current;
-        const areaMeasure = areaMeasureRef.current;
-
-        const lengthCount = lengthMeasure?.list?.size ?? 0;
-        const areaCount = areaMeasure?.list?.size ?? 0;
-        setMeasurementCount(lengthCount + areaCount);
-    }, []);
+    // ── handleMeasureClick — API compatibility (create() called from ProjectBimTab) ──
+    const handleMeasureClick = useCallback(() => {
+        // OBC create() is called from ProjectBimTab dblclick handler
+        // This updates the count
+        const components = componentsRef?.current;
+        if (!components) return;
+        try {
+            const measurerCount = components.get(OBCF.LengthMeasurement).list.size;
+            const areaCount = components.get(OBCF.AreaMeasurement).list.size;
+            setMeasurementCount(measurerCount + areaCount);
+        } catch { }
+    }, [componentsRef?.current]);
 
     // ── Clear all measurements ──
     const clearAllMeasurements = useCallback(() => {
-        // Clear length measurements
-        const lengthMeasure = lengthMeasureRef.current;
-        if (lengthMeasure?.list) {
-            try {
-                for (const [, dim] of lengthMeasure.list) {
-                    try { dim.dispose(); } catch { }
-                }
-                lengthMeasure.list.clear();
-            } catch (err) {
-                console.warn('[Measure] Length clear error:', err);
-            }
-        }
+        const components = componentsRef?.current;
+        if (!components) return;
 
-        // Clear area measurements
-        const areaMeasure = areaMeasureRef.current;
-        if (areaMeasure?.list) {
-            try {
-                for (const [, area] of areaMeasure.list) {
-                    try { (area as any).dispose?.(); } catch { }
-                }
-                areaMeasure.list.clear();
-            } catch (err) {
-                console.warn('[Measure] Area clear error:', err);
-            }
-        }
+        try {
+            const measurer = components.get(OBCF.LengthMeasurement);
+            measurer.list.clear();
+        } catch { }
+
+        try {
+            const areaMeasurer = components.get(OBCF.AreaMeasurement);
+            areaMeasurer.list.clear();
+        } catch { }
 
         setMeasurementCount(0);
         console.log('[Measure] All measurements cleared');
-    }, []);
+    }, [componentsRef?.current]);
 
     return {
         measurementCount,
