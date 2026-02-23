@@ -178,8 +178,8 @@ export const FacilityManagementPanel: React.FC<FacilityManagementPanelProps> = (
 
     // ── Style helpers ────────────────────────
     const inputCls = `w-full px-3 py-2 text-xs rounded-lg border outline-none transition-colors ${isDarkMode
-            ? 'bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-500 focus:border-blue-500'
-            : 'bg-white border-gray-300 text-gray-800 placeholder:text-gray-400 focus:border-blue-500'
+        ? 'bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-500 focus:border-blue-500'
+        : 'bg-white border-gray-300 text-gray-800 placeholder:text-gray-400 focus:border-blue-500'
         }`;
 
     const selectCls = `${inputCls} appearance-none`;
@@ -267,18 +267,18 @@ export const FacilityManagementPanel: React.FC<FacilityManagementPanelProps> = (
 
             {/* Asset table */}
             {!loading && (
-                <div className="overflow-x-auto">
+                <div className="overflow-x-auto overflow-y-auto max-h-[170px] custom-scrollbar">
                     <table className="w-full text-xs">
-                        <thead>
+                        <thead className={`sticky top-0 z-10 ${isDarkMode ? 'bg-slate-800' : 'bg-white'}`}>
                             <tr className={isDarkMode ? 'text-slate-500' : 'text-gray-400'}>
-                                <th className="text-left px-4 py-2 font-semibold">Mã TS</th>
-                                <th className="text-left px-4 py-2 font-semibold">Tên tài sản</th>
-                                <th className="text-left px-4 py-2 font-semibold">Phân loại</th>
-                                <th className="text-left px-4 py-2 font-semibold">Vị trí</th>
-                                <th className="text-left px-4 py-2 font-semibold">Trạng thái</th>
-                                <th className="text-left px-4 py-2 font-semibold">Tình trạng</th>
-                                <th className="text-left px-4 py-2 font-semibold">Bảo trì kế tiếp</th>
-                                <th className="px-4 py-2"></th>
+                                <th className="text-left px-4 py-2 font-semibold bg-inherit">Mã TS</th>
+                                <th className="text-left px-4 py-2 font-semibold bg-inherit">Tên tài sản</th>
+                                <th className="text-left px-4 py-2 font-semibold bg-inherit">Phân loại</th>
+                                <th className="text-left px-4 py-2 font-semibold bg-inherit">Vị trí</th>
+                                <th className="text-left px-4 py-2 font-semibold bg-inherit">Trạng thái</th>
+                                <th className="text-left px-4 py-2 font-semibold bg-inherit">Tình trạng</th>
+                                <th className="text-left px-4 py-2 font-semibold bg-inherit">Bảo trì kế tiếp</th>
+                                <th className="px-4 py-2 bg-inherit"></th>
                             </tr>
                         </thead>
                         <tbody className={`divide-y ${isDarkMode ? 'divide-slate-700/30' : 'divide-gray-100'}`}>
