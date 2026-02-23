@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Users, X, Phone, Trash2, Plus, Search } from 'lucide-react';
-import { mockEmployees } from '@/mockData';
+import { useEmployees } from '@/hooks/useEmployees';
 import { Employee } from '@/types';
 
 interface ProjectMembersModalProps {
@@ -12,16 +12,17 @@ interface ProjectMembersModalProps {
 
 export const ProjectMembersModal: React.FC<ProjectMembersModalProps> = ({ isOpen, onClose, currentMembers, onUpdateMembers }) => {
     const [searchQuery, setSearchQuery] = useState('');
+    const { data: employees = [] } = useEmployees();
 
     // Employees not in the project
-    const availableEmployees = mockEmployees.filter(e =>
+    const availableEmployees = employees.filter(e =>
         !currentMembers.includes(e.EmployeeID) &&
         (e.FullName.toLowerCase().includes(searchQuery.toLowerCase()) ||
             e.Position.toLowerCase().includes(searchQuery.toLowerCase()))
     );
 
     // Employees currently in the project
-    const activeMembers = currentMembers.map(id => mockEmployees.find(e => e.EmployeeID === id)).filter(Boolean) as Employee[];
+    const activeMembers = currentMembers.map(id => employees.find(e => e.EmployeeID === id)).filter(Boolean) as Employee[];
 
     const handleAddMember = (id: string) => {
         onUpdateMembers([...currentMembers, id]);

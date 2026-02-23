@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { X, Calendar, User, AlignLeft, CheckSquare, Clock, Flag, Link2, BarChart3 } from 'lucide-react';
 import { Task, TaskStatus, TaskPriority, TaskDependency, Employee } from '@/types';
-import { mockEmployees } from '@/mockData';
+import { useEmployees } from '@/hooks/useEmployees';
 import { ProgressSlider } from './ProgressSlider';
 import { TaskDependencyManager } from './TaskDependencyManager';
 
@@ -24,6 +24,7 @@ export const ProjectTaskModal: React.FC<ProjectTaskModalProps> = ({
     stepCode,
     allTasks = []
 }) => {
+    const { data: employees = [] } = useEmployees();
     const [formData, setFormData] = useState<Partial<Task>>({
         Title: '',
         Description: '',
@@ -257,7 +258,7 @@ export const ProjectTaskModal: React.FC<ProjectTaskModalProps> = ({
                                             onChange={e => setFormData({ ...formData, AssigneeID: e.target.value })}
                                         >
                                             <option value="">-- Chọn --</option>
-                                            {mockEmployees.map(emp => (
+                                            {employees.map(emp => (
                                                 <option key={emp.EmployeeID} value={emp.EmployeeID}>
                                                     {emp.FullName}
                                                 </option>
@@ -384,7 +385,7 @@ export const ProjectTaskModal: React.FC<ProjectTaskModalProps> = ({
                                         onChange={e => setFormData({ ...formData, ApproverID: e.target.value })}
                                     >
                                         <option value="">-- Chọn người phê duyệt --</option>
-                                        {mockEmployees.filter(emp => emp.Position?.includes('Trưởng') || emp.Position?.includes('Giám đốc')).map(emp => (
+                                        {employees.filter(emp => emp.Position?.includes('Trưởng') || emp.Position?.includes('Giám đốc')).map(emp => (
                                             <option key={emp.EmployeeID} value={emp.EmployeeID}>
                                                 {emp.FullName} - {emp.Position}
                                             </option>

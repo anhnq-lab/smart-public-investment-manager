@@ -20,7 +20,7 @@ import { SubTaskDetailModal } from '../SubTaskDetailModal';
 import { TaskService } from '@/services/TaskService';
 import { supabase } from '@/lib/supabase';
 import { findByStepCode, buildTT24Key } from '@/utils/docStepMapping';
-import { mockEmployees } from '@/mockData';
+
 
 interface ProjectPlanTabProps {
     tasks: Task[];
@@ -173,8 +173,7 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({
     // Employee name lookup map
     const employeeNameMap = useMemo(() => {
         const map: Record<string, string> = {};
-        const allEmps = employees.length > 0 ? employees : mockEmployees;
-        allEmps.forEach(e => { map[e.EmployeeID] = e.FullName; });
+        employees.forEach(e => { map[e.EmployeeID] = e.FullName; });
         return map;
     }, [employees]);
 

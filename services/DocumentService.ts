@@ -1,6 +1,5 @@
 
 import { Document, Folder, ISO19650Status, WorkflowStep } from '../types';
-import { mockDocuments, mockFolders } from '../mockData';
 
 export const INTERLINKED_WORKFLOW_STEPS = [
     { id: 'CONTRACTOR_SUBMIT', name: 'Nhà thầu trình', role: 'Contractor', nextStatus: ISO19650Status.S3 },
@@ -13,16 +12,18 @@ export class DocumentService {
 
     /**
      * Get folder structure for a project
+     * TODO: Integrate with Supabase storage
      */
     static getFolders(projectId: string): Folder[] {
-        return mockFolders;
+        return [];
     }
 
     /**
      * Get documents in a specific folder
+     * TODO: Integrate with Supabase storage
      */
     static getDocumentsInFolder(folderId: string): Document[] {
-        return mockDocuments.filter(d => d.FolderID === folderId);
+        return [];
     }
 
     /**
@@ -45,34 +46,12 @@ export class DocumentService {
 
     /**
      * Approve/Reject a document step
+     * TODO: Implement with Supabase
      */
     static async processStep(docId: number, status: 'Approved' | 'Rejected', comment: string, actorId: string): Promise<boolean> {
-        return new Promise((resolve) => {
-            setTimeout(() => {
-                const doc = mockDocuments.find(d => d.DocID === docId);
-                if (doc) {
-                    const nextStep = this.getNextWorkflowStep(doc);
-                    if (nextStep) {
-                        if (!doc.WorkflowHistory) doc.WorkflowHistory = [];
-                        doc.WorkflowHistory.push({
-                            StepID: `STP-${Date.now()}`,
-                            StepName: nextStep.name,
-                            ActorID: actorId,
-                            Status: status,
-                            Timestamp: new Date().toISOString(),
-                            Comment: comment
-                        });
-
-                        if (status === 'Approved') {
-                            doc.ISOStatus = nextStep.nextStatus;
-                        } else {
-                            doc.ISOStatus = ISO19650Status.S0; // Returned to WIP
-                        }
-                    }
-                }
-                resolve(true);
-            }, 800);
-        });
+        // Placeholder — document workflow will be integrated with Supabase
+        console.warn('DocumentService.processStep: Not yet connected to Supabase');
+        return true;
     }
 
     /**
@@ -128,9 +107,10 @@ export class DocumentService {
 
     /**
      * Get all documents belonging to a project
+     * TODO: Integrate with Supabase
      */
     static getDocumentsByProject(projectId: string): Document[] {
-        return mockDocuments.filter(d => d.ProjectID === projectId || d.ReferenceID === projectId);
+        return [];
     }
 
     /**
@@ -163,10 +143,11 @@ export class DocumentService {
 
     /**
      * Search documents by name within a project
+     * TODO: Integrate with Supabase
      */
     static searchDocuments(query: string, projectId?: string): Document[] {
         const lowerQuery = query.toLowerCase();
-        let docs = projectId ? this.getDocumentsByProject(projectId) : mockDocuments;
+        const docs = projectId ? this.getDocumentsByProject(projectId) : [];
         return docs.filter(d => d.DocName.toLowerCase().includes(lowerQuery));
     }
 }

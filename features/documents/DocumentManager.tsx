@@ -3,7 +3,7 @@ import {
     Folder, FileText, ChevronRight, ChevronDown, File as FileIcon,
     Download, Eye, ShieldCheck, PenTool, HardDrive, Box, X, Check, Loader2, Clock, Printer, Upload, Image as ImageIcon, History, Search
 } from 'lucide-react';
-import { mockDocuments } from '../../mockData';
+
 import { useProjects } from '../../hooks/useProjects';
 import { DocCategory } from '../../types';
 
@@ -314,8 +314,9 @@ const DocumentManager: React.FC = () => {
     // Filter docs by Selected Project AND Folder
 
     // Filter docs by Selected Project, Folder, Search, and Type
+    // TODO: Replace with Supabase-backed document fetching
     const currentDocs = useMemo(() => {
-        return mockDocuments.filter(doc => {
+        return ([] as any[]).filter(doc => {
             const matchesProject = doc.ProjectID === selectedProject || doc.ReferenceID === selectedProject;
 
             // Context Filter (Folder)

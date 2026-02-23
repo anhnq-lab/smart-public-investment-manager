@@ -6,7 +6,7 @@ import {
 } from 'lucide-react';
 import { SubTaskDef } from '@/utils/stepSubtasksRegistry';
 import { Task, TaskStatus, TaskPriority, Employee, Project } from '@/types';
-import { mockEmployees } from '@/mockData';
+import { useEmployees } from '@/hooks/useEmployees';
 import { ProgressSlider } from './ProgressSlider';
 import { TemplateViewer } from './TemplateViewer';
 import { TemplateExportModal } from './TemplateExportModal';
@@ -64,6 +64,7 @@ export const SubTaskDetailModal: React.FC<SubTaskDetailModalProps> = ({
     onCreateTask,
     project,
 }) => {
+    const { data: allEmployees = [] } = useEmployees();
     const [showTemplate, setShowTemplate] = useState(false);
     const [showExport, setShowExport] = useState(false);
     const hasExportConfig = subTask?.templatePath ? !!getTemplateConfig(subTask.templatePath) : false;
@@ -83,13 +84,13 @@ export const SubTaskDetailModal: React.FC<SubTaskDetailModalProps> = ({
     const [legalBasis, setLegalBasis] = useState('');
     const [durationDays, setDurationDays] = useState<number>(0);
 
-    const departments = useMemo(() => getUniqueDepartments(mockEmployees), []);
+    const departments = useMemo(() => getUniqueDepartments(allEmployees), [allEmployees]);
 
     // Filter employees by selected department
     const filteredEmployees = useMemo(() => {
-        if (!department) return mockEmployees;
-        return mockEmployees.filter(emp => emp.Department === department);
-    }, [department]);
+        if (!department) return allEmployees;
+        return allEmployees.filter(emp => emp.Department === department);
+    }, [department, allEmployees]);
 
     // Pre-fill from registry when subTask changes
     useEffect(() => {

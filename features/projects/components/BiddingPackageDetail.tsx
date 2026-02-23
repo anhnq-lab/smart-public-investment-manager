@@ -7,7 +7,9 @@ import {
 } from 'lucide-react';
 import { BiddingPackage, PackageStatus, ContractStatus, PaymentStatus } from '../../../types';
 import { formatCurrency, formatDate } from '../../../utils/format';
-import { mockPayments, mockContractors, mockContracts } from '../../../mockData';
+import { useContracts } from '../../../hooks/useContracts';
+import { usePayments } from '../../../hooks/usePayments';
+import { useContractors } from '../../../hooks/useContractors';
 
 // ========================================
 // BIDDING PACKAGE DETAIL - Full Lifecycle Management
@@ -100,10 +102,15 @@ export const BiddingPackageDetail: React.FC<BiddingPackageDetailProps> = ({
     const labels = getLabelMaps();
     const currentStage = statusConfig.stage;
 
+    // Fetch related data from Supabase
+    const { contracts } = useContracts();
+    const { payments } = usePayments();
+    const { contractors } = useContractors();
+
     // Get related data
-    const relatedContract = mockContracts.find(c => c.PackageID === pkg.PackageID);
-    const relatedPayments = mockPayments.filter(p => relatedContract && p.ContractID === relatedContract.ContractID);
-    const winningContractor = pkg.WinningContractorID ? mockContractors.find(c => c.ContractorID === pkg.WinningContractorID) : null;
+    const relatedContract = contracts.find(c => c.PackageID === pkg.PackageID);
+    const relatedPayments = payments.filter(p => relatedContract && p.ContractID === relatedContract.ContractID);
+    const winningContractor = pkg.WinningContractorID ? contractors.find(c => c.ContractorID === pkg.WinningContractorID) : null;
 
     // Calculate stats
     const savings = pkg.WinningPrice && pkg.Price ? pkg.Price - pkg.WinningPrice : 0;
@@ -385,8 +392,8 @@ export const BiddingPackageDetail: React.FC<BiddingPackageDetailProps> = ({
                                                     <Award className="w-6 h-6 text-green-600" />
                                                 </div>
                                                 <div>
-                                                    <p className="font-semibold text-gray-800">{winningContractor.ContractorName}</p>
-                                                    <p className="text-xs text-gray-500">MST: {winningContractor.TaxCode}</p>
+                                                    <p className="font-semibold text-gray-800">{winningContractor.FullName}</p>
+                                                    <p className="text-xs text-gray-500">MST: {winningContractor.ContractorID}</p>
                                                 </div>
                                             </div>
                                             <InfoRow label="Giá trúng thầu" value={<span className="font-bold text-green-600">{formatCurrency(pkg.WinningPrice || 0)}</span>} />
@@ -409,11 +416,10 @@ export const BiddingPackageDetail: React.FC<BiddingPackageDetailProps> = ({
                                 <SectionCard title="Nhà thầu thực hiện" icon={Building2} color="green">
                                     {winningContractor ? (
                                         <div className="space-y-2">
-                                            <p className="font-semibold text-gray-800">{winningContractor.ContractorName}</p>
+                                            <p className="font-semibold text-gray-800">{winningContractor.FullName}</p>
                                             <div className="text-sm text-gray-600 space-y-1.5">
-                                                <p className="flex items-center gap-2"><Target className="w-3.5 h-3.5 text-gray-400" /> MST: {winningContractor.TaxCode}</p>
-                                                {winningContractor.Phone && <p className="flex items-center gap-2"><Phone className="w-3.5 h-3.5 text-gray-400" /> {winningContractor.Phone}</p>}
-                                                {winningContractor.Email && <p className="flex items-center gap-2"><Mail className="w-3.5 h-3.5 text-gray-400" /> {winningContractor.Email}</p>}
+                                                <p className="flex items-center gap-2"><Target className="w-3.5 h-3.5 text-gray-400" /> MST: {winningContractor.ContractorID}</p>
+                                                {winningContractor.ContactInfo && <p className="flex items-center gap-2"><Phone className="w-3.5 h-3.5 text-gray-400" /> {winningContractor.ContactInfo}</p>}
                                                 {winningContractor.Address && <p className="flex items-center gap-2"><MapPin className="w-3.5 h-3.5 text-gray-400" /> {winningContractor.Address}</p>}
                                             </div>
                                         </div>
@@ -425,16 +431,16 @@ export const BiddingPackageDetail: React.FC<BiddingPackageDetailProps> = ({
                                 <SectionCard title="Hợp đồng" icon={FileSignature} color="blue">
                                     {relatedContract ? (
                                         <div className="space-y-2">
-                                            <InfoRow label="Số hợp đồng" value={<span className="font-mono font-semibold">{relatedContract.ContractNumber}</span>} />
-                                            <InfoRow label="Giá trị HĐ" value={<span className="font-bold text-blue-600">{formatCurrency(relatedContract.ContractValue)}</span>} />
-                                            <InfoRow label="Ngày ký" value={formatDate(relatedContract.SigningDate)} />
-                                            <InfoRow label="Thời gian thực hiện" value={relatedContract.Duration || pkg.Duration} />
+                                            <InfoRow label="Số hợp đồng" value={<span className="font-mono font-semibold">{relatedContract.ContractID}</span>} />
+                                            <InfoRow label="Giá trị HĐ" value={<span className="font-bold text-blue-600">{formatCurrency(relatedContract.Value)}</span>} />
+                                            <InfoRow label="Ngày ký" value={formatDate(relatedContract.SignDate)} />
+                                            <InfoRow label="Thời gian thực hiện" value={pkg.Duration || '-'} />
                                             <InfoRow label="Trạng thái" value={
-                                                <span className={`px-2 py-0.5 rounded text-xs font-medium ${relatedContract.Status === 'Active' ? 'bg-green-100 text-green-600' :
-                                                    relatedContract.Status === 'Completed' ? 'bg-blue-100 text-blue-600' : 'bg-gray-100 text-gray-600'
+                                                <span className={`px-2 py-0.5 rounded text-xs font-medium ${relatedContract.Status === ContractStatus.Executing ? 'bg-green-100 text-green-600' :
+                                                    relatedContract.Status === ContractStatus.Liquidated ? 'bg-blue-100 text-blue-600' : 'bg-gray-100 text-gray-600'
                                                     }`}>
-                                                    {relatedContract.Status === 'Active' ? 'Đang thực hiện' :
-                                                        relatedContract.Status === 'Completed' ? 'Hoàn thành' : relatedContract.Status}
+                                                    {relatedContract.Status === ContractStatus.Executing ? 'Đang thực hiện' :
+                                                        relatedContract.Status === ContractStatus.Liquidated ? 'Đã thanh lý' : 'Tạm dừng'}
                                                 </span>
                                             } />
                                         </div>
@@ -475,18 +481,18 @@ export const BiddingPackageDetail: React.FC<BiddingPackageDetailProps> = ({
                                                 {relatedPayments.map((payment, idx) => (
                                                     <div key={payment.PaymentID} className="flex items-center justify-between p-3 rounded-lg border border-gray-200 hover:bg-gray-50">
                                                         <div className="flex items-center gap-3">
-                                                            <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${payment.Status === 'Paid' ? 'bg-green-100 text-green-600' : 'bg-yellow-100 text-yellow-600'}`}>
-                                                                {payment.Status === 'Paid' ? <CheckCircle2 className="w-5 h-5" /> : <Clock className="w-5 h-5" />}
+                                                            <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${payment.Status === PaymentStatus.Transferred ? 'bg-green-100 text-green-600' : 'bg-yellow-100 text-yellow-600'}`}>
+                                                                {payment.Status === PaymentStatus.Transferred ? <CheckCircle2 className="w-5 h-5" /> : <Clock className="w-5 h-5" />}
                                                             </div>
                                                             <div>
-                                                                <p className="font-medium text-gray-800">Đợt {idx + 1}: {payment.Description}</p>
-                                                                <p className="text-xs text-gray-500">{payment.PaymentDate ? formatDate(payment.PaymentDate) : 'Chờ thanh toán'}</p>
+                                                                <p className="font-medium text-gray-800">Đợt {idx + 1}: {payment.Type}</p>
+                                                                <p className="text-xs text-gray-500">Mã KB: {payment.TreasuryRef || 'Chờ thanh toán'}</p>
                                                             </div>
                                                         </div>
                                                         <div className="text-right">
                                                             <p className="font-bold text-gray-800">{formatCurrency(payment.Amount)}</p>
-                                                            <span className={`text-xs px-2 py-0.5 rounded-full ${payment.Status === 'Paid' ? 'bg-green-100 text-green-600' : 'bg-yellow-100 text-yellow-600'}`}>
-                                                                {payment.Status === 'Paid' ? 'Đã thanh toán' : 'Chờ duyệt'}
+                                                            <span className={`text-xs px-2 py-0.5 rounded-full ${payment.Status === PaymentStatus.Transferred ? 'bg-green-100 text-green-600' : 'bg-yellow-100 text-yellow-600'}`}>
+                                                                {payment.Status === PaymentStatus.Transferred ? 'Đã chuyển tiền' : 'Chờ duyệt'}
                                                             </span>
                                                         </div>
                                                     </div>
@@ -512,7 +518,7 @@ export const BiddingPackageDetail: React.FC<BiddingPackageDetailProps> = ({
                         <div className="grid grid-cols-2 gap-6">
                             <div className="space-y-4">
                                 <SectionCard title="Nghiệm thu công trình" icon={CheckCircle2} color="green">
-                                    {relatedContract?.Status === 'Completed' ? (
+                                    {relatedContract?.Status === ContractStatus.Liquidated ? (
                                         <div className="space-y-2">
                                             <InfoRow label="Ngày nghiệm thu" value="15/01/2026" />
                                             <InfoRow label="Biên bản nghiệm thu" value="Đã ký" />
@@ -524,7 +530,7 @@ export const BiddingPackageDetail: React.FC<BiddingPackageDetailProps> = ({
                                 </SectionCard>
 
                                 <SectionCard title="Quyết toán hợp đồng" icon={Calculator} color="blue">
-                                    {relatedContract?.Status === 'Completed' ? (
+                                    {relatedContract?.Status === ContractStatus.Liquidated ? (
                                         <div className="space-y-2">
                                             <InfoRow label="Giá trị quyết toán" value={<span className="font-bold text-blue-600">{formatCurrency(contractValue)}</span>} />
                                             <InfoRow label="Đã thanh toán" value={<span className="text-green-600">{formatCurrency(totalPaid)}</span>} />
@@ -539,7 +545,7 @@ export const BiddingPackageDetail: React.FC<BiddingPackageDetailProps> = ({
 
                             <div className="space-y-4">
                                 <SectionCard title="Bảo hành công trình" icon={Shield} color="purple">
-                                    {relatedContract?.Status === 'Completed' ? (
+                                    {relatedContract?.Status === ContractStatus.Liquidated ? (
                                         <div className="space-y-2">
                                             <InfoRow label="Thời gian bảo hành" value="24 tháng" />
                                             <InfoRow label="Bắt đầu từ" value="15/01/2026" />
@@ -556,7 +562,7 @@ export const BiddingPackageDetail: React.FC<BiddingPackageDetailProps> = ({
                                     <div className="space-y-2">
                                         <InfoRow label="Giá gói thầu" value={formatCurrency(pkg.Price)} />
                                         <InfoRow label="Giá trúng thầu" value={pkg.WinningPrice ? formatCurrency(pkg.WinningPrice) : '-'} />
-                                        <InfoRow label="Giá trị HĐ" value={relatedContract ? formatCurrency(relatedContract.ContractValue) : '-'} />
+                                        <InfoRow label="Giá trị HĐ" value={relatedContract ? formatCurrency(relatedContract.Value) : '-'} />
                                         <div className="border-t border-gray-200 my-2" />
                                         <InfoRow label="Tiết kiệm so với dự toán" value={
                                             savings > 0
