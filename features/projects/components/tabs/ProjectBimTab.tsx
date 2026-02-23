@@ -70,7 +70,7 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
         () => tools.toggleRightPanel('properties'),
     );
     const section = useBimSection(engine.worldRef, engine.componentsRef, containerRef, tools.activeTool);
-    const measure = useBimMeasure(engine.worldRef, containerRef, tools.activeTool);
+    const measure = useBimMeasure(engine.worldRef, containerRef, tools.activeTool, engine.componentsRef);
 
     // Keyboard navigation: WASD orbit, arrows, 1-7 views, F fit, +/- zoom
     useBimKeyboard({
@@ -173,6 +173,9 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
         scene.traverse((obj: any) => {
             if (!obj.isMesh || !obj.material) return;
 
+            // Skip non-standard materials (LOD materials, custom shaders without clone)
+            if (typeof obj.material.clone !== 'function') return;
+
             // Cache original material on first use
             if (!cache.has(obj.material) && tools.renderMode !== 'shading') {
                 cache.set(obj.material, obj.material);
@@ -182,7 +185,7 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
                 // Restore original
                 const original = cache.get(obj.material);
                 if (original && original !== obj.material) {
-                    obj.material.dispose();
+                    try { obj.material.dispose(); } catch { }
                     obj.material = original;
                 } else {
                     obj.material.wireframe = false;
@@ -197,29 +200,51 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
             const orig = cache.get(obj.material) || obj.material;
             if (!cache.has(orig)) cache.set(orig, orig);
 
-            const cloned = orig.clone();
-            switch (tools.renderMode) {
-                case 'wireframe':
-                    cloned.wireframe = true;
-                    cloned.opacity = 1;
-                    cloned.transparent = false;
-                    break;
-                case 'xray':
-                    cloned.wireframe = false;
-                    cloned.opacity = 0.15;
-                    cloned.transparent = true;
-                    cloned.depthWrite = false;
-                    break;
-                case 'ghosting':
-                    cloned.wireframe = false;
-                    cloned.opacity = 0.35;
-                    cloned.transparent = true;
-                    cloned.depthWrite = false;
-                    break;
+            try {
+                const cloned = orig.clone();
+                switch (tools.renderMode) {
+                    case 'wireframe':
+                        cloned.wireframe = true;
+                        cloned.opacity = 1;
+                        cloned.transparent = false;
+                        break;
+                    case 'xray':
+                        cloned.wireframe = false;
+                        cloned.opacity = 0.15;
+                        cloned.transparent = true;
+                        cloned.depthWrite = false;
+                        break;
+                    case 'ghosting':
+                        cloned.wireframe = false;
+                        cloned.opacity = 0.35;
+                        cloned.transparent = true;
+                        cloned.depthWrite = false;
+                        break;
+                }
+                // Dispose previous clone if it's not the original
+                if (obj.material !== orig) {
+                    try { obj.material.dispose(); } catch { }
+                }
+                obj.material = cloned;
+            } catch (err) {
+                // Fallback: apply properties directly without cloning
+                console.warn('[RenderMode] Cannot clone material, applying in-place:', err);
+                switch (tools.renderMode) {
+                    case 'wireframe':
+                        obj.material.wireframe = true;
+                        break;
+                    case 'xray':
+                        obj.material.opacity = 0.15;
+                        obj.material.transparent = true;
+                        obj.material.depthWrite = false;
+                        break;
+                    case 'ghosting':
+                        obj.material.opacity = 0.35;
+                        obj.material.transparent = true;
+                        obj.material.depthWrite = false;
+                        break;
+                }
             }
-            // Dispose previous clone if it's not the original
-            if (obj.material !== orig) obj.material.dispose();
-            obj.material = cloned;
         });
     }, [tools.renderMode, engine.viewerReady]);
 

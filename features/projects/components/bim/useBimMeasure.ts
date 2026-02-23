@@ -1,9 +1,11 @@
 /**
- * useBimMeasure — Measurement tools using raycasting + scene overlays
+ * useBimMeasure — Measurement tools using OBC Raycasters + scene overlays
  * Handles: Point-to-point length measurement, area measurement with polygon
+ * Uses OBC.Raycasters for proper fragment-based geometry intersection
  */
-import { useRef, useState, useCallback, useEffect } from 'react';
+import React, { useRef, useState, useCallback, useEffect } from 'react';
 import * as THREE from 'three';
+import * as OBC from '@thatopen/components';
 import type { ActiveTool } from './useBimTools';
 
 interface MeasurementEntry {
@@ -26,6 +28,7 @@ export function useBimMeasure(
     worldRef: React.MutableRefObject<any | null>,
     containerRef: React.RefObject<HTMLDivElement | null>,
     activeTool: ActiveTool,
+    componentsRef?: React.MutableRefObject<OBC.Components | null>,
 ): BimMeasureAPI {
     // Smart unit formatting
     const formatDistance = (meters: number): string => {
@@ -43,28 +46,54 @@ export function useBimMeasure(
     const [measurementCount, setMeasurementCount] = useState(0);
     const activeMeasurementRef = useRef<{ points: THREE.Vector3[]; type: 'length' | 'area' } | null>(null);
     const [activeMeasurement, setActiveMeasurement] = useState<{ points: THREE.Vector3[]; type: 'length' | 'area' } | null>(null);
-    const raycasterRef = useRef(new THREE.Raycaster());
+    // Fallback THREE.Raycaster for when OBC is not available
+    const fallbackRaycasterRef = useRef(new THREE.Raycaster());
 
     // ── Raycast to find point on model surface ──────
+    // Uses OBC.Raycasters for proper fragment intersection, with THREE.Raycaster fallback
     const raycastPoint = useCallback((event: MouseEvent): THREE.Vector3 | null => {
         const container = containerRef.current;
         const world = worldRef.current;
         if (!container || !world) return null;
 
+        // Method 1: Use OBC.Raycasters (works with fragments)
+        if (componentsRef?.current) {
+            try {
+                const raycasters = componentsRef.current.get(OBC.Raycasters);
+                const raycaster = raycasters.get(world);
+                if (raycaster) {
+                    // OBC raycaster uses the mouse position from the last mousemove event
+                    // We need to manually update mouse position for the click event
+                    const rect = container.getBoundingClientRect();
+                    const mouse = new THREE.Vector2(
+                        ((event.clientX - rect.left) / rect.width) * 2 - 1,
+                        -((event.clientY - rect.top) / rect.height) * 2 + 1
+                    );
+                    // Use castRay with updated mouse
+                    (raycaster as any).mouse = mouse;
+                    const result = raycaster.castRay();
+                    if (result) {
+                        return result.point.clone();
+                    }
+                }
+            } catch (err) {
+                console.warn('[Measure] OBC raycaster failed, falling back to THREE:', err);
+            }
+        }
+
+        // Method 2: Fallback to standard THREE.Raycaster
         const rect = container.getBoundingClientRect();
         const mouse = new THREE.Vector2(
             ((event.clientX - rect.left) / rect.width) * 2 - 1,
             -((event.clientY - rect.top) / rect.height) * 2 + 1
         );
 
-        raycasterRef.current.setFromCamera(mouse, world.camera.three);
-        // Set precision for better point accuracy
-        raycasterRef.current.params.Line = { threshold: 0.05 };
-        raycasterRef.current.params.Points = { threshold: 0.05 };
-        const intersects = raycasterRef.current.intersectObjects(world.scene.three.children, true);
+        fallbackRaycasterRef.current.setFromCamera(mouse, world.camera.three);
+        fallbackRaycasterRef.current.params.Line = { threshold: 0.05 };
+        fallbackRaycasterRef.current.params.Points = { threshold: 0.05 };
+        const intersects = fallbackRaycasterRef.current.intersectObjects(world.scene.three.children, true);
 
         for (const hit of intersects) {
-            // Skip non-model objects
             if (hit.object.userData?.isMeasurement ||
                 hit.object.userData?.isClipHelper ||
                 hit.object.userData?.isSectionBox ||
@@ -72,14 +101,12 @@ export function useBimMeasure(
                 hit.object.userData?.isViewCube ||
                 hit.object instanceof THREE.Sprite ||
                 hit.object instanceof THREE.Line) continue;
-            // Skip non-visible or transparent helpers
             if (!hit.object.visible) continue;
             if ((hit.object as any).material?.opacity < 0.1) continue;
-
             return hit.point.clone();
         }
         return null;
-    }, [containerRef, worldRef]);
+    }, [containerRef, worldRef, componentsRef]);
 
     // ── Create measurement line + label ─────────────
     const createLengthVisual = useCallback((p1: THREE.Vector3, p2: THREE.Vector3, id: string): THREE.Object3D[] => {
@@ -124,18 +151,15 @@ export function useBimMeasure(
         canvas.width = 512;
         canvas.height = 128;
         const ctx = canvas.getContext('2d')!;
-        // Background pill
         ctx.fillStyle = 'rgba(0, 20, 40, 0.85)';
         ctx.beginPath();
         ctx.roundRect(16, 16, 480, 96, 16);
         ctx.fill();
-        // Border
         ctx.strokeStyle = 'rgba(0, 255, 255, 0.6)';
         ctx.lineWidth = 2;
         ctx.beginPath();
         ctx.roundRect(16, 16, 480, 96, 16);
         ctx.stroke();
-        // Text
         ctx.fillStyle = '#00ffff';
         ctx.font = 'bold 48px system-ui, sans-serif';
         ctx.textAlign = 'center';
@@ -195,24 +219,21 @@ export function useBimMeasure(
             objects.push(s);
         }
 
-        // Label — high resolution
+        // Label
         const label = formatArea(area);
         const canvas = document.createElement('canvas');
         canvas.width = 512;
         canvas.height = 128;
         const ctx = canvas.getContext('2d')!;
-        // Background pill
         ctx.fillStyle = 'rgba(0, 30, 20, 0.85)';
         ctx.beginPath();
         ctx.roundRect(16, 16, 480, 96, 16);
         ctx.fill();
-        // Border
         ctx.strokeStyle = 'rgba(68, 255, 136, 0.6)';
         ctx.lineWidth = 2;
         ctx.beginPath();
         ctx.roundRect(16, 16, 480, 96, 16);
         ctx.stroke();
-        // Text
         ctx.fillStyle = '#44ff88';
         ctx.font = 'bold 48px system-ui, sans-serif';
         ctx.textAlign = 'center';
@@ -223,7 +244,6 @@ export function useBimMeasure(
         texture.minFilter = THREE.LinearFilter;
         const spriteMat = new THREE.SpriteMaterial({ map: texture, depthTest: false, transparent: true });
         const sprite = new THREE.Sprite(spriteMat);
-        // Center of polygon
         const center = new THREE.Vector3();
         points.forEach(p => center.add(p));
         center.divideScalar(points.length);
@@ -243,13 +263,17 @@ export function useBimMeasure(
         if (!isMeasuring) return;
 
         const point = raycastPoint(event);
-        if (!point) return;
+        if (!point) {
+            console.warn('[Measure] Không tìm thấy điểm giao cắt trên mô hình');
+            return;
+        }
 
         const type = activeTool === 'measure-length' ? 'length' : 'area';
 
         if (!activeMeasurementRef.current || activeMeasurementRef.current.type !== type) {
             activeMeasurementRef.current = { points: [point], type };
             setActiveMeasurement({ points: [point], type });
+            console.log(`[Measure] Bắt đầu đo ${type}: điểm 1 tại`, point);
             return;
         }
 
@@ -262,6 +286,7 @@ export function useBimMeasure(
             const id = `measure-${Date.now()}`;
             const objs = createLengthVisual(active.points[0], active.points[1], id);
             const distance = active.points[0].distanceTo(active.points[1]);
+            console.log(`[Measure] Hoàn thành đo khoảng cách: ${formatDistance(distance)}`);
             measurementsRef.current.push({
                 id, type: 'length', points: [...active.points],
                 value: distance, unit: 'm', objects: objs,
@@ -270,15 +295,12 @@ export function useBimMeasure(
             activeMeasurementRef.current = null;
             setActiveMeasurement(null);
         } else if (type === 'area' && active.points.length >= 3) {
-            // Check if double-click or close to first point to complete
             const first = active.points[0];
             const last = active.points[active.points.length - 1];
             if (active.points.length > 3 && first.distanceTo(last) < 0.5) {
-                // Remove last point (too close to start) and complete
                 active.points.pop();
                 const id = `measure-${Date.now()}`;
                 const objs = createAreaVisual(active.points, id);
-                // Calculate area
                 let area = 0;
                 for (let i = 0; i < active.points.length; i++) {
                     const j = (i + 1) % active.points.length;
