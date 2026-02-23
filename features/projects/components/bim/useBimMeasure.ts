@@ -1,18 +1,17 @@
 /**
  * useBimMeasure — Professional measurement using OBC LengthMeasurement + AreaMeasurement
  * 
- * Setup: OBC docs — https://docs.thatopen.com/Tutorials/Components/Front/LengthMeasurement
- * - container.ondblclick = () => measurer.create()       ← dblclick gọi create()
- * - measurer.snappings = [FRAGS.SnappingClass.POINT]     ← snap vertex
- * - Highlighter.enabled = false khi measuring             ← tránh xung đột
+ * DEFERRED INIT: Only initializes OBC measurement components when user activates measure tool.
+ * This prevents LengthMeasurement/AreaMeasurement from interfering with model loading.
  * 
- * Features: snap-to-vertex, dimension lines, projection lines, auto labels
+ * Flow (per OBC docs):
+ *   container.ondblclick = () => measurer.create()
+ *   Highlighter disabled during measuring
  */
 import React, { useRef, useState, useCallback, useEffect } from 'react';
 import * as THREE from 'three';
 import * as OBC from '@thatopen/components';
 import * as OBCF from '@thatopen/components-front';
-import * as FRAGS from '@thatopen/fragments';
 import type { ActiveTool } from './useBimTools';
 
 export interface BimMeasureAPI {
@@ -32,36 +31,33 @@ export function useBimMeasure(
     const initDoneRef = useRef(false);
     const highlighterWasEnabledRef = useRef(true);
 
-    // ── Initialize measurement components ──
-    useEffect(() => {
+    // ── DEFERRED init: only when measure tool first activated ──
+    const ensureInit = useCallback(() => {
+        if (initDoneRef.current) return true;
         const components = componentsRef?.current;
         const world = worldRef.current;
-        if (!components || !world || initDoneRef.current) return;
+        if (!components || !world) return false;
 
         try {
-            // Length Measurement
             const measurer = components.get(OBCF.LengthMeasurement);
             measurer.world = world;
-            measurer.color = new THREE.Color('#00d4ff');  // Cyan
+            measurer.color = new THREE.Color('#00d4ff');
             measurer.enabled = false;
-            // Set snap to vertices for precision
-            try {
-                (measurer as any).snappings = [FRAGS.SnappingClass.POINT];
-            } catch { /* snappings may not exist in this version */ }
 
-            // Area Measurement
             const areaMeasurer = components.get(OBCF.AreaMeasurement);
             areaMeasurer.world = world;
             areaMeasurer.enabled = false;
 
             initDoneRef.current = true;
-            console.log('[Measure] ✅ OBC LengthMeasurement + AreaMeasurement initialized');
+            console.log('[Measure] ✅ OBC measurement components initialized (deferred)');
+            return true;
         } catch (err) {
             console.error('[Measure] Init failed:', err);
+            return false;
         }
-    }, [componentsRef?.current, worldRef.current]);
+    }, [componentsRef, worldRef]);
 
-    // ── Toggle measurement mode: enable/disable + supppress Highlighter ──
+    // ── Toggle measurement mode on activeTool change ──
     useEffect(() => {
         const components = componentsRef?.current;
         if (!components) return;
@@ -70,25 +66,33 @@ export function useBimMeasure(
         const isMeasuringArea = activeTool === 'measure-area';
         const isMeasuring = isMeasuringLength || isMeasuringArea;
 
-        try {
-            // Enable/disable Length
-            const measurer = components.get(OBCF.LengthMeasurement);
-            if (isMeasuringLength) {
-                measurer.enabled = true;
-            } else {
-                measurer.enabled = false;
-                try { measurer.endCreation(); } catch { }
-            }
+        // Only init measurement components when actually needed
+        if (isMeasuring) {
+            if (!ensureInit()) return;
+        }
 
-            // Enable/disable Area
-            const areaMeasurer = components.get(OBCF.AreaMeasurement);
-            if (isMeasuringArea) {
-                areaMeasurer.enabled = true;
-            } else {
-                areaMeasurer.enabled = false;
-                try { areaMeasurer.endCreation(); } catch { }
-            }
-        } catch { }
+        // Only toggle if init was done
+        if (initDoneRef.current) {
+            try {
+                const measurer = components.get(OBCF.LengthMeasurement);
+                if (isMeasuringLength) {
+                    measurer.enabled = true;
+                } else {
+                    measurer.enabled = false;
+                    try { measurer.endCreation(); } catch { }
+                }
+            } catch { }
+
+            try {
+                const areaMeasurer = components.get(OBCF.AreaMeasurement);
+                if (isMeasuringArea) {
+                    areaMeasurer.enabled = true;
+                } else {
+                    areaMeasurer.enabled = false;
+                    try { areaMeasurer.endCreation(); } catch { }
+                }
+            } catch { }
+        }
 
         // Suppress Highlighter during measuring
         try {
@@ -96,13 +100,11 @@ export function useBimMeasure(
             if (isMeasuring) {
                 highlighterWasEnabledRef.current = highlighter.enabled;
                 highlighter.enabled = false;
-                // Disable internal event listeners (OBC Highlighter binds mousedown/mouseup)
                 try { highlighter.eventManager.setActive(false); } catch { }
                 try {
                     highlighter.config.autoHighlightOnClick = false;
                     highlighter.config.selectEnabled = false;
                 } catch { }
-                console.log('[Measure] Highlighter DISABLED');
             } else {
                 highlighter.enabled = highlighterWasEnabledRef.current;
                 try { highlighter.eventManager.setActive(true); } catch { }
@@ -118,39 +120,30 @@ export function useBimMeasure(
         if (container) {
             container.style.cursor = isMeasuring ? 'crosshair' : '';
         }
-    }, [activeTool, componentsRef?.current, containerRef]);
+    }, [activeTool, componentsRef, containerRef, ensureInit]);
 
-    // ── handleMeasureClick — API compatibility (create() called from ProjectBimTab) ──
+    // ── handleMeasureClick — update count ──
     const handleMeasureClick = useCallback(() => {
-        // OBC create() is called from ProjectBimTab dblclick handler
-        // This updates the count
         const components = componentsRef?.current;
-        if (!components) return;
+        if (!components || !initDoneRef.current) return;
         try {
-            const measurerCount = components.get(OBCF.LengthMeasurement).list.size;
-            const areaCount = components.get(OBCF.AreaMeasurement).list.size;
-            setMeasurementCount(measurerCount + areaCount);
+            const lc = components.get(OBCF.LengthMeasurement).list.size;
+            const ac = components.get(OBCF.AreaMeasurement).list.size;
+            setMeasurementCount(lc + ac);
         } catch { }
-    }, [componentsRef?.current]);
+    }, [componentsRef]);
 
     // ── Clear all measurements ──
     const clearAllMeasurements = useCallback(() => {
         const components = componentsRef?.current;
-        if (!components) return;
+        if (!components || !initDoneRef.current) return;
 
-        try {
-            const measurer = components.get(OBCF.LengthMeasurement);
-            measurer.list.clear();
-        } catch { }
-
-        try {
-            const areaMeasurer = components.get(OBCF.AreaMeasurement);
-            areaMeasurer.list.clear();
-        } catch { }
+        try { components.get(OBCF.LengthMeasurement).list.clear(); } catch { }
+        try { components.get(OBCF.AreaMeasurement).list.clear(); } catch { }
 
         setMeasurementCount(0);
         console.log('[Measure] All measurements cleared');
-    }, [componentsRef?.current]);
+    }, [componentsRef]);
 
     return {
         measurementCount,
