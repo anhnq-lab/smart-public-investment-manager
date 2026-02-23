@@ -1,6 +1,6 @@
 import * as OBC from '@thatopen/components';
 import * as WEBIFC from 'web-ifc';
-import { FacilityAssetInsert, createAsset } from '../../../../../lib/facilityAssetService';
+import { FacilityAssetInsert, createAsset, getProjectBimAssetCount } from '../../../../../lib/facilityAssetService';
 
 // ── Danh sách IFC type codes của thiết bị MEP cụ thể ──
 const MEP_IFC_TYPES: number[] = [
@@ -115,6 +115,15 @@ export async function extractFacilityAssetsFromIFC(
         console.warn('[AutoExtractor] webIfc không khả dụng');
         return 0;
     }
+
+    // Kiểm tra xem project đã có asset BIM chưa (tránh trùng lặp khi reload trang)
+    try {
+        const existingCount = await getProjectBimAssetCount(projectId);
+        if (existingCount > 0) {
+            console.log(`[AutoExtractor] Project đã có ${existingCount} asset từ BIM, bỏ qua extraction.`);
+            return 0;
+        }
+    } catch { /* ignore check errors, proceed with extraction */ }
 
     let extractedCount = 0;
     const seenIds = new Set<number>(); // Tránh trùng lặp

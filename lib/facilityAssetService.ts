@@ -89,3 +89,15 @@ export async function deleteAsset(assetId: string): Promise<void> {
 
     if (error) throw error;
 }
+
+// ── Đếm số asset có bim_element_id (đã được extract từ BIM) ──
+export async function getProjectBimAssetCount(projectId: string): Promise<number> {
+    const { count, error } = await supabase
+        .from('facility_assets')
+        .select('*', { count: 'exact', head: true })
+        .eq('project_id', projectId)
+        .not('bim_element_id', 'is', null);
+
+    if (error) return 0;
+    return count || 0;
+}
