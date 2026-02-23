@@ -54,7 +54,7 @@ const ToolBtn: React.FC<{
         className={`
             relative w-9 h-9 flex items-center justify-center rounded-lg transition-all duration-150
             ${active
-                ? 'bg-blue-500/20 text-blue-400 ring-1 ring-blue-500/50 shadow-[0_0_8px_rgba(59,130,246,0.2)]'
+                ? 'bg-blue-500/20 text-blue-400 ring-1 ring-blue-500/50 shadow-[0_0_8px_rgba(59,130,246,0.2)] hover:bg-blue-500/30'
                 : danger
                     ? isDark ? 'text-red-400 hover:bg-red-500/10' : 'text-red-500 hover:bg-red-50'
                     : isDark ? 'text-slate-400 hover:bg-white/10 hover:text-white' : 'text-gray-500 hover:bg-gray-200 hover:text-gray-800'
@@ -91,19 +91,16 @@ const ToolDropdown: React.FC<{
     const ref = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
-        if (!open) return;
-        const handler = (e: MouseEvent) => {
-            if (ref.current && !ref.current.contains(e.target as Node)) {
+        const handler = (e: MouseEvent | TouchEvent) => {
+            if (open && ref.current && !ref.current.contains(e.target as Node)) {
                 setOpen(false);
             }
         };
-        // Use setTimeout to avoid immediate close on the click that opened
-        const timer = setTimeout(() => {
-            document.addEventListener('mousedown', handler);
-        }, 10);
+        document.addEventListener('mousedown', handler);
+        document.addEventListener('touchstart', handler);
         return () => {
-            clearTimeout(timer);
             document.removeEventListener('mousedown', handler);
+            document.removeEventListener('touchstart', handler);
         };
     }, [open]);
 
@@ -406,16 +403,6 @@ export const BimToolbar: React.FC<BimToolbarProps> = ({
                     { id: 'show-all', icon: <Eye className="w-4 h-4 text-emerald-400" />, label: 'Show All', shortcut: 'Shift+H', divider: true, onClick: onShowAll },
                 ]}
             />
-
-            <Divider isDark={isDarkMode} />
-
-            {/* ── Panels ──── */}
-            <ToolBtn isDark={isDarkMode} active={leftPanel === 'tree'} onClick={() => tools.toggleLeftPanel('tree')} title="Model Tree">
-                <TreePine className="w-4 h-4" />
-            </ToolBtn>
-            <ToolBtn isDark={isDarkMode} active={rightPanel === 'properties'} onClick={() => tools.toggleRightPanel('properties')} title="Properties Panel">
-                <PanelRight className="w-4 h-4" />
-            </ToolBtn>
 
             <Divider isDark={isDarkMode} />
 
