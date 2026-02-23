@@ -56,9 +56,14 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
     // ── Hooks ──────────────────────────────
     const tools = useBimTools();
     const engine = useBimEngine(containerRef, isDark);
+    const [opRefreshTrigger, setOpRefreshTrigger] = useState(0);
+
     const upload = useBimUpload(
         projectID, engine.componentsRef, engine.worldRef, engine.ifcLoaderRef,
-        (ifcData) => selection.buildSpatialTree(ifcData),
+        (ifcData) => {
+            selection.buildSpatialTree(ifcData);
+            setOpRefreshTrigger(prev => prev + 1);
+        },
     );
     const selection = useBimSelection(
         engine.componentsRef, engine.worldRef, engine.ifcLoaderRef, upload.ifcDataMapRef,
@@ -674,6 +679,7 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
                                 projectId={projectID}
                                 isDarkMode={isDark}
                                 isMobile={isMobile}
+                                refreshTrigger={opRefreshTrigger}
                             />
                         </div>
                     </div>

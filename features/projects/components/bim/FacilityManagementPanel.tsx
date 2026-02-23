@@ -19,6 +19,7 @@ interface FacilityManagementPanelProps {
     projectId: string;
     isDarkMode: boolean;
     isMobile: boolean;
+    refreshTrigger?: number;
 }
 
 type AssetStatus = FacilityAsset['status'];
@@ -56,7 +57,7 @@ const EMPTY_FORM: Partial<FacilityAssetInsert> = {
 
 // ── Component ────────────────────────────────────────
 export const FacilityManagementPanel: React.FC<FacilityManagementPanelProps> = ({
-    projectId, isDarkMode, isMobile
+    projectId, isDarkMode, isMobile, refreshTrigger = 0
 }) => {
     const [assets, setAssets] = useState<FacilityAsset[]>([]);
     const [loading, setLoading] = useState(true);
@@ -82,7 +83,7 @@ export const FacilityManagementPanel: React.FC<FacilityManagementPanelProps> = (
         }
     }, [projectId]);
 
-    useEffect(() => { loadAssets(); }, [loadAssets]);
+    useEffect(() => { loadAssets(); }, [loadAssets, refreshTrigger]);
 
     // ── Filter assets ────────────────────────
     const filteredAssets = useMemo(() => {
