@@ -398,8 +398,8 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
             case 'clip-z': return '✂ Clip Z';
             case 'section-box': return '📦 Section Box';
             case 'section-plane': return '✂ Section Plane — Click bề mặt mô hình';
-            case 'measure-length': return '📏 Đo khoảng cách — Double-click để chọn điểm';
-            case 'measure-area': return '📐 Đo diện tích — Double-click để chọn điểm';
+            case 'measure-length': return '📏 Đo khoảng cách — Click chọn điểm, tự động bắt đỉnh';
+            case 'measure-area': return '📐 Đo diện tích — Click chọn vùng, double-click hoàn thành';
             default: return null;
         }
     }, [tools.activeTool]);
