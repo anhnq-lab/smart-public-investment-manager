@@ -162,7 +162,7 @@ export function useBimSelection(
             try {
                 const modelID = ifcApi.OpenModel(ifcData, { COORDINATE_TO_ORIGIN: false });
                 try {
-                    const line = ifcApi.GetLine(modelID, expressID, false, true);
+                    const line = ifcApi.GetLine(modelID, expressID, false);
                     if (!line) continue;
 
                     const propertySets: PropertySetGroup[] = [];
@@ -331,7 +331,8 @@ export function useBimSelection(
                 } finally {
                     ifcApi.CloseModel(modelID);
                 }
-            } catch {
+            } catch (err) {
+                console.warn('[Selection] Error extracting properties from IFCApi:', err);
                 // Element not in this model, try next
             }
         }
