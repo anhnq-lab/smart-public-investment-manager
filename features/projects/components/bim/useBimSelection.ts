@@ -1,16 +1,33 @@
 /**
  * useBimSelection — Element selection, property extraction, spatial tree, visibility
  * 
- * KEY CHANGE: Uses official That Open API (model.getItemsData) instead of manual web-ifc.
- * The Highlighter emits modelIdMap where keys are FragmentsGroup UUIDs.
- * We use FragmentsManager.list.get(uuid) to get the model, then model.getItemsData([...ids])
- * to extract properties — this is the correct, documented approach.
+ * Uses standalone web-ifc IfcAPI for property extraction (OBC's internal webIfc
+ * has uninitialized WASM). Creates a cached IfcAPI instance with Init() for
+ * reliable OpenModel/GetLine/GetLineIDsWithType calls.
  */
-import { useRef, useState, useCallback } from 'react';
+import React, { useRef, useState, useCallback } from 'react';
 import * as OBC from '@thatopen/components';
 import * as OBCF from '@thatopen/components-front';
+import * as WebIFC from 'web-ifc';
 import type { SelectedElement, PropertySetGroup, PropertyItem, RelationItem, ClassificationItem } from './BimPropertiesPanel';
 import type { SpatialNode, TypeGroup } from './BimModelTree';
+
+// ── Standalone web-ifc IfcAPI (cached, initialized once) ──
+let _standaloneIfcApi: WebIFC.IfcAPI | null = null;
+let _initPromise: Promise<WebIFC.IfcAPI> | null = null;
+
+async function getStandaloneIfcApi(): Promise<WebIFC.IfcAPI> {
+    if (_standaloneIfcApi) return _standaloneIfcApi;
+    if (_initPromise) return _initPromise;
+    _initPromise = (async () => {
+        const api = new WebIFC.IfcAPI();
+        await api.Init();
+        _standaloneIfcApi = api;
+        console.log('[web-ifc] ✅ Standalone IfcAPI initialized');
+        return api;
+    })();
+    return _initPromise;
+}
 
 export interface BimSelectionAPI {
     selectedElement: SelectedElement | null;
@@ -129,21 +146,23 @@ export function useBimSelection(
     const extractFullProperties = useCallback(async (
         expressID: number
     ): Promise<Partial<SelectedElement>> => {
-        const ifcLoader = ifcLoaderRef.current;
-        console.log('[Selection] extractFullProperties for expressID:', expressID);
-        console.log('[Selection] ifcLoader:', !!ifcLoader, 'webIfc:', !!ifcLoader?.webIfc);
-        console.log('[Selection] ifcDataMap size:', ifcDataMapRef.current.size);
-        if (!ifcLoader?.webIfc) {
-            console.warn('[Selection] ❌ No webIfc available for property extraction');
+        if (ifcDataMapRef.current.size === 0) return {};
+
+        // Use standalone web-ifc (OBC's internal webIfc has uninitialized WASM)
+        let ifcApi: WebIFC.IfcAPI;
+        try {
+            ifcApi = await getStandaloneIfcApi();
+        } catch (err) {
+            console.warn('[Selection] Failed to init standalone web-ifc:', err);
             return {};
         }
 
         // Try all available IFC data
         for (const [, ifcData] of ifcDataMapRef.current) {
             try {
-                const modelID = ifcLoader.webIfc.OpenModel(ifcData, { COORDINATE_TO_ORIGIN: false });
+                const modelID = ifcApi.OpenModel(ifcData, { COORDINATE_TO_ORIGIN: false });
                 try {
-                    const line = ifcLoader.webIfc.GetLine(modelID, expressID, false, true);
+                    const line = ifcApi.GetLine(modelID, expressID, false, true);
                     if (!line) continue;
 
                     const propertySets: PropertySetGroup[] = [];
@@ -153,17 +172,17 @@ export function useBimSelection(
 
                     // --- PropertySets & QuantitySets ---
                     try {
-                        const relIds = ifcLoader.webIfc.GetLineIDsWithType(modelID, IFC_TYPES.IFCRELDEFINESBYPROPERTIES);
+                        const relIds = ifcApi.GetLineIDsWithType(modelID, IFC_TYPES.IFCRELDEFINESBYPROPERTIES);
                         for (let i = 0; i < relIds.size(); i++) {
                             const relId = relIds.get(i);
-                            const rel = ifcLoader.webIfc.GetLine(modelID, relId, false);
+                            const rel = ifcApi.GetLine(modelID, relId, false);
                             if (!rel?.RelatedObjects) continue;
                             const related = Array.isArray(rel.RelatedObjects) ? rel.RelatedObjects : [rel.RelatedObjects];
                             if (!related.some((r: any) => (r?.value ?? r) === expressID)) continue;
 
                             const psetId = rel.RelatingPropertyDefinition?.value;
                             if (!psetId) continue;
-                            const pset = ifcLoader.webIfc.GetLine(modelID, psetId, false);
+                            const pset = ifcApi.GetLine(modelID, psetId, false);
                             if (!pset) continue;
 
                             const psetName = pset.Name?.value || 'PropertySet';
@@ -175,7 +194,7 @@ export function useBimSelection(
                                     const propId = propRef?.value ?? propRef;
                                     if (!propId) continue;
                                     try {
-                                        const prop = ifcLoader.webIfc.GetLine(modelID, propId, false);
+                                        const prop = ifcApi.GetLine(modelID, propId, false);
                                         if (!prop) continue;
                                         const propName = prop.Name?.value || '';
                                         let propValue = '';
@@ -193,7 +212,7 @@ export function useBimSelection(
                                     const qId = qRef?.value ?? qRef;
                                     if (!qId) continue;
                                     try {
-                                        const q = ifcLoader.webIfc.GetLine(modelID, qId, false);
+                                        const q = ifcApi.GetLine(modelID, qId, false);
                                         if (!q) continue;
                                         const qName = q.Name?.value || '';
                                         const qVal = q.LengthValue?.value ?? q.AreaValue?.value ?? q.VolumeValue?.value ?? q.WeightValue?.value ?? q.CountValue?.value ?? '';
@@ -208,26 +227,26 @@ export function useBimSelection(
 
                     // --- Materials ---
                     try {
-                        const matRelIds = ifcLoader.webIfc.GetLineIDsWithType(modelID, IFC_TYPES.IFCRELASSOCIATESMATERIAL);
+                        const matRelIds = ifcApi.GetLineIDsWithType(modelID, IFC_TYPES.IFCRELASSOCIATESMATERIAL);
                         for (let i = 0; i < matRelIds.size(); i++) {
                             const relId = matRelIds.get(i);
-                            const rel = ifcLoader.webIfc.GetLine(modelID, relId, false);
+                            const rel = ifcApi.GetLine(modelID, relId, false);
                             if (!rel?.RelatedObjects) continue;
                             const related = Array.isArray(rel.RelatedObjects) ? rel.RelatedObjects : [rel.RelatedObjects];
                             if (!related.some((r: any) => (r?.value ?? r) === expressID)) continue;
                             const matId = rel.RelatingMaterial?.value;
                             if (!matId) continue;
                             try {
-                                const mat = ifcLoader.webIfc.GetLine(modelID, matId, false);
+                                const mat = ifcApi.GetLine(modelID, matId, false);
                                 if (mat?.Name?.value) materials.push(mat.Name.value);
                                 if (mat?.ForLayerSet?.value) {
-                                    const layerSet = ifcLoader.webIfc.GetLine(modelID, mat.ForLayerSet.value, false);
+                                    const layerSet = ifcApi.GetLine(modelID, mat.ForLayerSet.value, false);
                                     if (layerSet?.MaterialLayers) {
                                         const layers = Array.isArray(layerSet.MaterialLayers) ? layerSet.MaterialLayers : [layerSet.MaterialLayers];
                                         for (const layerRef of layers) {
-                                            const layer = ifcLoader.webIfc.GetLine(modelID, layerRef?.value ?? layerRef, false);
+                                            const layer = ifcApi.GetLine(modelID, layerRef?.value ?? layerRef, false);
                                             if (layer?.Material?.value) {
-                                                const material = ifcLoader.webIfc.GetLine(modelID, layer.Material.value, false);
+                                                const material = ifcApi.GetLine(modelID, layer.Material.value, false);
                                                 if (material?.Name?.value) materials.push(material.Name.value);
                                             }
                                         }
@@ -239,13 +258,13 @@ export function useBimSelection(
 
                     // --- Relations (voids, fills) ---
                     try {
-                        const voidRelIds = ifcLoader.webIfc.GetLineIDsWithType(modelID, IFC_TYPES.IFCRELVOIDSELEMENT);
+                        const voidRelIds = ifcApi.GetLineIDsWithType(modelID, IFC_TYPES.IFCRELVOIDSELEMENT);
                         for (let i = 0; i < voidRelIds.size(); i++) {
                             const relId = voidRelIds.get(i);
                             try {
-                                const rel = ifcLoader.webIfc.GetLine(modelID, relId, false);
+                                const rel = ifcApi.GetLine(modelID, relId, false);
                                 if (rel?.RelatingBuildingElement?.value === expressID && rel?.RelatedOpeningElement?.value) {
-                                    const target = ifcLoader.webIfc.GetLine(modelID, rel.RelatedOpeningElement.value, false);
+                                    const target = ifcApi.GetLine(modelID, rel.RelatedOpeningElement.value, false);
                                     relations.push({
                                         type: 'VoidsElement',
                                         targetName: target?.Name?.value || `#${rel.RelatedOpeningElement.value}`,
@@ -255,13 +274,13 @@ export function useBimSelection(
                                 }
                             } catch { /* skip */ }
                         }
-                        const fillRelIds = ifcLoader.webIfc.GetLineIDsWithType(modelID, IFC_TYPES.IFCRELFILLSELEMENT);
+                        const fillRelIds = ifcApi.GetLineIDsWithType(modelID, IFC_TYPES.IFCRELFILLSELEMENT);
                         for (let i = 0; i < fillRelIds.size(); i++) {
                             const relId = fillRelIds.get(i);
                             try {
-                                const rel = ifcLoader.webIfc.GetLine(modelID, relId, false);
+                                const rel = ifcApi.GetLine(modelID, relId, false);
                                 if (rel?.RelatingOpeningElement?.value === expressID && rel?.RelatedBuildingElement?.value) {
-                                    const target = ifcLoader.webIfc.GetLine(modelID, rel.RelatedBuildingElement.value, false);
+                                    const target = ifcApi.GetLine(modelID, rel.RelatedBuildingElement.value, false);
                                     relations.push({
                                         type: 'FillsElement',
                                         targetName: target?.Name?.value || `#${rel.RelatedBuildingElement.value}`,
@@ -275,22 +294,22 @@ export function useBimSelection(
 
                     // --- Classifications ---
                     try {
-                        const classRelIds = ifcLoader.webIfc.GetLineIDsWithType(modelID, IFC_TYPES.IFCRELASSOCIATESCLASSIFICATION);
+                        const classRelIds = ifcApi.GetLineIDsWithType(modelID, IFC_TYPES.IFCRELASSOCIATESCLASSIFICATION);
                         for (let i = 0; i < classRelIds.size(); i++) {
                             const relId = classRelIds.get(i);
                             try {
-                                const rel = ifcLoader.webIfc.GetLine(modelID, relId, false);
+                                const rel = ifcApi.GetLine(modelID, relId, false);
                                 if (!rel?.RelatedObjects) continue;
                                 const related = Array.isArray(rel.RelatedObjects) ? rel.RelatedObjects : [rel.RelatedObjects];
                                 if (!related.some((r: any) => (r?.value ?? r) === expressID)) continue;
                                 const classRefId = rel.RelatingClassification?.value;
                                 if (!classRefId) continue;
-                                const classRef = ifcLoader.webIfc.GetLine(modelID, classRefId, false);
+                                const classRef = ifcApi.GetLine(modelID, classRefId, false);
                                 if (!classRef) continue;
                                 let systemName = '';
                                 if (classRef.ReferencedSource?.value) {
                                     try {
-                                        const source = ifcLoader.webIfc.GetLine(modelID, classRef.ReferencedSource.value, false);
+                                        const source = ifcApi.GetLine(modelID, classRef.ReferencedSource.value, false);
                                         systemName = source?.Name?.value || '';
                                     } catch { /* skip */ }
                                 }
@@ -310,14 +329,14 @@ export function useBimSelection(
                         classifications: classifications.length > 0 ? classifications : undefined,
                     };
                 } finally {
-                    ifcLoader.webIfc.CloseModel(modelID);
+                    ifcApi.CloseModel(modelID);
                 }
             } catch {
                 // Element not in this model, try next
             }
         }
         return {};
-    }, [ifcLoaderRef, ifcDataMapRef]);
+    }, [ifcDataMapRef]);
 
     // ═══════════════════════════════════════════════════
     // HIGHLIGHTER EVENTS — using official API
@@ -463,21 +482,7 @@ export function useBimSelection(
             const ifcLoader = ifcLoaderRef.current;
             let enrichedName = prev.name;
             let enrichedType = prev.type;
-            if (ifcLoader?.webIfc) {
-                for (const [, ifcData] of ifcDataMapRef.current) {
-                    try {
-                        const mID = ifcLoader.webIfc.OpenModel(ifcData, { COORDINATE_TO_ORIGIN: false });
-                        try {
-                            const line = ifcLoader.webIfc.GetLine(mID, expressId, false);
-                            if (line) {
-                                enrichedName = line.Name?.value || line.LongName?.value || prev.name;
-                                enrichedType = getIfcTypeName(line.type) || prev.type;
-                            }
-                        } finally { ifcLoader.webIfc.CloseModel(mID); }
-                        break;
-                    } catch { /* try next */ }
-                }
-            }
+            // Name/type enrichment handled by extractFullProperties above
             return {
                 ...prev,
                 name: enrichedName,
@@ -586,26 +591,25 @@ export function useBimSelection(
     // ═══════════════════════════════════════════════════
     // SPATIAL TREE — using web-ifc (still needed for tree structure)
     // ═══════════════════════════════════════════════════
-    const buildSpatialTree = useCallback((ifcData: Uint8Array) => {
+    const buildSpatialTree = useCallback(async (ifcData: Uint8Array) => {
         try {
-            const ifcLoader = ifcLoaderRef.current;
-            if (!ifcLoader?.webIfc) return;
+            const ifcApi = await getStandaloneIfcApi();
 
-            const modelID = ifcLoader.webIfc.OpenModel(ifcData, { COORDINATE_TO_ORIGIN: false });
+            const modelID = ifcApi.OpenModel(ifcData, { COORDINATE_TO_ORIGIN: false });
             try {
                 const buildNode = (expressID: number): SpatialNode => {
-                    const line = ifcLoader.webIfc.GetLine(modelID, expressID, false);
+                    const line = ifcApi.GetLine(modelID, expressID, false);
                     const name = line?.Name?.value || line?.LongName?.value || `#${expressID}`;
                     let type = 'Unknown';
-                    try { type = ifcLoader.webIfc.GetNameFromTypeCode(line?.type) || 'Unknown'; } catch { }
+                    try { type = ifcApi.GetNameFromTypeCode(line?.type) || 'Unknown'; } catch { }
 
                     const children: SpatialNode[] = [];
 
                     // Aggregated children (Site→Building→Storey)
-                    const aggRelIds = ifcLoader.webIfc.GetLineIDsWithType(modelID, IFC_TYPES.IFCRELAGGREGATES);
+                    const aggRelIds = ifcApi.GetLineIDsWithType(modelID, IFC_TYPES.IFCRELAGGREGATES);
                     for (let i = 0; i < aggRelIds.size(); i++) {
                         const relId = aggRelIds.get(i);
-                        const rel = ifcLoader.webIfc.GetLine(modelID, relId, false);
+                        const rel = ifcApi.GetLine(modelID, relId, false);
                         if (!rel?.RelatingObject) continue;
                         const relObjId = rel.RelatingObject?.value ?? rel.RelatingObject;
                         if (relObjId !== expressID) continue;
@@ -618,10 +622,10 @@ export function useBimSelection(
 
                     // Contained elements count
                     let elementCount = 0;
-                    const containRelIds = ifcLoader.webIfc.GetLineIDsWithType(modelID, IFC_TYPES.IFCRELCONTAINEDINSPATIALSTRUCTURE);
+                    const containRelIds = ifcApi.GetLineIDsWithType(modelID, IFC_TYPES.IFCRELCONTAINEDINSPATIALSTRUCTURE);
                     for (let i = 0; i < containRelIds.size(); i++) {
                         const relId = containRelIds.get(i);
-                        const rel = ifcLoader.webIfc.GetLine(modelID, relId, false);
+                        const rel = ifcApi.GetLine(modelID, relId, false);
                         if (!rel?.RelatingStructure) continue;
                         const structId = rel.RelatingStructure?.value ?? rel.RelatingStructure;
                         if (structId !== expressID) continue;
@@ -632,7 +636,7 @@ export function useBimSelection(
                     return { id: expressID, name, type, children, elementCount };
                 };
 
-                const projectIds = ifcLoader.webIfc.GetLineIDsWithType(modelID, IFC_TYPES.IFCPROJECT);
+                const projectIds = ifcApi.GetLineIDsWithType(modelID, IFC_TYPES.IFCPROJECT);
                 const tree: SpatialNode[] = [];
                 for (let i = 0; i < projectIds.size(); i++) {
                     tree.push(buildNode(projectIds.get(i)));
@@ -643,13 +647,13 @@ export function useBimSelection(
                 const typeMap = new Map<string, { id: number; name: string }[]>();
                 for (const ct of COMMON_IFC_TYPES) {
                     try {
-                        const ids = ifcLoader.webIfc.GetLineIDsWithType(modelID, ct.code);
+                        const ids = ifcApi.GetLineIDsWithType(modelID, ct.code);
                         if (ids.size() === 0) continue;
                         const elements: { id: number; name: string }[] = [];
                         for (let j = 0; j < ids.size(); j++) {
                             const id = ids.get(j);
                             try {
-                                const el = ifcLoader.webIfc.GetLine(modelID, id, false);
+                                const el = ifcApi.GetLine(modelID, id, false);
                                 elements.push({ id, name: el?.Name?.value || `#${id}` });
                             } catch { elements.push({ id, name: `#${id}` }); }
                         }
@@ -683,12 +687,12 @@ export function useBimSelection(
                     return Array.from(merged.values()).sort((a, b) => b.count - a.count);
                 });
             } finally {
-                ifcLoader.webIfc.CloseModel(modelID);
+                ifcApi.CloseModel(modelID);
             }
         } catch (err) {
             console.warn('Spatial tree build error:', err);
         }
-    }, [ifcLoaderRef]);
+    }, []);
 
     // ── Clear selection ──
     const clearSelection = useCallback(() => {

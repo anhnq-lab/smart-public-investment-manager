@@ -2,6 +2,21 @@ import * as OBC from '@thatopen/components';
 import * as WEBIFC from 'web-ifc';
 import { FacilityAssetInsert, createAsset, getProjectBimAssetCount } from '../../../../../lib/facilityAssetService';
 
+// ── Standalone web-ifc (reuse cached instance) ──
+let _ifcApi: WEBIFC.IfcAPI | null = null;
+let _initP: Promise<WEBIFC.IfcAPI> | null = null;
+async function getIfcApi(): Promise<WEBIFC.IfcAPI> {
+    if (_ifcApi) return _ifcApi;
+    if (_initP) return _initP;
+    _initP = (async () => {
+        const api = new WEBIFC.IfcAPI();
+        await api.Init();
+        _ifcApi = api;
+        return api;
+    })();
+    return _initP;
+}
+
 // ── Danh sách IFC type codes của thiết bị MEP cụ thể ──
 const MEP_IFC_TYPES: number[] = [
     WEBIFC.IFCCHILLER, WEBIFC.IFCPUMP, WEBIFC.IFCFAN, WEBIFC.IFCAIRTERMINAL, WEBIFC.IFCBOILER,
@@ -109,10 +124,13 @@ function categorizeByIfcType(ifcType: string): string {
 export async function extractFacilityAssetsFromIFC(
     projectId: string,
     ifcData: Uint8Array,
-    ifcLoader: OBC.IfcLoader
+    _ifcLoader?: OBC.IfcLoader  // kept for API compat, unused
 ): Promise<number> {
-    if (!ifcLoader?.webIfc) {
-        console.warn('[AutoExtractor] webIfc không khả dụng');
+    let ifcApi: WEBIFC.IfcAPI;
+    try {
+        ifcApi = await getIfcApi();
+    } catch (err) {
+        console.warn('[AutoExtractor] Failed to init web-ifc:', err);
         return 0;
     }
 
@@ -129,7 +147,7 @@ export async function extractFacilityAssetsFromIFC(
     const seenIds = new Set<number>(); // Tránh trùng lặp
 
     try {
-        const modelID = ifcLoader.webIfc.OpenModel(ifcData, { COORDINATE_TO_ORIGIN: false });
+        const modelID = ifcApi.OpenModel(ifcData, { COORDINATE_TO_ORIGIN: false });
         console.log('[AutoExtractor] Đã mở model IFC, bắt đầu quét thiết bị...');
 
         try {
@@ -138,10 +156,10 @@ export async function extractFacilityAssetsFromIFC(
             // ═══ LỚP 1: Quét các MEP type cụ thể ═══
             for (const typeCode of MEP_IFC_TYPES) {
                 try {
-                    const ids = ifcLoader.webIfc.GetLineIDsWithType(modelID, typeCode);
+                    const ids = ifcApi.GetLineIDsWithType(modelID, typeCode);
                     if (ids.size() === 0) continue;
 
-                    const typeName = ifcLoader.webIfc.GetNameFromTypeCode(typeCode) || 'Unknown';
+                    const typeName = ifcApi.GetNameFromTypeCode(typeCode) || 'Unknown';
                     const category = categorizeByIfcType(typeName);
                     console.log(`[AutoExtractor] Tìm thấy ${ids.size()} phần tử loại ${typeName}`);
 
@@ -151,7 +169,7 @@ export async function extractFacilityAssetsFromIFC(
                         seenIds.add(id);
 
                         try {
-                            const line = ifcLoader.webIfc.GetLine(modelID, id, false);
+                            const line = ifcApi.GetLine(modelID, id, false);
                             if (!line) continue;
 
                             const name = line.Name?.value || line.LongName?.value || `${typeName} #${id}`;
@@ -183,10 +201,10 @@ export async function extractFacilityAssetsFromIFC(
             // ═══ LỚP 2: Quét loại CHUNG → lọc bằng tên ═══
             for (const typeCode of GENERIC_IFC_TYPES) {
                 try {
-                    const ids = ifcLoader.webIfc.GetLineIDsWithType(modelID, typeCode);
+                    const ids = ifcApi.GetLineIDsWithType(modelID, typeCode);
                     if (ids.size() === 0) continue;
 
-                    const typeName = ifcLoader.webIfc.GetNameFromTypeCode(typeCode) || 'GenericElement';
+                    const typeName = ifcApi.GetNameFromTypeCode(typeCode) || 'GenericElement';
                     console.log(`[AutoExtractor] Quét ${ids.size()} phần tử loại ${typeName} (lọc bằng tên)...`);
 
                     for (let i = 0; i < ids.size(); i++) {
@@ -194,7 +212,7 @@ export async function extractFacilityAssetsFromIFC(
                         if (seenIds.has(id)) continue;
 
                         try {
-                            const line = ifcLoader.webIfc.GetLine(modelID, id, false);
+                            const line = ifcApi.GetLine(modelID, id, false);
                             if (!line) continue;
 
                             const name = line.Name?.value || line.LongName?.value || '';
@@ -243,7 +261,7 @@ export async function extractFacilityAssetsFromIFC(
             }
 
         } finally {
-            ifcLoader.webIfc.CloseModel(modelID);
+            ifcApi.CloseModel(modelID);
         }
     } catch (err) {
         console.error('[AutoExtractor] Lỗi khi trích xuất tài sản:', err);
