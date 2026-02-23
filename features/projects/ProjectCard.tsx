@@ -1,7 +1,7 @@
 import React from 'react';
 import { Project, ProjectStatus, ProjectGroup } from '../../types';
 import { MapPin, Building, Layers } from 'lucide-react';
-import { formatCurrency } from '../../mockData';
+import { formatShortCurrency as formatCurrency } from '../../utils/format';
 import { getGroupGradient, requiresBIM } from '../../utils/projectCompliance';
 
 interface ProjectCardProps {

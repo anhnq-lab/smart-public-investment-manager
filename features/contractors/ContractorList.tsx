@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { mockContractors } from '../../mockData';
+import { useContractors } from '../../hooks/useContractors';
 import { Contractor } from '../../types';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '../../components/ui/Toast';
@@ -8,8 +8,16 @@ import { Pencil, Trash2, Plus, X, Search, Users, Building2, Globe, MapPin } from
 const ContractorList: React.FC = () => {
     const navigate = useNavigate();
     const { showToast } = useToast();
-    const [contractors, setContractors] = useState<Contractor[]>(mockContractors);
+    const { contractors: supabaseContractors } = useContractors();
+    const [contractors, setContractors] = useState<Contractor[]>([]);
     const [searchTerm, setSearchTerm] = useState('');
+
+    // Sync Supabase data to local state
+    React.useEffect(() => {
+        if (supabaseContractors.length > 0) {
+            setContractors(supabaseContractors);
+        }
+    }, [supabaseContractors]);
 
     // Modal State
     const [isModalOpen, setIsModalOpen] = useState(false);

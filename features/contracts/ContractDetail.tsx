@@ -1,10 +1,9 @@
 
 import React, { useState, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import {
-    mockContractors, mockBiddingPackages,
-    formatFullCurrency
-} from '../../mockData';
+import { formatFullCurrency } from '../../utils/format';
+import { useContractors } from '../../hooks/useContractors';
+import { useAllBiddingPackages } from '../../hooks/useAllBiddingPackages';
 import { ContractStatus, PaymentStatus } from '../../types';
 import { useContracts } from '../../hooks/useContracts';
 import { usePayments } from '../../hooks/usePayments';
@@ -30,6 +29,8 @@ const ContractDetail: React.FC = () => {
     const { contracts } = useContracts();
     const { payments: allPayments } = usePayments();
     const { projects: allProjects } = useProjects();
+    const { contractors: allContractors } = useContractors();
+    const { biddingPackages: allBiddingPackages } = useAllBiddingPackages();
 
     const contract = contracts.find(c => c.ContractID === contractId);
 
@@ -43,9 +44,9 @@ const ContractDetail: React.FC = () => {
         );
     }
 
-    const pkg = mockBiddingPackages.find(p => p.PackageID === contract.PackageID);
+    const pkg = allBiddingPackages.find(p => p.PackageID === contract.PackageID);
     const project = allProjects.find(p => p.ProjectID === pkg?.ProjectID);
-    const contractor = mockContractors.find(c => c.ContractorID === contract.ContractorID);
+    const contractor = allContractors.find(c => c.ContractorID === contract.ContractorID);
     const payments = allPayments.filter(p => p.ContractID === contract.ContractID);
 
     // 2. Calculate Financials

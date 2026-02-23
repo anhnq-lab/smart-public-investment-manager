@@ -1,11 +1,12 @@
 import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { formatCurrency } from '../../mockData';
+import { formatShortCurrency as formatCurrency } from '../../utils/format';
 import { PaymentType, PaymentStatus, Payment } from '../../types';
 import { PaymentForm } from './PaymentForm';
 import { usePayments, useCreatePayment } from '../../hooks/usePayments';
 import { useContracts } from '../../hooks/useContracts';
-import { mockContractors, mockBiddingPackages } from '../../mockData';
+import { useContractors } from '../../hooks/useContractors';
+import { useAllBiddingPackages } from '../../hooks/useAllBiddingPackages';
 import { useProjects } from '../../hooks/useProjects';
 import {
     CreditCard, Download, Search, Plus,
@@ -23,6 +24,8 @@ const PaymentList: React.FC = () => {
     const createPaymentMutation = useCreatePayment();
     const { contracts } = useContracts();
     const { projects } = useProjects();
+    const { contractors } = useContractors();
+    const { biddingPackages } = useAllBiddingPackages();
     const [isFormOpen, setIsFormOpen] = useState(false);
     const [filterStatus, setFilterStatus] = useState<'all' | PaymentStatus>('all');
     const [filterType, setFilterType] = useState<'all' | PaymentType>('all');
@@ -32,14 +35,14 @@ const PaymentList: React.FC = () => {
     const getContractorName = (contractId: string): string => {
         const contract = contracts.find(c => c.ContractID === contractId);
         if (!contract) return '—';
-        const contractor = mockContractors.find(ct => ct.ContractorID === contract.ContractorID);
+        const contractor = contractors.find(ct => ct.ContractorID === contract.ContractorID);
         return contractor?.FullName || contract.ContractorID;
     };
 
     const getProjectName = (contractId: string): string => {
         const contract = contracts.find(c => c.ContractID === contractId);
         if (!contract) return '—';
-        const pkg = mockBiddingPackages.find(p => p.PackageID === contract.PackageID);
+        const pkg = biddingPackages.find(p => p.PackageID === contract.PackageID);
         if (!pkg) return '—';
         const project = projects.find(p => p.ProjectID === pkg.ProjectID);
         return project?.ProjectName || '—';

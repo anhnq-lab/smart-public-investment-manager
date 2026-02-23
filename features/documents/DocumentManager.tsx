@@ -3,7 +3,8 @@ import {
     Folder, FileText, ChevronRight, ChevronDown, File as FileIcon,
     Download, Eye, ShieldCheck, PenTool, HardDrive, Box, X, Check, Loader2, Clock, Printer, Upload, Image as ImageIcon, History, Search
 } from 'lucide-react';
-import { mockProjects, mockDocuments } from '../../mockData';
+import { mockDocuments } from '../../mockData';
+import { useProjects } from '../../hooks/useProjects';
 import { DocCategory } from '../../types';
 
 // --- COMPONENT: REUSABLE FILE PREVIEW (ACTUAL + MOCK) ---
@@ -218,8 +219,9 @@ const FilterChip: React.FC<{ label: string, active: boolean, onClick: () => void
 );
 
 const DocumentManager: React.FC = () => {
+    const { projects } = useProjects();
     // Default to the first project or standard project
-    const defaultProject = mockProjects.find(p => p.ProjectID === 'PR2400031160') || mockProjects[0];
+    const defaultProject = projects.find(p => p.ProjectID === 'PR2400031160') || projects[0];
     const [selectedProject, setSelectedProject] = useState<string>(defaultProject?.ProjectID || "");
     const [selectedFolder, setSelectedFolder] = useState<string | null>('F1');
     const [selectedFile, setSelectedFile] = useState<any>(null);
@@ -425,7 +427,7 @@ const DocumentManager: React.FC = () => {
                                     onChange={(e) => setSelectedProject(e.target.value)}
                                     className="w-full text-sm font-bold text-gray-800 dark:text-slate-200 outline-none bg-transparent cursor-pointer hover:text-blue-600 dark:hover:text-blue-400 transition-colors truncate"
                                 >
-                                    {mockProjects.map(p => (
+                                    {projects.map(p => (
                                         <option key={p.ProjectID} value={p.ProjectID}>{p.ProjectName}</option>
                                     ))}
                                 </select>

@@ -5,7 +5,7 @@ import {
     Plus, Download, DollarSign, Calendar, PieChart
 } from 'lucide-react';
 import { CapitalPlan, Disbursement } from '../../types';
-import { formatFullCurrency } from '../../mockData';
+import { formatFullCurrency } from '../../utils/format';
 
 // Hooks
 import { useCapitalPlans, useDisbursements, useCapitalStats, useCapitalAlerts } from '../../hooks/useCapital';

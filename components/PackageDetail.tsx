@@ -1,14 +1,17 @@
 
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { 
-    mockBiddingPackages, mockProjects, mockContractors, mockContracts, mockPayments, 
-    formatFullCurrency, mockPackageIssues, analyzePackageHealth, formatCurrency 
-} from '../mockData';
+import { useProjects } from '../hooks/useProjects';
+import { useContractors } from '../hooks/useContractors';
+import { useContracts } from '../hooks/useContracts';
+import { useAllBiddingPackages } from '../hooks/useAllBiddingPackages';
+import { usePayments } from '../hooks/usePayments';
+import { formatFullCurrency, formatShortCurrency as formatCurrency } from '../utils/format';
+import { packageIssues, analyzePackageHealth } from '../utils/packageHealth';
 import { PackageStatus, ContractStatus, PackageIssue, RiskLevel, PackageHealthCheck, PaymentStatus } from '../types';
-import { 
-    ArrowLeft, FileText, Calendar, DollarSign, 
-    Users, Clock, CheckCircle2, AlertCircle, 
+import {
+    ArrowLeft, FileText, Calendar, DollarSign,
+    Users, Clock, CheckCircle2, AlertCircle,
     Gavel, Award, FileCheck, Download, ExternalLink, HardHat,
     FileSignature, ShieldCheck, ArrowRight, Activity, TrendingUp, AlertTriangle, List, PlusCircle, BrainCircuit,
     Building2, Loader2, ChevronDown
@@ -22,11 +25,17 @@ const PackageDetail: React.FC = () => {
     const [healthCheck, setHealthCheck] = useState<PackageHealthCheck | null>(null);
     const [isLoadingHealth, setIsLoadingHealth] = useState(false);
 
-    const pkg = mockBiddingPackages.find(p => p.PackageID === packageId);
-    const project = mockProjects.find(p => p.ProjectID === projectId);
-    const contract = mockContracts.find(c => c.PackageID === packageId);
-    const payments = mockPayments.filter(p => p.ContractID === contract?.ContractID);
-    const issues = mockPackageIssues.filter(i => i.PackageID === packageId);
+    const { projects } = useProjects();
+    const { contractors } = useContractors();
+    const { contracts: allContracts } = useContracts();
+    const { biddingPackages } = useAllBiddingPackages();
+    const { payments: allPayments } = usePayments();
+
+    const pkg = biddingPackages.find(p => p.PackageID === packageId);
+    const project = projects.find(p => p.ProjectID === projectId);
+    const contract = allContracts.find(c => c.PackageID === packageId);
+    const payments = allPayments.filter(p => p.ContractID === contract?.ContractID);
+    const issues = packageIssues.filter(i => i.PackageID === packageId);
 
     // Initial Data Fetch Simulation for AI Health Check
     useEffect(() => {
@@ -48,7 +57,7 @@ const PackageDetail: React.FC = () => {
         );
     }
 
-    const winningContractor = mockContractors.find(c => c.ContractorID === pkg.WinningContractorID);
+    const winningContractor = contractors.find(c => c.ContractorID === pkg.WinningContractorID);
     const totalDisbursed = payments.filter(p => p.Status === PaymentStatus.Transferred).reduce((acc, p) => acc + p.Amount, 0);
     const disbursedPercent = contract ? (totalDisbursed / contract.Value) * 100 : 0;
 
@@ -81,9 +90,8 @@ const PackageDetail: React.FC = () => {
                         <div>
                             <div className="flex items-center gap-2 mb-1">
                                 <span className="font-mono text-xs font-bold text-gray-500 bg-gray-100 px-2 py-0.5 rounded">{pkg.NotificationCode || pkg.PackageNumber}</span>
-                                <span className={`text-[10px] px-2 py-0.5 rounded font-bold uppercase ${
-                                    pkg.Status === PackageStatus.Awarded ? 'bg-emerald-100 text-emerald-700' : 'bg-blue-100 text-blue-700'
-                                }`}>
+                                <span className={`text-[10px] px-2 py-0.5 rounded font-bold uppercase ${pkg.Status === PackageStatus.Awarded ? 'bg-emerald-100 text-emerald-700' : 'bg-blue-100 text-blue-700'
+                                    }`}>
                                     {pkg.Status === PackageStatus.Awarded ? 'Đã có KQLCNT' : pkg.Status === PackageStatus.Bidding ? 'Đang mời thầu' : 'Đang thực hiện'}
                                 </span>
                             </div>
@@ -93,15 +101,15 @@ const PackageDetail: React.FC = () => {
                             </p>
                         </div>
                     </div>
-                    
+
                     {/* Header Action Buttons for PM */}
                     <div className="flex gap-2 mt-4 md:mt-0">
-                         <button className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 text-gray-700 font-medium rounded-xl hover:bg-gray-50 text-sm">
-                             <Download className="w-4 h-4" /> Báo cáo
-                         </button>
-                         <button className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white font-medium rounded-xl hover:bg-blue-700 text-sm shadow-lg shadow-blue-200">
-                             <Activity className="w-4 h-4" /> Cập nhật tiến độ
-                         </button>
+                        <button className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 text-gray-700 font-medium rounded-xl hover:bg-gray-50 text-sm">
+                            <Download className="w-4 h-4" /> Báo cáo
+                        </button>
+                        <button className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white font-medium rounded-xl hover:bg-blue-700 text-sm shadow-lg shadow-blue-200">
+                            <Activity className="w-4 h-4" /> Cập nhật tiến độ
+                        </button>
                     </div>
                 </div>
 
@@ -114,8 +122,8 @@ const PackageDetail: React.FC = () => {
                     <div className="p-3 bg-emerald-50 rounded-xl border border-emerald-100">
                         <p className="text-xs text-emerald-600 font-semibold uppercase mb-1">Đã giải ngân</p>
                         <div className="flex items-end gap-2">
-                             <p className="text-lg font-bold text-emerald-700">{formatFullCurrency(totalDisbursed)}</p>
-                             <span className="text-xs font-bold text-emerald-600 mb-1">({contract?.Value ? disbursedPercent.toFixed(1) : 0}%)</span>
+                            <p className="text-lg font-bold text-emerald-700">{formatFullCurrency(totalDisbursed)}</p>
+                            <span className="text-xs font-bold text-emerald-600 mb-1">({contract?.Value ? disbursedPercent.toFixed(1) : 0}%)</span>
                         </div>
                     </div>
                     <div className="p-3 bg-blue-50 rounded-xl border border-blue-100">
@@ -125,8 +133,8 @@ const PackageDetail: React.FC = () => {
                         </p>
                     </div>
                     <div className="p-3 bg-purple-50 rounded-xl border border-purple-100">
-                         <p className="text-xs text-purple-600 font-semibold uppercase mb-1">Thời điểm đóng thầu</p>
-                         <p className="text-lg font-bold text-purple-700">{pkg.BidClosingDate || 'Chưa xác định'}</p>
+                        <p className="text-xs text-purple-600 font-semibold uppercase mb-1">Thời điểm đóng thầu</p>
+                        <p className="text-lg font-bold text-purple-700">{pkg.BidClosingDate || 'Chưa xác định'}</p>
                     </div>
                 </div>
             </div>
@@ -140,14 +148,13 @@ const PackageDetail: React.FC = () => {
                     { id: 'bidders', label: 'Nhà thầu & KQLCNT', icon: Users },
                     { id: 'documents', label: 'Hồ sơ tài liệu', icon: FileCheck },
                 ].map((tab) => (
-                    <button 
+                    <button
                         key={tab.id}
                         onClick={() => setActiveTab(tab.id as any)}
-                        className={`py-3 px-1 text-sm font-bold border-b-2 transition-colors flex items-center gap-2 whitespace-nowrap ${
-                            activeTab === tab.id 
-                            ? 'border-blue-600 text-blue-600' 
-                            : 'border-transparent text-gray-500 hover:text-gray-700'
-                        }`}
+                        className={`py-3 px-1 text-sm font-bold border-b-2 transition-colors flex items-center gap-2 whitespace-nowrap ${activeTab === tab.id
+                                ? 'border-blue-600 text-blue-600'
+                                : 'border-transparent text-gray-500 hover:text-gray-700'
+                            }`}
                     >
                         <tab.icon className="w-4 h-4" /> {tab.label}
                     </button>
@@ -156,11 +163,11 @@ const PackageDetail: React.FC = () => {
 
             {/* Main Content Area */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                
+
                 {/* --- TAB: INFO (DETAILED VIEW) --- */}
                 {activeTab === 'info' && (
                     <div className="lg:col-span-3 space-y-8 max-w-5xl mx-auto">
-                        
+
                         {/* 1. Thông tin cơ bản */}
                         <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
                             <div className="px-6 py-4 bg-gray-50 border-b border-gray-200">
@@ -347,7 +354,7 @@ const PackageDetail: React.FC = () => {
                                     <BarChart data={financialData} layout="vertical" margin={{ top: 5, right: 30, left: 40, bottom: 5 }}>
                                         <CartesianGrid strokeDasharray="3 3" horizontal={false} />
                                         <XAxis type="number" hide />
-                                        <YAxis type="category" dataKey="name" width={100} tick={{fontSize: 12}} />
+                                        <YAxis type="category" dataKey="name" width={100} tick={{ fontSize: 12 }} />
                                         <RechartsTooltip formatter={(value) => formatFullCurrency(Number(value))} />
                                         <Bar dataKey="value" barSize={30} radius={[0, 4, 4, 0]}>
                                             {financialData.map((entry, index) => (
@@ -363,7 +370,7 @@ const PackageDetail: React.FC = () => {
                             <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
                                 <DollarSign className="w-5 h-5 text-blue-600" /> Chi tiết dòng tiền
                             </h3>
-                            
+
                             <div className="flex-1 space-y-6">
                                 <div className="p-4 bg-gray-50 rounded-xl border border-gray-100">
                                     <div className="flex justify-between items-center mb-2">
@@ -373,13 +380,13 @@ const PackageDetail: React.FC = () => {
                                         </span>
                                     </div>
                                     <div className="w-full bg-gray-200 rounded-full h-1.5">
-                                        <div 
-                                            className="bg-emerald-500 h-1.5 rounded-full" 
-                                            style={{ width: `${pkg.WinningPrice ? ((pkg.Price - pkg.WinningPrice)/pkg.Price)*100 : 0}%` }}
+                                        <div
+                                            className="bg-emerald-500 h-1.5 rounded-full"
+                                            style={{ width: `${pkg.WinningPrice ? ((pkg.Price - pkg.WinningPrice) / pkg.Price) * 100 : 0}%` }}
                                         ></div>
                                     </div>
                                     <p className="text-xs text-gray-500 mt-2 text-right">
-                                        Tỷ lệ giảm giá: {pkg.WinningPrice ? ((1 - pkg.WinningPrice/pkg.Price)*100).toFixed(2) : 0}%
+                                        Tỷ lệ giảm giá: {pkg.WinningPrice ? ((1 - pkg.WinningPrice / pkg.Price) * 100).toFixed(2) : 0}%
                                     </p>
                                 </div>
 
@@ -393,9 +400,8 @@ const PackageDetail: React.FC = () => {
                                             </div>
                                             <div className="text-right">
                                                 <p className="text-sm font-bold text-gray-900">{formatFullCurrency(pay.Amount)}</p>
-                                                <span className={`text-[10px] px-1.5 py-0.5 rounded ${
-                                                    pay.Status === PaymentStatus.Transferred ? 'bg-emerald-100 text-emerald-700' : 'bg-yellow-100 text-yellow-700'
-                                                }`}>
+                                                <span className={`text-[10px] px-1.5 py-0.5 rounded ${pay.Status === PaymentStatus.Transferred ? 'bg-emerald-100 text-emerald-700' : 'bg-yellow-100 text-yellow-700'
+                                                    }`}>
                                                     {pay.Status === PaymentStatus.Transferred ? 'Đã chuyển' : 'Chờ duyệt'}
                                                 </span>
                                             </div>
@@ -404,7 +410,7 @@ const PackageDetail: React.FC = () => {
                                         <p className="text-sm text-gray-500 italic">Chưa có dữ liệu thanh toán.</p>
                                     )}
                                 </div>
-                                
+
                                 <button onClick={() => navigate('/payments')} className="w-full mt-auto py-2 text-sm text-blue-600 font-medium hover:bg-blue-50 rounded-lg transition-colors">
                                     Xem toàn bộ lịch sử thanh toán
                                 </button>
@@ -419,7 +425,7 @@ const PackageDetail: React.FC = () => {
                         {/* AI Analysis Card */}
                         <div className="lg:col-span-1 bg-gradient-to-br from-indigo-900 to-slate-900 text-white rounded-2xl shadow-lg p-6 relative overflow-hidden">
                             <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full blur-3xl -mr-10 -mt-10"></div>
-                            
+
                             <div className="relative z-10">
                                 <h3 className="text-lg font-bold flex items-center gap-2 mb-6">
                                     <BrainCircuit className="w-5 h-5 text-indigo-300" />
@@ -463,9 +469,9 @@ const PackageDetail: React.FC = () => {
                                         <div className="bg-white/10 rounded-xl p-4 backdrop-blur-sm">
                                             <p className="text-xs text-indigo-300 uppercase font-bold mb-2">Đánh giá rủi ro</p>
                                             <div className={`inline-block px-3 py-1 rounded-lg text-xs font-bold mb-3 ${getRiskColor(healthCheck.riskLevel)}`}>
-                                                {healthCheck.riskLevel === 'Low' ? 'Thấp - An toàn' : 
-                                                 healthCheck.riskLevel === 'Medium' ? 'Trung bình - Cần chú ý' : 
-                                                 'Cao - Nguy hiểm'}
+                                                {healthCheck.riskLevel === 'Low' ? 'Thấp - An toàn' :
+                                                    healthCheck.riskLevel === 'Medium' ? 'Trung bình - Cần chú ý' :
+                                                        'Cao - Nguy hiểm'}
                                             </div>
                                             <ul className="space-y-1">
                                                 {healthCheck.factors.map((factor, idx) => (
@@ -496,7 +502,7 @@ const PackageDetail: React.FC = () => {
                                     <PlusCircle className="w-4 h-4" /> Báo cáo sự cố
                                 </button>
                             </div>
-                            
+
                             <div className="flex-1 overflow-y-auto p-4 space-y-3">
                                 {issues.length > 0 ? issues.map(issue => (
                                     <div key={issue.IssueID} className="p-4 rounded-xl border border-gray-100 hover:shadow-md transition-shadow bg-white group">
@@ -513,9 +519,8 @@ const PackageDetail: React.FC = () => {
                                         <div className="flex items-center justify-between text-xs">
                                             <div className="flex items-center gap-4 text-gray-500">
                                                 <span className="flex items-center gap-1"><Users className="w-3 h-3" /> {issue.Reporter}</span>
-                                                <span className={`px-2 py-0.5 rounded-full font-medium ${
-                                                    issue.Status === 'Resolved' ? 'bg-gray-100 text-gray-600' : 'bg-blue-50 text-blue-600'
-                                                }`}>
+                                                <span className={`px-2 py-0.5 rounded-full font-medium ${issue.Status === 'Resolved' ? 'bg-gray-100 text-gray-600' : 'bg-blue-50 text-blue-600'
+                                                    }`}>
                                                     {issue.Status === 'Resolved' ? 'Đã xử lý' : issue.Status === 'InProgress' ? 'Đang xử lý' : 'Mới mở'}
                                                 </span>
                                             </div>
@@ -559,13 +564,13 @@ const PackageDetail: React.FC = () => {
                                     <td className="px-6 py-4 font-medium text-gray-900">{winningContractor?.FullName || "Nhà thầu trúng thầu"}</td>
                                     <td className="px-6 py-4 text-right font-mono font-bold text-emerald-600">{formatFullCurrency(pkg.WinningPrice || 0)}</td>
                                     <td className="px-6 py-4 text-center"><span className="bg-green-100 text-green-700 px-2 py-1 rounded text-xs font-bold">95/100</span></td>
-                                    <td className="px-6 py-4 text-center text-emerald-600 font-bold flex items-center justify-center gap-1"><CheckCircle2 className="w-4 h-4"/> Trúng thầu</td>
+                                    <td className="px-6 py-4 text-center text-emerald-600 font-bold flex items-center justify-center gap-1"><CheckCircle2 className="w-4 h-4" /> Trúng thầu</td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
                 )}
-                
+
                 {/* --- TAB: DOCUMENTS --- */}
                 {activeTab === 'documents' && (
                     <div className="lg:col-span-3 bg-white rounded-2xl shadow-sm border border-gray-100 p-6">

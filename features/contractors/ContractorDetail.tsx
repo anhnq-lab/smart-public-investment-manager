@@ -1,20 +1,26 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { mockContractors, mockBiddingPackages, mockContracts } from '../../mockData';
+import { useContractors } from '../../hooks/useContractors';
+import { useAllBiddingPackages } from '../../hooks/useAllBiddingPackages';
+import { useContracts } from '../../hooks/useContracts';
 import { ArrowLeft, Building2, MapPin, Phone, FileText, CheckCircle2, DollarSign, Award } from 'lucide-react';
 
 const ContractorDetail: React.FC = () => {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
 
+    const { contractors: allContractors } = useContractors();
+    const { biddingPackages: allBiddingPackages } = useAllBiddingPackages();
+    const { contracts: allContracts } = useContracts();
+
     // Find Contractor
-    const contractor = mockContractors.find(c => c.ContractorID === id);
+    const contractor = allContractors.find(c => c.ContractorID === id);
 
     // Find Won Packages
-    const wonPackages = mockBiddingPackages.filter(p => p.WinningContractorID === id);
+    const wonPackages = allBiddingPackages.filter(p => p.WinningContractorID === id);
 
     // Find Contracts
-    const contracts = mockContracts.filter(c => c.ContractorID === id);
+    const contracts = allContracts.filter(c => c.ContractorID === id);
 
     if (!contractor) return <div className="p-8 text-center text-gray-500">Không tìm thấy nhà thầu.</div>;
 

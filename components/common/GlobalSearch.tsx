@@ -1,7 +1,11 @@
 import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Search, X, Building2, Users, FileText, Briefcase, ArrowRight, Clock, TrendingUp } from 'lucide-react';
-import { mockProjects, mockContractors, mockContracts, mockEmployees, mockBiddingPackages } from '../../mockData';
+import { useProjects } from '../../hooks/useProjects';
+import { useContractors } from '../../hooks/useContractors';
+import { useContracts } from '../../hooks/useContracts';
+import { useEmployees } from '../../hooks/useEmployees';
+import { useAllBiddingPackages } from '../../hooks/useAllBiddingPackages';
 import { ProjectStatus } from '../../types';
 
 interface SearchResult {
@@ -25,6 +29,11 @@ export const GlobalSearch: React.FC<GlobalSearchProps> = ({ isOpen, onClose, ini
     const [activeIndex, setActiveIndex] = useState(0);
     const inputRef = useRef<HTMLInputElement>(null);
     const navigate = useNavigate();
+    const { projects } = useProjects();
+    const { contractors } = useContractors();
+    const { contracts } = useContracts();
+    const { data: employees } = useEmployees();
+    const { biddingPackages } = useAllBiddingPackages();
 
     useEffect(() => {
         if (isOpen && inputRef.current) {
@@ -61,7 +70,7 @@ export const GlobalSearch: React.FC<GlobalSearchProps> = ({ isOpen, onClose, ini
         const matches: SearchResult[] = [];
 
         // Search Projects
-        mockProjects
+        (projects || [])
             .filter(p => p.ProjectName.toLowerCase().includes(q) || p.ProjectID.toLowerCase().includes(q))
             .slice(0, 5)
             .forEach(p => {
@@ -78,7 +87,7 @@ export const GlobalSearch: React.FC<GlobalSearchProps> = ({ isOpen, onClose, ini
             });
 
         // Search Contractors
-        mockContractors
+        (contractors || [])
             .filter(c => c.FullName.toLowerCase().includes(q) || c.ContractorID.toLowerCase().includes(q))
             .slice(0, 3)
             .forEach(c => {
@@ -94,7 +103,7 @@ export const GlobalSearch: React.FC<GlobalSearchProps> = ({ isOpen, onClose, ini
             });
 
         // Search Employees
-        mockEmployees
+        (employees || [])
             .filter(e => e.FullName.toLowerCase().includes(q) || e.Position.toLowerCase().includes(q))
             .slice(0, 3)
             .forEach(e => {
@@ -109,15 +118,15 @@ export const GlobalSearch: React.FC<GlobalSearchProps> = ({ isOpen, onClose, ini
             });
 
         // Search Contracts
-        mockContracts
+        (contracts || [])
             .filter(c => c.ContractID.toLowerCase().includes(q))
             .slice(0, 3)
             .forEach(c => {
-                const contractor = mockContractors.find(ct => ct.ContractorID === c.ContractorID);
+                const ct = (contractors || []).find(ct => ct.ContractorID === c.ContractorID);
                 matches.push({
                     id: c.ContractID,
                     title: `Hợp đồng ${c.ContractID}`,
-                    subtitle: contractor?.FullName || 'Nhà thầu',
+                    subtitle: ct?.FullName || 'Nhà thầu',
                     type: 'contract',
                     url: `/contracts/${c.ContractID}`,
                     icon: FileText
@@ -125,7 +134,7 @@ export const GlobalSearch: React.FC<GlobalSearchProps> = ({ isOpen, onClose, ini
             });
 
         // Search Packages
-        mockBiddingPackages
+        (biddingPackages || [])
             .filter(p => p.PackageName.toLowerCase().includes(q) || p.PackageNumber.toLowerCase().includes(q))
             .slice(0, 3)
             .forEach(p => {
@@ -140,7 +149,7 @@ export const GlobalSearch: React.FC<GlobalSearchProps> = ({ isOpen, onClose, ini
             });
 
         return matches.slice(0, 10);
-    }, [query]);
+    }, [query, projects, contractors, contracts, employees, biddingPackages]);
 
     const handleSelect = (result: SearchResult) => {
         navigate(result.url);

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { X, CreditCard, FileText, Calendar, DollarSign, Building2, Hash, AlertCircle, CheckCircle2 } from 'lucide-react';
-import { mockContractors, formatCurrency } from '../../mockData';
+import { formatShortCurrency as formatCurrency } from '../../utils/format';
+import { useContractors } from '../../hooks/useContractors';
 import { PaymentType, PaymentStatus } from '../../types';
 import { useContracts } from '../../hooks/useContracts';
 
@@ -13,6 +14,7 @@ interface PaymentFormProps {
 
 export const PaymentForm: React.FC<PaymentFormProps> = ({ isOpen, onClose, onSubmit, contractId }) => {
     const { contracts } = useContracts();
+    const { contractors } = useContractors();
     const [formData, setFormData] = useState({
         contractId: contractId || '',
         batchNo: 1,
@@ -28,7 +30,7 @@ export const PaymentForm: React.FC<PaymentFormProps> = ({ isOpen, onClose, onSub
     const [showSuccess, setShowSuccess] = useState(false);
 
     const selectedContract = contracts.find(c => c.ContractID === formData.contractId);
-    const contractor = selectedContract ? mockContractors.find(ct => ct.ContractorID === selectedContract.ContractorID) : null;
+    const contractor = selectedContract ? contractors.find(ct => ct.ContractorID === selectedContract.ContractorID) : null;
 
     const validate = () => {
         const errs: Record<string, string> = {};
@@ -116,7 +118,7 @@ export const PaymentForm: React.FC<PaymentFormProps> = ({ isOpen, onClose, onSub
                             >
                                 <option value="">-- Chọn hợp đồng --</option>
                                 {contracts.map(c => {
-                                    const ct = mockContractors.find(x => x.ContractorID === c.ContractorID);
+                                    const ct = contractors.find(x => x.ContractorID === c.ContractorID);
                                     return (
                                         <option key={c.ContractID} value={c.ContractID}>
                                             {c.ContractID} - {ct?.FullName || 'Nhà thầu'} ({formatCurrency(c.Value)})

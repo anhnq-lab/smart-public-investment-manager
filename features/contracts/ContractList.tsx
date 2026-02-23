@@ -1,7 +1,7 @@
 
 import React, { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { formatCurrency } from '../../mockData';
+import { formatShortCurrency as formatCurrency } from '../../utils/format';
 import { Contract, ContractStatus, PaymentStatus } from '../../types';
 import {
     FileText, Search, Plus, Filter,
@@ -12,7 +12,8 @@ import {
 import { useContracts } from '../../hooks/useContracts';
 import { usePayments } from '../../hooks/usePayments';
 import { useProjects } from '../../hooks/useProjects';
-import { mockContractors, mockBiddingPackages } from '../../mockData';
+import { useContractors } from '../../hooks/useContractors';
+import { useAllBiddingPackages } from '../../hooks/useAllBiddingPackages';
 import { Card } from '../../components/ui/Card';
 import { Input } from '../../components/ui/Input';
 import { Skeleton } from '../../components/ui/Skeleton';
@@ -22,17 +23,19 @@ const ContractList: React.FC = () => {
     const { contracts, isLoading } = useContracts();
     const { payments } = usePayments();
     const { projects } = useProjects();
+    const { contractors } = useContractors();
+    const { biddingPackages } = useAllBiddingPackages();
     const [searchQuery, setSearchQuery] = useState('');
     const [statusFilter, setStatusFilter] = useState<'all' | ContractStatus>('all');
 
     // === Cross-module helpers ===
     const getContractorName = (contractorId: string): string => {
-        const contractor = mockContractors.find(c => c.ContractorID === contractorId);
+        const contractor = contractors.find(c => c.ContractorID === contractorId);
         return contractor?.FullName || contractorId;
     };
 
     const getProjectName = (contract: Contract): string => {
-        const pkg = mockBiddingPackages.find(p => p.PackageID === contract.PackageID);
+        const pkg = biddingPackages.find(p => p.PackageID === contract.PackageID);
         if (!pkg) return '—';
         const project = projects.find(p => p.ProjectID === pkg.ProjectID);
         return project?.ProjectName || '—';

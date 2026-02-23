@@ -1,5 +1,5 @@
 // Report Generator Utility - Generates Excel/CSV exports for reports
-import { mockProjects, mockPayments, mockContracts, mockBiddingPackages, mockTasks } from '../mockData';
+import { Project, Payment, Task } from '../types';
 import { ProjectStatus, PaymentStatus, TaskStatus } from '../types';
 
 interface ReportData {
@@ -8,13 +8,20 @@ interface ReportData {
     type: 'csv' | 'json';
 }
 
+// Data source interface — callers pass in real Supabase data
+export interface ReportDataSource {
+    projects: Project[];
+    payments: Payment[];
+    tasks: Task[];
+}
+
 // Format number as VND currency string
 const formatVND = (value: number): string => {
     return new Intl.NumberFormat('vi-VN').format(value);
 };
 
 // Generate monitoring report (BC-01)
-export const generateMonitoringReport = (): ReportData => {
+export const generateMonitoringReport = (source: ReportDataSource): ReportData => {
     const headers = [
         'STT',
         'Mã dự án',
@@ -26,7 +33,7 @@ export const generateMonitoringReport = (): ReportData => {
         'Chủ đầu tư'
     ];
 
-    const rows = mockProjects.map((project, idx) => [
+    const rows = source.projects.map((project, idx) => [
         idx + 1,
         project.ProjectID,
         `"${project.ProjectName}"`, // Quote for CSV safety
@@ -54,7 +61,7 @@ export const generateMonitoringReport = (): ReportData => {
 };
 
 // Generate disbursement report
-export const generateDisbursementReport = (): ReportData => {
+export const generateDisbursementReport = (source: ReportDataSource): ReportData => {
     const headers = [
         'STT',
         'Mã thanh toán',
@@ -66,7 +73,7 @@ export const generateDisbursementReport = (): ReportData => {
         'Trạng thái'
     ];
 
-    const rows = mockPayments.map((payment, idx) => [
+    const rows = source.payments.map((payment, idx) => [
         idx + 1,
         payment.PaymentID,
         payment.ContractID,
@@ -78,8 +85,8 @@ export const generateDisbursementReport = (): ReportData => {
     ]);
 
     // Summary
-    const totalAmount = mockPayments.reduce((sum, p) => sum + p.Amount, 0);
-    const transferredAmount = mockPayments
+    const totalAmount = source.payments.reduce((sum, p) => sum + p.Amount, 0);
+    const transferredAmount = source.payments
         .filter(p => p.Status === PaymentStatus.Transferred)
         .reduce((sum, p) => sum + p.Amount, 0);
 
@@ -104,10 +111,10 @@ export const generateDisbursementReport = (): ReportData => {
 };
 
 // Generate issues report
-export const generateIssuesReport = (): ReportData => {
+export const generateIssuesReport = (source: ReportDataSource): ReportData => {
     // Get tasks that are overdue or at risk
     const now = new Date();
-    const riskyTasks = mockTasks.filter(task => {
+    const riskyTasks = source.tasks.filter(task => {
         if (task.Status === TaskStatus.Done) return false;
         const dueDate = new Date(task.DueDate);
         return dueDate < now; // Overdue
@@ -150,16 +157,16 @@ export const generateIssuesReport = (): ReportData => {
 };
 
 // Generate risk analysis report
-export const generateRiskReport = (): ReportData => {
+export const generateRiskReport = (source: ReportDataSource): ReportData => {
     const riskCategories = [
         {
             category: 'Tiến độ',
-            items: mockProjects.filter(p => (p.Progress || 0) < 50 && p.Status === ProjectStatus.Execution)
+            items: source.projects.filter(p => (p.Progress || 0) < 50 && p.Status === ProjectStatus.Execution)
                 .map(p => ({ name: p.ProjectName, risk: 'Tiến độ chậm', progress: p.Progress }))
         },
         {
             category: 'Tài chính',
-            items: mockProjects.filter(p => (p.PaymentProgress || 0) < 30 && p.Status === ProjectStatus.Execution)
+            items: source.projects.filter(p => (p.PaymentProgress || 0) < 30 && p.Status === ProjectStatus.Execution)
                 .map(p => ({ name: p.ProjectName, risk: 'Giải ngân chậm', progress: p.PaymentProgress }))
         }
     ];

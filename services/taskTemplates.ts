@@ -344,9 +344,10 @@ const GROUP_C_MAIN_FLOW: TaskTemplate[] = [
     }
 ];
 
-import { mockEmployees } from '../mockData';
 
-export const generateTasksForProject = (projectID: string, group: ProjectGroup, startDateInput?: string): Task[] => {
+import { Employee } from '../types';
+
+export const generateTasksForProject = (projectID: string, group: ProjectGroup, startDateInput?: string, employees?: Employee[]): Task[] => {
     // Chọn mẫu dựa trên Nhóm dự án
     let template = GROUP_B_MAIN_FLOW;
     if (group === ProjectGroup.C) {
@@ -364,8 +365,11 @@ export const generateTasksForProject = (projectID: string, group: ProjectGroup, 
         const dueDate = new Date(taskStartDate);
         dueDate.setDate(dueDate.getDate() + tpl.DurationDays);
 
-        // Random assignee
-        const randomEmployee = mockEmployees[Math.floor(Math.random() * mockEmployees.length)];
+        // Random assignee from provided employees or fallback
+        const employeeList = employees || [];
+        const randomEmployee = employeeList.length > 0
+            ? employeeList[Math.floor(Math.random() * employeeList.length)]
+            : null;
 
         return {
             TaskID: `TSK-${projectID}-${(index + 1).toString().padStart(2, '0')}`,

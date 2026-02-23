@@ -4,7 +4,8 @@ import {
     Bell, X, Clock, AlertTriangle, CheckCircle2, FileText,
     Building2, Calendar, ChevronRight, Trash2, BellOff
 } from 'lucide-react';
-import { mockTasks, mockProjects } from '../../mockData';
+import { useTasks } from '../../hooks/useTasks';
+import { useProjects } from '../../hooks/useProjects';
 import { TaskStatus } from '../../types';
 
 interface Notification {
@@ -26,6 +27,8 @@ interface NotificationCenterProps {
 
 export const NotificationCenter: React.FC<NotificationCenterProps> = ({ isOpen, onClose }) => {
     const navigate = useNavigate();
+    const { data: tasks } = useTasks();
+    const { projects } = useProjects();
 
     // Generate notifications from real data
     const notifications = useMemo<Notification[]>(() => {
@@ -33,7 +36,7 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({ isOpen, 
         const now = new Date();
 
         // 1. Tasks due within 7 days
-        mockTasks
+        (tasks || [])
             .filter(task => {
                 if (task.Status === TaskStatus.Done) return false;
                 const dueDate = new Date(task.DueDate);
@@ -62,7 +65,7 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({ isOpen, 
             });
 
         // 2. Project progress alerts
-        mockProjects
+        (projects || [])
             .filter(p => (p.Progress || 0) < 50 && p.Status === 2) // Execution status
             .slice(0, 2)
             .forEach((project, idx) => {
@@ -104,7 +107,7 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({ isOpen, 
         });
 
         return notifs;
-    }, []);
+    }, [tasks, projects]);
 
     const unreadCount = notifications.filter(n => !n.read).length;
 

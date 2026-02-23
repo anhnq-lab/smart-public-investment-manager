@@ -4,7 +4,7 @@ import {
     Edit3, Trash2, Plus, Eye, Clock, ChevronLeft, ChevronRight,
     Download, Building2, Briefcase, CreditCard
 } from 'lucide-react';
-import { mockEmployees } from '../../mockData';
+import { useEmployees } from '../../hooks/useEmployees';
 
 // AuditLog types based on types.ts interface
 interface AuditLog {
@@ -96,6 +96,7 @@ interface AuditLogViewerProps {
 }
 
 export const AuditLogViewer: React.FC<AuditLogViewerProps> = ({ isOpen = true, onClose, standalone = true }) => {
+    const { data: employees } = useEmployees();
     const [searchQuery, setSearchQuery] = useState('');
     const [filterAction, setFilterAction] = useState<string>('all');
     const [filterEntity, setFilterEntity] = useState<string>('all');
@@ -164,7 +165,7 @@ export const AuditLogViewer: React.FC<AuditLogViewerProps> = ({ isOpen = true, o
     };
 
     const getUserName = (userId: string) => {
-        const employee = mockEmployees.find(e => e.EmployeeID === userId);
+        const employee = (employees || []).find(e => e.EmployeeID === userId);
         return employee?.FullName || userId;
     };
 

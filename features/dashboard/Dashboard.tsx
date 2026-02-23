@@ -2,7 +2,7 @@ import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell, Legend } from 'recharts';
 import { Wallet, Activity, TrendingUp, AlertCircle, CheckCircle2, FileBox, Users, HardHat, Clock, ArrowRight, AlertTriangle, Calendar, Building2, Briefcase, Map as MapIcon } from 'lucide-react';
-import { formatCurrency } from '../../mockData';
+import { formatShortCurrency as formatCurrency } from '../../utils/format';
 import InteractiveMap from '../../components/common/InteractiveMap';
 import { DashboardService } from '../../services/DashboardService';
 import { ProjectService } from '../../services/ProjectService';

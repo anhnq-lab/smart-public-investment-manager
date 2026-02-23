@@ -6,26 +6,32 @@ import {
     Star, BookOpen, Bell, ChevronRight, Target
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
-import { mockProjects, mockTasks, mockDocuments, mockContracts, formatCurrency } from '../../mockData';
+import { useProjects } from '../../hooks/useProjects';
+import { useTasks } from '../../hooks/useTasks';
+import { useContracts } from '../../hooks/useContracts';
+import { formatShortCurrency as formatCurrency } from '../../utils/format';
 import { ProjectStatus, TaskStatus, TaskPriority } from '../../types';
 
 const PersonalDashboard: React.FC = () => {
     const navigate = useNavigate();
     const { currentUser } = useAuth();
-
+    const { projects } = useProjects();
+    const { data: allTasks } = useTasks();
+    const { contracts } = useContracts();
+    const tasks = allTasks || [];
     // Get projects where current user is a member
     const myProjects = useMemo(() => {
         if (!currentUser) return [];
-        return mockProjects.filter(p =>
+        return projects.filter(p =>
             p.Members?.includes(currentUser.EmployeeID)
         );
-    }, [currentUser]);
+    }, [currentUser, projects]);
 
     // Get tasks assigned to current user
     const myTasks = useMemo(() => {
         if (!currentUser) return [];
-        return mockTasks.filter(t => t.AssigneeID === currentUser.EmployeeID);
-    }, [currentUser]);
+        return tasks.filter(t => t.AssigneeID === currentUser.EmployeeID);
+    }, [currentUser, tasks]);
 
     // Tasks by status
     const taskStats = useMemo(() => {
@@ -53,12 +59,8 @@ const PersonalDashboard: React.FC = () => {
     }, [myTasks]);
 
     // Recent documents (from my projects)
-    const myDocuments = useMemo(() => {
-        const projectIds = myProjects.map(p => p.ProjectID);
-        return mockDocuments
-            .filter(d => projectIds.includes(d.ProjectID))
-            .slice(0, 5);
-    }, [myProjects]);
+    // TODO: Replace with useDocuments() hook when available
+    const myDocuments: any[] = [];
 
     // Total investment of my projects
     const totalInvestment = myProjects.reduce((sum, p) => sum + p.TotalInvestment, 0);

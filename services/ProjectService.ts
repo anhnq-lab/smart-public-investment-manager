@@ -176,6 +176,19 @@ export class ProjectService {
     }
 
     /**
+     * Get all bidding packages (across all projects)
+     */
+    static async getAllBiddingPackages(): Promise<BiddingPackage[]> {
+        const { data, error } = await supabase
+            .from('bidding_packages')
+            .select('*')
+            .order('created_at', { ascending: false });
+
+        if (error) throw new Error(`Failed to fetch all packages: ${error.message}`);
+        return (data || []).map(dbToBiddingPackage);
+    }
+
+    /**
      * Get bidding packages for a project
      */
     static async getPackagesByProject(projectId: string): Promise<BiddingPackage[]> {

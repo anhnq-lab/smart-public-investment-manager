@@ -1,7 +1,7 @@
 import React from 'react';
 import { Project, ProjectStatus, ProjectGroup } from '../../types';
 import { Wallet, TrendingUp, FolderOpen, AlertCircle } from 'lucide-react';
-import { formatCurrency } from '../../mockData';
+import { formatShortCurrency as formatCurrency } from '../../utils/format';
 
 interface ProjectStatsProps {
     projects: Project[];
