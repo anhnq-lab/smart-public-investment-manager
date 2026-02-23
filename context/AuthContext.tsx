@@ -1,11 +1,12 @@
 
 import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
-import { Employee, Role } from '../types';
-import { mockEmployees } from '../mockData';
+import { Employee } from '../types';
+import { supabase } from '../lib/supabase';
+import { validateCredentials } from '../config/authConfig';
 
 interface AuthContextType {
     currentUser: Employee | null;
-    login: (username: string, pass: string) => boolean;
+    login: (username: string, pass: string) => Promise<boolean>;
     logout: () => void;
     isAuthenticated: boolean;
 }
@@ -15,7 +16,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     const [currentUser, setCurrentUser] = useState<Employee | null>(null);
 
-    // Persist login (Mock persistence)
+    // Persist login
     useEffect(() => {
         const savedUser = localStorage.getItem('currentUser');
         if (savedUser) {
@@ -23,17 +24,42 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         }
     }, []);
 
-    const login = (username: string, pass: string) => {
-        const user = mockEmployees.find(e => 
-            (e.Username === username || e.Email === username) && e.Password === pass
-        );
+    const login = async (username: string, pass: string): Promise<boolean> => {
+        // Validate credentials from authConfig
+        const employeeId = validateCredentials(username, pass);
+        if (!employeeId) return false;
 
-        if (user) {
-            setCurrentUser(user);
-            localStorage.setItem('currentUser', JSON.stringify(user));
-            return true;
+        // Fetch employee profile from Supabase
+        const { data, error } = await supabase
+            .from('employees')
+            .select('*')
+            .eq('employee_id', employeeId)
+            .single();
+
+        if (error || !data) {
+            console.error('Failed to fetch employee from Supabase:', error);
+            return false;
         }
-        return false;
+
+        // Map DB snake_case to frontend camelCase
+        const user: Employee = {
+            EmployeeID: data.employee_id,
+            FullName: data.full_name,
+            Role: data.role as any,
+            Department: data.department || '',
+            Position: data.position || '',
+            Email: data.email || '',
+            Phone: data.phone || '',
+            AvatarUrl: data.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(data.full_name)}&background=0D8ABC&color=fff`,
+            JoinDate: data.join_date || '',
+            Status: data.status as any || 'Active',
+            Username: username,
+            Password: '', // Don't store password
+        };
+
+        setCurrentUser(user);
+        localStorage.setItem('currentUser', JSON.stringify(user));
+        return true;
     };
 
     const logout = () => {
