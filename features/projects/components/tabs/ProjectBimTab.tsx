@@ -1,6 +1,7 @@
 import React, { useRef, useEffect, useState, useCallback, useMemo } from 'react';
 import * as THREE from 'three';
 import * as OBC from '@thatopen/components';
+import * as OBCF from '@thatopen/components-front';
 import { Upload, Loader2, Building2, AlertCircle, CheckCircle, Maximize2, Minimize2 } from 'lucide-react';
 import { useTheme } from '../../../../context/ThemeContext';
 
@@ -127,34 +128,67 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
         }
     }, [engine.viewerReady]);
 
-    // ── Section Plane — use DOUBLE-CLICK ──────────
-    // OBC LengthMeasurement handles its own click events when enabled
+    // ── Measurement click + Section Plane dblclick ──────────
+    // OBC LengthMeasurement needs create() called on each click
     useEffect(() => {
         const container = containerRef.current;
-        if (!container) return;
+        const components = engine.componentsRef.current;
+        if (!container || !components) return;
 
+        // Click → create measurement point
+        const onClick = async () => {
+            if (tools.activeTool === 'measure-length') {
+                try {
+                    const lengthMeasure = components.get(OBCF.LengthMeasurement);
+                    await lengthMeasure.create();
+                } catch (err) {
+                    console.warn('[Measure] Length create error:', err);
+                }
+            } else if (tools.activeTool === 'measure-area') {
+                try {
+                    const areaMeasure = components.get(OBCF.AreaMeasurement);
+                    await areaMeasure.create();
+                } catch (err) {
+                    console.warn('[Measure] Area create error:', err);
+                }
+            }
+        };
+
+        // Double-click → section plane
         const onDblClick = async () => {
-            // Section Plane: double-click to create
             if (tools.activeTool === 'section-plane') {
-                const components = engine.componentsRef.current;
                 const world = engine.worldRef.current;
-                if (!components || !world) return;
-
+                if (!world) return;
                 try {
                     const clipper = components.get(OBC.Clipper);
                     const plane = await clipper.create(world);
-                    if (plane) {
-                        tools.activateTool('select');
-                    }
+                    if (plane) tools.activateTool('select');
                 } catch (err) {
                     console.warn('Section plane creation error:', err);
                 }
             }
         };
 
+        // Delete key → delete last measurement
+        const onKeyDown = (e: KeyboardEvent) => {
+            if (e.key === 'Delete' && (tools.activeTool === 'measure-length' || tools.activeTool === 'measure-area')) {
+                try {
+                    if (tools.activeTool === 'measure-length') {
+                        components.get(OBCF.LengthMeasurement).delete();
+                    } else {
+                        components.get(OBCF.AreaMeasurement).delete();
+                    }
+                } catch { }
+            }
+        };
+
+        container.addEventListener('click', onClick);
         container.addEventListener('dblclick', onDblClick);
+        window.addEventListener('keydown', onKeyDown);
         return () => {
+            container.removeEventListener('click', onClick);
             container.removeEventListener('dblclick', onDblClick);
+            window.removeEventListener('keydown', onKeyDown);
         };
     }, [tools.activeTool, engine.worldRef, engine.componentsRef, tools]);
 
