@@ -127,39 +127,42 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
         }
     }, [engine.viewerReady]);
 
-    // ── Measurement + Section Plane click handler ──────────
+    // ── Measurement + Section Plane — use DOUBLE-CLICK ──────────
+    // Single-click is consumed by OBC Highlighter for element selection,
+    // so we use double-click for both measure points and section-plane creation
     useEffect(() => {
         const container = containerRef.current;
         if (!container) return;
 
-        const onClick = (e: MouseEvent) => {
+        const onDblClick = async (e: MouseEvent) => {
+            // Priority 1: Measure tools
             if (tools.activeTool === 'measure-length' || tools.activeTool === 'measure-area') {
+                e.preventDefault();
+                e.stopPropagation();
                 measure.handleMeasureClick(e);
+                return;
             }
-        };
 
-        // Section Plane: use OBC Clipper's create() which handles raycasting + plane creation
-        const onDblClick = async () => {
-            if (tools.activeTool !== 'section-plane') return;
-            const components = engine.componentsRef.current;
-            const world = engine.worldRef.current;
-            if (!components || !world) return;
+            // Priority 2: Section Plane
+            if (tools.activeTool === 'section-plane') {
+                const components = engine.componentsRef.current;
+                const world = engine.worldRef.current;
+                if (!components || !world) return;
 
-            try {
-                const clipper = components.get(OBC.Clipper);
-                const plane = await clipper.create(world);
-                if (plane) {
-                    tools.activateTool('select');
+                try {
+                    const clipper = components.get(OBC.Clipper);
+                    const plane = await clipper.create(world);
+                    if (plane) {
+                        tools.activateTool('select');
+                    }
+                } catch (err) {
+                    console.warn('Section plane creation error:', err);
                 }
-            } catch (err) {
-                console.warn('Section plane creation error:', err);
             }
         };
 
-        container.addEventListener('click', onClick);
         container.addEventListener('dblclick', onDblClick);
         return () => {
-            container.removeEventListener('click', onClick);
             container.removeEventListener('dblclick', onDblClick);
         };
     }, [tools.activeTool, measure.handleMeasureClick, engine.worldRef, engine.componentsRef, tools]);
@@ -404,8 +407,8 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
             case 'clip-z': return '✂ Clip Z';
             case 'section-box': return '📦 Section Box';
             case 'section-plane': return '✂ Section Plane — Click bề mặt mô hình';
-            case 'measure-length': return '📏 Measure Length — Click to add points';
-            case 'measure-area': return '📐 Measure Area — Click to add points';
+            case 'measure-length': return '📏 Đo khoảng cách — Double-click để chọn điểm';
+            case 'measure-area': return '📐 Đo diện tích — Double-click để chọn điểm';
             default: return null;
         }
     }, [tools.activeTool]);
