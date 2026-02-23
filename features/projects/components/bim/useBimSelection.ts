@@ -350,6 +350,7 @@ export function useBimSelection(
 
                     // Step 1: Try official API — model.getItemsData()
                     const model = fragments.list.get(String(modelId));
+                    console.log('[Selection] Step 1: model found:', !!model, 'hasGetItemsData:', typeof (model as any)?.getItemsData);
                     let element: SelectedElement | null = null;
 
                     if (model && typeof (model as any).getItemsData === 'function') {
@@ -384,7 +385,9 @@ export function useBimSelection(
                         onPanelOpen?.();
 
                         // Async enrichment
+                        console.log('[Selection] Step 3: Starting extractFullProperties...');
                         extractFullProperties(expressID).then(extra => {
+                            console.log('[Selection] Step 3 DONE. Extra propertySets:', extra.propertySets?.length, 'materials:', extra.materials?.length);
                             if (disposed) return;
                             setSelectedElement(prev => {
                                 if (!prev || prev.id !== String(expressID)) return prev;
