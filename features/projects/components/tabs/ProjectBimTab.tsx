@@ -21,6 +21,7 @@ import { BimViewCube } from '../bim/BimViewCube';
 import { BimShortcutsModal } from '../bim/BimShortcutsModal';
 import { FacilityManagementPanel } from '../bim/FacilityManagementPanel';
 import { BimSectionPanel } from '../bim/BimSectionPanel';
+import { extractFacilityAssetsFromIFC } from '../bim/utils/autoExtractor';
 
 // ── Types ───────────────────────────────────────────
 interface ProjectBimTabProps {
@@ -82,6 +83,24 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
     });
 
     const hasModels = upload.disciplineModels.length > 0;
+
+    // ── Extract facility assets from loaded BIM models (manual trigger) ──
+    const handleExtractFromBIM = useCallback(async () => {
+        let totalExtracted = 0;
+        for (const [, ifcData] of upload.ifcDataMapRef.current) {
+            try {
+                const count = await extractFacilityAssetsFromIFC(projectID, ifcData);
+                totalExtracted += count;
+            } catch (err) {
+                console.warn('[ExtractBIM] Error:', err);
+            }
+        }
+        if (totalExtracted > 0) {
+            setOpRefreshTrigger(prev => prev + 1);
+        }
+        return totalExtracted;
+    }, [projectID, upload.ifcDataMapRef]);
+
     const cursorClass = getCursorClass(tools.activeTool);
 
     // ── Responsive check ───────────────────
@@ -715,6 +734,7 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
                                 isDarkMode={isDark}
                                 isMobile={isMobile}
                                 refreshTrigger={opRefreshTrigger}
+                                onExtractFromBIM={hasModels ? handleExtractFromBIM : undefined}
                             />
                         </div>
                     </div>

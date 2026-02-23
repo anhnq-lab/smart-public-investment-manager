@@ -10,7 +10,7 @@ import {
     downloadFile, deleteModel, updateModelStatus,
     type BimModel
 } from '../../../../lib/bimStorage';
-import { extractFacilityAssetsFromIFC } from './utils/autoExtractor';
+
 
 export type LoadStatus = 'idle' | 'initializing' | 'loading' | 'converting' | 'success' | 'error';
 
@@ -115,25 +115,7 @@ export function useBimUpload(
             setLoadingProgress(100);
             setTimeout(() => { setStatus('idle'); setStatusMessage(''); }, 3000);
 
-            // Auto extract thiết bị từ tất cả model đã load (chạy ngầm)
-            const ifcLoaderForExtract = ifcLoaderRef.current;
-            if (ifcLoaderForExtract) {
-                for (const dm of newDisciplineModels) {
-                    const ifcData = ifcDataMapRef.current.get(dm.model.file_name);
-                    if (ifcData) {
-                        try {
-                            console.log(`[AutoExtractor] Đang quét model: ${dm.model.file_name}`);
-                            const count = await extractFacilityAssetsFromIFC(projectID, ifcData, ifcLoaderForExtract);
-                            if (count > 0) {
-                                console.log(`[AutoExtractor] Đã trích xuất ${count} tài sản từ ${dm.model.file_name}`);
-                                onModelLoaded?.(new Uint8Array(0)); // Trigger refresh
-                            }
-                        } catch (extErr) {
-                            console.warn(`[AutoExtractor] Lỗi quét ${dm.model.file_name}:`, extErr);
-                        }
-                    }
-                }
-            }
+
         } catch (err: any) {
             console.warn('Load models error:', err);
             setStatus('error');
@@ -180,15 +162,7 @@ export function useBimUpload(
             await updateModelStatus(record.id, 'ready', { element_count: elementCount });
             setLoadingProgress(90);
 
-            // Bóc tách thiết bị/tài sản (Auto Extractor)
-            try {
-                setStatusMessage('Đang tự động bóc tách Tài sản thiết bị...');
-                const extractedCount = await extractFacilityAssetsFromIFC(projectID, uint8Array, ifcLoader);
-                console.log(`Đã tìm thấy/lưu ${extractedCount} tài sản vận hành từ BIM`);
-                setLoadingProgress(95);
-            } catch (extErr) {
-                console.warn('Lỗi bóc tách tài sản nhưng không ảnh hưởng upload:', extErr);
-            }
+
 
             setDisciplineModels(prev => [...prev, {
                 model: { ...record, status: 'ready', element_count: elementCount },
