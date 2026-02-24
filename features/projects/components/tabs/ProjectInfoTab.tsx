@@ -1,4 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/lib/supabase';
 import { Project, ProjectStage, Employee, BiddingPackage } from '@/types';
 import {
     Landmark, FileBarChart, FileCheck, RefreshCw, Settings,
@@ -68,39 +70,79 @@ export const ProjectInfoTab: React.FC<ProjectInfoTabProps> = ({
     const nationalCode = syncResult?.nationalCode || project.SyncStatus?.NationalProjectCode;
     const lastSyncTime = project.SyncStatus?.LastSyncTime;
 
-    // Mock key dates for demo
-    const mockKeyDates: KeyDate[] = [
-        {
-            id: '1',
-            title: 'Hạn nộp BC giám sát tháng 2',
-            date: '2026-02-15',
-            type: 'report',
-            status: 'due-soon',
-            description: 'Báo cáo giám sát định kỳ theo NĐ 175'
+    // Fetch upcoming tasks as key dates (real data)
+    const { data: upcomingTasks = [] } = useQuery({
+        queryKey: ['project-key-dates', project.ProjectID],
+        queryFn: async () => {
+            const now = new Date().toISOString();
+            const in30Days = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
+            const { data } = await supabase
+                .from('tasks')
+                .select('task_id, title, due_date, status, priority')
+                .eq('project_id', project.ProjectID)
+                .neq('status', 'Done')
+                .lte('due_date', in30Days)
+                .order('due_date', { ascending: true })
+                .limit(5);
+            return data || [];
         },
-        {
-            id: '2',
-            title: 'Nghiệm thu giai đoạn 1',
-            date: '2026-02-28',
-            type: 'milestone',
-            status: 'upcoming',
-            description: 'Nghiệm thu hoàn thành móng công trình'
+        enabled: !!project.ProjectID,
+    });
+
+    // Convert tasks to KeyDate format
+    const keyDates: KeyDate[] = useMemo(() => {
+        const now = new Date();
+        return upcomingTasks.map((t: any) => {
+            const dueDate = new Date(t.due_date);
+            const daysUntil = Math.ceil((dueDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+            let status: 'overdue' | 'due-soon' | 'upcoming' = 'upcoming';
+            if (daysUntil < 0) status = 'overdue';
+            else if (daysUntil <= 7) status = 'due-soon';
+            return {
+                id: t.task_id,
+                title: t.title,
+                date: t.due_date?.split('T')[0] || '',
+                type: t.priority === 'High' ? 'milestone' as const : 'deadline' as const,
+                status,
+                description: daysUntil < 0
+                    ? `Quá hạn ${Math.abs(daysUntil)} ngày`
+                    : daysUntil === 0 ? 'Hôm nay'
+                        : `Còn ${daysUntil} ngày`,
+            };
+        });
+    }, [upcomingTasks]);
+
+    // Fetch real disbursement data for BudgetVarianceCard
+    const { data: disbursementData } = useQuery({
+        queryKey: ['project-disbursement-overview', project.ProjectID],
+        queryFn: async () => {
+            const now = new Date();
+            const thisMonth = now.getMonth() + 1;
+            const thisYear = now.getFullYear();
+            const lastMonth = thisMonth === 1 ? 12 : thisMonth - 1;
+            const lastMonthYear = thisMonth === 1 ? thisYear - 1 : thisYear;
+
+            // Planned disbursement from capital_plans
+            const { data: planData } = await supabase
+                .from('capital_plans')
+                .select('planned_amount')
+                .eq('project_id', project.ProjectID)
+                .eq('year', thisYear);
+            const planned = planData?.reduce((s: number, r: any) => s + (r.planned_amount || 0), 0) || 0;
+
+            // Previous month disbursement
+            const { data: prevData } = await (supabase
+                .from('disbursements')
+                .select('amount')
+                .eq('project_id', project.ProjectID) as any)
+                .eq('month', lastMonth)
+                .eq('year', lastMonthYear);
+            const prevMonth = (prevData as any[])?.reduce((s: number, r: any) => s + (r.amount || 0), 0) || 0;
+
+            return { planned, prevMonth };
         },
-        {
-            id: '3',
-            title: 'Hết hạn BHXL gói thầu XL-01',
-            date: '2026-03-30',
-            type: 'deadline',
-            status: 'upcoming'
-        },
-        {
-            id: '4',
-            title: 'Họp đánh giá tiến độ Q1',
-            date: '2026-04-05',
-            type: 'meeting',
-            status: 'upcoming'
-        }
-    ];
+        enabled: !!project.ProjectID,
+    });
 
     return (
         <div className="animate-in slide-in-from-bottom-2 duration-500 space-y-6 py-4">
@@ -272,8 +314,8 @@ export const ProjectInfoTab: React.FC<ProjectInfoTabProps> = ({
                     <BudgetVarianceCard
                         totalInvestment={project.TotalInvestment}
                         disbursedAmount={disbursedAmount}
-                        plannedDisbursement={project.PlannedDisbursement || disbursedAmount * 1.05}
-                        previousMonthDisbursed={disbursedAmount * 0.92}
+                        plannedDisbursement={project.PlannedDisbursement || disbursementData?.planned || 0}
+                        previousMonthDisbursed={disbursementData?.prevMonth || 0}
                     />
 
                     {/* General Info Section */}
@@ -318,7 +360,7 @@ export const ProjectInfoTab: React.FC<ProjectInfoTabProps> = ({
 
                     {/* Key Dates Widget - NEW */}
                     <KeyDatesWidget
-                        dates={mockKeyDates}
+                        dates={keyDates}
                         maxItems={4}
                         onViewAll={() => console.log('View all dates')}
                     />

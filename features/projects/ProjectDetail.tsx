@@ -86,6 +86,15 @@ const ProjectDetail: React.FC = () => {
         if (activeTab === 'operations' && !opsMounted) setOpsMounted(true);
     }, [activeTab, bimMounted, opsMounted]);
 
+    // Refetch project when switching to info tab (picks up DB-trigger stage/progress changes)
+    useEffect(() => {
+        if (activeTab === 'info' && id && !loading) {
+            ProjectService.getById(id).then(data => {
+                if (data) setProject(data);
+            }).catch(() => { });
+        }
+    }, [activeTab]);
+
     // Initial Data Fetch
     useEffect(() => {
         const fetchProject = async () => {
