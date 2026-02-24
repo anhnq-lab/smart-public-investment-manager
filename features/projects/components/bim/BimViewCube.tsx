@@ -8,13 +8,7 @@
  */
 import React, { useState, useCallback, useRef, useEffect } from 'react';
 import * as THREE from 'three';
-
-interface BimViewCubeProps {
-    isDarkMode: boolean;
-    cameraQuaternion?: THREE.Quaternion; // from camera.three.quaternion
-    onSetView: (view: string) => void;
-    onOrbit?: (deltaAzimuth: number, deltaPolar: number) => void;
-}
+import { useBimContext } from './context/BimContext';
 
 // Face definitions with labels (Vietnamese + English)
 const FACES: Array<{ id: string; label: string; transform: string }> = [
@@ -38,12 +32,8 @@ function quaternionToCSS3D(q: THREE.Quaternion): string {
     return `matrix3d(${e[0]},${e[1]},${e[2]},${e[3]},${e[4]},${e[5]},${e[6]},${e[7]},${e[8]},${e[9]},${e[10]},${e[11]},${e[12]},${e[13]},${e[14]},${e[15]})`;
 }
 
-export const BimViewCube: React.FC<BimViewCubeProps> = ({
-    isDarkMode,
-    cameraQuaternion,
-    onSetView,
-    onOrbit,
-}) => {
+export const BimViewCube: React.FC = () => {
+    const { isDarkMode, engine: { cameraQuaternion, setView: onSetView, orbit: onOrbit } } = useBimContext();
     const [hoveredFace, setHoveredFace] = useState<string | null>(null);
     const [isDragging, setIsDragging] = useState(false);
     const dragRef = useRef<{ startX: number; startY: number } | null>(null);

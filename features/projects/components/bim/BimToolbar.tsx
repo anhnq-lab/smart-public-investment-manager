@@ -3,7 +3,7 @@
  * Grouped tools: Navigate, Section, Measure, Display, Actions
  * Fixed: dropdown close-on-outside, proper cursor, clear active states
  */
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import {
     MousePointer2, Move3D, Maximize, Scissors, Ruler, Eye,
     Camera, MoreHorizontal, Box, ArrowUp, Square as SquareIcon,
@@ -12,25 +12,9 @@ import {
     Layers, TreePine, PanelLeft, PanelRight, ChevronDown, ChevronUp,
     Slice, ScanLine, BoxSelect, Pipette, Waypoints, FileUp, Crosshair, GripVertical
 } from 'lucide-react';
-import { useTheme } from '../../../../context/ThemeContext';
-import type { ActiveTool, RenderMode, PanelView, BimToolsAPI } from './useBimTools';
+import { useBimContext } from './context/BimContext';
 
 interface BimToolbarProps {
-    tools: BimToolsAPI;
-    viewerReady: boolean;
-    hasModels: boolean;
-    onSetView: (view: string) => void;
-    onFitAll: () => void;
-    onScreenshot: () => void;
-    onIsolateSelected: () => void;
-    onHideSelected: () => void;
-    onShowAll: () => void;
-    isMobile: boolean;
-    clipPlaneCount?: number;
-    measurementCount?: number;
-    onSectionAction?: (action: string) => void;
-    onMeasureAction?: (action: string) => void;
-    onUpload?: (e: React.ChangeEvent<HTMLInputElement>) => void;
     isCollapsed?: boolean;
     onToggleCollapse?: () => void;
 }
@@ -165,17 +149,56 @@ const Divider: React.FC<{ isDark: boolean }> = ({ isDark }) => (
 
 // ── Main Toolbar ────────────────────────────────────
 export const BimToolbar: React.FC<BimToolbarProps> = ({
-    tools, viewerReady, hasModels, onSetView, onFitAll,
-    onScreenshot, onIsolateSelected, onHideSelected, onShowAll, isMobile,
-    clipPlaneCount = 0, measurementCount = 0,
-    onSectionAction, onMeasureAction,
-    onUpload,
     isCollapsed = false, onToggleCollapse,
 }) => {
-    const { theme } = useTheme();
-    const isDarkMode = theme === 'dark';
+    const {
+        isDarkMode,
+        isMobile,
+        tools,
+        engine,
+        upload,
+        selection,
+        section,
+        measure
+    } = useBimContext();
+
     const { activeTool, renderMode, leftPanel, rightPanel } = tools;
-    const disabled = !viewerReady || !hasModels;
+    const hasModels = upload.disciplineModels.length > 0;
+    const disabled = !engine.viewerReady || !hasModels;
+
+    const onFitAll = () => engine.fitAll();
+    const onSetView = (view: string) => engine.setView(view);
+    const onScreenshot = () => engine.takeScreenshot();
+    const onIsolateSelected = () => selection.handleIsolateSelected();
+    const onHideSelected = () => selection.handleHideSelected();
+    const onShowAll = () => selection.handleShowAll();
+    const onUpload = upload.handleFileUpload;
+
+    // ── Section tool handlers for toolbar ──
+    const handleSectionAction = useCallback((action: string) => {
+        switch (action) {
+            case 'clip-x': tools.activateTool('clip-x'); break;
+            case 'clip-y': tools.activateTool('clip-y'); break;
+            case 'clip-z': tools.activateTool('clip-z'); break;
+            case 'section-box': tools.activateTool('section-box'); break;
+            case 'section-plane': tools.activateTool('section-plane'); break;
+            case 'clear':
+                section.clearAllClipPlanes();
+                tools.activateTool('select');
+                break;
+        }
+    }, [tools, section]);
+
+    const handleMeasureAction = useCallback((action: string) => {
+        switch (action) {
+            case 'length': tools.activateTool('measure-length'); break;
+            case 'area': tools.activateTool('measure-area'); break;
+            case 'clear':
+                measure.clearAllMeasurements();
+                tools.activateTool('select');
+                break;
+        }
+    }, [tools, measure]);
 
     // ── Drag state ──
     const toolbarRef = React.useRef<HTMLDivElement>(null);
@@ -239,10 +262,10 @@ export const BimToolbar: React.FC<BimToolbarProps> = ({
                     <PanelRight className="w-5 h-5" />
                 </ToolBtn>
                 <Divider isDark={isDarkMode} />
-                <ToolBtn isDark={isDarkMode} active={activeTool?.startsWith('clip') || activeTool === 'section-box'} onClick={() => onSectionAction?.('clip-x')} title="Section" disabled={disabled} badge={clipPlaneCount}>
+                <ToolBtn isDark={isDarkMode} active={activeTool?.startsWith('clip') || activeTool === 'section-box'} onClick={() => handleSectionAction('clip-x')} title="Section" disabled={disabled} badge={section.clipPlaneCount}>
                     <Scissors className="w-5 h-5" />
                 </ToolBtn>
-                <ToolBtn isDark={isDarkMode} active={activeTool?.startsWith('measure')} onClick={() => onMeasureAction?.('length')} title="Measure" disabled={disabled} badge={measurementCount}>
+                <ToolBtn isDark={isDarkMode} active={activeTool?.startsWith('measure')} onClick={() => handleMeasureAction('length')} title="Measure" disabled={disabled} badge={measure.measurementCount}>
                     <Ruler className="w-5 h-5" />
                 </ToolBtn>
                 <Divider isDark={isDarkMode} />
@@ -339,17 +362,17 @@ export const BimToolbar: React.FC<BimToolbarProps> = ({
                 isDark={isDarkMode}
                 disabled={disabled}
                 trigger={
-                    <ToolBtn isDark={isDarkMode} active={activeTool?.startsWith('clip') || activeTool === 'section-box' || activeTool === 'section-plane'} title="Section Tools" disabled={disabled} badge={clipPlaneCount}>
+                    <ToolBtn isDark={isDarkMode} active={activeTool?.startsWith('clip') || activeTool === 'section-box' || activeTool === 'section-plane'} title="Section Tools" disabled={disabled} badge={section.clipPlaneCount}>
                         <Scissors className="w-4 h-4" />
                     </ToolBtn>
                 }
                 items={[
-                    { id: 'section-plane', icon: <Crosshair className="w-4 h-4 text-amber-400" />, label: 'Section Plane (Click Surface)', active: activeTool === 'section-plane', onClick: () => onSectionAction?.('section-plane') },
-                    { id: 'clip-x', icon: <ScanLine className="w-4 h-4 text-red-400" />, label: 'Clip X (YZ Plane)', active: activeTool === 'clip-x', onClick: () => onSectionAction?.('clip-x') },
-                    { id: 'clip-y', icon: <ScanLine className="w-4 h-4 text-green-400" />, label: 'Clip Y (XZ Plane)', active: activeTool === 'clip-y', onClick: () => onSectionAction?.('clip-y') },
-                    { id: 'clip-z', icon: <ScanLine className="w-4 h-4 text-blue-400" />, label: 'Clip Z (XY Plane)', active: activeTool === 'clip-z', onClick: () => onSectionAction?.('clip-z') },
-                    { id: 'section-box', icon: <BoxSelect className="w-4 h-4 text-amber-400" />, label: 'Section Box', active: activeTool === 'section-box', onClick: () => onSectionAction?.('section-box') },
-                    { id: 'clear-sections', icon: <Trash2 className="w-4 h-4" />, label: 'Clear All Sections', divider: true, danger: true, onClick: () => onSectionAction?.('clear') },
+                    { id: 'section-plane', icon: <Crosshair className="w-4 h-4 text-amber-400" />, label: 'Section Plane (Click Surface)', active: activeTool === 'section-plane', onClick: () => handleSectionAction('section-plane') },
+                    { id: 'clip-x', icon: <ScanLine className="w-4 h-4 text-red-400" />, label: 'Clip X (YZ Plane)', active: activeTool === 'clip-x', onClick: () => handleSectionAction('clip-x') },
+                    { id: 'clip-y', icon: <ScanLine className="w-4 h-4 text-green-400" />, label: 'Clip Y (XZ Plane)', active: activeTool === 'clip-y', onClick: () => handleSectionAction('clip-y') },
+                    { id: 'clip-z', icon: <ScanLine className="w-4 h-4 text-blue-400" />, label: 'Clip Z (XY Plane)', active: activeTool === 'clip-z', onClick: () => handleSectionAction('clip-z') },
+                    { id: 'section-box', icon: <BoxSelect className="w-4 h-4 text-amber-400" />, label: 'Section Box', active: activeTool === 'section-box', onClick: () => handleSectionAction('section-box') },
+                    { id: 'clear-sections', icon: <Trash2 className="w-4 h-4" />, label: 'Clear All Sections', divider: true, danger: true, onClick: () => handleSectionAction('clear') },
                 ]}
             />
 
@@ -358,14 +381,14 @@ export const BimToolbar: React.FC<BimToolbarProps> = ({
                 isDark={isDarkMode}
                 disabled={disabled}
                 trigger={
-                    <ToolBtn isDark={isDarkMode} active={activeTool?.startsWith('measure')} title="Measure Tools" disabled={disabled} badge={measurementCount}>
+                    <ToolBtn isDark={isDarkMode} active={activeTool?.startsWith('measure')} title="Measure Tools" disabled={disabled} badge={measure.measurementCount}>
                         <Ruler className="w-4 h-4" />
                     </ToolBtn>
                 }
                 items={[
-                    { id: 'measure-length', icon: <Waypoints className="w-4 h-4 text-cyan-400" />, label: 'Length', active: activeTool === 'measure-length', onClick: () => onMeasureAction?.('length') },
-                    { id: 'measure-area', icon: <PenTool className="w-4 h-4 text-emerald-400" />, label: 'Area', active: activeTool === 'measure-area', onClick: () => onMeasureAction?.('area') },
-                    { id: 'clear-measures', icon: <Trash2 className="w-4 h-4" />, label: 'Clear Measurements', divider: true, danger: true, onClick: () => onMeasureAction?.('clear') },
+                    { id: 'measure-length', icon: <Waypoints className="w-4 h-4 text-cyan-400" />, label: 'Length', active: activeTool === 'measure-length', onClick: () => handleMeasureAction('length') },
+                    { id: 'measure-area', icon: <PenTool className="w-4 h-4 text-emerald-400" />, label: 'Area', active: activeTool === 'measure-area', onClick: () => handleMeasureAction('area') },
+                    { id: 'clear-measures', icon: <Trash2 className="w-4 h-4" />, label: 'Clear Measurements', divider: true, danger: true, onClick: () => handleMeasureAction('clear') },
                 ]}
             />
 

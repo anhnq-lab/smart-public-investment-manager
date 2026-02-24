@@ -10,6 +10,7 @@ import {
     FileUp, Trash2, MoreVertical
 } from 'lucide-react';
 import type { BimModel } from '../../../../lib/bimStorage';
+import { useBimContext } from './context/BimContext';
 
 // ── Types ────────────────────────────────────────────
 export interface SpatialNode {
@@ -35,24 +36,6 @@ interface DisciplineModel {
 }
 
 type TreeMode = 'spatial' | 'types' | 'disciplines';
-
-interface BimModelTreeProps {
-    isDarkMode: boolean;
-    isMobile?: boolean;
-    onClose: () => void;
-    // Spatial tree data
-    spatialTree: SpatialNode[];
-    typeGroups: TypeGroup[];
-    // Discipline models
-    disciplineModels: DisciplineModel[];
-    // Actions
-    onSelectElement: (expressId: number) => void;
-    onToggleVisibility: (index: number) => void;
-    onToggleTypeVisibility: (type: string) => void;
-    onUpload: (e: React.ChangeEvent<HTMLInputElement>) => void;
-    onDeleteModel: (index: number) => void;
-    viewerReady: boolean;
-}
 
 // ── Icons for IFC types ──────────────────────────────
 function getTypeIcon(type: string) {
@@ -84,12 +67,22 @@ function getDisciplineColor(d: string | null) {
 }
 
 // ── Component ────────────────────────────────────────
-export const BimModelTree: React.FC<BimModelTreeProps> = ({
-    isDarkMode, isMobile, onClose,
-    spatialTree, typeGroups, disciplineModels,
-    onSelectElement, onToggleVisibility, onToggleTypeVisibility,
-    onUpload, onDeleteModel, viewerReady
-}) => {
+export const BimModelTree: React.FC = () => {
+    const {
+        isDarkMode,
+        isMobile,
+        tools,
+        selection: { spatialTree, typeGroups, handleSelectElementFromTree, toggleTypeVisibility },
+        upload: { disciplineModels, toggleDisciplineVisibility, handleFileUpload, handleDeleteModel },
+        engine: { viewerReady }
+    } = useBimContext();
+
+    const onClose = () => tools.toggleLeftPanel('none');
+    const onSelectElement = handleSelectElementFromTree;
+    const onToggleVisibility = toggleDisciplineVisibility;
+    const onToggleTypeVisibility = toggleTypeVisibility;
+    const onUpload = handleFileUpload;
+    const onDeleteModel = handleDeleteModel;
     const [mode, setMode] = useState<TreeMode>('disciplines');
     const [searchQuery, setSearchQuery] = useState('');
     const [expandedNodes, setExpandedNodes] = useState<Set<string>>(new Set(['root']));

@@ -13,17 +13,9 @@ import {
     ASSET_CATEGORIES,
     getProjectAssets, createAsset, updateAsset, deleteAsset
 } from '../../../../lib/facilityAssetService';
+import { useBimContext } from './context/BimContext';
 
 // ── Types ────────────────────────────────────────────
-interface FacilityManagementPanelProps {
-    projectId: string;
-    isDarkMode: boolean;
-    isMobile: boolean;
-    refreshTrigger?: number;
-    onExtractFromBIM?: () => Promise<number>;
-    onLocationClick?: (asset: FacilityAsset) => void;
-}
-
 type AssetStatus = FacilityAsset['status'];
 type AssetCondition = FacilityAsset['condition'];
 
@@ -58,9 +50,27 @@ const EMPTY_FORM: Partial<FacilityAssetInsert> = {
 };
 
 // ── Component ────────────────────────────────────────
-export const FacilityManagementPanel: React.FC<FacilityManagementPanelProps> = ({
-    projectId, isDarkMode, isMobile, refreshTrigger = 0, onExtractFromBIM, onLocationClick
-}) => {
+export const FacilityManagementPanel: React.FC = () => {
+    const {
+        projectID: projectId,
+        isDarkMode,
+        isMobile,
+        opRefreshTrigger: refreshTrigger,
+        handleExtractFromBIM: onExtractFromBIM,
+        tools,
+        selection,
+        engine
+    } = useBimContext();
+
+    const onLocationClick = useCallback(async (asset: FacilityAsset) => {
+        if (!asset.bim_element_id) return;
+        const expressId = parseInt(asset.bim_element_id, 10);
+        if (isNaN(expressId)) return;
+
+        tools.toggleRightPanel('properties');
+        await selection.handleSelectElementFromTree(expressId);
+        await engine.zoomToExpressId(expressId);
+    }, [selection, engine, tools]);
     const [assets, setAssets] = useState<FacilityAsset[]>([]);
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);

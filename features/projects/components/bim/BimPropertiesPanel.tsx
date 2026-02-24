@@ -9,6 +9,7 @@ import {
     Crosshair, Layers, Link2, Tag, Hash, Box,
     Ruler, Square, Maximize, Weight
 } from 'lucide-react';
+import { useBimContext } from './context/BimContext';
 
 // ── Types ────────────────────────────────────────────
 export interface PropertyItem {
@@ -51,11 +52,6 @@ export interface ClassificationItem {
 type PropertiesTab = 'properties' | 'relations' | 'classification';
 
 interface BimPropertiesPanelProps {
-    selectedElement: SelectedElement | null;
-    isDarkMode: boolean;
-    isMobile: boolean;
-    onClose: () => void;
-    onHighlightElement?: (id: string) => void;
     isBottomPanel?: boolean;
 }
 
@@ -95,8 +91,18 @@ function getQuantityIcon(name: string) {
 
 // ── Component ────────────────────────────────────────
 export const BimPropertiesPanel: React.FC<BimPropertiesPanelProps> = ({
-    selectedElement, isDarkMode, isMobile, onClose, onHighlightElement, isBottomPanel = false
+    isBottomPanel = false
 }) => {
+    const {
+        isDarkMode,
+        isMobile,
+        tools,
+        selection: { selectedElement, handleSelectElementFromTree }
+    } = useBimContext();
+
+    const onClose = () => tools.toggleRightPanel('none');
+    const onHighlightElement = (id: string) => handleSelectElementFromTree(Number(id));
+
     const [activeTab, setActiveTab] = useState<PropertiesTab>('properties');
     const [searchQuery, setSearchQuery] = useState('');
     const [expandedSets, setExpandedSets] = useState<Record<string, boolean>>({});

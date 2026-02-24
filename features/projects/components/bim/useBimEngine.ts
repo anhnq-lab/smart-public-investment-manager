@@ -180,6 +180,16 @@ export function useBimEngine(
                     },
                 });
 
+                // Setup Hoverer
+                const hoverer = components.get(OBCF.Hoverer);
+                hoverer.enabled = true;
+                hoverer.world = world;
+                if ('color' in hoverer.material) {
+                    (hoverer.material as any).color.setHex(0x81d4fa);
+                }
+                hoverer.material.opacity = 0.3;
+                hoverer.material.transparent = true;
+
                 // Track camera quaternion for ViewCube
                 let lastQStr = '';
                 world.camera.controls.addEventListener('update', () => {
