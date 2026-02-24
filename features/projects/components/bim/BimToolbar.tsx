@@ -10,7 +10,8 @@ import {
     ArrowRight, Grid3X3, Axis3D, Sun, Moon, RotateCcw,
     EyeOff, Focus, Download, Trash2, CircleDot, PenTool,
     Layers, TreePine, PanelLeft, PanelRight, ChevronDown, ChevronUp,
-    Slice, ScanLine, BoxSelect, Pipette, Waypoints, FileUp, Crosshair, GripVertical
+    Slice, ScanLine, BoxSelect, Pipette, Waypoints, FileUp, Crosshair, GripVertical,
+    Activity, ShieldAlert, Zap
 } from 'lucide-react';
 import { useBimContext } from './context/BimContext';
 
@@ -159,7 +160,8 @@ export const BimToolbar: React.FC<BimToolbarProps> = ({
         upload,
         selection,
         section,
-        measure
+        measure,
+        operations
     } = useBimContext();
 
     const { activeTool, renderMode, leftPanel, rightPanel } = tools;
@@ -424,6 +426,36 @@ export const BimToolbar: React.FC<BimToolbarProps> = ({
                     { id: 'isolate', icon: <Focus className="w-4 h-4 text-amber-400" />, label: 'Isolate Selected', shortcut: 'I', onClick: onIsolateSelected },
                     { id: 'hide', icon: <EyeOff className="w-4 h-4" />, label: 'Hide Selected', shortcut: 'H', onClick: onHideSelected },
                     { id: 'show-all', icon: <Eye className="w-4 h-4 text-emerald-400" />, label: 'Show All', shortcut: 'Shift+H', divider: true, onClick: onShowAll },
+                ]}
+            />
+
+            <Divider isDark={isDarkMode} />
+
+            {/* ── Operations (Heatmap & System) ──── */}
+            <ToolBtn
+                isDark={isDarkMode}
+                active={operations.heatmapActive}
+                onClick={operations.toggleHeatmap}
+                title="Asset Heatmap (Status)"
+                disabled={disabled}
+            >
+                <Activity className={`w-4 h-4 ${operations.heatmapActive ? 'text-rose-400' : ''}`} />
+            </ToolBtn>
+
+            <ToolDropdown
+                isDark={isDarkMode}
+                disabled={disabled}
+                trigger={
+                    <ToolBtn isDark={isDarkMode} active={operations.activeSystem !== null} title="MEP Systems" disabled={disabled}>
+                        <Zap className="w-4 h-4" />
+                    </ToolBtn>
+                }
+                items={[
+                    { id: 'sys-hvac', icon: <Box className="w-4 h-4 text-blue-400" />, label: 'HVAC System', active: operations.activeSystem === 'HVAC', onClick: () => operations.toggleSystemMapping('HVAC') },
+                    { id: 'sys-elec', icon: <Zap className="w-4 h-4 text-yellow-400" />, label: 'Electrical System', active: operations.activeSystem === 'Electrical', onClick: () => operations.toggleSystemMapping('Electrical') },
+                    { id: 'sys-plumb', icon: <Activity className="w-4 h-4 text-cyan-400" />, label: 'Plumbing System', active: operations.activeSystem === 'Plumbing', onClick: () => operations.toggleSystemMapping('Plumbing') },
+                    { id: 'sys-fire', icon: <ShieldAlert className="w-4 h-4 text-red-400" />, label: 'Fire Protection', active: operations.activeSystem === 'Fire', onClick: () => operations.toggleSystemMapping('Fire') },
+                    { id: 'sys-clear', icon: <Trash2 className="w-4 h-4" />, label: 'Clear System Filter', divider: true, danger: true, onClick: () => operations.toggleSystemMapping(null) },
                 ]}
             />
 

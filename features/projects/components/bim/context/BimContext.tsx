@@ -7,6 +7,7 @@ import { useBimUpload, BimUploadAPI } from '../useBimUpload';
 import { useBimSelection, BimSelectionAPI } from '../useBimSelection';
 import { useBimSection, BimSectionAPI } from '../useBimSection';
 import { useBimMeasure, BimMeasureAPI } from '../useBimMeasure';
+import { useBimOperations, BimOperationsAPI } from '../useBimOperations';
 import { useBimKeyboard } from '../useBimKeyboard';
 import { extractFacilityAssetsFromIFC } from '../utils/autoExtractor';
 
@@ -30,6 +31,7 @@ export interface BimContextValue {
     selection: BimSelectionAPI;
     section: BimSectionAPI;
     measure: BimMeasureAPI;
+    operations: BimOperationsAPI;
 
     opRefreshTrigger: number;
     handleExtractFromBIM: () => Promise<number>;
@@ -113,6 +115,12 @@ export const BimProvider: React.FC<BimProviderProps> = ({
         engine.componentsRef
     );
 
+    const operations = useBimOperations(
+        projectID,
+        engine.componentsRef,
+        engine.worldRef
+    );
+
     useBimKeyboard({
         containerRef,
         worldRef: engine.worldRef,
@@ -148,6 +156,7 @@ export const BimProvider: React.FC<BimProviderProps> = ({
         selection,
         section,
         measure,
+        operations,
         opRefreshTrigger,
         handleExtractFromBIM,
         contextMenu,
