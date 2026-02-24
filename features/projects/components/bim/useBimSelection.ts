@@ -21,6 +21,7 @@ async function getStandaloneIfcApi(): Promise<WebIFC.IfcAPI> {
     if (_initPromise) return _initPromise;
     _initPromise = (async () => {
         const api = new WebIFC.IfcAPI();
+        api.SetWasmPath('/');
         await api.Init();
         _standaloneIfcApi = api;
         console.log('[web-ifc] ✅ Standalone IfcAPI initialized');

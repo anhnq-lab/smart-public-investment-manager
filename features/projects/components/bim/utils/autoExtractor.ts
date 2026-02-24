@@ -10,6 +10,7 @@ async function getIfcApi(): Promise<WEBIFC.IfcAPI> {
     if (_initP) return _initP;
     _initP = (async () => {
         const api = new WEBIFC.IfcAPI();
+        api.SetWasmPath('/');
         await api.Init();
         _ifcApi = api;
         return api;
