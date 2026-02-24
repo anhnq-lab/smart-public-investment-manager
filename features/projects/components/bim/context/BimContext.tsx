@@ -10,6 +10,14 @@ import { useBimMeasure, BimMeasureAPI } from '../useBimMeasure';
 import { useBimKeyboard } from '../useBimKeyboard';
 import { extractFacilityAssetsFromIFC } from '../utils/autoExtractor';
 
+export interface BimContextMenuState {
+    visible: boolean;
+    x: number;
+    y: number;
+    modelId: string | null;
+    expressId: number | null;
+}
+
 export interface BimContextValue {
     projectID: string;
     isDarkMode: boolean;
@@ -25,6 +33,9 @@ export interface BimContextValue {
 
     opRefreshTrigger: number;
     handleExtractFromBIM: () => Promise<number>;
+
+    contextMenu: BimContextMenuState;
+    setContextMenu: React.Dispatch<React.SetStateAction<BimContextMenuState>>;
 }
 
 const BimContext = createContext<BimContextValue | null>(null);
@@ -52,6 +63,13 @@ export const BimProvider: React.FC<BimProviderProps> = ({
 }) => {
     const containerRef = useRef<HTMLDivElement>(null);
     const [opRefreshTrigger, setOpRefreshTrigger] = useState(0);
+    const [contextMenu, setContextMenu] = useState<BimContextMenuState>({
+        visible: false,
+        x: 0,
+        y: 0,
+        modelId: null,
+        expressId: null
+    });
 
     const tools = useBimTools();
     const engine = useBimEngine(containerRef, isDarkMode);
@@ -131,8 +149,31 @@ export const BimProvider: React.FC<BimProviderProps> = ({
         section,
         measure,
         opRefreshTrigger,
-        handleExtractFromBIM
+        handleExtractFromBIM,
+        contextMenu,
+        setContextMenu
     };
+
+    // Close context menu on any global click or escape key
+    React.useEffect(() => {
+        const handleClick = () => {
+            if (contextMenu.visible) {
+                setContextMenu(prev => ({ ...prev, visible: false }));
+            }
+        };
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.key === 'Escape' && contextMenu.visible) {
+                setContextMenu(prev => ({ ...prev, visible: false }));
+            }
+        };
+
+        window.addEventListener('click', handleClick);
+        window.addEventListener('keydown', handleKeyDown);
+        return () => {
+            window.removeEventListener('click', handleClick);
+            window.removeEventListener('keydown', handleKeyDown);
+        };
+    }, [contextMenu.visible]);
 
     return (
         <BimContext.Provider value={value}>

@@ -1,7 +1,7 @@
 import React, { useRef, useEffect, useState, useCallback, useMemo } from 'react';
 import * as THREE from 'three';
 import * as OBC from '@thatopen/components';
-import { Upload, Loader2, Building2, AlertCircle, CheckCircle, Maximize2, Minimize2 } from 'lucide-react';
+import { Upload, Loader2, Building2, AlertCircle, CheckCircle, Maximize2, Minimize2, Info, LocateFixed } from 'lucide-react';
 import { useTheme } from '../../../../context/ThemeContext';
 import { Group as PanelGroup, Panel, Separator as PanelResizeHandle } from 'react-resizable-panels';
 
@@ -63,7 +63,9 @@ const ProjectBimTabContent: React.FC = () => {
         section,
         measure,
         opRefreshTrigger,
-        handleExtractFromBIM
+        handleExtractFromBIM,
+        contextMenu,
+        setContextMenu
     } = useBimContext();
 
     // ── State ──────────────────────────────
@@ -366,6 +368,40 @@ const ProjectBimTabContent: React.FC = () => {
     }, [engine, tools, selection, section, measure, toggleFullscreen]);
 
 
+    // ── Context Menu ──────────────────────────────
+    const handleContextMenu = useCallback(async (e: React.MouseEvent) => {
+        e.preventDefault();
+
+        // Hide if clicking again
+        setContextMenu(prev => ({ ...prev, visible: false }));
+
+        if (!engine.worldRef.current || !engine.componentsRef.current) return;
+
+        // Use That Open Engine Raycaster
+        const raycasters = engine.componentsRef.current.get(OBC.Raycasters);
+        const raycaster = raycasters.get(engine.worldRef.current);
+        const result = await raycaster.castRay();
+
+        if (result && result.object && 'fragment' in result.object) {
+            const fragment = (result.object as any).fragment;
+            const modelId = fragment.model.uuid;
+            const expressId = fragment.getItemID(result.faceIndex ?? result.instanceId);
+
+            if (expressId !== null && expressId !== undefined) {
+                // Select the element
+                selection.handleSelectElementFromTree(expressId);
+
+                setContextMenu({
+                    visible: true,
+                    x: e.clientX,
+                    y: e.clientY,
+                    modelId,
+                    expressId
+                });
+            }
+        }
+    }, [engine, selection, setContextMenu]);
+
 
     // ── Status icon ────────────────────────
     const StatusIcon = () => {
@@ -480,7 +516,7 @@ const ProjectBimTabContent: React.FC = () => {
                                 className={`w-full h-full absolute inset-0 outline-none z-0`}
                                 tabIndex={0}
                                 style={{ isolation: 'isolate', touchAction: 'none' }}
-                                onContextMenu={(e) => e.preventDefault()}
+                                onContextMenu={handleContextMenu}
                             />
 
                             {/* ViewCube */}
@@ -640,13 +676,59 @@ const ProjectBimTabContent: React.FC = () => {
             {/* Footer when no models loaded */}
             {(!engine.viewerReady || !hasModels) && (
                 <div className={`
-                    absolute bottom-0 left-0 right-0
-                    shrink-0 h-8 flex items-center justify-between px-3 z-30
-                    text-[10px] border-t pointer-events-none
-                    ${isDark ? 'bg-slate-900/90 text-slate-500 border-slate-800' : 'bg-white/90 text-gray-400 border-gray-200'}
+                    absolute bottom-0 w-full h-10 border-t flex items-center justify-between px-4 z-10
+                    ${isDark ? 'bg-slate-800 border-slate-700/50' : 'bg-white border-gray-200'}
                 `}>
-                    <span>🏗️ That Open Engine v3</span>
-                    <span className="opacity-50">Press <kbd className={`px-1 rounded border ${isDark ? 'border-slate-700 bg-slate-800' : 'border-gray-200 bg-white'}`}>?</kbd> for shortcuts</span>
+                    <div className={`text-xs ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
+                        Mô đun BIM đang ở chế độ chờ
+                    </div>
+                </div>
+            )}
+
+            {/* Context Menu */}
+            {contextMenu.visible && (
+                <div
+                    className={`fixed z-[99999] w-48 py-1 rounded-md shadow-2xl border backdrop-blur-md
+                        ${isDark ? 'bg-slate-800/95 border-slate-700 text-slate-200' : 'bg-white/95 border-gray-200 text-gray-800'}
+                    `}
+                    style={{ left: contextMenu.x, top: contextMenu.y }}
+                    onClick={(e) => e.stopPropagation()}
+                >
+                    <button
+                        className={`w-full text-left px-4 py-2 text-sm transition-colors
+                            ${isDark ? 'hover:bg-slate-700' : 'hover:bg-gray-100'}
+                        `}
+                        onClick={() => {
+                            if (contextMenu.expressId !== null) {
+                                selection.handleSelectElementFromTree(contextMenu.expressId);
+                                tools.toggleRightPanel('properties');
+                            }
+                            setContextMenu(prev => ({ ...prev, visible: false }));
+                        }}
+                    >
+                        <div className="flex items-center gap-2">
+                            <Info className="w-4 h-4" />
+                            <span>Xem thuộc tính</span>
+                        </div>
+                    </button>
+                    {engine.zoomToExpressId && (
+                        <button
+                            className={`w-full text-left px-4 py-2 text-sm transition-colors
+                                ${isDark ? 'hover:bg-slate-700' : 'hover:bg-gray-100'}
+                            `}
+                            onClick={() => {
+                                if (contextMenu.expressId !== null) {
+                                    engine.zoomToExpressId(contextMenu.expressId);
+                                }
+                                setContextMenu(prev => ({ ...prev, visible: false }));
+                            }}
+                        >
+                            <div className="flex items-center gap-2">
+                                <LocateFixed className="w-4 h-4" />
+                                <span>Phóng to đối tượng</span>
+                            </div>
+                        </button>
+                    )}
                 </div>
             )}
         </div>
