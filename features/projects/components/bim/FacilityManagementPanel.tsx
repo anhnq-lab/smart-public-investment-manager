@@ -21,6 +21,7 @@ interface FacilityManagementPanelProps {
     isMobile: boolean;
     refreshTrigger?: number;
     onExtractFromBIM?: () => Promise<number>;
+    onLocationClick?: (asset: FacilityAsset) => void;
 }
 
 type AssetStatus = FacilityAsset['status'];
@@ -58,7 +59,7 @@ const EMPTY_FORM: Partial<FacilityAssetInsert> = {
 
 // ── Component ────────────────────────────────────────
 export const FacilityManagementPanel: React.FC<FacilityManagementPanelProps> = ({
-    projectId, isDarkMode, isMobile, refreshTrigger = 0, onExtractFromBIM
+    projectId, isDarkMode, isMobile, refreshTrigger = 0, onExtractFromBIM, onLocationClick
 }) => {
     const [assets, setAssets] = useState<FacilityAsset[]>([]);
     const [loading, setLoading] = useState(true);
@@ -360,10 +361,22 @@ export const FacilityManagementPanel: React.FC<FacilityManagementPanelProps> = (
                                         </td>
                                         <td className={`px-4 py-2.5 ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}>
                                             {asset.location ? (
-                                                <span className="flex items-center gap-1">
-                                                    <MapPin className="w-3 h-3" />
-                                                    {asset.location}
-                                                </span>
+                                                asset.bim_element_id && onLocationClick ? (
+                                                    <button
+                                                        onClick={() => onLocationClick(asset)}
+                                                        className={`flex items-center gap-1 hover:underline transition-colors ${isDarkMode ? 'text-blue-400 hover:text-blue-300' : 'text-blue-600 hover:text-blue-700'
+                                                            }`}
+                                                        title="Xem vị trí trên mô hình BIM"
+                                                    >
+                                                        <MapPin className="w-3 h-3" />
+                                                        {asset.location}
+                                                    </button>
+                                                ) : (
+                                                    <span className="flex items-center gap-1">
+                                                        <MapPin className="w-3 h-3" />
+                                                        {asset.location}
+                                                    </span>
+                                                )
                                             ) : '—'}
                                         </td>
                                         <td className="px-4 py-2.5">

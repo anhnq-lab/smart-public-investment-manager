@@ -101,6 +101,17 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
         return totalExtracted;
     }, [projectID, upload.ifcDataMapRef]);
 
+    const handleLocationClick = useCallback(async (asset: any) => {
+        if (!asset.bim_element_id) return;
+        const expressId = parseInt(asset.bim_element_id, 10);
+        if (isNaN(expressId)) return;
+
+        tools.toggleRightPanel('properties');
+        await selection.handleSelectElementFromTree(expressId);
+        await engine.zoomToExpressId(expressId);
+    }, [selection, engine, tools]);
+
+
     const cursorClass = getCursorClass(tools.activeTool);
 
     // ── Responsive check ───────────────────
@@ -735,6 +746,7 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
                                 isMobile={isMobile}
                                 refreshTrigger={opRefreshTrigger}
                                 onExtractFromBIM={hasModels ? handleExtractFromBIM : undefined}
+                                onLocationClick={handleLocationClick}
                             />
                         </div>
                     </div>

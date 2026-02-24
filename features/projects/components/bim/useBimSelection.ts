@@ -470,8 +470,35 @@ export function useBimSelection(
             if (components) {
                 const highlighter = components.get(OBCF.Highlighter);
                 await highlighter.clear('select');
+
+                const fragments = components.get(OBC.FragmentsManager);
+                const idMap: Record<string, Set<number>> = {};
+                let foundModelId: string | null = null;
+
+                for (const [modelId, model] of fragments.list) {
+                    try {
+                        let box = null;
+                        if (typeof (model as any).getMergedBox === 'function') {
+                            box = await (model as any).getMergedBox([expressId]);
+                        } else if (typeof (model as any).getBoundingBox === 'function') {
+                            box = await (model as any).getBoundingBox([expressId]);
+                        }
+                        if (box && !box.isEmpty()) {
+                            idMap[modelId] = new Set([expressId]);
+                            foundModelId = String(modelId);
+                            break;
+                        }
+                    } catch { /* skip */ }
+                }
+
+                if (foundModelId) {
+                    selectedFragmentRef.current = { modelId: foundModelId, expressIds: [expressId] };
+                    await highlighter.highlightByID('select', idMap, true, false);
+                }
             }
-        } catch { /* ignore */ }
+        } catch (e) {
+            console.warn('[Selection] Highlight from tree error:', e);
+        }
 
         // Step 3: Enrich with full properties
         const extra = await extractFullProperties(expressId);

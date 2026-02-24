@@ -3,7 +3,7 @@
  * Handles: Components init, World (Scene/Camera/Renderer), Grid, Highlighter, IfcLoader, Fragments
  * Professional lighting, gradient background, smooth camera
  */
-import { useRef, useEffect, useState, useCallback } from 'react';
+import React, { useRef, useEffect, useState, useCallback } from 'react';
 import * as OBC from '@thatopen/components';
 import * as OBCF from '@thatopen/components-front';
 import * as THREE from 'three';
@@ -20,6 +20,7 @@ export interface BimEngineAPI {
     fitAll: () => void;
     takeScreenshot: () => void;
     zoomToObject: (object: THREE.Object3D) => void;
+    zoomToExpressId: (expressId: number) => Promise<void>;
     orbit: (deltaAzimuth: number, deltaPolar: number) => void;
 }
 
@@ -365,6 +366,42 @@ export function useBimEngine(
         camera.controls.rotate(deltaAzimuthDeg * deg2rad, deltaPolarDeg * deg2rad, true);
     }, []);
 
+    const zoomToExpressId = useCallback(async (expressId: number) => {
+        try {
+            const fragments = componentsRef.current?.get(OBC.FragmentsManager);
+            if (!fragments || !worldRef.current?.camera) return;
+            const box3 = new THREE.Box3();
+            let found = false;
+
+            for (const [, model] of fragments.list) {
+                try {
+                    if (typeof (model as any).getMergedBox === 'function') {
+                        const box = await (model as any).getMergedBox([expressId]);
+                        if (box && !box.isEmpty()) {
+                            box3.union(box);
+                            found = true;
+                        }
+                    } else if (typeof (model as any).getBoundingBox === 'function') {
+                        const box = await (model as any).getBoundingBox([expressId]);
+                        if (box && !box.isEmpty()) {
+                            box3.union(box);
+                            found = true;
+                        }
+                    }
+                } catch { /* skip if error or element not in this model */ }
+            }
+            if (found && !box3.isEmpty()) {
+                const sphere = new THREE.Sphere();
+                box3.getBoundingSphere(sphere);
+                sphere.radius = Math.max(sphere.radius * 1.5, 2); // padding + minimum radius to avoid being too close
+                const camera = worldRef.current.camera as OBC.SimpleCamera;
+                camera.controls.fitToSphere(sphere, true);
+            }
+        } catch (err) {
+            console.warn('[BimEngine] Zoom to expressId error:', err);
+        }
+    }, [componentsRef, worldRef]);
+
     return {
         componentsRef,
         worldRef,
@@ -376,6 +413,7 @@ export function useBimEngine(
         fitAll,
         takeScreenshot,
         zoomToObject,
+        zoomToExpressId,
         orbit,
     };
 }
