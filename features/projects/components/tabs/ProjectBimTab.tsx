@@ -1,7 +1,7 @@
 import React, { useRef, useEffect, useState, useCallback, useMemo } from 'react';
 import * as THREE from 'three';
 import * as OBC from '@thatopen/components';
-import { Upload, Loader2, Building2, AlertCircle, CheckCircle, Maximize2, Minimize2, Info, LocateFixed } from 'lucide-react';
+import { Upload, Loader2, Building2, AlertCircle, CheckCircle, Maximize2, Minimize2, Info, LocateFixed, EyeOff, Focus, FileUp } from 'lucide-react';
 import { useTheme } from '../../../../context/ThemeContext';
 import { Group as PanelGroup, Panel, Separator as PanelResizeHandle } from 'react-resizable-panels';
 
@@ -75,7 +75,9 @@ const ProjectBimTabContent: React.FC = () => {
     const [modelsLoaded, setModelsLoaded] = useState(false);
     const [isFullscreen, setIsFullscreen] = useState(false);
     const [bottomTab, setBottomTab] = useState<'properties' | 'operations'>('properties');
+    const [isDraggingFile, setIsDraggingFile] = useState(false);
     const wrapperRef = useRef<HTMLDivElement>(null);
+    const contextMenuRef = useRef<HTMLDivElement>(null);
     const originalMaterialsRef = useRef(new WeakMap<THREE.Material, THREE.Material>());
 
     const hasModels = upload.disciplineModels.length > 0;
@@ -368,16 +370,32 @@ const ProjectBimTabContent: React.FC = () => {
     }, [engine, tools, selection, section, measure, toggleFullscreen]);
 
 
+    // ── Click-outside to close context menu ──────
+    useEffect(() => {
+        if (!contextMenu.visible) return;
+        const handler = (e: MouseEvent) => {
+            if (contextMenuRef.current && !contextMenuRef.current.contains(e.target as Node)) {
+                setContextMenu(prev => ({ ...prev, visible: false }));
+            }
+        };
+        const escHandler = (e: KeyboardEvent) => {
+            if (e.key === 'Escape') setContextMenu(prev => ({ ...prev, visible: false }));
+        };
+        document.addEventListener('mousedown', handler);
+        document.addEventListener('keydown', escHandler);
+        return () => {
+            document.removeEventListener('mousedown', handler);
+            document.removeEventListener('keydown', escHandler);
+        };
+    }, [contextMenu.visible, setContextMenu]);
+
     // ── Context Menu ──────────────────────────────
     const handleContextMenu = useCallback(async (e: React.MouseEvent) => {
         e.preventDefault();
-
-        // Hide if clicking again
         setContextMenu(prev => ({ ...prev, visible: false }));
 
         if (!engine.worldRef.current || !engine.componentsRef.current) return;
 
-        // Use That Open Engine Raycaster
         const raycasters = engine.componentsRef.current.get(OBC.Raycasters);
         const raycaster = raycasters.get(engine.worldRef.current);
         const result = await raycaster.castRay();
@@ -388,19 +406,45 @@ const ProjectBimTabContent: React.FC = () => {
             const expressId = fragment.getItemID(result.faceIndex ?? result.instanceId);
 
             if (expressId !== null && expressId !== undefined) {
-                // Select the element
                 selection.handleSelectElementFromTree(expressId);
-
-                setContextMenu({
-                    visible: true,
-                    x: e.clientX,
-                    y: e.clientY,
-                    modelId,
-                    expressId
-                });
+                // Clamp menu position to viewport
+                const menuW = 200, menuH = 180;
+                const x = Math.min(e.clientX, window.innerWidth - menuW);
+                const y = Math.min(e.clientY, window.innerHeight - menuH);
+                setContextMenu({ visible: true, x, y, modelId, expressId });
             }
         }
     }, [engine, selection, setContextMenu]);
+
+    // ── Drag & Drop Upload ───────────────────────
+    const handleDragOver = useCallback((e: React.DragEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (e.dataTransfer.types.includes('Files')) setIsDraggingFile(true);
+    }, []);
+
+    const handleDragLeave = useCallback((e: React.DragEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setIsDraggingFile(false);
+    }, []);
+
+    const handleDrop = useCallback((e: React.DragEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setIsDraggingFile(false);
+        const file = e.dataTransfer.files?.[0];
+        if (file && file.name.toLowerCase().endsWith('.ifc')) {
+            // Create a synthetic event for the upload handler
+            const dt = new DataTransfer();
+            dt.items.add(file);
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.files = dt.files;
+            const syntheticEvent = { target: input } as any;
+            upload.handleFileUpload(syntheticEvent);
+        }
+    }, [upload]);
 
 
     // ── Status icon ────────────────────────
@@ -436,6 +480,9 @@ const ProjectBimTabContent: React.FC = () => {
             ref={wrapperRef}
             className={`flex w-full overflow-hidden ${isFullscreen ? '' : 'h-full'} ${isDark ? 'bg-slate-900' : 'bg-gray-50'}`}
             style={isFullscreen ? { width: '100vw', height: '100vh', position: 'fixed', top: 0, left: 0, zIndex: 9999 } : undefined}
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
+            onDrop={handleDrop}
         >
             <PanelGroup direction="horizontal" autoSaveId="bim-layout-main">
                 {/* ─── LEFT SIDEBAR (Model Browser + Properties) ─── */}
@@ -513,11 +560,21 @@ const ProjectBimTabContent: React.FC = () => {
                             {/* 3D Viewer Canvas */}
                             <div
                                 ref={containerRef}
-                                className={`w-full h-full absolute inset-0 outline-none z-0`}
+                                className="w-full h-full absolute inset-0 outline-none z-0"
                                 tabIndex={0}
                                 style={{ isolation: 'isolate', touchAction: 'none' }}
                                 onContextMenu={handleContextMenu}
                             />
+
+                            {/* Drag & Drop overlay */}
+                            {isDraggingFile && (
+                                <div className="absolute inset-0 z-40 flex items-center justify-center bg-blue-500/10 backdrop-blur-sm border-2 border-dashed border-blue-400 rounded-lg">
+                                    <div className="text-center">
+                                        <FileUp className="w-12 h-12 mx-auto mb-2 text-blue-400 animate-bounce" />
+                                        <p className="text-sm font-medium text-blue-400">Thả file IFC vào đây</p>
+                                    </div>
+                                </div>
+                            )}
 
                             {/* ViewCube */}
                             {engine.viewerReady && !isMobile && (
@@ -580,18 +637,23 @@ const ProjectBimTabContent: React.FC = () => {
                             {engine.viewerReady && !hasModels && upload.status === 'idle' && (
                                 <div className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none">
                                     <div className={`
-                                        text-center p-8 rounded-2xl pointer-events-auto
-                                        ${isDark ? 'bg-slate-800/80' : 'bg-white/80'} backdrop-blur-md
-                                        border ${isDark ? 'border-slate-700' : 'border-gray-200'}
+                                        text-center p-10 rounded-2xl pointer-events-auto max-w-sm
+                                        ${isDark ? 'bg-slate-800/90' : 'bg-white/90'} backdrop-blur-xl
+                                        border ${isDark ? 'border-slate-700/50' : 'border-gray-200'}
+                                        shadow-2xl
                                     `}>
-                                        <Building2 className={`w-12 h-12 mx-auto mb-4 ${isDark ? 'text-slate-500' : 'text-gray-300'}`} />
-                                        <h3 className={`text-sm font-bold mb-2 ${isDark ? 'text-white' : 'text-gray-800'}`}>
+                                        <div className={`w-16 h-16 mx-auto mb-5 rounded-2xl flex items-center justify-center
+                                            ${isDark ? 'bg-blue-500/10' : 'bg-blue-50'}
+                                        `}>
+                                            <Building2 className={`w-8 h-8 ${isDark ? 'text-blue-400' : 'text-blue-500'}`} />
+                                        </div>
+                                        <h3 className={`text-base font-bold mb-2 ${isDark ? 'text-white' : 'text-gray-800'}`}>
                                             Chưa có mô hình BIM
                                         </h3>
-                                        <p className={`text-xs mb-4 ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
-                                            Upload file IFC để bắt đầu
+                                        <p className={`text-xs mb-5 leading-relaxed ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
+                                            Upload hoặc kéo thả file IFC để bắt đầu xem mô hình 3D
                                         </p>
-                                        <label className="inline-flex items-center gap-2 px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg cursor-pointer text-xs transition-colors">
+                                        <label className="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-500 hover:bg-blue-600 text-white rounded-xl cursor-pointer text-sm font-medium transition-all hover:shadow-lg hover:shadow-blue-500/25">
                                             <Upload className="w-4 h-4" />
                                             Upload IFC
                                             <input
@@ -601,6 +663,9 @@ const ProjectBimTabContent: React.FC = () => {
                                                 onChange={upload.handleFileUpload}
                                             />
                                         </label>
+                                        <p className={`text-[10px] mt-3 ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>
+                                            Hoặc kéo thả file .ifc vào đây
+                                        </p>
                                     </div>
                                 </div>
                             )}
@@ -632,38 +697,36 @@ const ProjectBimTabContent: React.FC = () => {
                         {engine.viewerReady && hasModels && (
                             <>
                                 <BimResizeHandle isDark={isDark} direction="vertical" />
-                                <Panel defaultSize={30} minSize={15} collapsible={true} collapsedSize={0} className={`
+                                <Panel defaultSize={28} minSize={12} collapsible={true} collapsedSize={0} className={`
                                     flex flex-col relative z-20
-                                    ${isDark ? 'bg-slate-800/95' : 'bg-white'}
+                                    ${isDark ? 'bg-slate-800' : 'bg-white'}
                                 `}>
                                     {/* Tab bar + stats */}
                                     <div className={`
-                                        flex items-center justify-between px-4 shrink-0 h-10
+                                        flex items-center justify-between px-3 shrink-0 h-9
                                         text-[11px] font-medium border-b
                                         ${isDark ? 'text-slate-400 border-slate-700/50' : 'text-gray-500 border-gray-100'}
                                     `}>
                                         <div className="flex items-center gap-2">
                                             <span className={`
-                                                flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all
-                                                ${isDark ? 'bg-blue-500/15 text-blue-400 ring-1 ring-blue-500/30' : 'bg-blue-50 text-blue-600 ring-1 ring-blue-200'}
+                                                flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-semibold
+                                                ${isDark ? 'bg-blue-500/10 text-blue-400' : 'bg-blue-50 text-blue-600'}
                                             `}>
                                                 🔧 Quản lý vận hành
                                             </span>
-
-                                            {/* Model stats */}
-                                            <div className={`h-4 w-px mx-2 ${isDark ? 'bg-slate-700' : 'bg-gray-200'}`} />
-                                            <span className="flex items-center gap-1 text-[10px]">📦 {upload.disciplineModels.length} models</span>
+                                            <div className={`h-3.5 w-px ${isDark ? 'bg-slate-700' : 'bg-gray-200'}`} />
+                                            <span className="text-[10px] opacity-70">📦 {upload.disciplineModels.length} models</span>
                                             {section.clipPlaneCount > 0 && (
-                                                <span className="text-cyan-500 text-[10px] ml-2">✂ {section.clipPlaneCount} clips</span>
+                                                <span className="text-cyan-500 text-[10px]">✂ {section.clipPlaneCount}</span>
                                             )}
                                             {measure.measurementCount > 0 && (
-                                                <span className="text-cyan-500 text-[10px] ml-2">📐 {measure.measurementCount} measures</span>
+                                                <span className="text-cyan-500 text-[10px]">📐 {measure.measurementCount}</span>
                                             )}
                                         </div>
                                     </div>
 
                                     {/* Operations Content */}
-                                    <div className={`flex-1 overflow-auto p-0`}>
+                                    <div className="flex-1 overflow-auto">
                                         <FacilityManagementPanel />
                                     </div>
                                 </Panel>
@@ -676,26 +739,28 @@ const ProjectBimTabContent: React.FC = () => {
             {/* Footer when no models loaded */}
             {(!engine.viewerReady || !hasModels) && (
                 <div className={`
-                    absolute bottom-0 w-full h-10 border-t flex items-center justify-between px-4 z-10
+                    absolute bottom-0 w-full h-8 border-t flex items-center px-4 z-10
                     ${isDark ? 'bg-slate-800 border-slate-700/50' : 'bg-white border-gray-200'}
                 `}>
-                    <div className={`text-xs ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
-                        Mô đun BIM đang ở chế độ chờ
-                    </div>
+                    <span className={`text-[10px] ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>
+                        Kéo thả file IFC hoặc bấm Upload để bắt đầu
+                    </span>
                 </div>
             )}
 
             {/* Context Menu */}
             {contextMenu.visible && (
                 <div
-                    className={`fixed z-[99999] w-48 py-1 rounded-md shadow-2xl border backdrop-blur-md
+                    ref={contextMenuRef}
+                    className={`fixed z-[99999] w-48 py-1 rounded-lg shadow-2xl border backdrop-blur-xl
                         ${isDark ? 'bg-slate-800/95 border-slate-700 text-slate-200' : 'bg-white/95 border-gray-200 text-gray-800'}
+                        animate-in fade-in zoom-in-95 duration-100
                     `}
                     style={{ left: contextMenu.x, top: contextMenu.y }}
                     onClick={(e) => e.stopPropagation()}
                 >
                     <button
-                        className={`w-full text-left px-4 py-2 text-sm transition-colors
+                        className={`w-full text-left px-3 py-1.5 text-xs transition-colors flex items-center gap-2
                             ${isDark ? 'hover:bg-slate-700' : 'hover:bg-gray-100'}
                         `}
                         onClick={() => {
@@ -706,29 +771,48 @@ const ProjectBimTabContent: React.FC = () => {
                             setContextMenu(prev => ({ ...prev, visible: false }));
                         }}
                     >
-                        <div className="flex items-center gap-2">
-                            <Info className="w-4 h-4" />
-                            <span>Xem thuộc tính</span>
-                        </div>
+                        <Info className="w-3.5 h-3.5 text-blue-400" />
+                        <span>Xem thuộc tính</span>
                     </button>
-                    {engine.zoomToExpressId && (
-                        <button
-                            className={`w-full text-left px-4 py-2 text-sm transition-colors
-                                ${isDark ? 'hover:bg-slate-700' : 'hover:bg-gray-100'}
-                            `}
-                            onClick={() => {
-                                if (contextMenu.expressId !== null) {
-                                    engine.zoomToExpressId(contextMenu.expressId);
-                                }
-                                setContextMenu(prev => ({ ...prev, visible: false }));
-                            }}
-                        >
-                            <div className="flex items-center gap-2">
-                                <LocateFixed className="w-4 h-4" />
-                                <span>Phóng to đối tượng</span>
-                            </div>
-                        </button>
-                    )}
+                    <button
+                        className={`w-full text-left px-3 py-1.5 text-xs transition-colors flex items-center gap-2
+                            ${isDark ? 'hover:bg-slate-700' : 'hover:bg-gray-100'}
+                        `}
+                        onClick={() => {
+                            if (contextMenu.expressId !== null) {
+                                engine.zoomToExpressId(contextMenu.expressId);
+                            }
+                            setContextMenu(prev => ({ ...prev, visible: false }));
+                        }}
+                    >
+                        <LocateFixed className="w-3.5 h-3.5 text-emerald-400" />
+                        <span>Phóng to đối tượng</span>
+                    </button>
+                    <div className={`my-1 h-px ${isDark ? 'bg-slate-700' : 'bg-gray-200'}`} />
+                    <button
+                        className={`w-full text-left px-3 py-1.5 text-xs transition-colors flex items-center gap-2
+                            ${isDark ? 'hover:bg-slate-700' : 'hover:bg-gray-100'}
+                        `}
+                        onClick={() => {
+                            selection.handleHideSelected();
+                            setContextMenu(prev => ({ ...prev, visible: false }));
+                        }}
+                    >
+                        <EyeOff className="w-3.5 h-3.5 text-amber-400" />
+                        <span>Ẩn đối tượng</span>
+                    </button>
+                    <button
+                        className={`w-full text-left px-3 py-1.5 text-xs transition-colors flex items-center gap-2
+                            ${isDark ? 'hover:bg-slate-700' : 'hover:bg-gray-100'}
+                        `}
+                        onClick={() => {
+                            selection.handleIsolateSelected();
+                            setContextMenu(prev => ({ ...prev, visible: false }));
+                        }}
+                    >
+                        <Focus className="w-3.5 h-3.5 text-purple-400" />
+                        <span>Cô lập đối tượng</span>
+                    </button>
                 </div>
             )}
         </div>

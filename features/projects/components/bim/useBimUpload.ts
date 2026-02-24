@@ -70,38 +70,42 @@ export function useBimUpload(
 
             const newDisciplineModels: DisciplineModel[] = [];
             const ifcLoader = ifcLoaderRef.current;
+            let completed = 0;
 
-            for (let i = 0; i < readyModels.length; i++) {
-                const m = readyModels[i];
-                setLoadingProgress(((i) / readyModels.length) * 100);
-                setStatusMessage(`Đang tải: ${m.file_name} (${i + 1}/${readyModels.length})`);
-
+            // Load models in parallel for speed
+            const loadPromises = readyModels.map(async (m) => {
                 try {
-                    // Download raw IFC file
                     const ifcBuffer = await downloadFile(m.ifc_path!);
                     const uint8Array = new Uint8Array(ifcBuffer);
 
                     if (ifcLoader && worldRef.current) {
-                        // Load via IfcLoader
                         const model = await ifcLoader.load(uint8Array, true, m.file_name);
-
-                        // Store IFC data using FragmentsGroup UUID (matches Highlighter events)
                         const groupUuid = (model as any).uuid || (model as any).id;
                         if (groupUuid) ifcDataMapRef.current.set(groupUuid, uint8Array);
                         ifcDataMapRef.current.set(m.file_name, uint8Array);
-
-                        newDisciplineModels.push({ model: m, visible: true, fragModel: model });
-
-                        // Build spatial tree for this model
                         onModelLoaded?.(uint8Array);
+
+                        completed++;
+                        setLoadingProgress((completed / readyModels.length) * 100);
+                        setStatusMessage(`Đã tải ${completed}/${readyModels.length}: ${m.file_name}`);
+
+                        return { model: m, visible: true, fragModel: model } as DisciplineModel;
                     }
+                    return { model: m, visible: false } as DisciplineModel;
                 } catch (err) {
                     console.warn(`Failed to load ${m.file_name}:`, err);
-                    newDisciplineModels.push({ model: m, visible: false });
+                    completed++;
+                    setLoadingProgress((completed / readyModels.length) * 100);
+                    return { model: m, visible: false } as DisciplineModel;
                 }
-            }
+            });
 
-            // Add non-ready models to the list
+            const results = await Promise.allSettled(loadPromises);
+            results.forEach(r => {
+                if (r.status === 'fulfilled') newDisciplineModels.push(r.value);
+            });
+
+            // Add non-ready models
             models.filter(m => m.status !== 'ready' || !m.ifc_path).forEach(m => {
                 newDisciplineModels.push({ model: m, visible: false });
             });

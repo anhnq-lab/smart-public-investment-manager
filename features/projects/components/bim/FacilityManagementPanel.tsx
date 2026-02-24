@@ -219,7 +219,7 @@ export const FacilityManagementPanel: React.FC = () => {
             )}
 
             {/* Stats bar */}
-            <div className={`flex items-center gap-4 px-4 py-2.5 text-[11px] font-medium ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}>
+            <div className={`flex items-center gap-3 px-3 py-1.5 text-[11px] font-medium ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}>
                 <span className="flex items-center gap-1.5">
                     <Package className={`w-3.5 h-3.5 ${isDarkMode ? 'text-blue-400' : 'text-blue-500'}`} />
                     <span className={`font-bold ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>{stats.total}</span> tài sản
@@ -284,7 +284,7 @@ export const FacilityManagementPanel: React.FC = () => {
             </div>
 
             {/* Search & Filters */}
-            <div className={`flex items-center gap-2 px-4 pb-2 ${isMobile ? 'flex-wrap' : ''}`}>
+            <div className={`flex items-center gap-2 px-3 pb-1.5 ${isMobile ? 'flex-wrap' : ''}`}>
                 <div className={`flex items-center gap-2 flex-1 min-w-[160px] px-2.5 py-1.5 rounded-lg ${isDarkMode ? 'bg-slate-700/50' : 'bg-gray-100'}`}>
                     <Search className={`w-3.5 h-3.5 shrink-0 ${isDarkMode ? 'text-slate-500' : 'text-gray-400'}`} />
                     <input
@@ -326,18 +326,18 @@ export const FacilityManagementPanel: React.FC = () => {
 
             {/* Asset table */}
             {!loading && (
-                <div className="overflow-x-auto overflow-y-auto max-h-[170px] custom-scrollbar">
-                    <table className="w-full text-xs">
+                <div className="overflow-x-auto overflow-y-auto flex-1 custom-scrollbar">
+                    <table className="w-full text-[11px]">
                         <thead className={`sticky top-0 z-10 ${isDarkMode ? 'bg-slate-800' : 'bg-white'}`}>
                             <tr className={isDarkMode ? 'text-slate-500' : 'text-gray-400'}>
-                                <th className="text-left px-4 py-2 font-semibold bg-inherit">Mã TS</th>
-                                <th className="text-left px-4 py-2 font-semibold bg-inherit">Tên tài sản</th>
-                                <th className="text-left px-4 py-2 font-semibold bg-inherit">Phân loại</th>
-                                <th className="text-left px-4 py-2 font-semibold bg-inherit">Vị trí</th>
-                                <th className="text-left px-4 py-2 font-semibold bg-inherit">Trạng thái</th>
-                                <th className="text-left px-4 py-2 font-semibold bg-inherit">Tình trạng</th>
-                                <th className="text-left px-4 py-2 font-semibold bg-inherit">Bảo trì kế tiếp</th>
-                                <th className="px-4 py-2 bg-inherit"></th>
+                                <th className="text-left px-3 py-1.5 font-semibold bg-inherit">Mã TS</th>
+                                <th className="text-left px-3 py-1.5 font-semibold bg-inherit">Tên tài sản</th>
+                                <th className="text-left px-3 py-1.5 font-semibold bg-inherit">Phân loại</th>
+                                <th className="text-left px-3 py-1.5 font-semibold bg-inherit">Vị trí</th>
+                                <th className="text-left px-3 py-1.5 font-semibold bg-inherit">Trạng thái</th>
+                                <th className="text-left px-3 py-1.5 font-semibold bg-inherit">Tình trạng</th>
+                                <th className="text-left px-3 py-1.5 font-semibold bg-inherit">Bảo trì kế tiếp</th>
+                                <th className="px-3 py-1.5 bg-inherit"></th>
                             </tr>
                         </thead>
                         <tbody className={`divide-y ${isDarkMode ? 'divide-slate-700/30' : 'divide-gray-100'}`}>
@@ -349,10 +349,10 @@ export const FacilityManagementPanel: React.FC = () => {
                                         key={asset.asset_id}
                                         className={`transition-colors ${isDarkMode ? 'hover:bg-white/5' : 'hover:bg-gray-50'}`}
                                     >
-                                        <td className={`px-4 py-2.5 font-mono ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}>
+                                        <td className={`px-3 py-1.5 font-mono ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}>
                                             {asset.asset_code || '—'}
                                         </td>
-                                        <td className={`px-4 py-2.5 font-medium ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
+                                        <td className={`px-3 py-1.5 font-medium ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
                                             {asset.asset_name}
                                             {asset.manufacturer && (
                                                 <span className={`ml-1.5 text-[10px] ${isDarkMode ? 'text-slate-500' : 'text-gray-400'}`}>
@@ -360,7 +360,7 @@ export const FacilityManagementPanel: React.FC = () => {
                                                 </span>
                                             )}
                                         </td>
-                                        <td className="px-4 py-2.5">
+                                        <td className="px-3 py-1.5">
                                             {asset.category ? (
                                                 <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-medium ${isDarkMode ? 'bg-slate-700/50 text-slate-300' : 'bg-gray-100 text-gray-600'
                                                     }`}>
@@ -369,7 +369,7 @@ export const FacilityManagementPanel: React.FC = () => {
                                                 </span>
                                             ) : '—'}
                                         </td>
-                                        <td className={`px-4 py-2.5 ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}>
+                                        <td className={`px-3 py-1.5 ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}>
                                             {asset.location ? (
                                                 asset.bim_element_id && onLocationClick ? (
                                                     <button
@@ -389,15 +389,15 @@ export const FacilityManagementPanel: React.FC = () => {
                                                 )
                                             ) : '—'}
                                         </td>
-                                        <td className="px-4 py-2.5">
+                                        <td className="px-3 py-1.5">
                                             <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold ${isDarkMode ? sc.darkColor : sc.color}`}>
                                                 {sc.icon} {sc.label}
                                             </span>
                                         </td>
-                                        <td className={`px-4 py-2.5 text-[10px] font-medium ${isDarkMode ? cc.darkColor : cc.color}`}>
+                                        <td className={`px-3 py-1.5 text-[10px] font-medium ${isDarkMode ? cc.darkColor : cc.color}`}>
                                             {cc.label}
                                         </td>
-                                        <td className={`px-4 py-2.5 ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}>
+                                        <td className={`px-3 py-1.5 ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}>
                                             {asset.next_maintenance ? (
                                                 <span className="flex items-center gap-1">
                                                     <Calendar className="w-3 h-3" />
@@ -405,7 +405,7 @@ export const FacilityManagementPanel: React.FC = () => {
                                                 </span>
                                             ) : '—'}
                                         </td>
-                                        <td className="px-4 py-2.5">
+                                        <td className="px-3 py-1.5">
                                             <div className="flex items-center gap-1">
                                                 <button
                                                     onClick={() => openEditForm(asset)}
