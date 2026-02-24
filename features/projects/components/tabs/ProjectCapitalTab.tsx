@@ -249,14 +249,14 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
                     value={formatCurrency(summary.yearlyTarget)}
                     sub={`Giải ngân: ${formatCurrency(summary.yearlyDisbursed)}`}
                     icon={<Calendar className="w-5 h-5" />}
-                    iconBg="bg-indigo-100 text-indigo-600"
+                    iconBg="bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400"
                     valueColor="text-indigo-700"
                 />
                 <KPICard
                     label="Đã giải ngân"
                     value={formatCurrency(summary.totalDisbursed)}
                     icon={<TrendingUp className="w-5 h-5" />}
-                    iconBg="bg-emerald-100 text-emerald-600"
+                    iconBg="bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400"
                     valueColor="text-emerald-700"
                     progress={summary.disbursementRate}
                     progressColor="bg-emerald-500"
@@ -266,7 +266,7 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
                     value={formatCurrency(summary.totalAdvance)}
                     sub={`Chưa thu hồi: ${formatCurrency(summary.advanceBalance)}`}
                     icon={<Receipt className="w-5 h-5" />}
-                    iconBg="bg-amber-100 text-amber-600"
+                    iconBg="bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400"
                     valueColor="text-amber-700"
                 />
                 <KPICard
@@ -274,7 +274,7 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
                     value={formatCurrency(summary.completionPayment)}
                     sub="Thanh toán khối lượng HT"
                     icon={<DollarSign className="w-5 h-5" />}
-                    iconBg="bg-cyan-100 text-cyan-600"
+                    iconBg="bg-cyan-100 dark:bg-cyan-900/30 text-cyan-600 dark:text-cyan-400"
                     valueColor="text-cyan-700"
                 />
             </div>
@@ -421,7 +421,7 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
                                                     style={{ width: `${Math.min(a.rate, 100)}%` }}
                                                 />
                                             </div>
-                                            <span className={`text-xs font-bold ${a.rate >= 90 ? 'text-emerald-600' : a.rate >= 50 ? 'text-blue-600' : 'text-orange-600'}`}>
+                                            <span className={`text-xs font-bold ${a.rate >= 90 ? 'text-emerald-600 dark:text-emerald-400' : a.rate >= 50 ? 'text-blue-600 dark:text-blue-400' : 'text-orange-600 dark:text-orange-400'}`}>
                                                 {a.rate.toFixed(0)}%
                                             </span>
                                         </div>
@@ -474,7 +474,7 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
                                     {formatCurrency(summary.totalDisbursed)}
                                 </td>
                                 <td className="px-6 py-3">
-                                    <span className={`text-sm font-bold ${summary.disbursementRate >= 50 ? 'text-emerald-600' : 'text-orange-600'}`}>
+                                    <span className={`text-sm font-bold ${summary.disbursementRate >= 50 ? 'text-emerald-600 dark:text-emerald-400' : 'text-orange-600 dark:text-orange-400'}`}>
                                         {summary.disbursementRate}%
                                     </span>
                                 </td>
@@ -579,9 +579,9 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
                                         {d.CumulativeBefore != null ? formatCurrency(d.CumulativeBefore + d.Amount) : '—'}
                                     </td>
                                     <td className="px-4 py-3.5 text-center">
-                                        <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold ${d.Status === 'Approved' ? 'bg-green-100 text-green-700' :
-                                            d.Status === 'Pending' ? 'bg-orange-100 text-orange-700' :
-                                                'bg-red-100 text-red-700'
+                                        <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold ${d.Status === 'Approved' ? 'bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-300' :
+                                            d.Status === 'Pending' ? 'bg-orange-100 dark:bg-orange-900/40 text-orange-700 dark:text-orange-300' :
+                                                'bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300'
                                             }`}>
                                             <span className={`w-1.5 h-1.5 rounded-full ${d.Status === 'Approved' ? 'bg-green-500' :
                                                 d.Status === 'Pending' ? 'bg-orange-500' : 'bg-red-500'
@@ -636,8 +636,8 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
                     <div className="p-4 space-y-2">
                         {alerts.map((a, i) => (
                             <div key={i} className={`p-3 rounded-lg border flex items-start gap-3 ${a.level === 'high'
-                                ? 'bg-red-50 border-red-200 text-red-800'
-                                : 'bg-amber-50 border-amber-200 text-amber-800'
+                                ? 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800 text-red-800 dark:text-red-300'
+                                : 'bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-800 text-amber-800 dark:text-amber-300'
                                 }`}>
                                 <div className="mt-0.5">{a.icon}</div>
                                 <p className="text-sm font-medium">{a.message}</p>
