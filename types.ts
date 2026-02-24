@@ -535,6 +535,8 @@ export interface Contract {
     ContractID: string; // VARCHAR(50)
     PackageID: string; // Changed to string to match Package
     ContractorID: string; // VARCHAR(20)
+    ProjectID: string; // VARCHAR - Foreign key to Project
+    ContractName: string; // NVARCHAR - Tên hợp đồng
     SignDate: string; // DATE
     Value: number; // DECIMAL(18,2)
     AdvanceRate: number; // DECIMAL(5,2) - Tỷ lệ tạm ứng

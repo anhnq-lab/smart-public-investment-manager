@@ -1,9 +1,10 @@
 import React, { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
 import {
     User, Briefcase, CheckSquare, FileText, AlertTriangle,
-    Clock, ArrowRight, Building2, Calendar, TrendingUp,
-    Star, BookOpen, Bell, ChevronRight, Target
+    Clock, ArrowRight, Building2, TrendingUp,
+    ChevronRight, Target, FileBox
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useProjects } from '../../hooks/useProjects';
@@ -11,6 +12,7 @@ import { useTasks } from '../../hooks/useTasks';
 import { useContracts } from '../../hooks/useContracts';
 import { formatShortCurrency as formatCurrency } from '../../utils/format';
 import { ProjectStatus, TaskStatus, TaskPriority } from '../../types';
+import { supabase } from '../../lib/supabase';
 
 const PersonalDashboard: React.FC = () => {
     const navigate = useNavigate();
@@ -19,6 +21,7 @@ const PersonalDashboard: React.FC = () => {
     const { data: allTasks } = useTasks();
     const { contracts } = useContracts();
     const tasks = allTasks || [];
+
     // Get projects where current user is a member
     const myProjects = useMemo(() => {
         if (!currentUser) return [];
@@ -26,6 +29,8 @@ const PersonalDashboard: React.FC = () => {
             p.Members?.includes(currentUser.EmployeeID)
         );
     }, [currentUser, projects]);
+
+    const myProjectIds = useMemo(() => myProjects.map(p => p.ProjectID), [myProjects]);
 
     // Get tasks assigned to current user
     const myTasks = useMemo(() => {
@@ -45,22 +50,50 @@ const PersonalDashboard: React.FC = () => {
         return { inProgress, todo, done, overdue, total: myTasks.length };
     }, [myTasks]);
 
-    // Upcoming deadlines (next 7 days)
+    // Upcoming deadlines (next 7 days) — with project name resolution
     const upcomingDeadlines = useMemo(() => {
         const now = new Date();
         const next7Days = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
+
+        // Build project name lookup map
+        const projectNameMap: Record<string, string> = {};
+        projects.forEach(p => {
+            projectNameMap[p.ProjectID] = p.ProjectName;
+        });
+
         return myTasks
             .filter(t => {
                 const due = new Date(t.DueDate);
                 return t.Status !== TaskStatus.Done && due >= now && due <= next7Days;
             })
             .sort((a, b) => new Date(a.DueDate).getTime() - new Date(b.DueDate).getTime())
-            .slice(0, 5);
-    }, [myTasks]);
+            .slice(0, 5)
+            .map(t => ({
+                ...t,
+                _projectName: projectNameMap[t.ProjectID] || t.ProjectID,
+            }));
+    }, [myTasks, projects]);
 
-    // Recent documents (from my projects)
-    // TODO: Replace with useDocuments() hook when available
-    const myDocuments: any[] = [];
+    // Fetch recent documents from Supabase for my projects
+    const { data: myDocuments = [] } = useQuery({
+        queryKey: ['personal-documents', myProjectIds],
+        queryFn: async () => {
+            if (myProjectIds.length === 0) return [];
+            const { data } = await supabase
+                .from('documents')
+                .select('doc_id, doc_name, project_id, upload_date, iso_status, version, category')
+                .in('project_id', myProjectIds)
+                .order('upload_date', { ascending: false })
+                .limit(5);
+            return data || [];
+        },
+        enabled: myProjectIds.length > 0,
+    });
+
+    // Get contracts for my projects
+    const myContracts = useMemo(() => {
+        return contracts.filter(c => myProjectIds.includes(c.ProjectID));
+    }, [contracts, myProjectIds]);
 
     // Total investment of my projects
     const totalInvestment = myProjects.reduce((sum, p) => sum + p.TotalInvestment, 0);
@@ -79,6 +112,13 @@ const PersonalDashboard: React.FC = () => {
         if (diff === 1) return 'Ngày mai';
         return `${diff} ngày`;
     };
+
+    // Build project name lookup for documents
+    const projectNameMap = useMemo(() => {
+        const map: Record<string, string> = {};
+        projects.forEach(p => { map[p.ProjectID] = p.ProjectName; });
+        return map;
+    }, [projects]);
 
     return (
         <div className="space-y-6 animate-in fade-in duration-300">
@@ -249,7 +289,7 @@ const PersonalDashboard: React.FC = () => {
                                     <div className="flex items-start justify-between gap-3">
                                         <div className="flex-1 min-w-0">
                                             <p className="font-medium text-gray-800 dark:text-slate-100 text-sm truncate">{task.Title}</p>
-                                            <p className="text-xs text-gray-400 dark:text-slate-500 mt-1 truncate">{task.ProjectID}</p>
+                                            <p className="text-xs text-gray-400 dark:text-slate-500 mt-1 truncate">{task._projectName}</p>
                                         </div>
                                         <span className={`text-[10px] font-bold px-2 py-1 rounded border shrink-0 ${priorityColors[task.Priority]}`}>
                                             {daysUntil(task.DueDate)}
@@ -309,12 +349,12 @@ const PersonalDashboard: React.FC = () => {
                     </div>
                 </div>
 
-                {/* My Documents */}
+                {/* My Documents — Real Data from Supabase */}
                 <div className="bg-white dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-700 shadow-sm overflow-hidden">
                     <div className="px-6 py-4 border-b border-gray-100 dark:border-slate-700 flex items-center justify-between">
                         <div className="flex items-center gap-2">
                             <FileText className="w-5 h-5 text-purple-600 dark:text-purple-400" />
-                            <h3 className="font-bold text-gray-800 dark:text-slate-100">Tài liệu liên quan</h3>
+                            <h3 className="font-bold text-gray-800 dark:text-slate-100">Tài liệu gần đây</h3>
                         </div>
                         <button
                             onClick={() => navigate('/documents')}
@@ -331,21 +371,27 @@ const PersonalDashboard: React.FC = () => {
                                 <p className="text-sm">Chưa có tài liệu nào</p>
                             </div>
                         ) : (
-                            myDocuments.map(doc => (
+                            myDocuments.map((doc: any) => (
                                 <div
-                                    key={doc.DocumentID}
+                                    key={doc.doc_id}
                                     className="p-4 hover:bg-gray-50 dark:hover:bg-slate-700/50 cursor-pointer transition-colors flex items-center gap-3"
+                                    onClick={() => navigate('/documents')}
                                 >
                                     <div className="w-10 h-10 bg-purple-50 dark:bg-purple-900/30 rounded-xl flex items-center justify-center shrink-0">
-                                        <FileText className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+                                        <FileBox className="w-5 h-5 text-purple-600 dark:text-purple-400" />
                                     </div>
                                     <div className="flex-1 min-w-0">
-                                        <p className="font-medium text-gray-800 dark:text-slate-100 text-sm truncate">{doc.Name}</p>
-                                        <p className="text-xs text-gray-400 dark:text-slate-500 mt-0.5">{doc.ProjectID} • v{doc.CurrentVersion}</p>
+                                        <p className="font-medium text-gray-800 dark:text-slate-100 text-sm truncate">{doc.doc_name}</p>
+                                        <p className="text-xs text-gray-400 dark:text-slate-500 mt-0.5 truncate">
+                                            {projectNameMap[doc.project_id] || doc.project_id}
+                                            {doc.version ? ` • v${doc.version}` : ''}
+                                        </p>
                                     </div>
-                                    <span className={`text-[10px] font-bold px-2 py-1 rounded ${doc.SignatureStatus === 'Signed' ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' : 'bg-gray-100 text-gray-600 dark:bg-slate-700 dark:text-slate-400'
+                                    <span className={`text-[10px] font-bold px-2 py-1 rounded ${doc.iso_status?.startsWith('A')
+                                        ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400'
+                                        : 'bg-gray-100 text-gray-600 dark:bg-slate-700 dark:text-slate-400'
                                         }`}>
-                                        {doc.SignatureStatus === 'Signed' ? 'Đã ký' : 'Chưa ký'}
+                                        {doc.iso_status?.startsWith('A') ? 'Đã duyệt' : doc.iso_status || 'Nháp'}
                                     </span>
                                 </div>
                             ))
@@ -353,6 +399,47 @@ const PersonalDashboard: React.FC = () => {
                     </div>
                 </div>
             </div>
+
+            {/* Contracts Row */}
+            {myContracts.length > 0 && (
+                <div className="bg-white dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-700 shadow-sm overflow-hidden">
+                    <div className="px-6 py-4 border-b border-gray-100 dark:border-slate-700 flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                            <FileText className="w-5 h-5 text-cyan-600 dark:text-cyan-400" />
+                            <h3 className="font-bold text-gray-800 dark:text-slate-100">Hợp đồng liên quan</h3>
+                        </div>
+                        <button
+                            onClick={() => navigate('/contracts')}
+                            className="text-xs font-bold text-cyan-600 dark:text-cyan-400 hover:text-cyan-700 dark:hover:text-cyan-300 flex items-center gap-1"
+                        >
+                            Xem tất cả <ArrowRight className="w-3 h-3" />
+                        </button>
+                    </div>
+
+                    <div className="divide-y divide-gray-50 dark:divide-slate-700">
+                        {myContracts.slice(0, 3).map(contract => (
+                            <div
+                                key={contract.ContractID}
+                                onClick={() => navigate(`/contracts/${contract.ContractID}`)}
+                                className="p-4 hover:bg-gray-50 dark:hover:bg-slate-700/50 cursor-pointer transition-colors flex items-center gap-4"
+                            >
+                                <div className="w-10 h-10 bg-cyan-50 dark:bg-cyan-900/30 rounded-xl flex items-center justify-center shrink-0">
+                                    <Briefcase className="w-5 h-5 text-cyan-600 dark:text-cyan-400" />
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                    <p className="font-semibold text-gray-800 dark:text-slate-100 text-sm truncate">{contract.ContractName}</p>
+                                    <div className="flex items-center gap-3 mt-1 text-xs text-gray-500 dark:text-slate-400">
+                                        <span>{formatCurrency(contract.Value)}</span>
+                                        <span>•</span>
+                                        <span>{projectNameMap[contract.ProjectID] || contract.ProjectID}</span>
+                                    </div>
+                                </div>
+                                <ChevronRight className="w-4 h-4 text-gray-300 dark:text-slate-600" />
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
 
             {/* Summary Footer */}
             <div className="bg-gradient-to-r from-gray-50 to-white dark:from-slate-800 dark:to-slate-800 rounded-2xl border border-gray-100 dark:border-slate-700 p-6">

@@ -13,30 +13,36 @@ export interface DashboardChartData {
 }
 
 export interface DashboardRisk {
-    id: number;
-    type: 'budget' | 'schedule' | 'legal';
+    id: number | string;
+    type: 'budget' | 'schedule' | 'legal' | 'overdue';
     msg: string;
     date: string;
+    projectId?: string;
+    severity?: 'high' | 'medium' | 'low';
 }
 
 export interface DashboardProjectStatus {
+    [key: string]: unknown;
     name: string;
     value: number;
     color: string;
 }
 
 export interface DashboardGroupDistribution {
+    [key: string]: unknown;
     name: string;
     value: number;
     color: string;
 }
 
 export interface DashboardDeadline {
-    id: number;
+    id: number | string;
     title: string;
     project: string;
+    projectName?: string;
     due: string;
     urgent: boolean;
+    taskId?: string;
 }
 
 export interface DashboardLegalIssue {

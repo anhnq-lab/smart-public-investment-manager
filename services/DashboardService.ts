@@ -33,7 +33,21 @@ export const DashboardService = {
         const totalVolumeValue = (payments || [])
             .filter(p => p.type === PaymentType.Volume)
             .reduce((acc, p) => acc + Number(p.amount), 0);
-        const riskCount = 3; // TODO: compute from real data
+
+        // Count real risks: overdue tasks + open package issues
+        const today = new Date().toISOString();
+        const { count: overdueCount } = await supabase
+            .from('tasks')
+            .select('*', { count: 'exact', head: true })
+            .neq('status', 'Done')
+            .lt('due_date', today);
+
+        const { count: issueCount } = await supabase
+            .from('package_issues')
+            .select('*', { count: 'exact', head: true })
+            .eq('status', 'Open');
+
+        const riskCount = (overdueCount || 0) + (issueCount || 0);
 
         return {
             totalInvestment,
@@ -45,27 +59,91 @@ export const DashboardService = {
     },
 
     getDisbursementChart: async (): Promise<DashboardChartData[]> => {
-        // TODO: aggregate from real disbursement data
-        return [
-            { name: 'T1', disbursement: 4200, plan: 4500 },
-            { name: 'T2', disbursement: 3800, plan: 4000 },
-            { name: 'T3', disbursement: 5100, plan: 5500 },
-            { name: 'T4', disbursement: 6200, plan: 6000 },
-            { name: 'T5', disbursement: 4800, plan: 5200 },
-            { name: 'T6', disbursement: 5900, plan: 6500 },
-            { name: 'T7', disbursement: 7200, plan: 8000 },
-            { name: 'T8', disbursement: 0, plan: 8500 },
-            { name: 'T9', disbursement: 0, plan: 9000 },
-        ];
+        const currentYear = new Date().getFullYear();
+
+        // Get disbursements for current year
+        const { data: disbursements } = await supabase
+            .from('disbursements')
+            .select('amount, date')
+            .gte('date', `${currentYear}-01-01`)
+            .lte('date', `${currentYear}-12-31`);
+
+        // Get capital plans for current year
+        const { data: capitalPlans } = await supabase
+            .from('capital_plans')
+            .select('amount, year')
+            .eq('year', currentYear);
+
+        // Total planned amount for the year (divided by 12 for monthly average)
+        const totalPlanned = (capitalPlans || []).reduce((acc, p) => acc + Number(p.amount), 0);
+        const monthlyPlan = totalPlanned / 12;
+
+        // Aggregate disbursements by month
+        const monthlyDisbursement: Record<number, number> = {};
+        (disbursements || []).forEach(d => {
+            const month = new Date(d.date).getMonth(); // 0-indexed
+            monthlyDisbursement[month] = (monthlyDisbursement[month] || 0) + Number(d.amount);
+        });
+
+        const monthNames = ['T1', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'T8', 'T9', 'T10', 'T11', 'T12'];
+        const currentMonth = new Date().getMonth();
+
+        // Only show months up to current month + 2 (for planning ahead)
+        const maxMonth = Math.min(currentMonth + 2, 11);
+
+        return monthNames.slice(0, maxMonth + 1).map((name, idx) => ({
+            name,
+            // Convert to billions for chart display (value / 1_000_000_000)
+            disbursement: Math.round((monthlyDisbursement[idx] || 0) / 1_000_000_000 * 1000) / 1000,
+            plan: Math.round(monthlyPlan / 1_000_000_000 * 1000) / 1000,
+        }));
     },
 
     getRisks: async (): Promise<DashboardRisk[]> => {
-        // TODO: derive from actual data
-        return [
-            { id: 1, type: 'budget', msg: 'Dự án Cầu Cửa Nhượng: Nguy cơ vượt tổng mức đầu tư 5%', date: '20-12-2025' },
-            { id: 2, type: 'schedule', msg: 'Dự án Đường ven biển: Chậm tiến độ GPMB 2 tuần', date: '19-12-2025' },
-            { id: 3, type: 'legal', msg: 'Dự án Bệnh viện Tỉnh: Thiếu giấy phép PCCC', date: '19-12-2025' },
-        ];
+        const risks: DashboardRisk[] = [];
+        const today = new Date().toISOString();
+
+        // 1. Overdue tasks
+        const { data: overdueTasks } = await supabase
+            .from('tasks')
+            .select('task_id, title, due_date, project_id')
+            .neq('status', 'Done')
+            .lt('due_date', today)
+            .order('due_date', { ascending: true })
+            .limit(5);
+
+        (overdueTasks || []).forEach(t => {
+            const dueDate = new Date(t.due_date);
+            const daysOverdue = Math.ceil((Date.now() - dueDate.getTime()) / (1000 * 60 * 60 * 24));
+            risks.push({
+                id: t.task_id,
+                type: 'overdue',
+                msg: `Công việc "${t.title}" quá hạn ${daysOverdue} ngày`,
+                date: dueDate.toLocaleDateString('vi-VN'),
+                projectId: t.project_id,
+                severity: daysOverdue > 14 ? 'high' : daysOverdue > 7 ? 'medium' : 'low',
+            });
+        });
+
+        // 2. Open package issues
+        const { data: issues } = await supabase
+            .from('package_issues')
+            .select('issue_id, title, reported_date, severity, package_id')
+            .eq('status', 'Open')
+            .order('reported_date', { ascending: false })
+            .limit(5);
+
+        (issues || []).forEach(issue => {
+            risks.push({
+                id: issue.issue_id,
+                type: 'legal',
+                msg: `Vấn đề gói thầu: ${issue.title}`,
+                date: new Date(issue.reported_date).toLocaleDateString('vi-VN'),
+                severity: issue.severity === 'High' ? 'high' : issue.severity === 'Medium' ? 'medium' : 'low',
+            });
+        });
+
+        return risks.slice(0, 8); // Limit to 8 items total
     },
 
     getProjectStatusDistribution: async (): Promise<DashboardProjectStatus[]> => {
@@ -114,16 +192,55 @@ export const DashboardService = {
     },
 
     getDeadlines: async (): Promise<DashboardDeadline[]> => {
-        // TODO: derive from tasks with upcoming due dates
-        return [
-            { id: 1, title: 'Trình thẩm định Báo cáo KTKT', project: 'Dự án Trường Trần Phú', due: 'Ngày mai', urgent: true },
-            { id: 2, title: 'Phê duyệt Tờ trình kế hoạch', project: 'Dự án Đường ven biển', due: '22/12', urgent: false },
-            { id: 3, title: 'Họp giao ban công trường', project: 'Dự án Cầu Cửa Nhượng', due: '23/12', urgent: false },
-            { id: 4, title: 'Nghiệm thu đợt 1', project: 'Dự án Đê kè biển', due: '24/12', urgent: false },
-        ];
+        const now = new Date();
+        const next7Days = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
+
+        const { data: tasks } = await supabase
+            .from('tasks')
+            .select('task_id, title, due_date, project_id, priority')
+            .neq('status', 'Done')
+            .gte('due_date', now.toISOString())
+            .lte('due_date', next7Days.toISOString())
+            .order('due_date', { ascending: true })
+            .limit(6);
+
+        if (!tasks || tasks.length === 0) return [];
+
+        // Fetch project names for these tasks
+        const projectIds = [...new Set(tasks.map(t => t.project_id))];
+        const { data: projects } = await supabase
+            .from('projects')
+            .select('project_id, project_name')
+            .in('project_id', projectIds);
+
+        const projectNameMap: Record<string, string> = {};
+        (projects || []).forEach(p => {
+            projectNameMap[p.project_id] = p.project_name;
+        });
+
+        return tasks.map(t => {
+            const dueDate = new Date(t.due_date);
+            const diffDays = Math.ceil((dueDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+            let dueLabel: string;
+            if (diffDays <= 0) dueLabel = 'Hôm nay';
+            else if (diffDays === 1) dueLabel = 'Ngày mai';
+            else dueLabel = dueDate.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit' });
+
+            return {
+                id: t.task_id,
+                title: t.title,
+                project: projectNameMap[t.project_id] || t.project_id,
+                projectName: projectNameMap[t.project_id],
+                due: dueLabel,
+                urgent: diffDays <= 1 || t.priority === 'Urgent',
+                taskId: t.task_id,
+            };
+        });
     },
 
     getGPMBData: async (): Promise<DashboardGPMB> => {
+        // TODO: Tạo bảng `site_clearance` trong DB để lưu dữ liệu GPMB thực
+        // Tạm thời trả về giá trị tĩnh
         return {
             bottlenecks: 2,
             handedOverPercent: 85

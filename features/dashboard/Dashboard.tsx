@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell, Legend } from 'recharts';
 import { Wallet, Activity, TrendingUp, AlertCircle, CheckCircle2, FileBox, Users, HardHat, Clock, ArrowRight, AlertTriangle, Calendar, Building2, Briefcase, Map as MapIcon } from 'lucide-react';
@@ -47,6 +48,7 @@ const StatCard: React.FC<{
 );
 
 const Dashboard: React.FC = () => {
+    const navigate = useNavigate();
     // --- DATA FETCHING ---
     const { data: metrics, isLoading: loadingMetrics } = useQuery({
         queryKey: ['dashboard', 'metrics'],
@@ -105,9 +107,9 @@ const Dashboard: React.FC = () => {
                 </div>
                 <div className="flex gap-2">
                     <button className="px-4 py-2 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-600 text-gray-600 dark:text-slate-300 text-sm font-bold rounded-xl hover:bg-gray-50 dark:hover:bg-slate-700 shadow-sm transition-all flex items-center gap-2">
-                        <Calendar className="w-4 h-4" /> Tháng 12/2025
+                        <Calendar className="w-4 h-4" /> Tháng {new Date().getMonth() + 1}/{new Date().getFullYear()}
                     </button>
-                    <button className="px-4 py-2 bg-blue-600 text-white text-sm font-bold rounded-xl hover:bg-blue-700 shadow-lg shadow-blue-200 dark:shadow-blue-900/30 transition-all flex items-center gap-2">
+                    <button onClick={() => navigate('/reports')} className="px-4 py-2 bg-blue-600 text-white text-sm font-bold rounded-xl hover:bg-blue-700 shadow-lg shadow-blue-200 dark:shadow-blue-900/30 transition-all flex items-center gap-2">
                         <FileBox className="w-4 h-4" /> Xuất báo cáo
                     </button>
                 </div>
@@ -119,21 +121,19 @@ const Dashboard: React.FC = () => {
                     title="Tổng vốn đầu tư"
                     value={metrics ? formatCurrency(metrics.totalInvestment) : '0'}
                     icon={Wallet}
-                    trend="+12% so với 2024"
-                    trendUp={true}
-                    bgIcon="bg-blue-50"
-                    textIcon="text-blue-600"
-                    description="Dự án đang quản lý"
+                    bgIcon="bg-blue-50 dark:bg-blue-900/30"
+                    textIcon="text-blue-600 dark:text-blue-400"
+                    description={`${projects?.length || 0} dự án đang quản lý`}
                     loading={loadingMetrics}
                 />
                 <StatCard
                     title="Giá trị giải ngân"
                     value={metrics ? formatCurrency(metrics.totalDisbursed) : '0'}
                     icon={Activity}
-                    trend="92% Kế hoạch năm"
-                    trendUp={true}
-                    bgIcon="bg-emerald-50"
-                    textIcon="text-emerald-600"
+                    trend={metrics ? `${metrics.disbursementRate.toFixed(0)}% tổng vốn` : undefined}
+                    trendUp={metrics ? metrics.disbursementRate >= 50 : undefined}
+                    bgIcon="bg-emerald-50 dark:bg-emerald-900/30"
+                    textIcon="text-emerald-600 dark:text-emerald-400"
                     description={metrics ? `Đạt ${metrics.disbursementRate.toFixed(1)}% tổng vốn` : ''}
                     loading={loadingMetrics}
                 />
@@ -141,21 +141,19 @@ const Dashboard: React.FC = () => {
                     title="Giá trị KL nghiệm thu"
                     value={metrics ? formatCurrency(metrics.totalVolumeValue) : '0'}
                     icon={CheckCircle2}
-                    bgIcon="bg-purple-50"
-                    textIcon="text-purple-600"
+                    bgIcon="bg-purple-50 dark:bg-purple-900/30"
+                    textIcon="text-purple-600 dark:text-purple-400"
                     description="Đã được phê duyệt"
-                    trend="+8% yêu cầu mới"
-                    trendUp={true}
                     loading={loadingMetrics}
                 />
                 <StatCard
                     title="Cảnh báo rủi ro"
                     value={metrics ? metrics.riskCount.toString() : '0'}
                     icon={AlertCircle}
-                    bgIcon="bg-red-50"
-                    textIcon="text-red-600"
-                    description="Cần xử lý ngay"
-                    trend="Tăng 1 cảnh báo"
+                    bgIcon="bg-red-50 dark:bg-red-900/30"
+                    textIcon="text-red-600 dark:text-red-400"
+                    description={metrics && metrics.riskCount > 0 ? 'Cần xử lý ngay' : 'Không có cảnh báo'}
+                    trend={metrics && metrics.riskCount > 0 ? `${metrics.riskCount} cảnh báo` : undefined}
                     trendUp={false}
                     loading={loadingMetrics}
                 />
@@ -236,12 +234,12 @@ const Dashboard: React.FC = () => {
                     {/* PORTFOLIO STATUS ROW (Horizontal / Compact) */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         {/* Pie Chart: Project Status */}
-                        <div className="bg-white p-5 rounded-3xl shadow-sm border border-gray-100 flex flex-col h-48">
-                            <h3 className="text-xs font-black text-gray-800 uppercase tracking-widest mb-2 flex items-center gap-2 shrink-0">
+                        <div className="bg-white dark:bg-slate-800 p-5 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 flex flex-col h-48">
+                            <h3 className="text-xs font-black text-gray-800 dark:text-slate-100 uppercase tracking-widest mb-2 flex items-center gap-2 shrink-0">
                                 <Activity className="w-4 h-4 text-blue-500" /> Giai đoạn dự án
                             </h3>
                             {loadingStatus ? (
-                                <div className="h-full w-full bg-gray-50 rounded-xl animate-pulse"></div>
+                                <div className="h-full w-full bg-gray-50 dark:bg-slate-700 rounded-xl animate-pulse"></div>
                             ) : (
                                 <div className="flex-1 flex items-center gap-4">
                                     <div className="relative w-32 h-32 shrink-0">
