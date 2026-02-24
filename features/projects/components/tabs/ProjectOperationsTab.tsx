@@ -292,9 +292,9 @@ export const ProjectOperationsTab: React.FC<Props> = ({ projectID }) => {
 
                 {/* ── Asset Inventory ── */}
                 <div className={`rounded-xl border ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-gray-100'} shadow-sm overflow-hidden`}>
-                    {/* Inventory header */}
-                    <div className={`px-4 py-3 border-b flex flex-col md:flex-row md:items-center md:justify-between gap-3
-                        ${isDark ? 'border-slate-800 bg-slate-900' : 'border-gray-100 bg-gray-50/50'}
+                    {/* Inventory header — sticky */}
+                    <div className={`px-4 py-3 border-b flex flex-col md:flex-row md:items-center md:justify-between gap-3 sticky top-0 z-10
+                        ${isDark ? 'border-slate-800 bg-slate-900' : 'border-gray-100 bg-white'}
                     `}>
                         <div className="flex items-center gap-2">
                             <Layers className={`w-4 h-4 ${isDark ? 'text-emerald-400' : 'text-emerald-500'}`} />
@@ -381,8 +381,8 @@ export const ProjectOperationsTab: React.FC<Props> = ({ projectID }) => {
                             </div>
                         ) : (
                             <table className="w-full text-xs">
-                                <thead>
-                                    <tr className={isDark ? 'bg-slate-800/50' : 'bg-gray-50'}>
+                                <thead className="sticky top-0 z-[5]">
+                                    <tr className={isDark ? 'bg-slate-800' : 'bg-gray-50'}>
                                         <th className={`px-3 py-2 text-left font-bold ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>Mã TS</th>
                                         <th className={`px-3 py-2 text-left font-bold ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>Tên tài sản</th>
                                         <th className={`px-3 py-2 text-left font-bold ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>Danh mục</th>
