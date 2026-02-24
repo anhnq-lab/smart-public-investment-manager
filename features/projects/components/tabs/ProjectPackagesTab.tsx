@@ -308,24 +308,24 @@ export const ProjectPackagesTab: React.FC<ProjectPackagesTabProps> = ({ projectI
                                         }}
                                     />
                                 </th>
-                                <th rowSpan={2} className="border border-slate-300 px-2 py-2 text-center font-bold text-slate-700 w-10">TT</th>
-                                <th rowSpan={2} className="border border-slate-300 px-2 py-2 text-center font-bold text-slate-700 min-w-[80px]">Tên chủ<br />đầu tư</th>
-                                <th colSpan={2} className="border border-slate-300 px-2 py-2 text-center font-bold text-slate-700">Tên gói thầu</th>
-                                <th rowSpan={2} className="border border-slate-300 px-2 py-2 text-center font-bold text-slate-700 w-[110px]">Giá gói thầu<br />(đồng)</th>
-                                <th rowSpan={2} className="border border-slate-300 px-2 py-2 text-center font-bold text-slate-700 min-w-[100px]">Nguồn vốn</th>
-                                <th rowSpan={2} className="border border-slate-300 px-2 py-2 text-center font-bold text-slate-700">Hình thức<br />lựa chọn<br />nhà thầu</th>
-                                <th rowSpan={2} className="border border-slate-300 px-2 py-2 text-center font-bold text-slate-700">Phương thức<br />lựa chọn<br />nhà thầu</th>
-                                <th rowSpan={2} className="border border-slate-300 px-2 py-2 text-center font-bold text-slate-700 w-[90px]">Thời gian<br />tổ chức<br />lựa chọn<br />nhà thầu</th>
-                                <th rowSpan={2} className="border border-slate-300 px-2 py-2 text-center font-bold text-slate-700 w-[90px]">Thời gian<br />bắt đầu<br />tổ chức<br />lựa chọn<br />nhà thầu</th>
-                                <th rowSpan={2} className="border border-slate-300 px-2 py-2 text-center font-bold text-slate-700">Loại<br />hợp đồng</th>
-                                <th rowSpan={2} className="border border-slate-300 px-2 py-2 text-center font-bold text-slate-700 w-[90px]">Thời gian<br />thực hiện<br />gói thầu</th>
-                                <th rowSpan={2} className="border border-slate-300 px-2 py-2 text-center font-bold text-slate-700 w-[60px]">Tùy chọn<br />mua thêm</th>
-                                <th rowSpan={2} className="border border-slate-300 px-2 py-2 text-center font-bold text-slate-700 w-[90px]">Trạng thái</th>
-                                <th rowSpan={2} className="border border-slate-300 px-2 py-2 text-center font-bold text-slate-700 w-10">TT</th>
+                                <th rowSpan={2} className="border border-slate-300 px-2 py-2 text-center font-bold text-slate-700 dark:text-slate-200 w-10">TT</th>
+                                <th rowSpan={2} className="border border-slate-300 px-2 py-2 text-center font-bold text-slate-700 dark:text-slate-200 min-w-[80px]">Tên chủ<br />đầu tư</th>
+                                <th colSpan={2} className="border border-slate-300 px-2 py-2 text-center font-bold text-slate-700 dark:text-slate-200">Tên gói thầu</th>
+                                <th rowSpan={2} className="border border-slate-300 px-2 py-2 text-center font-bold text-slate-700 dark:text-slate-200 w-[110px]">Giá gói thầu<br />(đồng)</th>
+                                <th rowSpan={2} className="border border-slate-300 px-2 py-2 text-center font-bold text-slate-700 dark:text-slate-200 min-w-[100px]">Nguồn vốn</th>
+                                <th rowSpan={2} className="border border-slate-300 px-2 py-2 text-center font-bold text-slate-700 dark:text-slate-200">Hình thức<br />lựa chọn<br />nhà thầu</th>
+                                <th rowSpan={2} className="border border-slate-300 px-2 py-2 text-center font-bold text-slate-700 dark:text-slate-200">Phương thức<br />lựa chọn<br />nhà thầu</th>
+                                <th rowSpan={2} className="border border-slate-300 px-2 py-2 text-center font-bold text-slate-700 dark:text-slate-200 w-[90px]">Thời gian<br />tổ chức<br />lựa chọn<br />nhà thầu</th>
+                                <th rowSpan={2} className="border border-slate-300 px-2 py-2 text-center font-bold text-slate-700 dark:text-slate-200 w-[90px]">Thời gian<br />bắt đầu<br />tổ chức<br />lựa chọn<br />nhà thầu</th>
+                                <th rowSpan={2} className="border border-slate-300 px-2 py-2 text-center font-bold text-slate-700 dark:text-slate-200">Loại<br />hợp đồng</th>
+                                <th rowSpan={2} className="border border-slate-300 px-2 py-2 text-center font-bold text-slate-700 dark:text-slate-200 w-[90px]">Thời gian<br />thực hiện<br />gói thầu</th>
+                                <th rowSpan={2} className="border border-slate-300 px-2 py-2 text-center font-bold text-slate-700 dark:text-slate-200 w-[60px]">Tùy chọn<br />mua thêm</th>
+                                <th rowSpan={2} className="border border-slate-300 px-2 py-2 text-center font-bold text-slate-700 dark:text-slate-200 w-[90px]">Trạng thái</th>
+                                <th rowSpan={2} className="border border-slate-300 px-2 py-2 text-center font-bold text-slate-700 dark:text-slate-200 w-10">TT</th>
                             </tr>
                             <tr className="bg-slate-100 dark:bg-slate-700 border-b border-slate-300 dark:border-slate-600">
-                                <th className="border border-slate-300 px-2 py-1 text-center font-bold text-slate-700 min-w-[120px]">Tên gói thầu</th>
-                                <th className="border border-slate-300 px-2 py-1 text-center font-bold text-slate-700 min-w-[140px]">Tóm tắt công việc<br />chính của gói thầu</th>
+                                <th className="border border-slate-300 px-2 py-1 text-center font-bold text-slate-700 dark:text-slate-200 min-w-[120px]">Tên gói thầu</th>
+                                <th className="border border-slate-300 px-2 py-1 text-center font-bold text-slate-700 dark:text-slate-200 min-w-[140px]">Tóm tắt công việc<br />chính của gói thầu</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -426,7 +426,7 @@ export const ProjectPackagesTab: React.FC<ProjectPackagesTabProps> = ({ projectI
 
                                     {/* Phương thức LCNT */}
                                     <td className="border border-slate-200 dark:border-slate-700 px-2 py-3 text-slate-600 dark:text-slate-400 align-top">
-                                        {pkg.SelectionProcedure === 'OneStageOneEnvelope' ? 'Một giai đoạn, hai túi hồ sơ' :
+                                        {pkg.SelectionProcedure === 'OneStageOneEnvelope' ? 'Một giai đoạn, một túi hồ sơ' :
                                             pkg.SelectionProcedure === 'OneStageTwoEnvelope' ? 'Một giai đoạn, hai túi hồ sơ' :
                                                 pkg.SelectionProcedure === 'TwoStageOneEnvelope' ? 'Hai giai đoạn' :
                                                     pkg.SelectionProcedure === 'Reduced' ? 'Rút gọn' :
