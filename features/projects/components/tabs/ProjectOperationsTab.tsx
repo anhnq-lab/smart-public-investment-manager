@@ -13,7 +13,7 @@ import {
     Building2, Wrench, AlertTriangle, CheckCircle2, XCircle,
     Search, Filter, ChevronDown, ChevronRight, ArrowUpDown,
     Calendar, Shield, Package, Layers, BarChart3, PieChart,
-    Clock, TrendingUp, RefreshCw, Download
+    Clock, TrendingUp, RefreshCw, Download, FileText, ClipboardList
 } from 'lucide-react';
 import {
     FacilityAsset,
@@ -162,6 +162,20 @@ export const ProjectOperationsTab: React.FC<Props> = ({ projectID }) => {
     const categoryValues = Object.values(stats.byCategory) as number[];
     const maxCategory = Math.max(...categoryValues, 1);
 
+    // ── Maintenance timeline ──
+    const maintenanceTimeline = useMemo(() => {
+        const now = new Date();
+        const items: { asset: FacilityAsset; date: Date; overdue: boolean; daysUntil: number }[] = [];
+        assets.forEach(a => {
+            if (a.next_maintenance) {
+                const d = new Date(a.next_maintenance);
+                const daysUntil = Math.ceil((d.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+                items.push({ asset: a, date: d, overdue: daysUntil < 0, daysUntil });
+            }
+        });
+        return items.sort((a, b) => a.date.getTime() - b.date.getTime());
+    }, [assets]);
+
     // ── RENDER ──
     return (
         <div className={`h-full overflow-y-auto ${isDark ? 'bg-slate-950' : 'bg-gray-50'}`}>
@@ -290,6 +304,76 @@ export const ProjectOperationsTab: React.FC<Props> = ({ projectID }) => {
                     </div>
                 </div>
 
+                {/* ── Maintenance Timeline ── */}
+                <div className={`rounded-xl border ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-gray-100'} shadow-sm overflow-hidden`}>
+                    <div className={`px-4 py-3 border-b flex items-center justify-between ${isDark ? 'border-slate-800' : 'border-gray-100'}`}>
+                        <div className="flex items-center gap-2">
+                            <Calendar className={`w-4 h-4 ${isDark ? 'text-amber-400' : 'text-amber-500'}`} />
+                            <span className={`text-xs font-bold ${isDark ? 'text-slate-200' : 'text-gray-700'}`}>Lịch bảo trì</span>
+                            <span className={`text-[10px] px-2 py-0.5 rounded-full ${isDark ? 'bg-slate-800 text-slate-400' : 'bg-gray-100 text-gray-500'}`}>
+                                {maintenanceTimeline.length} mục
+                            </span>
+                        </div>
+                    </div>
+                    <div className="max-h-[280px] overflow-y-auto">
+                        {maintenanceTimeline.length === 0 ? (
+                            <div className="flex flex-col items-center justify-center py-10 gap-2">
+                                <Calendar className={`w-6 h-6 ${isDark ? 'text-slate-600' : 'text-gray-300'}`} />
+                                <p className={`text-xs ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>Chưa có lịch bảo trì</p>
+                            </div>
+                        ) : (
+                            <div className="divide-y divide-slate-800/30">
+                                {maintenanceTimeline.map((item, idx) => (
+                                    <div
+                                        key={item.asset.asset_id}
+                                        className={`flex items-center gap-3 px-4 py-2.5 transition-colors ${isDark ? 'hover:bg-slate-800/30' : 'hover:bg-blue-50/30'}`}
+                                    >
+                                        {/* Timeline dot */}
+                                        <div className="flex flex-col items-center gap-0.5 shrink-0">
+                                            <div className={`w-2.5 h-2.5 rounded-full ${item.overdue ? 'bg-red-500 animate-pulse'
+                                                    : item.daysUntil <= 7 ? 'bg-amber-500'
+                                                        : item.daysUntil <= 30 ? 'bg-blue-500'
+                                                            : 'bg-emerald-500'
+                                                }`} />
+                                            {idx < maintenanceTimeline.length - 1 && (
+                                                <div className={`w-px h-3 ${isDark ? 'bg-slate-700' : 'bg-gray-200'}`} />
+                                            )}
+                                        </div>
+                                        {/* Date */}
+                                        <div className="w-20 shrink-0">
+                                            <div className={`text-xs font-bold ${item.overdue ? 'text-red-500' : isDark ? 'text-slate-200' : 'text-gray-800'}`}>
+                                                {item.date.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit' })}
+                                            </div>
+                                            <div className={`text-[10px] ${item.overdue ? 'text-red-400 font-semibold'
+                                                    : item.daysUntil <= 7 ? 'text-amber-500'
+                                                        : isDark ? 'text-slate-500' : 'text-gray-400'
+                                                }`}>
+                                                {item.overdue ? `Quá ${Math.abs(item.daysUntil)} ngày` : item.daysUntil === 0 ? 'Hôm nay' : `${item.daysUntil} ngày nữa`}
+                                            </div>
+                                        </div>
+                                        {/* Asset info */}
+                                        <div className="flex-1 min-w-0">
+                                            <div className={`text-xs font-medium truncate ${isDark ? 'text-slate-200' : 'text-gray-800'}`}>
+                                                {item.asset.asset_name}
+                                            </div>
+                                            <div className={`text-[10px] truncate ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>
+                                                {item.asset.category && <span>{item.asset.category}</span>}
+                                                {item.asset.location && <span> · {item.asset.location}</span>}
+                                            </div>
+                                        </div>
+                                        {/* Status badge */}
+                                        {item.overdue && (
+                                            <span className="flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold bg-red-500/10 text-red-500">
+                                                <AlertTriangle className="w-3 h-3" /> Quá hạn
+                                            </span>
+                                        )}
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+                </div>
+
                 {/* ── Asset Inventory ── */}
                 <div className={`rounded-xl border ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-gray-100'} shadow-sm overflow-hidden`}>
                     {/* Inventory header — sticky */}
@@ -390,6 +474,7 @@ export const ProjectOperationsTab: React.FC<Props> = ({ projectID }) => {
                                         <th className={`px-3 py-2 text-left font-bold ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>Trạng thái</th>
                                         <th className={`px-3 py-2 text-left font-bold ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>Tình trạng</th>
                                         <th className={`px-3 py-2 text-left font-bold ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>Bảo trì tiếp</th>
+                                        <th className={`px-3 py-2 text-left font-bold ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>Ghi chú</th>
                                         <th className={`px-3 py-2 text-left font-bold ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>BIM</th>
                                     </tr>
                                 </thead>
@@ -402,7 +487,7 @@ export const ProjectOperationsTab: React.FC<Props> = ({ projectID }) => {
                                                     className={`cursor-pointer ${isDark ? 'bg-slate-800/30 hover:bg-slate-800/50' : 'bg-gray-50 hover:bg-gray-100'}`}
                                                     onClick={() => toggleGroup(group)}
                                                 >
-                                                    <td colSpan={8} className={`px-3 py-2 font-bold ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>
+                                                    <td colSpan={9} className={`px-3 py-2 font-bold ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>
                                                         <div className="flex items-center gap-1.5">
                                                             {expandedGroups.has(group) ? <ChevronDown className="w-3.5 h-3.5" /> : <ChevronRight className="w-3.5 h-3.5" />}
                                                             {group}
@@ -456,6 +541,14 @@ export const ProjectOperationsTab: React.FC<Props> = ({ projectID }) => {
                                                                 ? new Date(a.next_maintenance).toLocaleDateString('vi-VN')
                                                                 : '—'}
                                                             {isOverdue && <AlertTriangle className="w-3 h-3 inline ml-1" />}
+                                                        </td>
+                                                        <td className={`px-3 py-2 max-w-[120px] ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
+                                                            {a.notes ? (
+                                                                <span className="flex items-center gap-1 truncate" title={a.notes}>
+                                                                    <FileText className="w-3 h-3 shrink-0" />
+                                                                    <span className="truncate text-[10px]">{a.notes}</span>
+                                                                </span>
+                                                            ) : '—'}
                                                         </td>
                                                         <td className="px-3 py-2">
                                                             {a.bim_element_id ? (
