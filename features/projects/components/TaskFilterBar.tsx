@@ -74,13 +74,13 @@ export const TaskFilterBar: React.FC<TaskFilterBarProps> = ({
         if (!isActive) return 'bg-white dark:bg-slate-800 text-gray-600 dark:text-slate-300 border-gray-200 dark:border-slate-600 hover:bg-gray-50 dark:hover:bg-slate-700';
 
         switch (filter.color) {
-            case 'blue': return 'bg-blue-50 text-blue-700 border-blue-300 ring-1 ring-blue-200';
-            case 'red': return 'bg-red-50 text-red-700 border-red-300 ring-1 ring-red-200';
-            case 'orange': return 'bg-orange-50 text-orange-700 border-orange-300 ring-1 ring-orange-200';
-            case 'emerald': return 'bg-emerald-50 text-emerald-700 border-emerald-300 ring-1 ring-emerald-200';
-            case 'purple': return 'bg-purple-50 text-purple-700 border-purple-300 ring-1 ring-purple-200';
-            case 'indigo': return 'bg-indigo-50 text-indigo-700 border-indigo-300 ring-1 ring-indigo-200';
-            default: return 'bg-gray-100 text-gray-800 border-gray-300 ring-1 ring-gray-200';
+            case 'blue': return 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 border-blue-300 dark:border-blue-700 ring-1 ring-blue-200 dark:ring-blue-800';
+            case 'red': return 'bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-400 border-red-300 dark:border-red-700 ring-1 ring-red-200 dark:ring-red-800';
+            case 'orange': return 'bg-orange-50 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400 border-orange-300 dark:border-orange-700 ring-1 ring-orange-200 dark:ring-orange-800';
+            case 'emerald': return 'bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 border-emerald-300 dark:border-emerald-700 ring-1 ring-emerald-200 dark:ring-emerald-800';
+            case 'purple': return 'bg-purple-50 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400 border-purple-300 dark:border-purple-700 ring-1 ring-purple-200 dark:ring-purple-800';
+            case 'indigo': return 'bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-400 border-indigo-300 dark:border-indigo-700 ring-1 ring-indigo-200 dark:ring-indigo-800';
+            default: return 'bg-gray-100 dark:bg-slate-700 text-gray-800 dark:text-slate-200 border-gray-300 dark:border-slate-600 ring-1 ring-gray-200 dark:ring-slate-500';
         }
     };
 
@@ -139,10 +139,10 @@ export const TaskFilterBar: React.FC<TaskFilterBarProps> = ({
                                 {filter.label}
                                 {count !== undefined && count > 0 && (
                                     <span className={`ml-0.5 px-1.5 py-0.5 rounded-full text-[10px] ${isActive
-                                        ? 'bg-white/50'
+                                        ? 'bg-white/50 dark:bg-white/10'
                                         : filter.color === 'red' && count > 0
-                                            ? 'bg-red-100 text-red-700'
-                                            : 'bg-gray-100'
+                                            ? 'bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-400'
+                                            : 'bg-gray-100 dark:bg-slate-600'
                                         }`}>
                                         {count}
                                     </span>

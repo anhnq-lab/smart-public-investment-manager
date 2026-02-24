@@ -692,10 +692,10 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({
     // Priority color helper
     const getPriorityColor = (priority?: string) => {
         switch (priority) {
-            case 'High': return 'text-red-600 bg-red-50 border-red-200';
-            case 'Medium': return 'text-amber-600 bg-amber-50 border-amber-200';
-            case 'Low': return 'text-green-600 bg-green-50 border-green-200';
-            default: return 'text-gray-600 bg-gray-50 border-gray-200';
+            case 'High': return 'text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/30 border-red-200 dark:border-red-700';
+            case 'Medium': return 'text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/30 border-amber-200 dark:border-amber-700';
+            case 'Low': return 'text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/30 border-green-200 dark:border-green-700';
+            default: return 'text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-slate-700 border-gray-200 dark:border-slate-600';
         }
     };
 
@@ -840,10 +840,10 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({
 
                                                 {/* Task Count Badge */}
                                                 <span className={`shrink-0 text-[10px] px-2 py-0.5 rounded font-medium ${linkedTasks.length === 0
-                                                    ? 'bg-gray-100 text-gray-500'
+                                                    ? 'bg-gray-100 dark:bg-slate-700 text-gray-500 dark:text-slate-400'
                                                     : completedCount === linkedTasks.length
-                                                        ? 'bg-emerald-100 text-emerald-700'
-                                                        : 'bg-blue-100 text-blue-700'
+                                                        ? 'bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-400'
+                                                        : 'bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-400'
                                                     }`}>
                                                     {completedCount}/{linkedTasks.length} việc
                                                 </span>
@@ -900,25 +900,25 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({
                                                                     <td className="px-2 py-2">
                                                                         <button
                                                                             onClick={(e) => handleQuickStatusChange(e, t)}
-                                                                            className={`w-4 h-4 rounded-full transition-transform hover:scale-125 focus:outline-none ring-2 ring-offset-1 ${t.Status === 'Done' ? 'bg-emerald-500 ring-emerald-200' :
-                                                                                t.Status === 'Review' ? 'bg-indigo-500 ring-indigo-200' :
-                                                                                    t.Status === 'InProgress' ? 'bg-orange-500 ring-orange-200' :
-                                                                                        'bg-gray-200 ring-gray-100 hover:bg-gray-300'
+                                                                            className={`w-4 h-4 rounded-full transition-transform hover:scale-125 focus:outline-none ring-2 ring-offset-1 dark:ring-offset-slate-800 ${t.Status === 'Done' ? 'bg-emerald-500 ring-emerald-200 dark:ring-emerald-700' :
+                                                                                t.Status === 'Review' ? 'bg-indigo-500 ring-indigo-200 dark:ring-indigo-700' :
+                                                                                    t.Status === 'InProgress' ? 'bg-orange-500 ring-orange-200 dark:ring-orange-700' :
+                                                                                        'bg-gray-200 dark:bg-slate-600 ring-gray-100 dark:ring-slate-500 hover:bg-gray-300 dark:hover:bg-slate-500'
                                                                                 }`}
                                                                             title="Click để chuyển trạng thái"
                                                                         />
                                                                     </td>
 
                                                                     {/* Title */}
-                                                                    <td className={`px-2 py-2 font-medium ${t.Status === 'Done' ? 'text-gray-400 line-through' :
-                                                                        isOverdue(t) ? 'text-red-700' :
-                                                                            t.Status === 'Review' ? 'text-indigo-700' :
-                                                                                t.Status === 'InProgress' ? 'text-orange-700' :
-                                                                                    'text-gray-700'
+                                                                    <td className={`px-2 py-2 font-medium ${t.Status === 'Done' ? 'text-gray-400 dark:text-slate-500 line-through' :
+                                                                        isOverdue(t) ? 'text-red-700 dark:text-red-400' :
+                                                                            t.Status === 'Review' ? 'text-indigo-700 dark:text-indigo-400' :
+                                                                                t.Status === 'InProgress' ? 'text-orange-700 dark:text-orange-400' :
+                                                                                    'text-gray-700 dark:text-slate-300'
                                                                         }`}>
                                                                         {t.Title}
                                                                         {t.IsCritical && (
-                                                                            <span className="ml-1 px-1 py-0.5 bg-purple-100 text-purple-700 text-[8px] rounded font-bold">
+                                                                            <span className="ml-1 px-1 py-0.5 bg-purple-100 dark:bg-purple-900/40 text-purple-700 dark:text-purple-400 text-[8px] rounded font-bold">
                                                                                 CP
                                                                             </span>
                                                                         )}
@@ -933,7 +933,7 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({
                                                                     </td>
 
                                                                     {/* Assignee */}
-                                                                    <td className="px-2 py-2 text-gray-500 hidden sm:table-cell">
+                                                                    <td className="px-2 py-2 text-gray-500 dark:text-slate-400 hidden sm:table-cell">
                                                                         {t.AssigneeID && (
                                                                             <span className="flex items-center gap-1 truncate max-w-[120px]" title={employeeNameMap[t.AssigneeID] || t.AssigneeID}>
                                                                                 <User className="w-3 h-3 shrink-0" />
@@ -985,7 +985,7 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({
                                                                                 }
                                                                             </button>
                                                                             {(attachmentCounts[t.TaskID] || 0) > 0 && (
-                                                                                <span className="flex items-center gap-0.5 text-[9px] px-1 py-0.5 rounded bg-blue-50 text-blue-600 border border-blue-100 font-bold">
+                                                                                <span className="flex items-center gap-0.5 text-[9px] px-1 py-0.5 rounded bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 border border-blue-100 dark:border-blue-700 font-bold">
                                                                                     <Paperclip className="w-2.5 h-2.5" />
                                                                                     {attachmentCounts[t.TaskID]}
                                                                                 </span>
@@ -1079,10 +1079,10 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({
                                                                             }}
                                                                             disabled={bulkCreatingStep === item.code || allCreated}
                                                                             className={`px-2.5 py-1 text-[10px] font-semibold rounded-lg flex items-center gap-1 transition-all ${allCreated
-                                                                                ? 'bg-emerald-50 text-emerald-600 border border-emerald-200 cursor-default'
+                                                                                ? 'bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-700 cursor-default'
                                                                                 : bulkCreatingStep === item.code
-                                                                                    ? 'bg-amber-50 text-amber-600 border border-amber-200 cursor-wait'
-                                                                                    : 'bg-blue-50 text-blue-600 border border-blue-200 hover:bg-blue-100 hover:shadow-sm'
+                                                                                    ? 'bg-amber-50 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 border border-amber-200 dark:border-amber-700 cursor-wait'
+                                                                                    : 'bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-700 hover:bg-blue-100 dark:hover:bg-blue-900/50 hover:shadow-sm'
                                                                                 }`}
                                                                             title={allCreated ? 'Đã tạo công việc cho tất cả bước' : 'Tạo công việc tự động cho tất cả bước quy trình'}
                                                                         >

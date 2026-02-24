@@ -38,9 +38,9 @@ export const PlanStatisticsHeader: React.FC<PlanStatisticsHeaderProps> = ({ task
             icon: ListTodo,
             color: 'blue',
             bgGradient: 'from-blue-500 to-blue-600',
-            textColor: 'text-blue-600',
-            bgColor: 'bg-blue-50',
-            borderColor: 'border-blue-100'
+            textColor: 'text-blue-600 dark:text-blue-400',
+            bgColor: 'bg-blue-50 dark:bg-blue-900/20',
+            borderColor: 'border-blue-100 dark:border-blue-800'
         },
         {
             label: 'Đang thực hiện',
@@ -49,9 +49,9 @@ export const PlanStatisticsHeader: React.FC<PlanStatisticsHeaderProps> = ({ task
             icon: PlayCircle,
             color: 'amber',
             bgGradient: 'from-amber-500 to-orange-500',
-            textColor: 'text-amber-600',
-            bgColor: 'bg-amber-50',
-            borderColor: 'border-amber-100'
+            textColor: 'text-amber-600 dark:text-amber-400',
+            bgColor: 'bg-amber-50 dark:bg-amber-900/20',
+            borderColor: 'border-amber-100 dark:border-amber-800'
         },
         {
             label: 'Hoàn thành',
@@ -60,9 +60,9 @@ export const PlanStatisticsHeader: React.FC<PlanStatisticsHeaderProps> = ({ task
             icon: CheckCircle2,
             color: 'emerald',
             bgGradient: 'from-emerald-500 to-green-600',
-            textColor: 'text-emerald-600',
-            bgColor: 'bg-emerald-50',
-            borderColor: 'border-emerald-100'
+            textColor: 'text-emerald-600 dark:text-emerald-400',
+            bgColor: 'bg-emerald-50 dark:bg-emerald-900/20',
+            borderColor: 'border-emerald-100 dark:border-emerald-800'
         },
         {
             label: 'Quá hạn',
@@ -70,9 +70,9 @@ export const PlanStatisticsHeader: React.FC<PlanStatisticsHeaderProps> = ({ task
             icon: AlertTriangle,
             color: 'red',
             bgGradient: 'from-red-500 to-rose-600',
-            textColor: overdueTasks > 0 ? 'text-red-600' : 'text-gray-400',
-            bgColor: overdueTasks > 0 ? 'bg-red-50' : 'bg-gray-50',
-            borderColor: overdueTasks > 0 ? 'border-red-100' : 'border-gray-100',
+            textColor: overdueTasks > 0 ? 'text-red-600 dark:text-red-400' : 'text-gray-400 dark:text-slate-500',
+            bgColor: overdueTasks > 0 ? 'bg-red-50 dark:bg-red-900/20' : 'bg-gray-50 dark:bg-slate-800',
+            borderColor: overdueTasks > 0 ? 'border-red-100 dark:border-red-800' : 'border-gray-100 dark:border-slate-700',
             alert: overdueTasks > 0
         }
     ];

@@ -61,11 +61,11 @@ export const PhaseProgressCard: React.FC<PhaseProgressCardProps> = ({
     if (phaseEndDate && completedItems < totalItems) {
         const diffDays = Math.ceil((phaseEndDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
         if (diffDays < 0) {
-            daysInfo = { label: `Quá hạn ${Math.abs(diffDays)} ngày`, color: 'text-red-600 bg-red-50', isOverdue: true };
+            daysInfo = { label: `Quá hạn ${Math.abs(diffDays)} ngày`, color: 'text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/30', isOverdue: true };
         } else if (diffDays <= 7) {
-            daysInfo = { label: `Còn ${diffDays} ngày`, color: 'text-amber-600 bg-amber-50', isOverdue: false };
+            daysInfo = { label: `Còn ${diffDays} ngày`, color: 'text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/30', isOverdue: false };
         } else if (diffDays <= 30) {
-            daysInfo = { label: `Còn ${diffDays} ngày`, color: 'text-blue-600 bg-blue-50', isOverdue: false };
+            daysInfo = { label: `Còn ${diffDays} ngày`, color: 'text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30', isOverdue: false };
         }
     }
 
@@ -80,22 +80,22 @@ export const PhaseProgressCard: React.FC<PhaseProgressCardProps> = ({
     const statusConfig = {
         todo: {
             icon: Circle,
-            color: 'text-gray-400',
-            bgColor: 'bg-gray-100',
-            progressColor: 'bg-gray-300',
-            borderColor: 'border-l-gray-300'
+            color: 'text-gray-400 dark:text-slate-500',
+            bgColor: 'bg-gray-100 dark:bg-slate-700',
+            progressColor: 'bg-gray-300 dark:bg-slate-600',
+            borderColor: 'border-l-gray-300 dark:border-l-slate-600'
         },
         in_progress: {
             icon: Clock,
-            color: 'text-blue-600',
-            bgColor: 'bg-blue-100',
+            color: 'text-blue-600 dark:text-blue-400',
+            bgColor: 'bg-blue-100 dark:bg-blue-900/30',
             progressColor: 'from-blue-500 to-indigo-600',
             borderColor: 'border-l-blue-500'
         },
         done: {
             icon: CheckCircle2,
-            color: 'text-emerald-600',
-            bgColor: 'bg-emerald-100',
+            color: 'text-emerald-600 dark:text-emerald-400',
+            bgColor: 'bg-emerald-100 dark:bg-emerald-900/30',
             progressColor: 'from-emerald-500 to-green-600',
             borderColor: 'border-l-emerald-500'
         }
