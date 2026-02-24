@@ -403,7 +403,7 @@ const CostBreakdownDisplay: React.FC<{
         { key: 'other', label: 'Chi phí khác' },
         { key: 'contingency', label: 'Dự phòng' },
     ];
-    const total = Object.values(breakdown).reduce((s, v) => s + (v || 0), 0);
+    const total = Object.values(breakdown).reduce((s: number, v) => s + (Number(v) || 0), 0);
 
     return (
         <div className="space-y-2">
@@ -425,7 +425,7 @@ const CostBreakdownDisplay: React.FC<{
             ))}
             <div className="pt-1 border-t border-gray-200 dark:border-slate-600 flex items-center gap-3 text-xs font-bold">
                 <span className="w-32 text-gray-700 dark:text-slate-300">Tổng cộng:</span>
-                <span className="text-blue-700 dark:text-blue-400">{formatCurrency(total)}</span>
+                <span className="text-blue-700 dark:text-blue-400">{formatCurrency(total as number)}</span>
             </div>
         </div>
     );
@@ -906,8 +906,8 @@ export const ProjectComplianceTab: React.FC<ProjectComplianceTabProps> = ({ proj
                             className={`grid grid-cols-[56px_1fr_130px_1fr] gap-0 border-b border-gray-100 dark:border-slate-700 transition-colors ${isMainHeading
                                 ? 'bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-slate-700 dark:to-slate-700 cursor-pointer hover:from-blue-100 hover:to-indigo-100 dark:hover:from-slate-600 dark:hover:to-slate-600'
                                 : isHeading
-                                    ? 'bg-gray-50/50 dark:bg-slate-750'
-                                    : 'hover:bg-gray-50 dark:hover:bg-slate-750'
+                                    ? 'bg-gray-50/50 dark:bg-slate-700/50'
+                                    : 'hover:bg-gray-50 dark:hover:bg-slate-700/50'
                                 }`}
                             onClick={isMainHeading ? () => toggleSection(row.stt) : undefined}
                         >
