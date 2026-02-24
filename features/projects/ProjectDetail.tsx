@@ -76,6 +76,16 @@ const ProjectDetail: React.FC = () => {
     const [syncResult, setSyncResult] = useState<SyncResult | null>(null);
     const [isGeneratingReport, setIsGeneratingReport] = useState(false);
 
+    // Lazy-mount flags: once mounted, stay mounted to preserve 3D engine state
+    const [bimMounted, setBimMounted] = useState(initialTab === 'bim');
+    const [opsMounted, setOpsMounted] = useState(initialTab === 'operations');
+
+    // Mount BIM/Operations on first visit
+    useEffect(() => {
+        if (activeTab === 'bim' && !bimMounted) setBimMounted(true);
+        if (activeTab === 'operations' && !opsMounted) setOpsMounted(true);
+    }, [activeTab, bimMounted, opsMounted]);
+
     // Initial Data Fetch
     useEffect(() => {
         const fetchProject = async () => {
@@ -244,84 +254,91 @@ const ProjectDetail: React.FC = () => {
                 </div>
             </div>
 
-            {/* 3. Tab Content */}
-            <div className={`flex-1 min-h-0 ${(activeTab === 'bim' || activeTab === 'operations') ? '' : 'overflow-y-auto px-4 py-6'}`}>
-                {activeTab === 'info' && (
-                    <ProjectInfoTab
-                        project={project}
-                        projectMembers={projectMembers}
-                        projectPackages={packages}
-                        isSyncing={isSyncing}
-                        syncResult={syncResult}
-                        isGeneratingReport={isGeneratingReport}
-                        onGenerateReport={handleGenerateReport}
-                        onViewMember={(employeeId) => {
-                            // TODO: Navigate to Personnel module
-                            console.log('View member:', employeeId);
-                        }}
-                        onViewPackage={(packageId) => {
-                            // Navigate to Packages tab
-                            setActiveTab('packages');
-                        }}
-                        onStageChange={(newStage, entry) => {
-                            // Update project stage
-                            setProject(prev => prev ? {
-                                ...prev,
-                                Stage: newStage,
-                                StageHistory: [...(prev.StageHistory || []), entry]
-                            } : null);
-                            console.log('Stage changed to:', newStage, entry);
-                            // TODO: Persist to API
-                        }}
-                        onHistoryUpdate={(history) => {
-                            setProject(prev => prev ? { ...prev, StageHistory: history } : null);
-                        }}
-                        canEditLifecycle={true}
-                    />
-                )}
-                {activeTab === 'plan' && (
-                    <ProjectPlanTab
-                        tasks={tasks}
-                        projectID={project.ProjectID}
-                        onSaveTask={(t) => saveTask(t)}
-                        groupCode={project.GroupCode}
-                        isODA={project.IsODA}
-                        project={project}
-                    />
-                )}
-                {activeTab === 'packages' && (
-                    <ProjectPackagesTab projectID={project.ProjectID} project={project} />
-                )}
-                {activeTab === 'capital' && (
-                    <ProjectCapitalTab projectID={project.ProjectID} />
-                )}
-                {activeTab === 'documents' && (
-                    <ProjectDocumentsTab
-                        projectID={project.ProjectID}
-                        projectStage={project.Stage || ProjectStage.Execution}
-                        investmentPolicy={(project as any).InvestmentPolicy}
-                        feasibilityStudy={(project as any).FeasibilityStudy}
-                    />
-                )}
-                {activeTab === 'tt24' && (
-                    <ProjectComplianceTab
-                        project={project}
-                        onUpdate={(updated) => {
-                            setProject(prev => prev ? { ...prev, ...updated } : null);
-                        }}
-                    />
-                )}
-                {activeTab === 'bim' && (
+            {/* 3. Tab Content — BIM & Operations stay mounted to avoid re-init */}
+            {/* Regular tabs: unmount when inactive */}
+            {activeTab !== 'bim' && activeTab !== 'operations' && (
+                <div className="flex-1 min-h-0 overflow-y-auto px-4 py-6">
+                    {activeTab === 'info' && (
+                        <ProjectInfoTab
+                            project={project}
+                            projectMembers={projectMembers}
+                            projectPackages={packages}
+                            isSyncing={isSyncing}
+                            syncResult={syncResult}
+                            isGeneratingReport={isGeneratingReport}
+                            onGenerateReport={handleGenerateReport}
+                            onViewMember={(employeeId) => {
+                                console.log('View member:', employeeId);
+                            }}
+                            onViewPackage={(packageId) => {
+                                setActiveTab('packages');
+                            }}
+                            onStageChange={(newStage, entry) => {
+                                setProject(prev => prev ? {
+                                    ...prev,
+                                    Stage: newStage,
+                                    StageHistory: [...(prev.StageHistory || []), entry]
+                                } : null);
+                                console.log('Stage changed to:', newStage, entry);
+                            }}
+                            onHistoryUpdate={(history) => {
+                                setProject(prev => prev ? { ...prev, StageHistory: history } : null);
+                            }}
+                            canEditLifecycle={true}
+                        />
+                    )}
+                    {activeTab === 'plan' && (
+                        <ProjectPlanTab
+                            tasks={tasks}
+                            projectID={project.ProjectID}
+                            onSaveTask={(t) => saveTask(t)}
+                            groupCode={project.GroupCode}
+                            isODA={project.IsODA}
+                            project={project}
+                        />
+                    )}
+                    {activeTab === 'packages' && (
+                        <ProjectPackagesTab projectID={project.ProjectID} project={project} />
+                    )}
+                    {activeTab === 'capital' && (
+                        <ProjectCapitalTab projectID={project.ProjectID} />
+                    )}
+                    {activeTab === 'documents' && (
+                        <ProjectDocumentsTab
+                            projectID={project.ProjectID}
+                            projectStage={project.Stage || ProjectStage.Execution}
+                            investmentPolicy={(project as any).InvestmentPolicy}
+                            feasibilityStudy={(project as any).FeasibilityStudy}
+                        />
+                    )}
+                    {activeTab === 'tt24' && (
+                        <ProjectComplianceTab
+                            project={project}
+                            onUpdate={(updated) => {
+                                setProject(prev => prev ? { ...prev, ...updated } : null);
+                            }}
+                        />
+                    )}
+                </div>
+            )}
+
+            {/* BIM tab: always mounted after first visit, hidden via CSS */}
+            {bimMounted && (
+                <div className="flex-1 min-h-0" style={{ display: activeTab === 'bim' ? undefined : 'none' }}>
                     <BimErrorBoundary>
                         <Suspense fallback={<div className="flex items-center justify-center h-96 text-blue-500 dark:text-blue-400">Đang tải BIM Viewer...</div>}>
                             <ProjectBimTab projectID={project.ProjectID} />
                         </Suspense>
                     </BimErrorBoundary>
-                )}
-                {activeTab === 'operations' && (
+                </div>
+            )}
+
+            {/* Operations tab: always mounted after first visit, hidden via CSS */}
+            {opsMounted && (
+                <div className="flex-1 min-h-0" style={{ display: activeTab === 'operations' ? undefined : 'none' }}>
                     <ProjectOperationsTab projectID={project.ProjectID} />
-                )}
-            </div>
+                </div>
+            )}
         </div>
     );
 };
