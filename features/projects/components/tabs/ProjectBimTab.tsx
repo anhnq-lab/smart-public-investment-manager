@@ -63,6 +63,12 @@ const ProjectBimTabContent: React.FC = () => {
     const contextMenuRef = useRef<HTMLDivElement>(null);
     const originalMaterialsRef = useRef(new WeakMap<THREE.Material, THREE.Material>());
 
+    // Debug mount/unmount
+    useEffect(() => {
+        console.log('[BimTab] ✅ MOUNTED ProjectBimTabContent');
+        return () => console.log('[BimTab] ❌ UNMOUNTED ProjectBimTabContent');
+    }, []);
+
     const hasModels = upload.disciplineModels.length > 0;
 
 
@@ -810,6 +816,7 @@ export const ProjectBimTab: React.FC<ProjectBimTabProps> = ({ projectID }) => {
             projectID={projectID}
             isDarkMode={isDark}
             isMobile={isMobile}
+            key="bim-provider-persist"
         >
             <ProjectBimTabContent />
         </BimProvider>

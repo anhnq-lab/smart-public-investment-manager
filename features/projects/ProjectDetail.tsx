@@ -219,7 +219,7 @@ const ProjectDetail: React.FC = () => {
     };
 
     return (
-        <div className="flex flex-col h-[calc(100vh-120px)] bg-[#F8FAFC] dark:bg-slate-900">
+        <div className="flex flex-col relative h-[calc(100vh-120px)] bg-[#F8FAFC] dark:bg-slate-900">
             {/* Fixed Header + Tabs — does NOT scroll */}
             <div className="shrink-0 px-4 pt-4">
                 {/* 1. Header */}
@@ -322,9 +322,12 @@ const ProjectDetail: React.FC = () => {
                 </div>
             )}
 
-            {/* BIM tab: always mounted after first visit, hidden via CSS */}
+            {/* BIM tab: always mounted after first visit, hidden via visibility (not display:none — preserves WebGL context) */}
             {bimMounted && (
-                <div className="flex-1 min-h-0" style={{ display: activeTab === 'bim' ? undefined : 'none' }}>
+                <div
+                    className={`flex-1 min-h-0 ${activeTab === 'bim' ? 'relative' : 'absolute inset-0 pointer-events-none'}`}
+                    style={activeTab === 'bim' ? undefined : { visibility: 'hidden', zIndex: -1 }}
+                >
                     <BimErrorBoundary>
                         <Suspense fallback={<div className="flex items-center justify-center h-96 text-blue-500 dark:text-blue-400">Đang tải BIM Viewer...</div>}>
                             <ProjectBimTab projectID={project.ProjectID} />
@@ -333,9 +336,12 @@ const ProjectDetail: React.FC = () => {
                 </div>
             )}
 
-            {/* Operations tab: always mounted after first visit, hidden via CSS */}
+            {/* Operations tab: always mounted after first visit, hidden via visibility */}
             {opsMounted && (
-                <div className="flex-1 min-h-0" style={{ display: activeTab === 'operations' ? undefined : 'none' }}>
+                <div
+                    className={`flex-1 min-h-0 ${activeTab === 'operations' ? '' : 'absolute inset-0 pointer-events-none'}`}
+                    style={activeTab === 'operations' ? undefined : { visibility: 'hidden', zIndex: -1 }}
+                >
                     <ProjectOperationsTab projectID={project.ProjectID} />
                 </div>
             )}
