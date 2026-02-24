@@ -168,27 +168,21 @@ export function useBimEngine(
                 const raycasters = components.get(OBC.Raycasters);
                 raycasters.get(world);
 
-                // Setup Highlighter for selection + hover
+                // Setup Highlighter for selection
                 const highlighter = components.get(OBCF.Highlighter);
                 highlighter.setup({
                     world,
                     selectMaterialDefinition: {
-                        color: new THREE.Color('#4fc3f7'),
-                        opacity: 0.5,
+                        color: new THREE.Color('#29b6f6'),
+                        opacity: 0.85,
                         transparent: true,
                         renderedFaces: 0,
                     },
                 });
 
-                // Setup Hoverer
+                // Hoverer disabled per user request
                 const hoverer = components.get(OBCF.Hoverer);
-                hoverer.enabled = true;
-                hoverer.world = world;
-                if ('color' in hoverer.material) {
-                    (hoverer.material as any).color.setHex(0x81d4fa);
-                }
-                hoverer.material.opacity = 0.3;
-                hoverer.material.transparent = true;
+                hoverer.enabled = false;
 
                 // Track camera quaternion for ViewCube
                 let lastQStr = '';
