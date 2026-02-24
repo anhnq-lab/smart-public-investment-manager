@@ -15,7 +15,8 @@ import { ProjectPackagesTab } from './components/tabs/ProjectPackagesTab';
 import { ProjectCapitalTab } from './components/tabs/ProjectCapitalTab';
 import { ProjectDocumentsTab } from './components/tabs/ProjectDocumentsTab';
 import { ProjectComplianceTab } from './components/tabs/ProjectComplianceTab';
-import { Info, CalendarCheck, Briefcase, FolderOpen, Layers, Landmark, Database } from 'lucide-react';
+import { ProjectOperationsTab } from './components/tabs/ProjectOperationsTab';
+import { Info, CalendarCheck, Briefcase, FolderOpen, Layers, Landmark, Database, Settings2 } from 'lucide-react';
 
 // Error Boundary for BIM tab - catches runtime crashes from 3D libraries
 class BimErrorBoundary extends React.Component<
@@ -68,7 +69,7 @@ const ProjectDetail: React.FC = () => {
 
     // Read initial tab from navigation state (e.g. from TaskDetail breadcrumb)
     const initialTab = (location.state as any)?.activeTab || 'info';
-    const [activeTab, setActiveTab] = useState<'info' | 'plan' | 'packages' | 'capital' | 'documents' | 'bim' | 'tt24'>(initialTab);
+    const [activeTab, setActiveTab] = useState<'info' | 'plan' | 'packages' | 'capital' | 'documents' | 'bim' | 'tt24' | 'operations'>(initialTab);
 
     // Module 1: National Gateway State
     const [isSyncing, setIsSyncing] = useState(false);
@@ -230,6 +231,7 @@ const ProjectDetail: React.FC = () => {
                         { id: 'tt24', label: 'DỮ LIỆU TT24', icon: Database },
                         { id: 'documents', label: 'HỒ SƠ', icon: FolderOpen },
                         { id: 'bim', label: 'MÔ HÌNH BIM', icon: Layers },
+                        { id: 'operations', label: 'VẬN HÀNH', icon: Settings2 },
                     ].map(t => (
                         <button
                             key={t.id} onClick={() => setActiveTab(t.id as any)}
@@ -243,7 +245,7 @@ const ProjectDetail: React.FC = () => {
             </div>
 
             {/* 3. Tab Content */}
-            <div className={`flex-1 min-h-0 ${activeTab === 'bim' ? '' : 'overflow-y-auto px-4 py-6'}`}>
+            <div className={`flex-1 min-h-0 ${(activeTab === 'bim' || activeTab === 'operations') ? '' : 'overflow-y-auto px-4 py-6'}`}>
                 {activeTab === 'info' && (
                     <ProjectInfoTab
                         project={project}
@@ -315,6 +317,9 @@ const ProjectDetail: React.FC = () => {
                             <ProjectBimTab projectID={project.ProjectID} />
                         </Suspense>
                     </BimErrorBoundary>
+                )}
+                {activeTab === 'operations' && (
+                    <ProjectOperationsTab projectID={project.ProjectID} />
                 )}
             </div>
         </div>
