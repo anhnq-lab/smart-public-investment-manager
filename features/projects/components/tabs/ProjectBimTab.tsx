@@ -3,7 +3,6 @@ import * as THREE from 'three';
 import * as OBC from '@thatopen/components';
 import { Upload, Loader2, Building2, AlertCircle, CheckCircle, Maximize2, Minimize2, Info, LocateFixed, EyeOff, Focus, FileUp } from 'lucide-react';
 import { useTheme } from '../../../../context/ThemeContext';
-import { Group as PanelGroup, Panel, Separator as PanelResizeHandle } from 'react-resizable-panels';
 
 // BIM hooks and context
 import { BimProvider, useBimContext } from '../bim/context/BimContext';
@@ -31,23 +30,7 @@ function getCursorClass(activeTool: string | null): string {
     return '';
 }
 
-// ── Custom Resize Handle ────────────────────────────
-const BimResizeHandle = ({ isDark, direction = 'horizontal' }: { isDark: boolean; direction?: 'horizontal' | 'vertical' }) => {
-    return (
-        <PanelResizeHandle className={`
-            relative flex items-center justify-center z-20 group
-            ${direction === 'horizontal' ? 'w-1.5 cursor-col-resize' : 'h-1.5 cursor-row-resize'}
-            ${isDark ? 'bg-slate-800 hover:bg-slate-700' : 'bg-gray-100 hover:bg-gray-200'}
-            transition-colors
-        `}>
-            <div className={`
-                ${direction === 'horizontal' ? 'w-0.5 h-8' : 'w-8 h-0.5'}
-                rounded-full transition-colors
-                ${isDark ? 'bg-slate-600 group-hover:bg-slate-400' : 'bg-gray-300 group-hover:bg-gray-500'}
-            `} />
-        </PanelResizeHandle>
-    );
-};
+
 
 // ── Inner Component ───────────────────────────────────────
 const ProjectBimTabContent: React.FC = () => {
@@ -475,272 +458,261 @@ const ProjectBimTabContent: React.FC = () => {
     }, [tools.activeTool]);
 
     // ── RENDER ──────────────────────────────
+    const showLeftPanel = hasModels && !isMobile && tools.leftPanel === 'tree';
+    const showBottomPanel = engine.viewerReady && hasModels;
+
     return (
         <div
             ref={wrapperRef}
-            className={`flex w-full overflow-hidden ${isFullscreen ? '' : 'h-full'} ${isDark ? 'bg-slate-900' : 'bg-gray-50'}`}
-            style={isFullscreen ? { width: '100vw', height: '100vh', position: 'fixed', top: 0, left: 0, zIndex: 9999 } : undefined}
+            className={`w-full overflow-hidden ${isFullscreen ? '' : 'h-full'} ${isDark ? 'bg-slate-950' : 'bg-gray-50'}`}
+            style={{
+                ...(isFullscreen ? { width: '100vw', height: '100vh', position: 'fixed' as const, top: 0, left: 0, zIndex: 9999 } : {}),
+                display: 'grid',
+                gridTemplateColumns: showLeftPanel ? '280px 1fr' : '1fr',
+                gridTemplateRows: showBottomPanel ? '1fr 240px' : '1fr',
+            }}
             onDragOver={handleDragOver}
             onDragLeave={handleDragLeave}
             onDrop={handleDrop}
         >
-            <PanelGroup direction="horizontal" autoSaveId="bim-h-v2">
-                {/* ─── LEFT SIDEBAR (Model Browser + Properties) ─── */}
-                {hasModels && !isMobile && tools.leftPanel === 'tree' && (
-                    <>
-                        <Panel defaultSize={20} minSize={15} maxSize={40} className={`flex flex-col border-r z-20 ${isDark ? 'border-slate-700/50 bg-slate-800' : 'border-gray-200 bg-white'}`}>
-                            <PanelGroup direction="vertical" autoSaveId="bim-sidebar-v2">
-                                {/* Top half: Model Browser */}
-                                <Panel defaultSize={50} minSize={20} className="relative flex flex-col border-b border-inherit bg-inherit">
-                                    <BimModelTree />
-                                </Panel>
-                                <BimResizeHandle isDark={isDark} direction="vertical" />
-                                {/* Bottom half: Properties Panel */}
-                                <Panel defaultSize={50} minSize={20} className="relative flex flex-col bg-inherit">
-                                    <BimPropertiesPanel isBottomPanel={false} />
-                                </Panel>
-                            </PanelGroup>
-                        </Panel>
-                        <BimResizeHandle isDark={isDark} direction="horizontal" />
-                    </>
+            {/* ─── LEFT SIDEBAR ─── */}
+            {showLeftPanel && (
+                <div
+                    className={`flex flex-col border-r overflow-hidden ${isDark ? 'border-slate-800 bg-slate-900' : 'border-gray-200 bg-white'}`}
+                    style={{ gridRow: '1 / -1' }}
+                >
+                    {/* Top: Model Tree */}
+                    <div className="flex-1 overflow-hidden flex flex-col min-h-0">
+                        <BimModelTree />
+                    </div>
+                    {/* Divider */}
+                    <div className={`h-px shrink-0 ${isDark ? 'bg-slate-800' : 'bg-gray-200'}`} />
+                    {/* Bottom: Properties */}
+                    <div className="flex-1 overflow-hidden flex flex-col min-h-0">
+                        <BimPropertiesPanel isBottomPanel={false} />
+                    </div>
+                </div>
+            )}
+
+            {/* ─── MAIN 3D CANVAS ─── */}
+            <div className={`relative flex flex-col min-h-0 min-w-0 ${cursorClass}`}>
+                {/* Active tool indicator */}
+                {activeToolLabel && (
+                    <div className={`
+                        absolute top-3 left-1/2 -translate-x-1/2 z-30 px-4 py-1.5 rounded-full
+                        flex items-center gap-2 text-xs font-medium
+                        backdrop-blur-xl shadow-lg border
+                        ${isDark ? 'bg-slate-900/80 text-blue-300 border-slate-700/60' : 'bg-white/90 text-blue-700 border-blue-200'}
+                    `}>
+                        <span>{activeToolLabel}</span>
+                        <button
+                            onClick={() => tools.activateTool('select')}
+                            className={`px-2 py-0.5 rounded text-[10px] font-bold transition-colors cursor-pointer
+                                ${isDark ? 'bg-slate-700/80 hover:bg-slate-600 text-slate-300' : 'bg-gray-100 hover:bg-gray-200 text-gray-600'}
+                            `}
+                        >
+                            ESC
+                        </button>
+                    </div>
                 )}
 
-                {/* ─── RIGHT MAIN AREA (3D Viewer + Operations) ─── */}
-                <Panel className="flex flex-col relative min-w-0">
-                    <PanelGroup direction="vertical" autoSaveId="bim-content-v2">
-                        {/* 3D Viewer Area */}
-                        <Panel className={`relative flex flex-col min-h-0 ${cursorClass}`}>
-                            {/* Active tool indicator bar */}
-                            {activeToolLabel && (
-                                <div className={`
-                                    absolute top-2 left-1/2 -translate-x-1/2 z-30 px-4 py-1.5 rounded-full
-                                    flex items-center gap-2 text-xs font-medium
-                                    backdrop-blur-md shadow-lg border
-                                    ${isDark ? 'bg-blue-900/60 text-blue-300 border-blue-700/50' : 'bg-blue-50/90 text-blue-700 border-blue-200'}
-                                `}>
-                                    <span>{activeToolLabel}</span>
-                                    <button
-                                        onClick={() => tools.activateTool('select')}
-                                        className={`px-2 py-0.5 rounded text-[10px] font-bold transition-colors
-                                            ${isDark ? 'bg-slate-700/80 hover:bg-slate-600 text-slate-300' : 'bg-white hover:bg-gray-100 text-gray-600'}
-                                        `}
-                                    >
-                                        ESC
-                                    </button>
-                                </div>
-                            )}
-
-                            {/* Status bar */}
-                            {upload.status !== 'idle' && !activeToolLabel && (
-                                <div className={`
-                                    absolute top-2 left-1/2 -translate-x-1/2 z-30 px-4 py-2 rounded-xl flex items-center gap-2
-                                    shadow-lg backdrop-blur-md text-xs font-medium
-                                    ${isDark ? 'bg-slate-800/90 text-slate-300 border border-slate-700' : 'bg-white/90 text-gray-700 border border-gray-200'}
-                                `}>
-                                    <StatusIcon />
-                                    <span>{upload.statusMessage}</span>
-                                    {(upload.status === 'loading' || upload.status === 'converting') && (
-                                        <div className={`w-20 h-1.5 rounded-full overflow-hidden ${isDark ? 'bg-slate-700' : 'bg-gray-200'}`}>
-                                            <div className="h-full bg-blue-500 rounded-full transition-all" style={{ width: `${upload.loadingProgress}%` }} />
-                                        </div>
-                                    )}
-                                </div>
-                            )}
-
-                            {/* Mobile Only: Left Panel */}
-                            {tools.leftPanel === 'tree' && isMobile && (
-                                <BimModelTree />
-                            )}
-
-                            {/* Mobile Only: Component Properties */}
-                            {tools.rightPanel === 'properties' && isMobile && hasModels && (
-                                <BimPropertiesPanel isBottomPanel={false} />
-                            )}
-
-                            {/* 3D Viewer Canvas */}
-                            <div
-                                ref={containerRef}
-                                className="w-full h-full absolute inset-0 outline-none z-0"
-                                tabIndex={0}
-                                style={{ isolation: 'isolate', touchAction: 'none' }}
-                                onContextMenu={handleContextMenu}
-                            />
-
-                            {/* Drag & Drop overlay */}
-                            {isDraggingFile && (
-                                <div className="absolute inset-0 z-40 flex items-center justify-center bg-blue-500/10 backdrop-blur-sm border-2 border-dashed border-blue-400 rounded-lg">
-                                    <div className="text-center">
-                                        <FileUp className="w-12 h-12 mx-auto mb-2 text-blue-400 animate-bounce" />
-                                        <p className="text-sm font-medium text-blue-400">Thả file IFC vào đây</p>
-                                    </div>
-                                </div>
-                            )}
-
-                            {/* ViewCube */}
-                            {engine.viewerReady && !isMobile && (
-                                <BimViewCube />
-                            )}
-
-                            {/* Fullscreen toggle button */}
-                            {engine.viewerReady && (
-                                <button
-                                    onClick={toggleFullscreen}
-                                    title={isFullscreen ? 'Thoát toàn màn hình (F11)' : 'Xem toàn màn hình (F11)'}
-                                    className={`
-                                        absolute top-3 right-3 z-30 p-2 rounded-xl backdrop-blur-md shadow-lg border
-                                        hidden md:flex items-center justify-center transition-colors
-                                        ${isFullscreen
-                                            ? 'bg-blue-500/20 text-blue-400 border-blue-500/50 hover:bg-blue-500/30'
-                                            : isDark
-                                                ? 'bg-slate-800/80 text-slate-400 border-slate-700 hover:bg-slate-700/80 hover:text-white'
-                                                : 'bg-white/80 text-gray-500 border-gray-200 hover:bg-gray-100 hover:text-gray-800'
-                                        }
-                                    `}
-                                >
-                                    {isFullscreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
-                                </button>
-                            )}
-
-                            {/* Toolbar */}
-                            {engine.viewerReady && (
-                                <BimToolbar
-                                    isCollapsed={toolbarCollapsed}
-                                    onToggleCollapse={() => setToolbarCollapsed(prev => !prev)}
-                                />
-                            )}
-
-                            {/* Shortcuts Modal */}
-                            <BimShortcutsModal
-                                isOpen={showShortcuts}
-                                onClose={() => setShowShortcuts(false)}
-                                isDarkMode={isDark}
-                            />
-
-                            {/* Section Box Controls Panel */}
-                            {section.sectionBoxActive && !isMobile && (
-                                <BimSectionPanel
-                                    sectionBoxBounds={section.sectionBoxBounds}
-                                    onUpdatePlane={section.updateSectionPlane}
-                                    onReset={section.resetSectionBox}
-                                    onRemove={() => {
-                                        section.removeSectionBox();
-                                        tools.activateTool('select');
-                                    }}
-                                    onClose={() => {
-                                        section.removeSectionBox();
-                                        tools.activateTool('select');
-                                    }}
-                                />
-                            )}
-
-                            {/* Empty state */}
-                            {engine.viewerReady && !hasModels && upload.status === 'idle' && (
-                                <div className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none">
-                                    <div className={`
-                                        text-center p-10 rounded-2xl pointer-events-auto max-w-sm
-                                        ${isDark ? 'bg-slate-800/90' : 'bg-white/90'} backdrop-blur-xl
-                                        border ${isDark ? 'border-slate-700/50' : 'border-gray-200'}
-                                        shadow-2xl
-                                    `}>
-                                        <div className={`w-16 h-16 mx-auto mb-5 rounded-2xl flex items-center justify-center
-                                            ${isDark ? 'bg-blue-500/10' : 'bg-blue-50'}
-                                        `}>
-                                            <Building2 className={`w-8 h-8 ${isDark ? 'text-blue-400' : 'text-blue-500'}`} />
-                                        </div>
-                                        <h3 className={`text-base font-bold mb-2 ${isDark ? 'text-white' : 'text-gray-800'}`}>
-                                            Chưa có mô hình BIM
-                                        </h3>
-                                        <p className={`text-xs mb-5 leading-relaxed ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
-                                            Upload hoặc kéo thả file IFC để bắt đầu xem mô hình 3D
-                                        </p>
-                                        <label className="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-500 hover:bg-blue-600 text-white rounded-xl cursor-pointer text-sm font-medium transition-all hover:shadow-lg hover:shadow-blue-500/25">
-                                            <Upload className="w-4 h-4" />
-                                            Upload IFC
-                                            <input
-                                                type="file"
-                                                accept=".ifc"
-                                                className="hidden"
-                                                onChange={upload.handleFileUpload}
-                                            />
-                                        </label>
-                                        <p className={`text-[10px] mt-3 ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>
-                                            Hoặc kéo thả file .ifc vào đây
-                                        </p>
-                                    </div>
-                                </div>
-                            )}
-
-                            {/* Loading skeleton */}
-                            {!engine.viewerReady && !engine.initError && (
-                                <div className="absolute inset-0 flex items-center justify-center z-10">
-                                    <div className="text-center">
-                                        <Loader2 className={`w-10 h-10 mx-auto mb-3 animate-spin ${isDark ? 'text-blue-400' : 'text-blue-500'}`} />
-                                        <p className={`text-sm font-medium ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
-                                            Đang khởi tạo BIM Engine...
-                                        </p>
-                                    </div>
-                                </div>
-                            )}
-
-                            {/* Init error */}
-                            {engine.initError && (
-                                <div className="absolute inset-0 flex items-center justify-center z-10">
-                                    <div className="text-center p-8 rounded-2xl bg-red-500/10 border border-red-500/30">
-                                        <AlertCircle className="w-12 h-12 mx-auto mb-4 text-red-400" />
-                                        <p className="text-sm text-red-300">{engine.initError}</p>
-                                    </div>
-                                </div>
-                            )}
-                        </Panel>
-
-                        {/* BOTTOM: Operations Panel */}
-                        {engine.viewerReady && hasModels && (
-                            <>
-                                <BimResizeHandle isDark={isDark} direction="vertical" />
-                                <Panel defaultSize={28} minSize={12} collapsible={true} collapsedSize={0} className={`
-                                    flex flex-col relative z-20
-                                    ${isDark ? 'bg-slate-800' : 'bg-white'}
-                                `}>
-                                    {/* Tab bar + stats */}
-                                    <div className={`
-                                        flex items-center justify-between px-3 shrink-0 h-9
-                                        text-[11px] font-medium border-b
-                                        ${isDark ? 'text-slate-400 border-slate-700/50' : 'text-gray-500 border-gray-100'}
-                                    `}>
-                                        <div className="flex items-center gap-2">
-                                            <span className={`
-                                                flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-semibold
-                                                ${isDark ? 'bg-blue-500/10 text-blue-400' : 'bg-blue-50 text-blue-600'}
-                                            `}>
-                                                🔧 Quản lý vận hành
-                                            </span>
-                                            <div className={`h-3.5 w-px ${isDark ? 'bg-slate-700' : 'bg-gray-200'}`} />
-                                            <span className="text-[10px] opacity-70">📦 {upload.disciplineModels.length} models</span>
-                                            {section.clipPlaneCount > 0 && (
-                                                <span className="text-cyan-500 text-[10px]">✂ {section.clipPlaneCount}</span>
-                                            )}
-                                            {measure.measurementCount > 0 && (
-                                                <span className="text-cyan-500 text-[10px]">📐 {measure.measurementCount}</span>
-                                            )}
-                                        </div>
-                                    </div>
-
-                                    {/* Operations Content */}
-                                    <div className="flex-1 overflow-auto">
-                                        <FacilityManagementPanel />
-                                    </div>
-                                </Panel>
-                            </>
+                {/* Status bar */}
+                {upload.status !== 'idle' && !activeToolLabel && (
+                    <div className={`
+                        absolute top-3 left-1/2 -translate-x-1/2 z-30 px-4 py-2 rounded-xl flex items-center gap-2
+                        shadow-lg backdrop-blur-xl text-xs font-medium
+                        ${isDark ? 'bg-slate-900/90 text-slate-300 border border-slate-700/60' : 'bg-white/95 text-gray-700 border border-gray-200'}
+                    `}>
+                        <StatusIcon />
+                        <span>{upload.statusMessage}</span>
+                        {(upload.status === 'loading' || upload.status === 'converting') && (
+                            <div className={`w-20 h-1.5 rounded-full overflow-hidden ${isDark ? 'bg-slate-700' : 'bg-gray-200'}`}>
+                                <div className="h-full bg-blue-500 rounded-full transition-all duration-300" style={{ width: `${upload.loadingProgress}%` }} />
+                            </div>
                         )}
-                    </PanelGroup>
-                </Panel>
-            </PanelGroup>
+                    </div>
+                )}
 
-            {/* Footer when no models loaded */}
+                {/* Mobile: Model Tree */}
+                {tools.leftPanel === 'tree' && isMobile && (
+                    <BimModelTree />
+                )}
+
+                {/* Mobile: Properties */}
+                {tools.rightPanel === 'properties' && isMobile && hasModels && (
+                    <BimPropertiesPanel isBottomPanel={false} />
+                )}
+
+                {/* 3D Canvas */}
+                <div
+                    ref={containerRef}
+                    className="w-full h-full absolute inset-0 outline-none z-0"
+                    tabIndex={0}
+                    style={{ isolation: 'isolate', touchAction: 'none' }}
+                    onContextMenu={handleContextMenu}
+                />
+
+                {/* Drag & Drop overlay */}
+                {isDraggingFile && (
+                    <div className="absolute inset-0 z-40 flex items-center justify-center backdrop-blur-sm border-2 border-dashed border-blue-400/60 rounded-lg bg-blue-500/5">
+                        <div className="text-center">
+                            <FileUp className="w-12 h-12 mx-auto mb-2 text-blue-400 animate-bounce" />
+                            <p className="text-sm font-medium text-blue-400">Thả file IFC vào đây</p>
+                        </div>
+                    </div>
+                )}
+
+                {/* ViewCube */}
+                {engine.viewerReady && !isMobile && (
+                    <BimViewCube />
+                )}
+
+                {/* Fullscreen toggle */}
+                {engine.viewerReady && (
+                    <button
+                        onClick={toggleFullscreen}
+                        title={isFullscreen ? 'Thoát toàn màn hình (F11)' : 'Toàn màn hình (F11)'}
+                        className={`
+                            absolute top-3 right-3 z-30 p-2 rounded-lg backdrop-blur-xl shadow-lg border
+                            hidden md:flex items-center justify-center transition-colors cursor-pointer
+                            ${isFullscreen
+                                ? 'bg-blue-500/20 text-blue-400 border-blue-500/40 hover:bg-blue-500/30'
+                                : isDark
+                                    ? 'bg-slate-900/80 text-slate-400 border-slate-700/60 hover:bg-slate-800 hover:text-white'
+                                    : 'bg-white/90 text-gray-500 border-gray-200 hover:bg-gray-100 hover:text-gray-800'
+                            }
+                        `}
+                    >
+                        {isFullscreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
+                    </button>
+                )}
+
+                {/* Toolbar */}
+                {engine.viewerReady && (
+                    <BimToolbar
+                        isCollapsed={toolbarCollapsed}
+                        onToggleCollapse={() => setToolbarCollapsed(prev => !prev)}
+                    />
+                )}
+
+                {/* Shortcuts Modal */}
+                <BimShortcutsModal
+                    isOpen={showShortcuts}
+                    onClose={() => setShowShortcuts(false)}
+                    isDarkMode={isDark}
+                />
+
+                {/* Section Box Controls */}
+                {section.sectionBoxActive && !isMobile && (
+                    <BimSectionPanel
+                        sectionBoxBounds={section.sectionBoxBounds}
+                        onUpdatePlane={section.updateSectionPlane}
+                        onReset={section.resetSectionBox}
+                        onRemove={() => { section.removeSectionBox(); tools.activateTool('select'); }}
+                        onClose={() => { section.removeSectionBox(); tools.activateTool('select'); }}
+                    />
+                )}
+
+                {/* Empty state */}
+                {engine.viewerReady && !hasModels && upload.status === 'idle' && (
+                    <div className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none">
+                        <div className={`
+                            text-center p-10 rounded-2xl pointer-events-auto max-w-sm
+                            ${isDark ? 'bg-slate-900/95' : 'bg-white/95'} backdrop-blur-xl
+                            border ${isDark ? 'border-slate-800' : 'border-gray-200'}
+                            shadow-2xl
+                        `}>
+                            <div className={`w-16 h-16 mx-auto mb-5 rounded-2xl flex items-center justify-center
+                                ${isDark ? 'bg-emerald-500/10' : 'bg-blue-50'}
+                            `}>
+                                <Building2 className={`w-8 h-8 ${isDark ? 'text-emerald-400' : 'text-blue-500'}`} />
+                            </div>
+                            <h3 className={`text-base font-bold mb-2 ${isDark ? 'text-slate-100' : 'text-gray-800'}`}>
+                                Chưa có mô hình BIM
+                            </h3>
+                            <p className={`text-xs mb-5 leading-relaxed ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
+                                Upload hoặc kéo thả file IFC để bắt đầu xem mô hình 3D
+                            </p>
+                            <label className="inline-flex items-center gap-2 px-5 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl cursor-pointer text-sm font-medium transition-all hover:shadow-lg hover:shadow-emerald-500/25">
+                                <Upload className="w-4 h-4" />
+                                Upload IFC
+                                <input
+                                    type="file"
+                                    accept=".ifc"
+                                    className="hidden"
+                                    onChange={upload.handleFileUpload}
+                                />
+                            </label>
+                            <p className={`text-[10px] mt-3 ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>
+                                Hoặc kéo thả file .ifc vào đây
+                            </p>
+                        </div>
+                    </div>
+                )}
+
+                {/* Loading skeleton */}
+                {!engine.viewerReady && !engine.initError && (
+                    <div className="absolute inset-0 flex items-center justify-center z-10">
+                        <div className="text-center">
+                            <Loader2 className={`w-10 h-10 mx-auto mb-3 animate-spin ${isDark ? 'text-emerald-400' : 'text-blue-500'}`} />
+                            <p className={`text-sm font-medium ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
+                                Đang khởi tạo BIM Engine...
+                            </p>
+                        </div>
+                    </div>
+                )}
+
+                {/* Init error */}
+                {engine.initError && (
+                    <div className="absolute inset-0 flex items-center justify-center z-10">
+                        <div className={`text-center p-8 rounded-2xl ${isDark ? 'bg-red-500/10 border border-red-500/30' : 'bg-red-50 border border-red-200'}`}>
+                            <AlertCircle className="w-12 h-12 mx-auto mb-4 text-red-400" />
+                            <p className={`text-sm ${isDark ? 'text-red-300' : 'text-red-600'}`}>{engine.initError}</p>
+                        </div>
+                    </div>
+                )}
+            </div>
+
+            {/* ─── BOTTOM PANEL: Operations Management ─── */}
+            {showBottomPanel && (
+                <div
+                    className={`flex flex-col overflow-hidden border-t z-20
+                        ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-gray-200'}
+                    `}
+                    style={{ gridColumn: showLeftPanel ? '2' : '1' }}
+                >
+                    {/* Panel header */}
+                    <div className={`
+                        flex items-center justify-between px-3 shrink-0 h-8
+                        text-[11px] font-medium border-b
+                        ${isDark ? 'text-slate-400 border-slate-800/80 bg-slate-900' : 'text-gray-500 border-gray-100 bg-gray-50/80'}
+                    `}>
+                        <div className="flex items-center gap-2">
+                            <span className={`
+                                flex items-center gap-1.5 px-2 py-0.5 rounded text-[11px] font-semibold
+                                ${isDark ? 'bg-emerald-500/10 text-emerald-400' : 'bg-blue-50 text-blue-600'}
+                            `}>
+                                <Building2 className="w-3 h-3" />
+                                Quản lý vận hành
+                            </span>
+                            <span className={`text-[10px] ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>
+                                {upload.disciplineModels.length} models
+                            </span>
+                        </div>
+                    </div>
+
+                    {/* Content */}
+                    <div className="flex-1 overflow-auto">
+                        <FacilityManagementPanel />
+                    </div>
+                </div>
+            )}
+
+            {/* Footer when no models */}
             {(!engine.viewerReady || !hasModels) && (
                 <div className={`
-                    absolute bottom-0 w-full h-8 border-t flex items-center px-4 z-10
-                    ${isDark ? 'bg-slate-800 border-slate-700/50' : 'bg-white border-gray-200'}
+                    absolute bottom-0 w-full h-7 border-t flex items-center px-4 z-10
+                    ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-gray-200'}
                 `}>
                     <span className={`text-[10px] ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>
                         Kéo thả file IFC hoặc bấm Upload để bắt đầu
@@ -752,16 +724,15 @@ const ProjectBimTabContent: React.FC = () => {
             {contextMenu.visible && (
                 <div
                     ref={contextMenuRef}
-                    className={`fixed z-[99999] w-48 py-1 rounded-lg shadow-2xl border backdrop-blur-xl
-                        ${isDark ? 'bg-slate-800/95 border-slate-700 text-slate-200' : 'bg-white/95 border-gray-200 text-gray-800'}
-                        animate-in fade-in zoom-in-95 duration-100
+                    className={`fixed z-[99999] w-44 py-1 rounded-lg shadow-2xl border backdrop-blur-xl
+                        ${isDark ? 'bg-slate-900/98 border-slate-700/80 text-slate-200' : 'bg-white/98 border-gray-200 text-gray-800'}
                     `}
                     style={{ left: contextMenu.x, top: contextMenu.y }}
                     onClick={(e) => e.stopPropagation()}
                 >
                     <button
-                        className={`w-full text-left px-3 py-1.5 text-xs transition-colors flex items-center gap-2
-                            ${isDark ? 'hover:bg-slate-700' : 'hover:bg-gray-100'}
+                        className={`w-full text-left px-3 py-1.5 text-xs transition-colors flex items-center gap-2 cursor-pointer
+                            ${isDark ? 'hover:bg-slate-800' : 'hover:bg-gray-100'}
                         `}
                         onClick={() => {
                             if (contextMenu.expressId !== null) {
@@ -775,23 +746,21 @@ const ProjectBimTabContent: React.FC = () => {
                         <span>Xem thuộc tính</span>
                     </button>
                     <button
-                        className={`w-full text-left px-3 py-1.5 text-xs transition-colors flex items-center gap-2
-                            ${isDark ? 'hover:bg-slate-700' : 'hover:bg-gray-100'}
+                        className={`w-full text-left px-3 py-1.5 text-xs transition-colors flex items-center gap-2 cursor-pointer
+                            ${isDark ? 'hover:bg-slate-800' : 'hover:bg-gray-100'}
                         `}
                         onClick={() => {
-                            if (contextMenu.expressId !== null) {
-                                engine.zoomToExpressId(contextMenu.expressId);
-                            }
+                            if (contextMenu.expressId !== null) engine.zoomToExpressId(contextMenu.expressId);
                             setContextMenu(prev => ({ ...prev, visible: false }));
                         }}
                     >
                         <LocateFixed className="w-3.5 h-3.5 text-emerald-400" />
                         <span>Phóng to đối tượng</span>
                     </button>
-                    <div className={`my-1 h-px ${isDark ? 'bg-slate-700' : 'bg-gray-200'}`} />
+                    <div className={`my-0.5 h-px ${isDark ? 'bg-slate-800' : 'bg-gray-100'}`} />
                     <button
-                        className={`w-full text-left px-3 py-1.5 text-xs transition-colors flex items-center gap-2
-                            ${isDark ? 'hover:bg-slate-700' : 'hover:bg-gray-100'}
+                        className={`w-full text-left px-3 py-1.5 text-xs transition-colors flex items-center gap-2 cursor-pointer
+                            ${isDark ? 'hover:bg-slate-800' : 'hover:bg-gray-100'}
                         `}
                         onClick={() => {
                             selection.handleHideSelected();
@@ -802,8 +771,8 @@ const ProjectBimTabContent: React.FC = () => {
                         <span>Ẩn đối tượng</span>
                     </button>
                     <button
-                        className={`w-full text-left px-3 py-1.5 text-xs transition-colors flex items-center gap-2
-                            ${isDark ? 'hover:bg-slate-700' : 'hover:bg-gray-100'}
+                        className={`w-full text-left px-3 py-1.5 text-xs transition-colors flex items-center gap-2 cursor-pointer
+                            ${isDark ? 'hover:bg-slate-800' : 'hover:bg-gray-100'}
                         `}
                         onClick={() => {
                             selection.handleIsolateSelected();
