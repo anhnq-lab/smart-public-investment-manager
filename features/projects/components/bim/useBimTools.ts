@@ -45,7 +45,7 @@ export interface BimToolState {
 export function useBimTools() {
     const [activeTool, setActiveTool] = useState<ActiveTool>('select');
     const [renderMode, setRenderMode] = useState<RenderMode>('shading');
-    const [leftPanel, setLeftPanel] = useState<PanelView>('none');
+    const [leftPanel, setLeftPanel] = useState<PanelView>('tree');
     const [rightPanel, setRightPanel] = useState<PanelView>('properties');
     const [clipPlanes, setClipPlanes] = useState<ClipPlaneState[]>([]);
     const [measurements, setMeasurements] = useState<MeasurementState[]>([]);

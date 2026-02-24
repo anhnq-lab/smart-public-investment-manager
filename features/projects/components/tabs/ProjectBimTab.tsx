@@ -484,12 +484,12 @@ const ProjectBimTabContent: React.FC = () => {
             onDragLeave={handleDragLeave}
             onDrop={handleDrop}
         >
-            <PanelGroup direction="horizontal" autoSaveId="bim-layout-main">
+            <PanelGroup direction="horizontal" autoSaveId="bim-h-v2">
                 {/* ─── LEFT SIDEBAR (Model Browser + Properties) ─── */}
                 {hasModels && !isMobile && tools.leftPanel === 'tree' && (
                     <>
                         <Panel defaultSize={20} minSize={15} maxSize={40} className={`flex flex-col border-r z-20 ${isDark ? 'border-slate-700/50 bg-slate-800' : 'border-gray-200 bg-white'}`}>
-                            <PanelGroup direction="vertical" autoSaveId="bim-layout-sidebar">
+                            <PanelGroup direction="vertical" autoSaveId="bim-sidebar-v2">
                                 {/* Top half: Model Browser */}
                                 <Panel defaultSize={50} minSize={20} className="relative flex flex-col border-b border-inherit bg-inherit">
                                     <BimModelTree />
@@ -507,7 +507,7 @@ const ProjectBimTabContent: React.FC = () => {
 
                 {/* ─── RIGHT MAIN AREA (3D Viewer + Operations) ─── */}
                 <Panel className="flex flex-col relative min-w-0">
-                    <PanelGroup direction="vertical" autoSaveId="bim-layout-content">
+                    <PanelGroup direction="vertical" autoSaveId="bim-content-v2">
                         {/* 3D Viewer Area */}
                         <Panel className={`relative flex flex-col min-h-0 ${cursorClass}`}>
                             {/* Active tool indicator bar */}
