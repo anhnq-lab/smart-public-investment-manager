@@ -148,6 +148,7 @@ const LegalDocumentSearch: React.FC = () => {
     const [showBookmarks, setShowBookmarks] = useState(false);
     const [activeArticleId, setActiveArticleId] = useState<string | null>(null);
     const [showDeepSearch, setShowDeepSearch] = useState(false);
+    const [expandedArticles, setExpandedArticles] = useState<Set<string>>(new Set());
 
     const contentRef = useRef<HTMLDivElement>(null);
     const articleRefs = useRef<Map<string, HTMLDivElement>>(new Map());
@@ -213,8 +214,16 @@ const LegalDocumentSearch: React.FC = () => {
         }, 150);
     }, []);
 
+    const toggleArticleExpand = useCallback((articleId: string) => {
+        setExpandedArticles(prev => {
+            const next = new Set(prev);
+            next.has(articleId) ? next.delete(articleId) : next.add(articleId);
+            return next;
+        });
+    }, []);
+
     const copyArticle = useCallback((article: LegalArticle) => {
-        const text = `${article.code}. ${article.title}\n\n${article.summary}`;
+        const text = `${article.code}. ${article.title}\n\n${article.content || article.summary}`;
         navigator.clipboard.writeText(text);
         setCopiedId(article.id);
         setTimeout(() => setCopiedId(null), 2000);
@@ -227,7 +236,7 @@ const LegalDocumentSearch: React.FC = () => {
         const content = selectedDoc.chapters.map(ch =>
             `<h2 style="color:#1e40af;margin-top:24px">${ch.code}: ${ch.title}</h2>` +
             ch.articles.map(a =>
-                `<div style="margin:12px 0 12px 16px"><strong>${a.code}. ${a.title}</strong><p style="color:#555;margin:4px 0">${a.summary}</p></div>`
+                `<div style="margin:12px 0 12px 16px"><strong>${a.code}. ${a.title}</strong><div style="color:#333;margin:4px 0;white-space:pre-line;line-height:1.8">${a.content || a.summary}</div></div>`
             ).join('')
         ).join('');
         w.document.write(`<!DOCTYPE html><html><head><title>${selectedDoc.code} - ${selectedDoc.title}</title>
@@ -546,9 +555,30 @@ const LegalDocumentSearch: React.FC = () => {
                                                                                             <p className="font-bold text-gray-800 dark:text-slate-200 mb-1">
                                                                                                 <HighlightText text={article.title} query={searchQuery} />
                                                                                             </p>
-                                                                                            <p className="text-gray-500 dark:text-slate-400 leading-relaxed">
+                                                                                            {/* Summary always shown */}
+                                                                                            <p className="text-gray-500 dark:text-slate-400 leading-relaxed text-[11px] italic">
                                                                                                 <HighlightText text={article.summary} query={searchQuery} />
                                                                                             </p>
+                                                                                            {/* Full content with expand/collapse */}
+                                                                                            {article.content && (
+                                                                                                <div className="mt-2">
+                                                                                                    <button onClick={() => toggleArticleExpand(article.id)}
+                                                                                                        className="flex items-center gap-1.5 text-[10px] font-bold text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 transition-colors mb-1.5">
+                                                                                                        {expandedArticles.has(article.id) ? (
+                                                                                                            <><ChevronUp className="w-3 h-3" />Thu gọn nội dung</>
+                                                                                                        ) : (
+                                                                                                            <><ChevronDown className="w-3 h-3" />Xem toàn văn ({(article.content.length / 1000).toFixed(1)}k ký tự)</>
+                                                                                                        )}
+                                                                                                    </button>
+                                                                                                    {expandedArticles.has(article.id) && (
+                                                                                                        <div className="bg-slate-50 dark:bg-slate-900/50 rounded-xl p-4 border border-slate-200 dark:border-slate-700 animate-in slide-in-from-top-2 duration-200">
+                                                                                                            <pre className="whitespace-pre-wrap text-[12px] leading-[1.8] text-gray-700 dark:text-slate-300 font-sans">
+                                                                                                                <HighlightText text={article.content} query={searchQuery} />
+                                                                                                            </pre>
+                                                                                                        </div>
+                                                                                                    )}
+                                                                                                </div>
+                                                                                            )}
                                                                                         </div>
                                                                                         {/* Article Actions */}
                                                                                         <div className="flex items-center gap-1 shrink-0 opacity-0 group-hover/article:opacity-100 transition-opacity">
