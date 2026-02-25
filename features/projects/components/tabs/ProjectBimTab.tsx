@@ -15,6 +15,7 @@ import { BimViewCube } from '../bim/BimViewCube';
 import { BimShortcutsModal } from '../bim/BimShortcutsModal';
 import { FacilityManagementPanel } from '../bim/FacilityManagementPanel';
 import { BimSectionPanel } from '../bim/BimSectionPanel';
+import { BimPerformanceStats } from '../bim/BimPerformanceStats';
 
 // ── Types ───────────────────────────────────────────
 interface ProjectBimTabProps {
@@ -59,6 +60,7 @@ const ProjectBimTabContent: React.FC = () => {
     const [isFullscreen, setIsFullscreen] = useState(false);
     const [bottomTab, setBottomTab] = useState<'properties' | 'operations'>('properties');
     const [isDraggingFile, setIsDraggingFile] = useState(false);
+    const [showPerfStats, setShowPerfStats] = useState(false);
 
     // ── Resizable panels ──────────────────────
     const LEFT_DEFAULT = 280, LEFT_MIN = 200, LEFT_MAX = 500;
@@ -402,6 +404,9 @@ const ProjectBimTabContent: React.FC = () => {
                 case 't': case 'T':
                     setToolbarCollapsed(prev => !prev);
                     break;
+                case 'p': case 'P':
+                    setShowPerfStats(prev => !prev);
+                    break;
             }
         };
         window.addEventListener('keydown', handleKeyDown);
@@ -674,6 +679,12 @@ const ProjectBimTabContent: React.FC = () => {
                     isOpen={showShortcuts}
                     onClose={() => setShowShortcuts(false)}
                     isDarkMode={isDark}
+                />
+
+                {/* Performance Stats */}
+                <BimPerformanceStats
+                    visible={showPerfStats}
+                    onClose={() => setShowPerfStats(false)}
                 />
 
                 {/* Section Box Controls */}
