@@ -309,37 +309,6 @@ export const legalDocuments: LegalDocument[] = [
         ]
     },
     {
-        id: 'luat-quy-hoach-2025',
-        code: 'Luật số 112/2025/QH16',
-        title: 'Luật Quy hoạch (sửa đổi)',
-        shortTitle: 'Luật Quy hoạch 2025',
-        type: 'luat',
-        issuedDate: '2025',
-        effectiveDate: '01/01/2026',
-        issuedBy: 'Quốc hội',
-        status: 'hieu-luc',
-        summary: 'Sửa đổi Luật Quy hoạch, quy định việc lập, thẩm định, phê duyệt, công bố, thực hiện, đánh giá, điều chỉnh quy hoạch trong hệ thống quy hoạch quốc gia.',
-        fileName: 'luat112-QH-2025.pdf',
-        filePath: '/resources/luat112-QH-2025.pdf',
-        fileSize: '4.9 MB',
-        tags: ['quy hoạch', 'quy hoạch đô thị', 'quy hoạch xây dựng', 'không gian'],
-        relatedDocIds: ['luat-xay-dung-2025'],
-        chapters: [
-            {
-                id: 'luat112-ch1', code: 'Chương I', title: 'Quy định chung',
-                articles: [
-                    { id: 'luat112-d1', code: 'Điều 1', title: 'Phạm vi điều chỉnh', summary: 'Quy định về hoạt động quy hoạch; quyền, nghĩa vụ các bên liên quan đến quy hoạch.' },
-                ]
-            },
-            {
-                id: 'luat112-ch2', code: 'Chương II', title: 'Hệ thống quy hoạch quốc gia',
-                articles: [
-                    { id: 'luat112-d5', code: 'Điều 5', title: 'Hệ thống quy hoạch', summary: 'Quy hoạch tổng thể quốc gia, quy hoạch ngành, quy hoạch vùng, quy hoạch tỉnh.' },
-                ]
-            },
-        ]
-    },
-    {
         id: 'luat-khcn-2025',
         code: 'Luật số 93/2025/QH16',
         title: 'Luật Khoa học và Công nghệ',
