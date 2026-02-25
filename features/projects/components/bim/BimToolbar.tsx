@@ -20,7 +20,7 @@ interface BimToolbarProps {
     onToggleCollapse?: () => void;
 }
 
-// ── Tool Button ─────────────────────────────────────
+// ── Tool Button with Rich Tooltip ───────────────────
 const ToolBtn: React.FC<{
     active?: boolean;
     onClick?: () => void;
@@ -31,30 +31,83 @@ const ToolBtn: React.FC<{
     isDark: boolean;
     danger?: boolean;
     badge?: number;
-}> = ({ active, onClick, title, shortcut, children, disabled, isDark, danger, badge }) => (
-    <button
-        onClick={onClick}
-        title={`${title}${shortcut ? ` (${shortcut})` : ''}`}
-        disabled={disabled}
-        className={`
-            relative w-9 h-9 flex items-center justify-center rounded-lg transition-all duration-150
-            ${active
-                ? 'bg-blue-500/20 text-blue-400 ring-1 ring-blue-500/50 shadow-[0_0_8px_rgba(59,130,246,0.2)] hover:bg-blue-500/30'
-                : danger
-                    ? isDark ? 'text-red-400 hover:bg-red-500/10' : 'text-red-500 hover:bg-red-50'
-                    : isDark ? 'text-slate-400 hover:bg-white/10 hover:text-white' : 'text-gray-500 hover:bg-gray-200 hover:text-gray-800'
-            }
-            ${disabled ? 'opacity-30 cursor-not-allowed' : 'cursor-pointer'}
-        `}
-    >
-        {children}
-        {badge !== undefined && badge > 0 && (
-            <span className="absolute -top-1 -right-1 bg-cyan-500 text-white text-[8px] font-bold w-3.5 h-3.5 rounded-full flex items-center justify-center">
-                {badge}
-            </span>
-        )}
-    </button>
-);
+}> = ({ active, onClick, title, shortcut, children, disabled, isDark, danger, badge }) => {
+    const [showTooltip, setShowTooltip] = useState(false);
+    const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+    const handleEnter = () => {
+        timerRef.current = setTimeout(() => setShowTooltip(true), 350);
+    };
+    const handleLeave = () => {
+        if (timerRef.current) clearTimeout(timerRef.current);
+        setShowTooltip(false);
+    };
+
+    return (
+        <div className="relative" onMouseEnter={handleEnter} onMouseLeave={handleLeave}>
+            <button
+                onClick={onClick}
+                disabled={disabled}
+                className={`
+                    relative w-9 h-9 flex items-center justify-center rounded-lg transition-all duration-150
+                    ${active
+                        ? 'bg-blue-500/20 text-blue-400 ring-1 ring-blue-500/50 shadow-[0_0_8px_rgba(59,130,246,0.2)] hover:bg-blue-500/30'
+                        : danger
+                            ? isDark ? 'text-red-400 hover:bg-red-500/10' : 'text-red-500 hover:bg-red-50'
+                            : isDark ? 'text-slate-400 hover:bg-white/10 hover:text-white' : 'text-gray-500 hover:bg-gray-200 hover:text-gray-800'
+                    }
+                    ${disabled ? 'opacity-30 cursor-not-allowed' : 'cursor-pointer'}
+                `}
+            >
+                {children}
+                {badge !== undefined && badge > 0 && (
+                    <span className="absolute -top-1 -right-1 bg-cyan-500 text-white text-[8px] font-bold w-3.5 h-3.5 rounded-full flex items-center justify-center">
+                        {badge}
+                    </span>
+                )}
+            </button>
+
+            {/* Rich Tooltip */}
+            {showTooltip && !disabled && (
+                <div
+                    className={`
+                        absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2.5 py-1.5 rounded-lg
+                        whitespace-nowrap text-[11px] font-medium pointer-events-none z-50
+                        animate-[tooltipFadeIn_0.15s_ease-out]
+                        shadow-lg border backdrop-blur-xl
+                        ${isDark
+                            ? 'bg-slate-800/95 text-slate-200 border-slate-700/60'
+                            : 'bg-gray-800/95 text-white border-gray-700/40'
+                        }
+                    `}
+                >
+                    <div className="flex items-center gap-2">
+                        <span>{title}</span>
+                        {shortcut && (
+                            <kbd className={`
+                                px-1.5 py-0.5 rounded text-[9px] font-mono font-bold leading-none
+                                ${isDark
+                                    ? 'bg-slate-700/80 text-slate-400 border border-slate-600/50'
+                                    : 'bg-gray-700/80 text-gray-300 border border-gray-600/50'
+                                }
+                            `}>
+                                {shortcut}
+                            </kbd>
+                        )}
+                    </div>
+                    {/* Arrow */}
+                    <div className={`
+                        absolute top-full left-1/2 -translate-x-1/2 w-0 h-0
+                        border-l-[5px] border-l-transparent
+                        border-r-[5px] border-r-transparent
+                        border-t-[5px]
+                        ${isDark ? 'border-t-slate-800' : 'border-t-gray-800'}
+                    `} />
+                </div>
+            )}
+        </div>
+    );
+};
 
 // ── Dropdown Menu ───────────────────────────────────
 const ToolDropdown: React.FC<{
