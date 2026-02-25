@@ -6,20 +6,14 @@ let rawText = fs.readFileSync(
     path.join(__dirname, '..', 'Doccument', 'luat58-full-text.txt'),
     'utf-8'
 );
-// Strip BOM
 if (rawText.charCodeAt(0) === 0xFEFF) rawText = rawText.slice(1);
 
 const lines = rawText.split(/\r?\n/);
 console.log(`Total lines: ${lines.length}`);
 
-// Normalize Unicode - Vietnamese can use NFC or NFD forms
-const { normalize } = require('string_decoder');
-
-// Find "Điều X." pattern - handle both composed and decomposed Unicode
+// Find "Điều X." pattern
 function matchDieu(line) {
-    // Normalize to NFC first
     const normalized = line.normalize('NFC').trim();
-    // Try multiple patterns
     const patterns = [
         /^Điều\s+(\d+)\.\s*(.*)$/,
         /^Đi[eề]u\s+(\d+)\.\s*(.*)$/,
@@ -28,63 +22,37 @@ function matchDieu(line) {
         const m = normalized.match(p);
         if (m) return { num: parseInt(m[1]), title: m[2].trim() };
     }
-
-    // Fallback: check for article-like pattern with Unicode normalization
     const nfd = line.normalize('NFD').trim();
     const nfdMatch = nfd.match(/^\u0110i\u00ea\u0300u\s+(\d+)\.\s*(.*)$/);
     if (nfdMatch) return { num: parseInt(nfdMatch[1]), title: nfdMatch[2].normalize('NFC').trim() };
-
-    const nfdMatch2 = nfd.match(/^\u0110i\u1EC1u\s+(\d+)\.\s*(.*)$/);
-    if (nfdMatch2) return { num: parseInt(nfdMatch2[1]), title: nfdMatch2[2].normalize('NFC').trim() };
-
-    // Last resort: look for any line that starts with D followed by "ieu" + number + dot
-    const stripped = normalized.replace(/[\u0300-\u036f]/g, ''); // remove combining marks
+    const stripped = normalized.replace(/[\u0300-\u036f]/g, '');
     const simpleMatch = stripped.match(/^Dieu\s+(\d+)\.\s*(.*)$/i);
     if (simpleMatch) {
-        // Re-extract title from original
         const titleStart = normalized.indexOf('.') + 1;
         return { num: parseInt(simpleMatch[1]), title: normalized.substring(titleStart).trim() };
     }
-
     return null;
 }
 
-// Test on first few lines
-let articleCount = 0;
+// Detect chapter headers
+function isChapterHeader(line) {
+    const n = line.normalize('NFC').trim();
+    return /^Ch\u01b0\u01a1ng\s+[IVX]+/i.test(n) || /^CH\u01af\u01a0NG\s+[IVX]+/i.test(n);
+}
+
+// Detect section headers (Mục)
+function isSectionHeader(line) {
+    const n = line.normalize('NFC').trim();
+    return /^M\u1ee5c\s+\d+/i.test(n);
+}
+
+// Parse all articles
 const articlePositions = [];
 for (let i = 0; i < lines.length; i++) {
     const result = matchDieu(lines[i]);
-    if (result) {
-        articleCount++;
-        articlePositions.push({ line: i, ...result });
-    }
+    if (result) articlePositions.push({ line: i, ...result });
 }
-console.log(`Found ${articleCount} articles`);
-if (articleCount < 50) {
-    // Debug: show lines that look like they could be articles
-    console.log('\nLooking for article-like lines...');
-    for (let i = 0; i < Math.min(20, lines.length); i++) {
-        const l = lines[i].trim();
-        if (l.length > 0 && l.length < 200) {
-            const codes = [...l.substring(0, 15)].map(c => c.charCodeAt(0).toString(16)).join(' ');
-            if (l.includes('1.') || l.includes('2.') || i < 5) {
-                console.log(`Line ${i}: [${codes}] "${l.substring(0, 60)}"`);
-            }
-        }
-    }
-
-    // Try to find the specific character code for first article
-    for (let i = 0; i < lines.length; i++) {
-        const l = lines[i].trim();
-        if (/\d+\./.test(l) && l.length < 200 && l.length > 10) {
-            const first5 = [...l.substring(0, 10)].map(c => `${c}(${c.charCodeAt(0).toString(16)})`).join('');
-            if (l.includes('Ph') || l.includes('Đ') || l.charCodeAt(0) > 127) {
-                console.log(`Potential Art Line ${i}: ${first5} | "${l.substring(0, 60)}"`);
-                if (articlePositions.length === 0) break; // Just show first one
-            }
-        }
-    }
-}
+console.log(`Found ${articlePositions.length} articles`);
 
 // Define chapter structure
 const chapters = [
@@ -97,43 +65,41 @@ const chapters = [
     { id: 'luat58-ch7', code: 'Chương VII', title: 'Điều khoản thi hành', startArticle: 102, endArticle: 103 },
 ];
 
-if (articlePositions.length >= 50) {
-    // Build content for each article
-    const articles = [];
-    for (let a = 0; a < articlePositions.length; a++) {
-        const pos = articlePositions[a];
-        const nextLine = a < articlePositions.length - 1 ? articlePositions[a + 1].line : lines.length;
+// Build articles with content
+const articles = [];
+for (let a = 0; a < articlePositions.length; a++) {
+    const pos = articlePositions[a];
+    const nextLine = a < articlePositions.length - 1 ? articlePositions[a + 1].line : lines.length;
 
-        // Collect content between this article and the next
-        let contentLines = [];
-        for (let j = pos.line + 1; j < nextLine; j++) {
-            const trimmed = lines[j].trim();
-            // Skip chapter headers, section headers
-            if (/^Ch\u01b0\u01a1ng\s+[IVX]+/i.test(trimmed.normalize('NFC'))) continue;
-            if (/^M\u1ee5c\s+\d+/i.test(trimmed.normalize('NFC'))) continue;
-            if (trimmed.length > 0) contentLines.push(trimmed);
-        }
-
-        // Summary: first 250 chars
-        let summary = contentLines.slice(0, 3).join(' ');
-        if (summary.length > 250) summary = summary.substring(0, 247) + '...';
-
-        articles.push({
-            num: pos.num,
-            title: pos.title,
-            summary: summary,
-            contentLines: contentLines,
-        });
+    let contentLines = [];
+    for (let j = pos.line + 1; j < nextLine; j++) {
+        const trimmed = lines[j].trim();
+        if (isChapterHeader(trimmed)) continue;
+        if (isSectionHeader(trimmed)) continue;
+        if (trimmed.length > 0) contentLines.push(trimmed);
     }
 
-    console.log(`Processed ${articles.length} articles with content`);
+    // Summary: first 250 chars, with proper truncation
+    let summary = contentLines.slice(0, 3).join(' ');
+    if (summary.length > 250) summary = summary.substring(0, 247) + '...';
 
-    // Generate TypeScript
-    function esc(s) {
-        return s.replace(/\\/g, '\\\\').replace(/'/g, "\\'");
-    }
+    articles.push({
+        num: pos.num,
+        title: pos.title,
+        summary,
+        contentLines,
+    });
+}
 
-    let ts = `    {
+console.log(`Processed ${articles.length} articles with content`);
+
+// Escape for single-quoted strings, but keep \n as REAL newlines
+function esc(s) {
+    return s.replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+}
+
+// Generate TypeScript with REAL newlines in content (using backtick template literals)
+let ts = `    {
         id: 'luat-dau-tu-cong-2024',
         code: 'Luật số 58/2024/QH15',
         title: 'Luật Đầu tư công',
@@ -151,33 +117,42 @@ if (articlePositions.length >= 50) {
         relatedDocIds: ['nd-175-2024', 'nd-111-2024'],
         chapters: [\n`;
 
-    for (const ch of chapters) {
-        const chArticles = articles.filter(a => a.num >= ch.startArticle && a.num <= ch.endArticle);
-        ts += `            {\n`;
-        ts += `                id: '${ch.id}', code: '${ch.code}', title: '${esc(ch.title)}',\n`;
-        ts += `                articles: [\n`;
+for (const ch of chapters) {
+    const chArticles = articles.filter(a => a.num >= ch.startArticle && a.num <= ch.endArticle);
 
-        for (const art of chArticles) {
-            const fullContent = art.contentLines.join('\\n');
-            ts += `                    { id: 'luat58-d${art.num}', code: 'Điều ${art.num}', title: '${esc(art.title)}', summary: '${esc(art.summary)}'`;
-            if (fullContent.length > 0 && fullContent.length < 8000) {
-                ts += `, fullContent: '${esc(fullContent)}'`;
-            }
-            ts += ` },\n`;
+    ts += `            {\n`;
+    ts += `                id: '${ch.id}', code: '${ch.code}', title: '${esc(ch.title)}',\n`;
+    ts += `                articles: [\n`;
+
+    for (const art of chArticles) {
+        // Build fullContent with REAL \n between lines
+        const fullContent = art.contentLines.join('\n');
+
+        ts += `                    {\n`;
+        ts += `                        id: 'luat58-d${art.num}',\n`;
+        ts += `                        code: 'Điều ${art.num}',\n`;
+        ts += `                        title: '${esc(art.title)}',\n`;
+        ts += `                        summary: '${esc(art.summary)}',\n`;
+
+        if (fullContent.length > 0) {
+            // Use backtick template literals to preserve actual newlines
+            ts += `                        content: \`${fullContent.replace(/\\/g, '\\\\').replace(/\`/g, '\\`').replace(/\$/g, '\\$')}\`,\n`;
         }
 
-        ts += `                ]\n`;
-        ts += `            },\n`;
+        ts += `                    },\n`;
     }
 
-    ts += `        ]\n    },`;
-
-    const outputPath = path.join(__dirname, 'luat58-replacement.ts');
-    fs.writeFileSync(outputPath, ts, 'utf-8');
-    console.log(`\nWritten to ${outputPath}`);
-    console.log(`Size: ${(ts.length / 1024).toFixed(1)} KB`);
-    console.log(`Articles per chapter:`, chapters.map(ch => {
-        const count = articles.filter(a => a.num >= ch.startArticle && a.num <= ch.endArticle).length;
-        return `${ch.code}: ${count}`;
-    }).join(', '));
+    ts += `                ]\n`;
+    ts += `            },\n`;
 }
+
+ts += `        ]\n    },`;
+
+const outputPath = path.join(__dirname, 'luat58-replacement.ts');
+fs.writeFileSync(outputPath, ts, 'utf-8');
+console.log(`\nWritten to ${outputPath}`);
+console.log(`Size: ${(ts.length / 1024).toFixed(1)} KB`);
+console.log(`Articles per chapter:`, chapters.map(ch => {
+    const count = articles.filter(a => a.num >= ch.startArticle && a.num <= ch.endArticle).length;
+    return `${ch.code}: ${count}`;
+}).join(', '));
