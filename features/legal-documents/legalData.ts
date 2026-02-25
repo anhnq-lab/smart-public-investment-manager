@@ -124,52 +124,185 @@ export const legalDocuments: LegalDocument[] = [
     },
     {
         id: 'luat-xay-dung-2025',
-        code: 'Luật số 135/2025/QH16',
-        title: 'Luật Xây dựng (sửa đổi)',
+        code: 'Luật số 135/2025/QH15',
+        title: 'Luật Xây dựng',
         shortTitle: 'Luật Xây dựng 2025',
         type: 'luat',
         issuedDate: '2025',
         effectiveDate: '01/01/2026',
         issuedBy: 'Quốc hội',
         status: 'hieu-luc',
-        summary: 'Luật Xây dựng sửa đổi năm 2025 quy định về quy hoạch xây dựng, dự án đầu tư xây dựng, khảo sát - thiết kế, thi công, nghiệm thu, bảo hành, bảo trì công trình; năng lực hoạt động xây dựng; quản lý nhà nước về xây dựng.',
+        summary: 'Luật Xây dựng quy định về hoạt động xây dựng; quyền, nghĩa vụ, trách nhiệm của cơ quan, tổ chức, cá nhân trong hoạt động xây dựng và quản lý nhà nước về xây dựng. Căn cứ Hiến pháp nước CHXHCN Việt Nam.',
         fileName: 'luat135-XD-2025.pdf',
         filePath: '/resources/luat135-XD-2025.pdf',
         fileSize: '4.2 MB',
-        tags: ['xây dựng', 'quản lý dự án', 'giấy phép xây dựng', 'chất lượng công trình', 'thiết kế'],
-        relatedDocIds: ['nd-175-2024', 'tt-06-2021', 'qcvn-pccc'],
+        tags: ['xây dựng', 'quản lý dự án', 'giấy phép xây dựng', 'chất lượng công trình', 'thiết kế', 'thi công', 'nghiệm thu', 'bảo hành', 'bảo trì', 'khảo sát', 'an toàn xây dựng'],
+        relatedDocIds: ['nd-175-2024', 'tt-06-2021', 'qcvn-pccc', 'tt-24-2025', 'nd-140-2025', 'nd-144-2025'],
         chapters: [
+            // ===== CHƯƠNG I: NHỮNG QUY ĐỊNH CHUNG =====
             {
-                id: 'luat135-ch1', code: 'Chương I', title: 'Quy định chung',
+                id: 'luat135-ch1', code: 'Chương I', title: 'Những quy định chung',
                 articles: [
-                    { id: 'luat135-d1', code: 'Điều 1', title: 'Phạm vi điều chỉnh', summary: 'Quy định về hoạt động đầu tư xây dựng; quyền và nghĩa vụ của tổ chức, cá nhân.' },
-                    { id: 'luat135-d3', code: 'Điều 3', title: 'Giải thích từ ngữ', summary: 'Công trình xây dựng, hoạt động xây dựng, chủ đầu tư, nhà thầu, giám sát...' },
+                    { id: 'luat135-d1', code: 'Điều 1', title: 'Phạm vi điều chỉnh', summary: 'Luật này quy định về hoạt động xây dựng; quyền, nghĩa vụ, trách nhiệm của cơ quan, tổ chức, cá nhân trong hoạt động xây dựng và quản lý nhà nước về xây dựng.' },
+                    { id: 'luat135-d2', code: 'Điều 2', title: 'Đối tượng áp dụng', summary: 'Áp dụng đối với cơ quan, tổ chức, cá nhân trong nước; tổ chức, cá nhân nước ngoài có hoạt động xây dựng trên lãnh thổ Việt Nam.' },
+                    { id: 'luat135-d3', code: 'Điều 3', title: 'Giải thích từ ngữ', summary: 'Định nghĩa 30 thuật ngữ: hoạt động xây dựng, công trình xây dựng, hệ thống HTKT, HTXH, người quyết định đầu tư, dự án ĐTXD, dự án khu đô thị, tư vấn XD, thiết kế sơ bộ/cơ sở/FEED/kỹ thuật/BVTC, thẩm tra, thẩm định, cơ quan QLNN, nhà thầu, sự cố công trình, vùng nguy hiểm...' },
+                    { id: 'luat135-d4', code: 'Điều 4', title: 'Áp dụng Luật Xây dựng và các luật có liên quan', summary: 'Hoạt động XD thực hiện theo Luật XD. Hợp đồng XD chưa quy định cụ thể thì áp dụng Luật Đấu thầu, Luật Đầu tư PPP, BLDS. Quy định khác với Luật Đầu tư về thủ tục đặc biệt thì theo Luật Đầu tư. Quy định khác Luật Đường sắt về dự án đường sắt thì theo Luật Đường sắt.' },
+                    { id: 'luat135-d5', code: 'Điều 5', title: 'Nguyên tắc cơ bản trong hoạt động xây dựng', summary: '7 nguyên tắc: (1) Xây dựng theo quy hoạch, bảo vệ cảnh quan, môi trường; (2) Sử dụng hợp lý nguồn lực; (3) Tuân thủ QCKT, tiêu chuẩn; (4) Bảo đảm an toàn, chất lượng, PCCC; (5) Xây dựng đồng bộ HTKT-HTXH; (6) Công khai, minh bạch, phòng chống tham nhũng; (7) Phân định chức năng QLNN với CĐT.' },
+                    { id: 'luat135-d6', code: 'Điều 6', title: 'Loại, cấp công trình xây dựng', summary: 'Loại CT xác định theo tính chất kết cấu và công năng. Cấp CT gồm: cấp đặc biệt, I, II, III, IV (căn cứ quy mô, mức độ quan trọng, thông số kỹ thuật). Bộ trưởng BXD quy định chi tiết.' },
+                    { id: 'luat135-d7', code: 'Điều 7', title: 'Tiêu chuẩn, quy chuẩn kỹ thuật, ứng dụng KHCN, chuyển đổi số', summary: 'Tiêu chuẩn áp dụng tự nguyện (trừ viện dẫn trong QCKT). Ứng dụng CNTT, CĐS, mô hình thông tin công trình (BIM). Bộ QLCTXDCN xây dựng, cập nhật QCKT quốc gia.' },
+                    { id: 'luat135-d8', code: 'Điều 8', title: 'Vật liệu xây dựng', summary: 'VLXD phải an toàn, hiệu quả, thân thiện môi trường. Phải theo thiết kế, chỉ dẫn kỹ thuật đã phê duyệt. Ưu tiên VLXD tại chỗ, sản phẩm nội địa hóa cao.' },
+                    { id: 'luat135-d9', code: 'Điều 9', title: 'Chủ đầu tư', summary: 'Dự án ĐTC: CĐT là Ban QLDA hoặc cơ quan được giao. Dự án PPP: CĐT là doanh nghiệp dự án PPP. Dự án đầu tư kinh doanh: CĐT là nhà đầu tư được lựa chọn. Trường hợp khác: CĐT là tổ chức/cá nhân bỏ vốn.' },
+                    { id: 'luat135-d10', code: 'Điều 10', title: 'Bảo hiểm trong hoạt động xây dựng', summary: 'Bảo hiểm bắt buộc: (a) BH công trình trong thời gian XD cho CT ảnh hưởng lớn; (b) BH trách nhiệm nghề nghiệp tư vấn từ cấp II trở lên; (c) BH cho người lao động thi công và trách nhiệm dân sự bên thứ ba.' },
+                    { id: 'luat135-d11', code: 'Điều 11', title: 'Chính sách khuyến khích trong hoạt động xây dựng', summary: 'Khuyến khích bảo tồn di tích, nhà ở xã hội, xây dựng miền núi/hải đảo. Khuyến khích VLXD mới/tái chế/xanh/thông minh, công trình xanh, đô thị thông minh. Nghiên cứu ứng dụng KHCN, đổi mới sáng tạo.' },
+                    { id: 'luat135-d12', code: 'Điều 12', title: 'Hợp tác quốc tế trong hoạt động xây dựng', summary: 'Khuyến khích mở rộng hợp tác quốc tế, chuyển giao công nghệ. Nhà nước hỗ trợ ký kết điều ước quốc tế, bảo hộ thương hiệu XD Việt Nam ở nước ngoài. Bảo đảm an ninh, chủ quyền.' },
+                    { id: 'luat135-d13', code: 'Điều 13', title: 'Bất khả kháng và hoàn cảnh thay đổi cơ bản', summary: 'Bất khả kháng: thiên tai, hỏa hoạn, dịch bệnh, tình trạng khẩn cấp, đình công, cổ vật/khảo cổ. Hoàn cảnh thay đổi cơ bản: Nhà nước thay đổi chính sách/pháp luật, điều kiện bất thường về địa chất.' },
+                    { id: 'luat135-d14', code: 'Điều 14', title: 'Hệ thống thông tin, CSDL quốc gia về hoạt động xây dựng', summary: 'CSDL quốc gia về HĐXD là nền tảng chuyển đổi số trong quản lý XD. Dữ liệu là tham chiếu gốc phục vụ tra cứu. Phải kết nối đồng bộ với CSDL quốc gia về đất đai, quy hoạch. Chính phủ quy định chi tiết.' },
+                    { id: 'luat135-d15', code: 'Điều 15', title: 'Các hành vi bị nghiêm cấm', summary: '10 hành vi: XD trong khu vực cấm; không phù hợp QCKT; khởi công khi chưa đủ ĐK; VLXD không đảm bảo; vi phạm an toàn/PCCC/MT; sử dụng CT sai mục đích; hối lộ/thông đồng; lạm dụng chức vụ; cản trở HĐXD; tự ý thay đổi thiết kế.' },
                 ]
             },
+            // ===== CHƯƠNG II: QUẢN LÝ DỰ ÁN ĐẦU TƯ XÂY DỰNG =====
             {
-                id: 'luat135-ch2', code: 'Chương II', title: 'Quy hoạch xây dựng',
+                id: 'luat135-ch2', code: 'Chương II', title: 'Quản lý dự án đầu tư xây dựng',
                 articles: [
-                    { id: 'luat135-d12', code: 'Điều 12', title: 'Yêu cầu đối với quy hoạch xây dựng', summary: 'Phù hợp chiến lược PT KT-XH, quốc phòng, an ninh, bảo vệ môi trường.' },
+                    // --- Mục 1: Quy định chung ---
+                    { id: 'luat135-d16', code: 'Điều 16', title: 'Trình tự đầu tư xây dựng', summary: '3 giai đoạn: chuẩn bị dự án → thực hiện dự án → kết thúc xây dựng. Dự án có thể phân kỳ, tách thành dự án thành phần, dự án BT-HT-TĐC độc lập.' },
+                    { id: 'luat135-d17', code: 'Điều 17', title: 'Phân loại dự án đầu tư xây dựng', summary: 'Theo hình thức: ĐTC, PPP, vốn chi thường xuyên, đầu tư kinh doanh. Theo quy mô: quan trọng quốc gia, nhóm A, B, C. Theo mục đích, công năng phục vụ.' },
+                    { id: 'luat135-d18', code: 'Điều 18', title: 'Yêu cầu đối với dự án ĐTXD', summary: 'Phù hợp quy hoạch, đảm bảo tính khả thi thiết kế/công nghệ, đáp ứng an toàn/PCCC/BVMT/biến đổi khí hậu, có phương án tài chính/huy động vốn.' },
+                    { id: 'luat135-d19', code: 'Điều 19', title: 'Thiết kế xây dựng', summary: 'Thiết kế 1 hoặc nhiều bước. Các loại: thiết kế sơ bộ, cơ sở, FEED, kỹ thuật, bản vẽ thi công. Dự án BCKTKT áp dụng 1 bước là BVTC.' },
+                    { id: 'luat135-d20', code: 'Điều 20', title: 'Yêu cầu đối với thiết kế xây dựng', summary: 'Phù hợp nhiệm vụ thiết kế, tuân thủ QCKT/tiêu chuẩn, đáp ứng công năng/an toàn/PCCC/BVMT. Bước sau cụ thể hóa bước trước. Bảo đảm bảo trì, phương án quản lý khai thác.' },
+                    { id: 'luat135-d21', code: 'Điều 21', title: 'Khảo sát xây dựng', summary: 'Gồm: khảo sát địa hình, địa chất công trình, địa chất thủy văn, thủy văn, hiện trạng công trình, và công việc khảo sát khác.' },
+                    { id: 'luat135-d22', code: 'Điều 22', title: 'Yêu cầu đối với khảo sát xây dựng', summary: 'Nhiệm vụ KS phù hợp loại/cấp CT. Phương án KTKS tuân thủ QCKT, tiêu chuẩn. Kết quả KS phải trung thực, khách quan, được phê duyệt.' },
+                    // --- Mục 2: Lập, thẩm định dự án và quyết định ĐTXD ---
+                    { id: 'luat135-d23', code: 'Điều 23', title: 'Lập dự án đầu tư xây dựng', summary: 'Phải lập BCNCKT hoặc BCKTKT. Chỉ cần BCKTKT cho: CT tôn giáo, quy mô nhỏ/đơn giản. CT nông nghiệp cá nhân/nhà ở riêng lẻ không phải lập. Dự án bảo tồn di tích theo PL di sản.' },
+                    { id: 'luat135-d24', code: 'Điều 24', title: 'Báo cáo nghiên cứu khả thi', summary: 'Gồm thuyết minh + thiết kế XD. Thuyết minh: sự cần thiết, mục tiêu, khả thi, tổng mức ĐT, đánh giá tác động, CĐT, hình thức QLDA. Thiết kế XD tại BCNCKT là thiết kế cơ sở (có thể FEED/TKKT thay thế).' },
+                    { id: 'luat135-d25', code: 'Điều 25', title: 'Báo cáo kinh tế - kỹ thuật', summary: 'Gồm thuyết minh + thiết kế BVTC + thiết kế công nghệ (nếu có). Thuyết minh gồm: sự cần thiết, mục tiêu, địa điểm, quy mô, TMĐT, cấp CT, giải pháp thi công, PCCC, BVMT.' },
+                    { id: 'luat135-d26', code: 'Điều 26', title: 'Thẩm định BCNCKT, BCKTKT', summary: 'BCNCKT/BCKTKT phải được thẩm định. Dự án ĐTC: cơ quan chuyên môn trực thuộc NQĐĐT thẩm định (phù hợp chủ trương, khả thi, thiết kế, công nghệ, BVMT, QLDA). CT ảnh hưởng lớn phải thẩm tra TKXD.' },
+                    { id: 'luat135-d27', code: 'Điều 27', title: 'Thẩm định BCNCKT của cơ quan chuyên môn về XD', summary: 'Phải thẩm định tại CQCM: dự án ĐTC, PPP, ĐTKD quy mô lớn. BCKTKT không yêu cầu thẩm định tại CQCM. Dự án QTQG có thể lập Hội đồng thẩm định. Nội dung: quy hoạch, hạ tầng, QCKT, an toàn, PCCC, chi phí.' },
+                    { id: 'luat135-d28', code: 'Điều 28', title: 'Phê duyệt, quyết định đầu tư, điều chỉnh dự án', summary: 'Thẩm quyền phê duyệt theo PL ĐTC, PPP. Điều chỉnh dự án ĐTC khi: thay đổi CS/PL, điều chỉnh QH, bất khả kháng, hiệu quả cao hơn, chỉ số giá vượt dự phòng. CT trọng yếu QP-AN phải có ý kiến BQP, BCA.' },
+                    // --- Mục 3: Quản lý thiết kế XD sau dự án ---
+                    { id: 'luat135-d29', code: 'Điều 29', title: 'Thẩm định, phê duyệt thiết kế xây dựng', summary: 'CĐT thẩm định, kiểm soát và phê duyệt TKXD sau dự án được phê duyệt. CT ảnh hưởng lớn phải thẩm tra TKXD. CĐT thực hiện yêu cầu PCCC, BVMT, QP-AN.' },
+                    { id: 'luat135-d30', code: 'Điều 30', title: 'Nội dung thẩm định thiết kế XD của CĐT', summary: 'DA ĐTC: đáp ứng nhiệm vụ TK, phù hợp BCNCKT, tuân thủ QCKT, an toàn chịu lực/PCCC, phù hợp khối lượng-dự toán-TMĐT, năng lực chủ thể. DA PPP/ĐTKD: theo NĐ Chính phủ.' },
+                    { id: 'luat135-d31', code: 'Điều 31', title: 'Điều chỉnh thiết kế XD sau dự án', summary: 'Điều chỉnh khi: điều chỉnh dự án có yêu cầu, hoặc quá trình thi công cần điều chỉnh để đảm bảo chất lượng/hiệu quả. CĐT quyết định, phải thẩm định và phê duyệt lại.' },
+                    // --- Mục 4: Quản lý thực hiện dự án ---
+                    { id: 'luat135-d32', code: 'Điều 32', title: 'Hình thức tổ chức quản lý dự án', summary: '2 hình thức: (a) Ban QLDA ĐTXD (quản lý đồng thời/liên tục nhiều DA); (b) CĐT thuê tư vấn QLDA hoặc thành lập Ban QLDA trực thuộc hoặc tự thực hiện.' },
+                    { id: 'luat135-d33', code: 'Điều 33', title: 'Nội dung quản lý dự án ĐTXD', summary: 'Quản lý: phạm vi, kế hoạch, khối lượng, chất lượng, tiến độ, chi phí, an toàn, BVMT, lựa chọn nhà thầu, hợp đồng XD. CĐT thực hiện hoặc giao Ban QLDA/tư vấn.' },
+                    { id: 'luat135-d34', code: 'Điều 34', title: 'Quản lý tiến độ thực hiện dự án', summary: 'NQĐĐT quyết định thời gian/tiến độ khi phê duyệt DA. CĐT, nhà thầu phải lập kế hoạch tiến độ. Khuyến khích áp dụng giải pháp rút ngắn thời gian XD.' },
+                    // --- Mục 5: Quyền, nghĩa vụ các chủ thể ---
+                    { id: 'luat135-d35', code: 'Điều 35', title: 'Quyền, nghĩa vụ nhà thầu tư vấn', summary: 'Quyền: yêu cầu cung cấp thông tin, bảo hộ sở hữu trí tuệ, từ chối yêu cầu trái PL, thuê thầu phụ. Nghĩa vụ: thực hiện HĐ, chịu trách nhiệm chất lượng, bồi thường thiệt hại.' },
+                    { id: 'luat135-d36', code: 'Điều 36', title: 'Quyền, nghĩa vụ nhà thầu tư vấn thẩm tra', summary: 'Quyền: yêu cầu giải trình, bảo lưu kết quả. Nghĩa vụ: thẩm tra theo HĐ, chịu trách nhiệm về tính đầy đủ/chính xác/trung thực của Báo cáo thẩm tra, bồi thường thiệt hại.' },
+                    { id: 'luat135-d37', code: 'Điều 37', title: 'Quyền, nghĩa vụ nhà thầu khảo sát xây dựng', summary: 'Quyền: yêu cầu thông tin, từ chối ngoài HĐ, thuê thầu phụ. Nghĩa vụ: thực hiện đúng yêu cầu KS, đề xuất bổ sung khi phát hiện yếu tố ảnh hưởng, chịu trách nhiệm kết quả KS, bồi thường thiệt hại.' },
+                    { id: 'luat135-d38', code: 'Điều 38', title: 'Quyền và trách nhiệm cơ quan thẩm định BCNCKT, BCKTKT', summary: 'CQCM trực thuộc NQĐĐT: yêu cầu giải trình, thuê thẩm tra, bảo lưu kết quả; thẩm định và tổng hợp trình NQĐĐT. Hội đồng thẩm định/CQCM XD: yêu cầu thông tin QH, thẩm tra, thông báo kết quả.' },
+                    { id: 'luat135-d39', code: 'Điều 39', title: 'Quyền và trách nhiệm của người quyết định đầu tư', summary: 'Quyền: phê duyệt/phân cấp/ủy quyền DA, không phê duyệt nếu không hiệu quả, tạm ngừng/hủy/điều chỉnh DA. Trách nhiệm: tổ chức thẩm định, đảm bảo nguồn vốn, kiểm tra CĐT, chịu trách nhiệm toàn diện.' },
+                    { id: 'luat135-d40', code: 'Điều 40', title: 'Quyền, nghĩa vụ, trách nhiệm chủ đầu tư', summary: 'Quyền: lập DA/TK, lựa chọn nhà thầu, tổ chức QLDA. Nghĩa vụ: lựa chọn nhà thầu đủ năng lực, cung cấp thông tin, nghiệm thu KS/TK, thực hiện HĐ, kiểm tra giám sát, báo cáo định kỳ, bồi thường thiệt hại.' },
+                    { id: 'luat135-d41', code: 'Điều 41', title: 'Quyền, nghĩa vụ Ban QLDA ĐTXD', summary: 'Quyền: yêu cầu thông tin, quản lý DA theo nhiệm vụ, đề xuất giải pháp, thuê tư vấn. Nghĩa vụ: thực hiện trách nhiệm CĐT, đảm bảo tiến độ/chất lượng/chi phí/an toàn/BVMT, báo cáo CĐT.' },
+                    { id: 'luat135-d42', code: 'Điều 42', title: 'Lưu trữ hồ sơ công trình xây dựng', summary: 'CĐT lưu trữ hồ sơ thẩm định, văn bản CQTQ, hồ sơ hoàn thành CT. Nhà thầu lưu trữ hồ sơ phần việc. Hồ sơ quản lý/sử dụng CT lưu tối thiểu bằng thời hạn sử dụng CT.' },
                 ]
             },
+            // ===== CHƯƠNG III: GIẤY PHÉP XÂY DỰNG VÀ QUẢN LÝ TRẬT TỰ XD =====
             {
-                id: 'luat135-ch3', code: 'Chương III', title: 'Dự án đầu tư xây dựng',
+                id: 'luat135-ch3', code: 'Chương III', title: 'Giấy phép xây dựng và quản lý trật tự xây dựng',
                 articles: [
-                    { id: 'luat135-d50', code: 'Điều 50', title: 'Phân loại dự án đầu tư xây dựng', summary: 'Phân loại theo quy mô, tính chất, nguồn vốn: Nhóm A, B, C.' },
-                    { id: 'luat135-d52', code: 'Điều 52', title: 'Trình tự thực hiện dự án', summary: 'Chuẩn bị đầu tư → Thực hiện dự án → Kết thúc xây dựng đưa vào khai thác sử dụng.' },
+                    { id: 'luat135-d43', code: 'Điều 43', title: 'Quy định chung về cấp GPXD', summary: '3 loại GPXD: mới, sửa chữa/cải tạo/di dời, có thời hạn. 8 trường hợp miễn GPXD: bí mật nhà nước, khẩn cấp, ĐTC đặc biệt, đầu tư đặc biệt, XD tạm, CT theo tuyến, đã thẩm định BCNCKT, CT cấp IV <7 tầng <500m2 ngoài khu vực QH...' },
+                    { id: 'luat135-d44', code: 'Điều 44', title: 'Cấp giấy phép xây dựng', summary: 'Điều kiện: phù hợp MĐSD đất, phù hợp QHĐT&NT/TKĐT/QCQLKT, thiết kế đảm bảo an toàn/BVMT/PCCC/kết nối HTKT. GPXD có thời hạn cho khu vực có QH chưa thực hiện. Chính phủ quy định chi tiết.' },
+                    { id: 'luat135-d45', code: 'Điều 45', title: 'Quyền và trách nhiệm cơ quan cấp GPXD', summary: 'Quyền: yêu cầu giải trình, từ chối yêu cầu sai lệch, lấy ý kiến cơ quan liên quan. Trách nhiệm: niêm yết công khai, trả kết quả đúng thời hạn, kiểm tra thực hiện, đình chỉ/thu hồi, bồi thường cấp sai/chậm.' },
+                    { id: 'luat135-d46', code: 'Điều 46', title: 'Quyền và trách nhiệm tổ chức, cá nhân đề nghị cấp GPXD', summary: 'Quyền: yêu cầu hướng dẫn, khiếu nại/khởi kiện/tố cáo, khởi công theo quy định. Trách nhiệm: nộp đủ hồ sơ trung thực, đảm bảo quyền SDĐ/sở hữu CT, nộp lệ phí, thực hiện đúng GPXD.' },
+                    { id: 'luat135-d47', code: 'Điều 47', title: 'Quản lý trật tự xây dựng', summary: 'Quản lý từ tiếp nhận thông báo khởi công đến nghiệm thu/bàn giao. UBND cấp tỉnh chịu trách nhiệm toàn diện trên địa bàn. UBND cấp xã chịu trách nhiệm theo phân cấp. Phát hiện vi phạm phải xử lý ngay.' },
                 ]
             },
+            // ===== CHƯƠNG IV: XÂY DỰNG CÔNG TRÌNH =====
             {
-                id: 'luat135-ch5', code: 'Chương V', title: 'Thi công xây dựng công trình',
+                id: 'luat135-ch4', code: 'Chương IV', title: 'Xây dựng công trình',
                 articles: [
-                    { id: 'luat135-d107', code: 'Điều 107', title: 'Điều kiện khởi công xây dựng', summary: 'Phải có GPXD (nếu thuộc diện), thiết kế BVTC được duyệt, hợp đồng thi công.' },
+                    // --- Mục 1: Chuẩn bị xây dựng ---
+                    { id: 'luat135-d48', code: 'Điều 48', title: 'Điều kiện khởi công xây dựng công trình', summary: 'ĐK: mặt bằng, GPXD, thiết kế BVTC được duyệt, HĐ với nhà thầu, thông báo khởi công. CT khẩn cấp/ĐTC đặc biệt chỉ cần mặt bằng. Nhà ở riêng lẻ chỉ cần GPXD + đất ở hợp pháp.' },
+                    { id: 'luat135-d49', code: 'Điều 49', title: 'Yêu cầu đối với công trường xây dựng', summary: 'CĐT lắp biển báo, thiết bị giám sát. Nhà thầu quản lý toàn bộ công trường. Phải đảm bảo an toàn, vệ sinh, xử lý chất thải, không gây ảnh hưởng xấu đến môi trường xung quanh.' },
+                    // --- Mục 2: Thi công xây dựng ---
+                    { id: 'luat135-d50', code: 'Điều 50', title: 'Yêu cầu đối với thi công xây dựng', summary: 'Tuân thủ thiết kế, QCKT, tiêu chuẩn, VLXD theo quy định; đảm bảo an toàn/PCCC/BVMT. Đảm bảo an toàn cho người, thiết bị, CT ngầm, CT liền kề. Kiểm tra, giám sát, nghiệm thu đầy đủ.' },
+                    { id: 'luat135-d51', code: 'Điều 51', title: 'An toàn trong thi công xây dựng', summary: 'Nhà thầu đảm bảo an toàn/VSLĐ/BVMT/PCCC. CĐT giám sát an toàn, tạm dừng khi vi phạm, phối hợp xử lý sự cố. Nhà thầu xác định vùng nguy hiểm, lập biện pháp an toàn. Máy/thiết bị nghiêm ngặt phải kiểm định.' },
+                    { id: 'luat135-d52', code: 'Điều 52', title: 'Bảo vệ môi trường trong thi công', summary: 'Nhà thầu lập và thực hiện biện pháp BVMT: không khí, nước, chất thải rắn, tiếng ồn. Bồi thường thiệt hại do gây ô nhiễm.' },
+                    { id: 'luat135-d53', code: 'Điều 53', title: 'Di dời công trình xây dựng', summary: 'Phải phù hợp quy hoạch, đảm bảo chất lượng/an toàn, không ảnh hưởng CT lân cận. Phải có giấy phép di dời (trừ miễn GPXD). Nhà thầu thực hiện biện pháp an toàn.' },
+                    { id: 'luat135-d54', code: 'Điều 54', title: 'Phá dỡ công trình xây dựng', summary: '9 trường hợp phá dỡ: giải phóng mặt bằng, nguy cơ sụp đổ, khu vực cấm, sai quy hoạch, không có GPXD, lấn chiếm đất, theo nhu cầu CĐT, hết thời hạn. Trách nhiệm các bên: CĐT tổ chức, nhà thầu lập biện pháp, cưỡng chế nếu không chấp hành.' },
+                    { id: 'luat135-d55', code: 'Điều 55', title: 'Sự cố công trình xây dựng', summary: 'Phát hiện nguy cơ: kịp thời dừng thi công/khai thác, thực hiện biện pháp an toàn, bảo vệ hiện trường. CQNN tổ chức giám định nguyên nhân. CT có sự cố chỉ tiếp tục khi được cho phép. Tổ chức/cá nhân gây sự cố phải bồi thường.' },
+                    // --- Mục 3: Quản lý chất lượng, nghiệm thu, bàn giao ---
+                    { id: 'luat135-d56', code: 'Điều 56', title: 'Giám sát thi công xây dựng', summary: 'CT phải được giám sát về chất lượng, khối lượng, tiến độ, an toàn, BVMT. Yêu cầu: nghiệm thu trong quá trình thi công, đúng thiết kế/QCKT/tiêu chuẩn, trung thực khách quan. Nhà thầu giám sát phải có giải pháp và quy trình kiểm soát.' },
+                    { id: 'luat135-d57', code: 'Điều 57', title: 'Nghiệm thu công trình xây dựng', summary: 'Nghiệm thu: công việc XD trong thi công, giai đoạn chuyển bước, hoàn thành hạng mục/CT. CT hoàn thành chỉ được khai thác sau khi nghiệm thu đúng quy định. CĐT tổ chức nghiệm thu. CT QTQG/quy mô lớn phải được CQTQ kiểm tra nghiệm thu.' },
+                    { id: 'luat135-d58', code: 'Điều 58', title: 'Bàn giao công trình xây dựng', summary: 'Phải nghiệm thu xong, đảm bảo an toàn vận hành. Khu đô thị: bàn giao toàn bộ hoặc từng phần nhưng phải đồng bộ HTKT-HTXH. Nhà thầu giao bản vẽ hoàn công, quy trình vận hành/bảo trì, DMTB dự trữ.' },
+                    // --- Mục 4: Quyền, nghĩa vụ các chủ thể trong thi công ---
+                    { id: 'luat135-d59', code: 'Điều 59', title: 'Quyền, nghĩa vụ CĐT trong thi công XD', summary: 'Quyền: thi công/thuê nhà thầu, giám sát, đình chỉ/chấm dứt HĐ, dừng thi công khi vi phạm. Nghĩa vụ: lựa chọn nhà thầu phù hợp, bàn giao mặt bằng, tổ chức giám sát QLCL, nghiệm thu/thanh toán/quyết toán.' },
+                    { id: 'luat135-d60', code: 'Điều 60', title: 'Quyền, nghĩa vụ CĐT trong giám sát thi công', summary: 'Quyền: tự giám sát hoặc thuê, thay đổi người giám sát, đình chỉ/chấm dứt HĐ. Nghĩa vụ: thuê tư vấn giám sát phù hợp, thông báo quyền/nghĩa vụ, xử lý đề xuất, lưu trữ kết quả, bồi thường thiệt hại.' },
+                    { id: 'luat135-d61', code: 'Điều 61', title: 'Quyền, nghĩa vụ nhà thầu thi công XD', summary: 'Quyền: từ chối ngoài HĐ, đề xuất sửa đổi TK, yêu cầu thanh toán, dừng thi công khi mất an toàn, yêu cầu bồi thường. Nghĩa vụ: thi công đúng TK/QCKT, hệ thống QLCL, quản lý lao động, bản vẽ hoàn công, bảo hành, bồi thường thiệt hại.' },
+                    { id: 'luat135-d62', code: 'Điều 62', title: 'Quyền, nghĩa vụ nhà thầu thiết kế trong thi công', summary: 'Quyền: yêu cầu thi công đúng TK, từ chối thay đổi không phù hợp, từ chối nghiệm thu sai TK. Nghĩa vụ: cử người giám sát tác giả TK, tham gia nghiệm thu, xử lý bất hợp lý TK, thông báo khi phát hiện thi công sai.' },
+                    { id: 'luat135-d63', code: 'Điều 63', title: 'Quyền, nghĩa vụ nhà thầu giám sát thi công', summary: 'Quyền: tham gia nghiệm thu, yêu cầu thi công đúng TK, bảo lưu ý kiến, tạm dừng khi mất an toàn, từ chối ngoài HĐ. Nghĩa vụ: giám sát và chịu trách nhiệm chất lượng, từ chối nghiệm thu không đạt, đề xuất bất hợp lý TK.' },
+                    // --- Mục 5: Bảo hành, bảo trì ---
+                    { id: 'luat135-d64', code: 'Điều 64', title: 'Bảo hành công trình xây dựng', summary: 'Nhà thầu thi công bảo hành CT do mình thi công, nhà thầu cung ứng thiết bị bảo hành thiết bị. Nội dung: khắc phục, sửa chữa, thay thế hư hỏng/khiếm khuyết. Thời gian BH theo loại/cấp CT và HĐ.' },
+                    { id: 'luat135-d65', code: 'Điều 65', title: 'Bảo trì công trình xây dựng', summary: 'CT phải được bảo trì trong khai thác/sử dụng. Quy trình BT do CĐT lập và phê duyệt trước khi khai thác. Chủ sở hữu/quản lý chịu trách nhiệm BT. CT quy mô lớn phải đánh giá định kỳ an toàn.' },
+                    { id: 'luat135-d66', code: 'Điều 66', title: 'Quản lý, khai thác, sử dụng công trình', summary: 'CT phải được quản lý/khai thác đúng mục đích, an toàn, bền vững, hiệu quả KT-XH. HTKT: vận hành liên tục, ổn định, chia sẻ dữ liệu, có phương án bảo vệ an ninh, an toàn.' },
+                    { id: 'luat135-d67', code: 'Điều 67', title: 'Dừng khai thác, sử dụng công trình', summary: 'Dừng khi: hết thời hạn sử dụng, nguy cơ mất an toàn, gây sự cố. Phải thông báo bằng văn bản cho người sử dụng. Chỉ tiếp tục khi đã khắc phục sự cố hoặc kiểm định/gia cố đạt an toàn.' },
+                    // --- Mục 6: Đầu tư XD công trình đặc thù ---
+                    { id: 'luat135-d68', code: 'Điều 68', title: 'Dự án ĐTXD công trình đặc thù', summary: '4 loại: (a) CT bí mật nhà nước; (b) CT khẩn cấp, cấp bách; (c) DA ĐTC đặc biệt; (d) CT xây dựng tạm. Trình tự, thủ tục riêng theo Điều 69-72.' },
+                    { id: 'luat135-d69', code: 'Điều 69', title: 'Dự án, công trình cần bảo đảm bí mật nhà nước', summary: 'CT bí mật nhà nước: CT có yêu cầu bí mật theo PL bảo vệ BMNN, CT QP-AN có thông tin bí mật. Cơ quan được giao quyền quyết định và chịu trách nhiệm toàn bộ từ lập DA đến nghiệm thu.' },
+                    { id: 'luat135-d70', code: 'Điều 70', title: 'Dự án, công trình khẩn cấp, cấp bách', summary: 'CT khẩn cấp: XD ngay sau lệnh XD khẩn cấp để phòng/chống/khắc phục thiên tai, thảm họa, dịch bệnh. CT cấp bách: XD nhanh đáp ứng QP-AN, đối ngoại, năng lượng, nguồn nước, sự cố MT theo yêu cầu CP/TTg.' },
+                    { id: 'luat135-d71', code: 'Điều 71', title: 'Dự án đầu tư công đặc biệt', summary: 'Trình tự theo PL ĐTC. NQĐĐT/CĐT được quyết định trình tự rút gọn. BCNCKT phải thẩm tra, thẩm định bởi CQCM trực thuộc NQĐĐT. TK XD có thể lập song song, đồng thời với lập/thẩm định BCNCKT và thi công.' },
+                    { id: 'luat135-d72', code: 'Điều 72', title: 'Công trình xây dựng tạm', summary: 'CT XD tạm phục vụ thi công CT chính phải bảo đảm an toàn, BVMT, phải phá dỡ khi hoàn thành. CT XD tạm theo quy hoạch phải có thời hạn theo quyết định của CQTQ.' },
                 ]
             },
+            // ===== CHƯƠNG V: HỢP ĐỒNG XÂY DỰNG =====
             {
-                id: 'luat135-ch6', code: 'Chương VI', title: 'Quản lý chất lượng công trình',
+                id: 'luat135-ch5', code: 'Chương V', title: 'Hợp đồng xây dựng',
                 articles: [
-                    { id: 'luat135-d112', code: 'Điều 112', title: 'Nguyên tắc QLCL công trình', summary: 'Đảm bảo an toàn, tiết kiệm, phù hợp tiêu chuẩn, quy chuẩn kỹ thuật.' },
-                    { id: 'luat135-d120', code: 'Điều 120', title: 'Nghiệm thu công trình', summary: 'Nghiệm thu từng công việc, giai đoạn, hạng mục, toàn bộ công trình.' },
+                    { id: 'luat135-d73', code: 'Điều 73', title: 'Quy định chung về hợp đồng xây dựng', summary: 'HĐXD là hợp đồng dân sự bằng văn bản giữa bên giao thầu và bên nhận thầu để thực hiện công việc XD. Phải tuân thủ nguyên tắc bình đẳng, tự nguyện, thiện chí, hợp tác.' },
+                    { id: 'luat135-d74', code: 'Điều 74', title: 'Nguyên tắc ký kết hợp đồng xây dựng', summary: 'Tự nguyện, bình đẳng, không trái PL/đạo đức. Đảm bảo năng lực phù hợp, phạm vi công việc rõ ràng. HĐ sử dụng vốn NN phải theo kết quả lựa chọn nhà thầu.' },
+                    { id: 'luat135-d75', code: 'Điều 75', title: 'Loại hợp đồng xây dựng', summary: 'Theo tính chất: tư vấn, thi công, thiết kế-thi công, EPC, EC, chìa khóa trao tay, hỗn hợp. Theo hình thức giá: trọn gói, đơn giá cố định, đơn giá điều chỉnh, theo thời gian, theo tỷ lệ (%), hỗn hợp giá.' },
+                    { id: 'luat135-d76', code: 'Điều 76', title: 'Nội dung hợp đồng xây dựng', summary: 'Bao gồm: phạm vi công việc, thời gian thực hiện, giá HĐ, tạm ứng/thanh toán, bảo lãnh, bảo đảm, điều chỉnh HĐ, nghiệm thu/bàn giao, bảo hành, quyền/nghĩa vụ, tạm dừng/chấm dứt, thưởng/phạt, bồi thường, giải quyết tranh chấp.' },
+                    { id: 'luat135-d77', code: 'Điều 77', title: 'Điều chỉnh hợp đồng xây dựng', summary: 'Điều chỉnh khi: bổ sung/thay đổi thiết kế, bất khả kháng, hoàn cảnh thay đổi cơ bản, thay đổi CS/PL, điều chỉnh DA. Giá HĐ điều chỉnh: bổ sung khối lượng, trượt giá theo HĐ. Vốn NN: điều chỉnh không vượt TMĐT.' },
+                    { id: 'luat135-d78', code: 'Điều 78', title: 'Quản lý, thanh toán hợp đồng xây dựng', summary: 'Thanh toán theo tiến độ/khối lượng hoàn thành. Tạm ứng theo quy định. Bảo lãnh thực hiện HĐ, bảo lãnh tạm ứng bắt buộc. Thanh toán trong 14 ngày kể từ hồ sơ hợp lệ. Lãi chậm thanh toán theo BLDS.' },
+                    { id: 'luat135-d79', code: 'Điều 79', title: 'Quyết toán hợp đồng xây dựng', summary: 'CĐT quyết toán HĐ khi hoàn thành/chấm dứt. Hồ sơ quyết toán: biên bản nghiệm thu, hồ sơ thanh toán, biên bản bàn giao. Bên nhận thầu lập hồ sơ, CĐT phê duyệt.' },
+                    { id: 'luat135-d80', code: 'Điều 80', title: 'Tạm dừng, chấm dứt hợp đồng xây dựng', summary: 'Tạm dừng khi: vi phạm an toàn, mất an toàn, theo yêu cầu CQTQ, theo thỏa thuận. Chấm dứt khi: bên kia vi phạm nghiêm trọng, bất khả kháng kéo dài, phá sản/giải thể, theo thỏa thuận.' },
+                    { id: 'luat135-d81', code: 'Điều 81', title: 'Thưởng, phạt hợp đồng xây dựng', summary: 'Thưởng vượt tiến độ/chất lượng theo thỏa thuận (≤12% giá trị phần vượt). Phạt vi phạm HĐ theo thỏa thuận (≤12% giá trị phần vi phạm hoặc theo BLDS). Bồi thường thiệt hại thực tế.' },
+                    { id: 'luat135-d82', code: 'Điều 82', title: 'Giải quyết tranh chấp hợp đồng xây dựng', summary: 'Thương lượng → Hòa giải → Trọng tài/Tòa án. Khuyến khích giải quyết bằng hòa giải. Tranh chấp có yếu tố nước ngoài theo thỏa thuận và PL quốc tế.' },
+                    { id: 'luat135-d83', code: 'Điều 83', title: 'Hợp đồng với nhà thầu nước ngoài', summary: 'Phải tuân thủ PL Việt Nam. Nhà thầu nước ngoài phải liên danh hoặc sử dụng thầu phụ trong nước (trừ không có nhà thầu trong nước đáp ứng). Thanh toán bằng VND, ngoại tệ theo quy định NHNN.' },
+                    { id: 'luat135-d84', code: 'Điều 84', title: 'Quyền, nghĩa vụ bên giao thầu', summary: 'Quyền: giám sát, yêu cầu thực hiện đúng HĐ, tạm dừng/chấm dứt HĐ, yêu cầu bồi thường. Nghĩa vụ: bàn giao mặt bằng/tài liệu, thanh toán đúng hạn, cử đại diện đủ thẩm quyền, nghiệm thu đúng quy định.' },
+                    { id: 'luat135-d85', code: 'Điều 85', title: 'Quyền, nghĩa vụ bên nhận thầu', summary: 'Quyền: yêu cầu thanh toán, yêu cầu bồi thường, tạm dừng khi chưa thanh toán. Nghĩa vụ: thực hiện đúng HĐ, tổ chức QLCL, bảo hành, mua bảo hiểm, không giao thầu phụ toàn bộ.' },
+                ]
+            },
+            // ===== CHƯƠNG VI: NĂNG LỰC HOẠT ĐỘNG XÂY DỰNG =====
+            {
+                id: 'luat135-ch6', code: 'Chương VI', title: 'Năng lực hoạt động xây dựng',
+                articles: [
+                    { id: 'luat135-d86', code: 'Điều 86', title: 'Điều kiện năng lực hoạt động xây dựng', summary: 'Tổ chức/cá nhân tham gia HĐXD phải có đủ điều kiện năng lực phù hợp loại, cấp CT. Điều kiện: nhân lực, kinh nghiệm, tài chính, thiết bị. Cấp năng lực: I, II, III theo loại công việc.' },
+                    { id: 'luat135-d87', code: 'Điều 87', title: 'Chứng chỉ hành nghề hoạt động xây dựng', summary: 'Cá nhân phải có CCHN: khảo sát, thiết kế, giám sát, định giá, QLDA XD. Điều kiện: trình độ chuyên môn, kinh nghiệm, đạo đức nghề nghiệp. Hạng I: BXD cấp, Hạng II-III: Sở XD cấp. Thời hạn 7 năm.' },
+                    { id: 'luat135-d88', code: 'Điều 88', title: 'Chứng chỉ năng lực hoạt động xây dựng', summary: 'Tổ chức phải có CCNL: khảo sát, thiết kế, thi công, giám sát, QLDA, kiểm định, thẩm tra. Hạng I: BXD cấp, Hạng II-III: Sở XD cấp. Thời hạn 7 năm. Đánh giá dựa trên nhân lực, kinh nghiệm, tài chính.' },
+                    { id: 'luat135-d89', code: 'Điều 89', title: 'Điều kiện năng lực nhà thầu nước ngoài', summary: 'Nhà thầu nước ngoài: phải có giấy phép hoạt động XD tại VN, liên danh/sử dụng thầu phụ trong nước, đăng ký tại Sở XD. Chứng chỉ nước ngoài được công nhận theo điều ước quốc tế hoặc thẩm định của BXD.' },
+                    { id: 'luat135-d90', code: 'Điều 90', title: 'Quản lý năng lực hoạt động xây dựng', summary: 'BXD quản lý CSDL năng lực HĐXD quốc gia. Công khai thông tin CCHN, CCNL trên hệ thống. Thu hồi CCHN/CCNL khi vi phạm. Kiểm tra định kỳ duy trì điều kiện năng lực.' },
+                    { id: 'luat135-d91', code: 'Điều 91', title: 'Đào tạo, bồi dưỡng kiến thức hoạt động xây dựng', summary: 'Các nhân phải cập nhật kiến thức định kỳ (tối thiểu 1 lần trong thời hạn CCHN). Chương trình đào tạo do BXD quy định. Cơ sở đào tạo phải đăng ký và được BXD/Sở XD chấp thuận.' },
+                    { id: 'luat135-d92', code: 'Điều 92', title: 'Trách nhiệm nghề nghiệp', summary: 'Cá nhân CCHN chịu trách nhiệm cá nhân về chất lượng công việc. Phải tuân thủ QCKT, tiêu chuẩn, đạo đức nghề nghiệp. Bồi thường thiệt hại do lỗi chuyên môn. Bị thu hồi CCHN nếu vi phạm nghiêm trọng.' },
+                    { id: 'luat135-d93', code: 'Điều 93', title: 'Tổ chức xã hội - nghề nghiệp trong xây dựng', summary: 'Tổ chức xã hội - nghề nghiệp (Hội KTS, Hội KTXD, Tổng hội XD...) tham gia: tư vấn phản biện, đào tạo, giám sát chất lượng, bảo vệ quyền lợi hội viên. Nhà nước tạo điều kiện hoạt động.' },
+                ]
+            },
+            // ===== CHƯƠNG VII: QUẢN LÝ NHÀ NƯỚC VỀ XÂY DỰNG =====
+            {
+                id: 'luat135-ch7', code: 'Chương VII', title: 'Quản lý nhà nước về xây dựng',
+                articles: [
+                    { id: 'luat135-d94', code: 'Điều 94', title: 'Nội dung quản lý nhà nước về xây dựng', summary: 'Xây dựng chiến lược/chính sách/PL; QCKT/tiêu chuẩn; quản lý HĐXD/chất lượng CT/năng lực HĐXD; thanh tra/kiểm tra; hợp tác quốc tế; CSDL quốc gia; giải quyết khiếu nại/tố cáo.' },
+                    { id: 'luat135-d95', code: 'Điều 95', title: 'Trách nhiệm của Chính phủ', summary: 'Thống nhất QLNN về XD. Ban hành NĐ hướng dẫn. Phân công, phân cấp cho Bộ/UBND. Chỉ đạo xây dựng CSDL quốc gia. Báo cáo Quốc hội về tình hình HĐXD.' },
+                    { id: 'luat135-d96', code: 'Điều 96', title: 'Trách nhiệm của Bộ Xây dựng', summary: 'Chịu trách nhiệm trước CP về QLNN về XD. Xây dựng QCKT/tiêu chuẩn; quản lý CCHN/CCNL hạng I; thẩm định DA QTQG; thanh tra chuyên ngành XD; quản lý CSDL quốc gia; hợp tác quốc tế.' },
+                    { id: 'luat135-d97', code: 'Điều 97', title: 'Trách nhiệm của Bộ quản lý công trình XD chuyên ngành', summary: 'Bộ GTVT, Bộ NN&PTNT, Bộ CT: quản lý CT chuyên ngành (giao thông, thủy lợi, công nghiệp). Xây dựng QCKT chuyên ngành, thẩm định DA chuyên ngành, quản lý CCHN/CCNL liên quan.' },
+                    { id: 'luat135-d98', code: 'Điều 98', title: 'Trách nhiệm của UBND cấp tỉnh', summary: 'QLNN về XD trên địa bàn tỉnh/TP. Cấp GPXD, CCHN/CCNL hạng II-III. Thẩm định BCNCKT theo thẩm quyền. Quản lý trật tự XD. Thanh tra, xử lý vi phạm. Báo cáo BXD.' },
+                    { id: 'luat135-d99', code: 'Điều 99', title: 'Trách nhiệm của UBND cấp huyện, cấp xã', summary: 'UBND huyện: cấp GPXD theo phân cấp, quản lý trật tự XD, kiểm tra CT trên địa bàn. UBND xã: phát hiện/báo cáo vi phạm trật tự XD, phối hợp xử lý, theo dõi thi công nhà ở riêng lẻ.' },
+                    { id: 'luat135-d100', code: 'Điều 100', title: 'Thanh tra xây dựng', summary: 'Thanh tra XD nằm trong hệ thống thanh tra nhà nước. BXD: Thanh tra Bộ. Sở XD: Thanh tra Sở. Nội dung: thanh tra HĐXD, chất lượng CT, năng lực, trật tự XD, xử lý vi phạm. Thanh tra viên XD có QĐ riêng.' },
+                    { id: 'luat135-d101', code: 'Điều 101', title: 'Xử lý vi phạm trong hoạt động xây dựng', summary: 'Vi phạm hành chính: xử phạt theo NĐ CP. Vi phạm hình sự: truy cứu TNHS. Gây thiệt hại: bồi thường theo BLDS. Thu hồi CCHN/CCNL/GPXD. Cưỡng chế phá dỡ CT vi phạm.' },
+                ]
+            },
+            // ===== CHƯƠNG VIII: ĐIỀU KHOẢN THI HÀNH =====
+            {
+                id: 'luat135-ch8', code: 'Chương VIII', title: 'Điều khoản thi hành',
+                articles: [
+                    { id: 'luat135-d102', code: 'Điều 102', title: 'Sửa đổi, bổ sung một số điều của các luật có liên quan', summary: 'Sửa đổi/bổ sung một số điều của: Luật Nhà ở, Luật Kinh doanh BĐS, Luật QH đô thị, Luật Đầu tư, Luật Đầu tư công, Luật PPP và các luật liên quan khác để đồng bộ với Luật XD mới.' },
+                    { id: 'luat135-d103', code: 'Điều 103', title: 'Bãi bỏ', summary: 'Bãi bỏ Luật Xây dựng số 50/2014/QH13, Luật sửa đổi bổ sung Luật XD số 62/2020/QH14, và các quy định trái với Luật này tại NĐ, TT, QĐ đã ban hành.' },
+                    { id: 'luat135-d104', code: 'Điều 104', title: 'Quy định chuyển tiếp', summary: 'DA đã phê duyệt trước ngày Luật có hiệu lực: tiếp tục theo quy định cũ. DA đang thẩm định: áp dụng Luật mới nếu CĐT đề nghị. GPXD đã cấp còn hiệu lực. CCHN/CCNL đã cấp có giá trị đến hết thời hạn.' },
+                    { id: 'luat135-d105', code: 'Điều 105', title: 'Hiệu lực thi hành', summary: 'Luật này có hiệu lực thi hành từ ngày 01/01/2026. Luật XD số 50/2014/QH13 (sửa đổi, bổ sung 2020) hết hiệu lực kể từ ngày Luật này có hiệu lực.' },
+                    { id: 'luat135-d106', code: 'Điều 106', title: 'Quy định chi tiết', summary: 'Chính phủ, Bộ trưởng BXD, Bộ trưởng các Bộ QLCTXDCN quy định chi tiết các điều, khoản được giao trong Luật này. Các NĐ, TT hướng dẫn phải ban hành trước ngày Luật có hiệu lực.' },
+                    { id: 'luat135-d107', code: 'Điều 107', title: 'Trách nhiệm thi hành', summary: 'Chính phủ, các Bộ, UBND các cấp, tổ chức/cá nhân liên quan chịu trách nhiệm thi hành Luật này. Luật được QH nước CHXHCN Việt Nam khóa XV thông qua.' },
                 ]
             },
         ]
@@ -607,11 +740,17 @@ export function getRelatedDocuments(doc: LegalDocument): LegalDocument[] {
 }
 
 export function getDocStats() {
+    const totalArticles = legalDocuments.reduce((sum, d) =>
+        sum + d.chapters.reduce((s, c) => s + c.articles.length, 0), 0
+    );
+    const totalChapters = legalDocuments.reduce((sum, d) => sum + d.chapters.length, 0);
     return {
         total: legalDocuments.length,
         active: legalDocuments.filter(d => d.status === 'hieu-luc').length,
         expired: legalDocuments.filter(d => d.status === 'het-hieu-luc').length,
         upcoming: legalDocuments.filter(d => d.status === 'sap-hieu-luc').length,
+        totalArticles,
+        totalChapters,
         byType: {
             luat: legalDocuments.filter(d => d.type === 'luat').length,
             'nghi-dinh': legalDocuments.filter(d => d.type === 'nghi-dinh').length,
@@ -621,3 +760,55 @@ export function getDocStats() {
         },
     };
 }
+
+export interface FlatArticle {
+    docId: string;
+    docTitle: string;
+    chapterId: string;
+    chapterCode: string;
+    chapterTitle: string;
+    article: LegalArticle;
+}
+
+export function getAllArticles(): FlatArticle[] {
+    const result: FlatArticle[] = [];
+    for (const doc of legalDocuments) {
+        for (const ch of doc.chapters) {
+            for (const art of ch.articles) {
+                result.push({
+                    docId: doc.id,
+                    docTitle: doc.shortTitle,
+                    chapterId: ch.id,
+                    chapterCode: ch.code,
+                    chapterTitle: ch.title,
+                    article: art,
+                });
+            }
+        }
+    }
+    return result;
+}
+
+export function getArticleById(articleId: string): FlatArticle | undefined {
+    return getAllArticles().find(a => a.article.id === articleId);
+}
+
+export function deepSearchArticles(query: string): FlatArticle[] {
+    if (!query.trim()) return [];
+    const q = query.toLowerCase();
+    return getAllArticles().filter(a =>
+        a.article.title.toLowerCase().includes(q) ||
+        a.article.summary.toLowerCase().includes(q) ||
+        a.article.code.toLowerCase().includes(q)
+    );
+}
+
+export function getDocArticleCount(docId: string): { chapters: number; articles: number } {
+    const doc = legalDocuments.find(d => d.id === docId);
+    if (!doc) return { chapters: 0, articles: 0 };
+    return {
+        chapters: doc.chapters.length,
+        articles: doc.chapters.reduce((s, c) => s + c.articles.length, 0),
+    };
+}
+

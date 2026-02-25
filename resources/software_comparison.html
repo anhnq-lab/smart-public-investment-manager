@@ -1,0 +1,1423 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>So Sánh Phần Mềm QLDA Xây Dựng Việt Nam</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
+    rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box
+    }
+
+    :root {
+      --bg: #0f172a;
+      --card: #1e293b;
+      --card2: #334155;
+      --border: #475569;
+      --text: #e2e8f0;
+      --text2: #94a3b8;
+      --accent: #3b82f6;
+      --green: #22c55e;
+      --red: #ef4444;
+      --yellow: #f59e0b;
+      --purple: #a855f7;
+      --cyan: #06b6d4;
+      --orange: #f97316;
+      --pink: #ec4899;
+      --smart: #8b5cf6
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 20px
+    }
+
+    h1 {
+      font-size: 2rem;
+      font-weight: 900;
+      text-align: center;
+      margin: 30px 0 5px;
+      background: linear-gradient(135deg, var(--accent), var(--purple), var(--pink));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent
+    }
+
+    .subtitle {
+      text-align: center;
+      color: var(--text2);
+      margin-bottom: 40px;
+      font-size: .95rem
+    }
+
+    h2 {
+      font-size: 1.4rem;
+      font-weight: 800;
+      margin: 40px 0 20px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid var(--accent);
+      display: flex;
+      align-items: center;
+      gap: 10px
+    }
+
+    h3 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin: 25px 0 12px;
+      color: var(--cyan)
+    }
+
+    /* Overview Cards */
+    .grid-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 16px;
+      margin-bottom: 30px
+    }
+
+    .sw-card {
+      background: var(--card);
+      border-radius: 14px;
+      padding: 20px;
+      border: 1px solid var(--border);
+      transition: transform .2s, box-shadow .2s;
+      position: relative;
+      overflow: hidden
+    }
+
+    .sw-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 30px rgba(0, 0, 0, .4)
+    }
+
+    .sw-card.highlight {
+      border-color: var(--smart);
+      box-shadow: 0 0 20px rgba(139, 92, 246, .2)
+    }
+
+    .sw-card .badge {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      font-size: .65rem;
+      padding: 3px 8px;
+      border-radius: 20px;
+      font-weight: 700;
+      text-transform: uppercase
+    }
+
+    .sw-card .icon {
+      font-size: 2rem;
+      margin-bottom: 10px
+    }
+
+    .sw-card h4 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 4px
+    }
+
+    .sw-card .dev {
+      color: var(--text2);
+      font-size: .8rem;
+      margin-bottom: 8px
+    }
+
+    .sw-card .desc {
+      font-size: .85rem;
+      color: var(--text2);
+      margin-bottom: 12px;
+      line-height: 1.5
+    }
+
+    .tag {
+      display: inline-block;
+      font-size: .7rem;
+      padding: 2px 8px;
+      border-radius: 10px;
+      margin: 2px;
+      font-weight: 600
+    }
+
+    .tag-web {
+      background: rgba(59, 130, 246, .2);
+      color: var(--accent)
+    }
+
+    .tag-mobile {
+      background: rgba(34, 197, 94, .2);
+      color: var(--green)
+    }
+
+    .tag-desktop {
+      background: rgba(249, 115, 22, .2);
+      color: var(--orange)
+    }
+
+    .tag-cloud {
+      background: rgba(6, 182, 212, .2);
+      color: var(--cyan)
+    }
+
+    .tag-free {
+      background: rgba(34, 197, 94, .25);
+      color: var(--green)
+    }
+
+    /* Tables */
+    .table-wrap {
+      overflow-x: auto;
+      margin: 15px 0;
+      border-radius: 12px;
+      border: 1px solid var(--border)
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: .82rem
+    }
+
+    thead th {
+      background: var(--card2);
+      color: var(--text);
+      font-weight: 700;
+      padding: 12px 10px;
+      text-align: center;
+      white-space: nowrap;
+      position: sticky;
+      top: 0
+    }
+
+    thead th:first-child {
+      text-align: left;
+      min-width: 200px
+    }
+
+    tbody td {
+      padding: 10px;
+      text-align: center;
+      border-top: 1px solid rgba(71, 85, 105, .4)
+    }
+
+    tbody td:first-child {
+      text-align: left;
+      font-weight: 500;
+      color: var(--text)
+    }
+
+    tbody tr:hover {
+      background: rgba(59, 130, 246, .06)
+    }
+
+    .col-smart {
+      background: rgba(139, 92, 246, .08)
+    }
+
+    thead .col-smart {
+      background: rgba(139, 92, 246, .25);
+      color: #c4b5fd
+    }
+
+    .yes {
+      color: #4ade80;
+      font-weight: 900;
+      font-size: 1.1rem;
+      text-shadow: 0 0 6px rgba(74, 222, 128, .4)
+    }
+
+    .no {
+      color: #f87171;
+      font-weight: 700;
+      font-size: .9rem;
+      opacity: .7
+    }
+
+    .star {
+      color: #fbbf24;
+      font-weight: 900;
+      font-size: 1.1rem;
+      text-shadow: 0 0 6px rgba(251, 191, 36, .4)
+    }
+
+    .wip {
+      color: #22d3ee;
+      font-weight: 700;
+      font-size: .85rem
+    }
+
+    /* Pricing */
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 16px;
+      margin: 20px 0
+    }
+
+    .price-card {
+      background: var(--card);
+      border-radius: 14px;
+      padding: 22px;
+      border: 1px solid var(--border);
+      text-align: center
+    }
+
+    .price-card.best {
+      border-color: var(--smart);
+      background: linear-gradient(135deg, rgba(139, 92, 246, .1), rgba(59, 130, 246, .1))
+    }
+
+    .price-card .name {
+      font-weight: 700;
+      font-size: 1rem;
+      margin-bottom: 4px
+    }
+
+    .price-card .price {
+      font-size: 1.8rem;
+      font-weight: 900;
+      margin: 10px 0;
+      background: linear-gradient(135deg, var(--accent), var(--purple));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent
+    }
+
+    .price-card .price small {
+      font-size: .7rem;
+      -webkit-text-fill-color: var(--text2)
+    }
+
+    .price-card .note {
+      font-size: .78rem;
+      color: var(--text2);
+      margin-top: 8px
+    }
+
+    .price-card ul {
+      list-style: none;
+      text-align: left;
+      margin-top: 12px;
+      font-size: .82rem
+    }
+
+    .price-card ul li {
+      padding: 4px 0;
+      border-bottom: 1px solid rgba(71, 85, 105, .3)
+    }
+
+    .price-card ul li::before {
+      content: "✓ ";
+      color: var(--green);
+      font-weight: 700
+    }
+
+    /* Ranking */
+    .rank-table td:nth-child(2) {
+      font-weight: 700;
+      color: var(--yellow)
+    }
+
+    /* Alert boxes */
+    .alert {
+      padding: 14px 18px;
+      border-radius: 10px;
+      margin: 15px 0;
+      font-size: .85rem;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px
+    }
+
+    .alert-warn {
+      background: rgba(245, 158, 11, .1);
+      border-left: 4px solid var(--yellow)
+    }
+
+    .alert-info {
+      background: rgba(59, 130, 246, .1);
+      border-left: 4px solid var(--accent)
+    }
+
+    .alert-success {
+      background: rgba(34, 197, 94, .1);
+      border-left: 4px solid var(--green)
+    }
+
+    .alert-danger {
+      background: rgba(239, 68, 68, .1);
+      border-left: 4px solid var(--red)
+    }
+
+    /* Conclusion */
+    .conclusion {
+      background: linear-gradient(135deg, rgba(139, 92, 246, .15), rgba(59, 130, 246, .15));
+      border: 1px solid var(--smart);
+      border-radius: 16px;
+      padding: 28px;
+      margin: 30px 0;
+      text-align: center
+    }
+
+    .conclusion h3 {
+      color: var(--purple);
+      font-size: 1.3rem;
+      margin-bottom: 12px
+    }
+
+    .conclusion p {
+      color: var(--text2);
+      max-width: 700px;
+      margin: 0 auto;
+      font-size: .92rem;
+      line-height: 1.7
+    }
+
+    /* Roadmap */
+    .roadmap {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin: 15px 0
+    }
+
+    .roadmap-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: var(--card);
+      padding: 12px 16px;
+      border-radius: 10px;
+      border: 1px solid var(--border)
+    }
+
+    .roadmap-item .pri {
+      font-size: .7rem;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 20px;
+      white-space: nowrap
+    }
+
+    .pri-high {
+      background: rgba(239, 68, 68, .2);
+      color: var(--red)
+    }
+
+    .pri-mid {
+      background: rgba(245, 158, 11, .2);
+      color: var(--yellow)
+    }
+
+    .pri-low {
+      background: rgba(34, 197, 94, .2);
+      color: var(--green)
+    }
+
+    .roadmap-item .feat {
+      font-weight: 600;
+      font-size: .88rem
+    }
+
+    .roadmap-item .reason {
+      color: var(--text2);
+      font-size: .78rem;
+      margin-left: auto
+    }
+
+    .footer {
+      text-align: center;
+      color: var(--text2);
+      font-size: .75rem;
+      margin: 40px 0 20px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border)
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+
+    <h1>So Sánh Phần Mềm QLDA Xây Dựng Việt Nam</h1>
+    <p class="subtitle">7 phần mềm cạnh tranh trên thị trường vs. Smart Public Investment Manager — Cập nhật 02/2026</p>
+
+    <!-- ========== SECTION 1: OVERVIEW ========== -->
+    <h2>📋 1. Tổng Quan Các Phần Mềm</h2>
+
+    <div class="grid-cards">
+      <div class="sw-card">
+        <span class="badge" style="background:rgba(59,130,246,.2);color:var(--accent)">Excel</span>
+        <div class="icon">🔵</div>
+        <h4>PM QLDA GXD</h4>
+        <div class="dev">GXD JSC — Hà Nội</div>
+        <div class="desc">Quản lý dự án trên nền Excel. Hệ thống biểu mẫu pháp lý, tiến độ dự án, tra cứu văn bản quy
+          phạm.</div>
+        <span class="tag tag-desktop">Desktop/Excel</span>
+      </div>
+
+      <div class="sw-card">
+        <span class="badge" style="background:rgba(34,197,94,.2);color:var(--green)">BIM+CDE</span>
+        <div class="icon">🟢</div>
+        <h4>QLDA 360 (BIM XD 360)</h4>
+        <div class="dev">TBT Việt Nam</div>
+        <div class="desc">BIM 4D, CDE ISO 19650, pháp lý tự động NĐ175/2024, trợ lý ảo, quản lý tiến độ Gantt pháp lý.
+        </div>
+        <span class="tag tag-web">Web</span><span class="tag tag-mobile">Mobile</span>
+      </div>
+
+      <div class="sw-card">
+        <span class="badge tag-free">Miễn phí</span>
+        <div class="icon">🟠</div>
+        <h4>IBOM.IM</h4>
+        <div class="dev">ISOFT / BMD Solutions</div>
+        <div class="desc">Quản lý đầu tư & thi công toàn diện. Cảnh báo vượt TMĐT, dòng tiền, đấu thầu, hợp đồng, bản
+          vẽ.</div>
+        <span class="tag tag-web">Web</span><span class="tag tag-mobile">Mobile</span>
+      </div>
+
+      <div class="sw-card">
+        <span class="badge" style="background:rgba(239,68,68,.2);color:var(--red)">Thi công</span>
+        <div class="icon">🔴</div>
+        <h4>FastCons</h4>
+        <div class="dev">FastWork JSC</div>
+        <div class="desc">Chuyên sâu quản lý thi công: vật tư, tồn kho, nhật ký, chấm công FaceID/GPS, tài chính công
+          trường.</div>
+        <span class="tag tag-cloud">Cloud</span><span class="tag tag-mobile">Mobile</span>
+      </div>
+
+      <div class="sw-card">
+        <span class="badge" style="background:rgba(245,158,11,.2);color:var(--yellow)">CĐT</span>
+        <div class="icon">🟤</div>
+        <h4>PMS Đông Tây</h4>
+        <div class="dev">DongTay JSC</div>
+        <div class="desc">Xuất văn bản pháp lý tự động, theo dõi tiến độ, cảnh báo rủi ro, tích hợp Excel/MSProject.
+        </div>
+        <span class="tag tag-web">Web</span>
+      </div>
+
+      <div class="sw-card">
+        <span class="badge" style="background:rgba(71,85,105,.4);color:var(--text2)">ERP</span>
+        <div class="icon">⚫</div>
+        <h4>DIGINET</h4>
+        <div class="dev">DIGINET Corp</div>
+        <div class="desc">ERP tập đoàn lớn. Tùy biến linh hoạt, chuẩn hóa quy trình, bảo mật cao, báo cáo chi tiết.
+        </div>
+        <span class="tag tag-web">Web</span><span class="tag tag-mobile">Mobile</span>
+      </div>
+
+      <div class="sw-card">
+        <span class="badge" style="background:rgba(249,115,22,.2);color:var(--orange)">Tài sản</span>
+        <div class="icon">🔶</div>
+        <h4>gAMSPro 4.0</h4>
+        <div class="dev">GSOFT JSC</div>
+        <div class="desc">19 phân hệ: dự án xây dựng, mua sắm, tài sản cố định, NCC, bất động sản, kho, thanh lý.</div>
+        <span class="tag tag-web">Web</span><span class="tag tag-mobile">Mobile</span>
+      </div>
+
+      <div class="sw-card highlight">
+        <span class="badge" style="background:rgba(139,92,246,.3);color:#c4b5fd">★ Của mình</span>
+        <div class="icon">🟣</div>
+        <h4>Smart Public Investment Manager</h4>
+        <div class="dev">CIC / In-house — React + Supabase + AI</div>
+        <div class="desc">All-in-one: 14 modules, BIM Viewer, Gemini AI, Dashboard, Gantt/Kanban, đấu thầu KHLCNT, GIS,
+          biểu mẫu, nhân sự.</div>
+        <span class="tag tag-web">Web SPA</span><span class="tag tag-cloud">Cloud</span><span
+          class="tag tag-mobile">Responsive</span>
+      </div>
+    </div>
+
+    <!-- ========== SECTION 2: FEATURE COMPARISON ========== -->
+    <h2>⚡ 2. So Sánh Tính Năng Chi Tiết</h2>
+    <p style="font-size:.85rem;margin-bottom:15px"><span style="color:#4ade80;font-weight:900">●</span> Có &nbsp;|&nbsp;
+      <span style="color:#fbbf24;font-weight:900">★</span> Nổi bật &nbsp;|&nbsp; <span
+        style="color:#22d3ee;font-weight:700">◐</span> Đang phát triển &nbsp;|&nbsp; <span
+        style="color:#f87171">✕</span> Không
+    </p>
+
+    <h3>2.1 Quản Lý Dự Án Tổng Thể</h3>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Tính năng</th>
+            <th>GXD</th>
+            <th>QLDA 360</th>
+            <th>IBOM</th>
+            <th>FastCons</th>
+            <th>PMS ĐT</th>
+            <th>DIGINET</th>
+            <th>gAMSPro</th>
+            <th class="col-smart">Smart PM ★</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Danh sách đa dự án</td>
+            <td class="yes">●</td>
+            <td class="yes">●</td>
+            <td class="yes">●</td>
+            <td class="yes">●</td>
+            <td class="yes">●</td>
+            <td class="yes">●</td>
+            <td class="yes">●</td>
+            <td class="col-smart yes">●</td>
+          </tr>
+          <tr>
+            <td>Dashboard tổng quan</td>
+            <td class="no">✕</td>
+            <td class="yes">●</td>
+            <td class="yes">●</td>
+            <td class="star">★</td>
+            <td class="no">✕</td>
+            <td class="yes">●</td>
+            <td class="yes">●</td>
+            <td class="col-smart star">★</td>
+          </tr>
+          <tr>
+            <td>Gantt Chart tiến độ</td>
+            <td class="yes">●</td>
+            <td class="yes">●</td>
+            <td class="yes">●</td>
+            <td class="yes">●</td>
+            <td class="no">✕</td>
+            <td class="yes">●</td>
+            <td class="no">✕</td>
+            <td class="col-smart yes">●</td>
+          </tr>
+          <tr>
+            <td>Kanban Board</td>
+            <td class="no">✕</td>
+            <td class="no">✕</td>
+            <td class="no">✕</td>
+            <td class="no">✕</td>
+            <td class="no">✕</td>
+            <td class="no">✕</td>
+            <td class="no">✕</td>
+            <td class="col-smart star">★</td>
+          </tr>
+          <tr>
+            <td>Lifecycle Stepper</td>
+            <td class="no">✕</td>
+            <td class="yes">●</td>
+            <td class="no">✕</td>
+            <td class="no">✕</td>
+            <td class="no">✕</td>
+            <td class="no">✕</td>
+            <td class="no">✕</td>
+            <td class="col-smart star">★</td>
+          </tr>
+          <tr>
+            <td>Milestone Timeline</td>
+            <td class="no">✕</td>
+            <td class="no">✕</td>
+            <td class="no">✕</td>
+            <td class="no">✕</td>
+            <td class="no">✕</td>
+            <td class="no">✕</td>
+            <td class="no">✕</td>
+            <td class="col-smart star">★</td>
+          </tr>
+          <tr>
+            <td>Risk Indicators</td>
+            <td class="no">✕</td>
+            <td class="no">✕</td>
+            <td class="star">★</td>
+            <td class="no">✕</td>
+            <td class="star">★</td>
+            <td class="no">✕</td>
+            <td class="no">✕</td>
+            <td class="col-smart star">★</td>
+          </tr>
+          <tr>
+            <td>Resource Allocation</td>
+            <td class="no">✕</td>
+            <td class="no">✕</td>
+            <td class="no">✕</td>
+            <td class="no">✕</td>
+            <td class="no">✕</td>
+            <td class="yes">●</td>
+            <td class="no">✕</td>
+            <td class="col-smart star">★</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>2.2 BIM & Mô Hình 3D</h3>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Tính năng</th>
+            <th>GXD</th>
+            <th>QLDA 360</th>
+            <th>IBOM</th>
+            <th>FastCons</th>
+            <th>PMS ĐT</th>
+            <th>DIGINET</th>
+            <th>gAMSPro</th>
+            <th class="col-smart">Smart PM ★</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>BIM Viewer (IFC)</td>
+            <td class="no">✕</td>
+            <td class="star">★</td>
+            <td class="no">✕</td>
+            <td class="no">✕</td>
+            <td class="no">✕</td>
+            <td class="no">✕</td>
+            <td class="no">✕</td>
+            <td class="col-smart star">★</td>
+          </tr>
+          <tr>
+            <td>BIM 4D (tiến độ 3D)</td>
+            <td class="no">✕</td>
+            <td class="star">★</td>
+            <td class="no">✕</td>
+            <td class="no">✕</td>
+            <td class="no">✕</td>
+            <td class="no">✕</td>
+            <td class="no">✕</td>
+            <td class="col-smart wip">◐</td>
+          </tr>
+          <tr>
+            <td>CDE (ISO 19650)</td>
+            <td class="no">✕</td>
+            <td class="star">★</td>
+            <td class="no">✕</td>
+            <td class="no">✕</td>
+            <td class="no">✕</td>
+            <td class="no">✕</td>
+            <td class="no">✕</td>
+            <td class="col-smart no">✕</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="alert alert-info">💡 Chỉ có <strong>QLDA 360</strong> và <strong>Smart PM</strong> tích hợp BIM Viewer —
+      lợi thế cạnh tranh lớn giữa 8 phần mềm.</div>
+
+    <h3>2.3 Pháp Lý & Biểu Mẫu</h3>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Tính năng</th>
+            <th>GXD</th>
+            <th>QLDA 360</th>
+            <th>IBOM</th>
+            <th>FastCons</th>
+            <th>PMS ĐT</th>
+            <th>DIGINET</th>
+            <th>gAMSPro</th>
+            <th class="col-smart">Smart PM ★</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Quy trình NĐ 175/2024</td>
+            <td class="yes">●</td>
+            <td class="star">★</td>
+            <td class="no">✕</td>
+            <td class="no">✕</td>
+            <td class="yes">●</td>
+            <td class="no">✕</td>
+            <td class="no">✕</td>
+            <td class="col-smart yes">●</td>
+          </tr>
+          <tr>
+            <td>Hệ thống biểu mẫu Word</td>
+            <td class="star">★</td>
+            <td class="yes">●</td>
+            <td class="no">✕</td>
+            <td class="no">✕</td>
+            <td class="star">★</td>
+            <td class="no">✕</td>
+            <td class="no">✕</td>
+            <td class="col-smart star">★</td>
+          </tr>
+          <tr>
+            <td>Auto-update luật</td>
+            <td class="no">✕</td>
+            <td class="star">★</td>
+            <td class="no">✕</td>
+            <td class="no">✕</td>
+            <td class="no">✕</td>
+            <td class="no">✕</td>
+            <td class="no">✕</td>
+            <td class="col-smart no">✕</td>
+          </tr>
+          <tr>
+            <td>Compliance Checklist</td>
+            <td class="no">✕</td>
+            <td class="no">✕</td>
+            <td class="no">✕</td>
+            <td class="no">✕</td>
+            <td class="star">★</td>
+            <td class="no">✕</td>
+            <td class="no">✕</td>
+            <td class="col-smart star">★</td>
+          </tr>
+          <tr>
+            <td>Xuất văn bản tự động</td>
+            <td class="yes">●</td>
+            <td class="yes">●</td>
+            <td class="no">✕</td>
+            <td class="no">✕</td>
+            <td class="star">★</td>
+            <td class="no">✕</td>
+            <td class="no">✕</td>
+            <td class="col-smart yes">●</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>2.4 Tài Chính & Vốn Đầu Tư</h3>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Tính năng</th>
+            <th>GXD</th>
+            <th>QLDA 360</th>
+            <th>IBOM</th>
+            <th>FastCons</th>
+            <th>PMS ĐT</th>
+            <th>DIGINET</th>
+            <th>gAMSPro</th>
+            <th class="col-smart">Smart PM ★</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Tổng mức đầu tư</td>
+            <td class="no">✕</td>
+            <td class="yes">●</td>
+            <td class="star">★</td>
+            <td class="no">✕</td>
+            <td class="yes">●</td>
+            <td class="yes">●</td>
+            <td class="yes">●</td>
+            <td class="col-smart yes">●</td>
+          </tr>
+          <tr>
+            <td>Quản lý thanh toán</td>
+            <td class="no">✕</td>
+            <td class="yes">●</td>
+            <td class="yes">●</td>
+            <td class="star">★</td>
+            <td class="yes">●</td>
+            <td class="yes">●</td>
+            <td class="yes">●</td>
+            <td class="col-smart yes">●</td>
+          </tr>
+          <tr>
+            <td>Kế hoạch vốn / Giải ngân</td>
+            <td class="no">✕</td>
+            <td class="yes">●</td>
+            <td class="star">★</td>
+            <td class="no">✕</td>
+            <td class="yes">●</td>
+            <td class="yes">●</td>
+            <td class="no">✕</td>
+            <td class="col-smart star">★</td>
+          </tr>
+          <tr>
+            <td>Cảnh báo vượt TMĐT</td>
+            <td class="no">✕</td>
+            <td class="no">✕</td>
+            <td class="star">★</td>
+            <td class="no">✕</td>
+            <td class="star">★</td>
+            <td class="no">✕</td>
+            <td class="no">✕</td>
+            <td class="col-smart yes">●</td>
+          </tr>
+          <tr>
+            <td>Budget Variance</td>
+            <td class="no">✕</td>
+            <td class="no">✕</td>
+            <td class="no">✕</td>
+            <td class="no">✕</td>
+            <td class="no">✕</td>
+            <td class="no">✕</td>
+            <td class="no">✕</td>
+            <td class="col-smart star">★</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>2.5 Hợp Đồng & Đấu Thầu</h3>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Tính năng</th>
+            <th>GXD</th>
+            <th>QLDA 360</th>
+            <th>IBOM</th>
+            <th>FastCons</th>
+            <th>PMS ĐT</th>
+            <th>DIGINET</th>
+            <th>gAMSPro</th>
+            <th class="col-smart">Smart PM ★</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Quản lý hợp đồng</td>
+            <td class="no">✕</td>
+            <td class="yes">●</td>
+            <td class="star">★</td>
+            <td class="star">★</td>
+            <td class="yes">●</td>
+            <td class="yes">●</td>
+            <td class="yes">●</td>
+            <td class="col-smart yes">●</td>
+          </tr>
+          <tr>
+            <td>Quản lý nhà thầu</td>
+            <td class="no">✕</td>
+            <td class="no">✕</td>
+            <td class="yes">●</td>
+            <td class="yes">●</td>
+            <td class="no">✕</td>
+            <td class="no">✕</td>
+            <td class="star">★</td>
+            <td class="col-smart yes">●</td>
+          </tr>
+          <tr>
+            <td>Gói thầu / Đấu thầu</td>
+            <td class="no">✕</td>
+            <td class="yes">●</td>
+            <td class="star">★</td>
+            <td class="no">✕</td>
+            <td class="yes">●</td>
+            <td class="no">✕</td>
+            <td class="yes">●</td>
+            <td class="col-smart star">★</td>
+          </tr>
+          <tr>
+            <td>KHLCNT</td>
+            <td class="no">✕</td>
+            <td class="no">✕</td>
+            <td class="star">★</td>
+            <td class="no">✕</td>
+            <td class="star">★</td>
+            <td class="no">✕</td>
+            <td class="no">✕</td>
+            <td class="col-smart star">★</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>2.6 Quản Lý Thi Công (Nhà thầu)</h3>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Tính năng</th>
+            <th>GXD</th>
+            <th>QLDA 360</th>
+            <th>IBOM</th>
+            <th>FastCons</th>
+            <th>PMS ĐT</th>
+            <th>DIGINET</th>
+            <th>gAMSPro</th>
+            <th class="col-smart">Smart PM ★</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Nhật ký thi công</td>
+            <td class="no">✕</td>
+            <td class="no">✕</td>
+            <td class="yes">●</td>
+            <td class="star">★</td>
+            <td class="no">✕</td>
+            <td class="no">✕</td>
+            <td class="no">✕</td>
+            <td class="col-smart no">✕</td>
+          </tr>
+          <tr>
+            <td>Vật tư / Tồn kho</td>
+            <td class="no">✕</td>
+            <td class="no">✕</td>
+            <td class="star">★</td>
+            <td class="star">★</td>
+            <td class="no">✕</td>
+            <td class="yes">●</td>
+            <td class="star">★</td>
+            <td class="col-smart no">✕</td>
+          </tr>
+          <tr>
+            <td>Chấm công FaceID/GPS</td>
+            <td class="no">✕</td>
+            <td class="no">✕</td>
+            <td class="no">✕</td>
+            <td class="star">★</td>
+            <td class="no">✕</td>
+            <td class="no">✕</td>
+            <td class="no">✕</td>
+            <td class="col-smart no">✕</td>
+          </tr>
+          <tr>
+            <td>Quản lý máy thi công</td>
+            <td class="no">✕</td>
+            <td class="no">✕</td>
+            <td class="no">✕</td>
+            <td class="star">★</td>
+            <td class="no">✕</td>
+            <td class="no">✕</td>
+            <td class="no">✕</td>
+            <td class="col-smart no">✕</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>2.7 Công Nghệ & Trải Nghiệm</h3>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Tính năng</th>
+            <th>GXD</th>
+            <th>QLDA 360</th>
+            <th>IBOM</th>
+            <th>FastCons</th>
+            <th>PMS ĐT</th>
+            <th>DIGINET</th>
+            <th>gAMSPro</th>
+            <th class="col-smart">Smart PM ★</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>AI / Trợ lý ảo</td>
+            <td class="no">✕</td>
+            <td class="star">★</td>
+            <td class="no">✕</td>
+            <td class="no">✕</td>
+            <td class="no">✕</td>
+            <td class="no">✕</td>
+            <td class="no">✕</td>
+            <td class="col-smart star">★</td>
+          </tr>
+          <tr>
+            <td>Map / GIS</td>
+            <td class="no">✕</td>
+            <td class="no">✕</td>
+            <td class="no">✕</td>
+            <td class="no">✕</td>
+            <td class="no">✕</td>
+            <td class="no">✕</td>
+            <td class="no">✕</td>
+            <td class="col-smart star">★</td>
+          </tr>
+          <tr>
+            <td>Dark Mode</td>
+            <td class="no">✕</td>
+            <td class="no">✕</td>
+            <td class="no">✕</td>
+            <td class="no">✕</td>
+            <td class="no">✕</td>
+            <td class="no">✕</td>
+            <td class="no">✕</td>
+            <td class="col-smart star">★</td>
+          </tr>
+          <tr>
+            <td>Auth / RBAC</td>
+            <td class="no">✕</td>
+            <td class="yes">●</td>
+            <td class="yes">●</td>
+            <td class="yes">●</td>
+            <td class="yes">●</td>
+            <td class="star">★</td>
+            <td class="yes">●</td>
+            <td class="col-smart star">★</td>
+          </tr>
+          <tr>
+            <td>Audit Log</td>
+            <td class="no">✕</td>
+            <td class="no">✕</td>
+            <td class="no">✕</td>
+            <td class="no">✕</td>
+            <td class="no">✕</td>
+            <td class="yes">●</td>
+            <td class="no">✕</td>
+            <td class="col-smart star">★</td>
+          </tr>
+          <tr>
+            <td>Quản lý nhân sự</td>
+            <td class="no">✕</td>
+            <td class="no">✕</td>
+            <td class="no">✕</td>
+            <td class="yes">●</td>
+            <td class="no">✕</td>
+            <td class="star">★</td>
+            <td class="no">✕</td>
+            <td class="col-smart yes">●</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- ========== SECTION 3: PRICING ========== -->
+    <h2>💰 3. So Sánh Giá Thành</h2>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Phần mềm</th>
+            <th>Giá bán</th>
+            <th>Phí duy trì/năm</th>
+            <th>Ghi chú</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>🔵 GXD QLDA</td>
+            <td><strong>1.000.000đ</strong> (PM only)<br>5.500.000đ (khóa cứng + PM)<br>8.000.000đ (khóa cứng + đào tạo)
+            </td>
+            <td>Không rõ</td>
+            <td>Bộ đầy đủ GXD: Dự thầu 800K + Dự toán 800K + Lập DA 1M + Quyết toán 800K + QLCL 800K =
+              <strong>~4.2M</strong>
+            </td>
+          </tr>
+          <tr>
+            <td>🟢 QLDA 360</td>
+            <td>5 – 70 triệu</td>
+            <td>2 – 7 triệu</td>
+            <td>Chưa gồm BIM+CDE (×2 nếu có → 10–140M)</td>
+          </tr>
+          <tr>
+            <td>🟠 IBOM.IM</td>
+            <td><strong style="color:var(--green)">Miễn phí</strong></td>
+            <td>Miễn phí</td>
+            <td>Có gói nâng cao trả phí</td>
+          </tr>
+          <tr>
+            <td>🔴 FastCons</td>
+            <td>Không công khai</td>
+            <td>Cloud subscription</td>
+            <td>Phí khởi tạo 1 lần + phí thuê bao</td>
+          </tr>
+          <tr>
+            <td>🟤 PMS Đông Tây</td>
+            <td>Từ <strong>1.500.000đ</strong></td>
+            <td>Không rõ</td>
+            <td>Gói Basic, có gói nâng cao</td>
+          </tr>
+          <tr>
+            <td>⚫ DIGINET</td>
+            <td>Không công khai</td>
+            <td>15-20% giá HĐ</td>
+            <td>ERP, báo giá theo dự án</td>
+          </tr>
+          <tr>
+            <td>🔶 gAMSPro</td>
+            <td>Không công khai</td>
+            <td>Theo gói</td>
+            <td>19 phân hệ, liên hệ báo giá</td>
+          </tr>
+          <tr style="background:rgba(139,92,246,.08)">
+            <td>🟣 <strong>Smart PM</strong></td>
+            <td><strong style="color:var(--green)">Tự phát triển</strong></td>
+            <td><strong>~$45/tháng</strong><br>(~1.125K VNĐ)</td>
+            <td>Supabase Pro $25 + Vercel Pro $20. Chi phí infra cực thấp (~13.5M/năm)</td>
+          </tr>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="alert alert-warn">⚠️ Giá QLDA 360 <strong>chưa bao gồm BIM Viewer + CDE</strong>. Tích hợp đầy đủ → giá
+      <strong>gấp đôi</strong> (10–140 triệu VNĐ).
+    </div>
+
+    <!-- ========== SECTION 4: RANKING ========== -->
+    <h2>🏆 4. Xếp Hạng Theo Phân Khúc</h2>
+
+    <h3>🏛️ Dành cho CĐT / Ban QLDA Đầu Tư Công</h3>
+    <div class="table-wrap">
+      <table class="rank-table">
+        <thead>
+          <tr>
+            <th>Tiêu chí</th>
+            <th>#1</th>
+            <th>#2</th>
+            <th>#3</th>
+            <th>#4</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Tính năng tổng thể</td>
+            <td>🟣 Smart PM</td>
+            <td>🟠 IBOM</td>
+            <td>🟤 PMS ĐT</td>
+            <td>🟢 QLDA 360</td>
+          </tr>
+          <tr>
+            <td>Pháp lý & biểu mẫu</td>
+            <td>🟢 QLDA 360</td>
+            <td>🟣 Smart PM</td>
+            <td>🟤 PMS ĐT</td>
+            <td>🔵 GXD</td>
+          </tr>
+          <tr>
+            <td>Tài chính & vốn</td>
+            <td>🟣 Smart PM</td>
+            <td>🟠 IBOM</td>
+            <td>🟤 PMS ĐT</td>
+            <td>🟢 QLDA 360</td>
+          </tr>
+          <tr>
+            <td>BIM tích hợp</td>
+            <td>🟢 QLDA 360</td>
+            <td>🟣 Smart PM</td>
+            <td colspan="2" style="color:var(--text2)">—</td>
+          </tr>
+          <tr>
+            <td>Chi phí sở hữu thấp nhất</td>
+            <td>🟠 IBOM</td>
+            <td>🟣 Smart PM</td>
+            <td>🟤 PMS ĐT</td>
+            <td>🔵 GXD</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>🏗️ Dành cho Nhà Thầu Thi Công</h3>
+    <div class="table-wrap">
+      <table class="rank-table">
+        <thead>
+          <tr>
+            <th>Tiêu chí</th>
+            <th>#1</th>
+            <th>#2</th>
+            <th>#3</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Quản lý thi công</td>
+            <td>🔴 FastCons</td>
+            <td>🟠 IBOM</td>
+            <td style="color:var(--text2)">các PM khác</td>
+          </tr>
+          <tr>
+            <td>Vật tư & tồn kho</td>
+            <td>🔴 FastCons</td>
+            <td>🟠 IBOM</td>
+            <td>🔶 gAMSPro</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- ========== SECTION 5: ROADMAP ========== -->
+    <h2>🗺️ 5. Smart PM — Tính Năng Cần Bổ Sung</h2>
+
+    <div class="roadmap">
+      <div class="roadmap-item"><span class="pri pri-high">🔴 CAO</span><span class="feat">CDE chuẩn ISO
+          19650</span><span class="reason">Bắt buộc theo QĐ 258/TTg — đối thủ: QLDA 360</span></div>
+      <div class="roadmap-item"><span class="pri pri-high">🔴 CAO</span><span class="feat">Auto-update văn bản pháp
+          luật</span><span class="reason">Giảm rủi ro pháp lý — đối thủ: QLDA 360</span></div>
+      <div class="roadmap-item"><span class="pri pri-mid">🟡 TB</span><span class="feat">BIM 4D hoàn thiện</span><span
+          class="reason">Cạnh tranh phân khúc BIM — đối thủ: QLDA 360</span></div>
+      <div class="roadmap-item"><span class="pri pri-mid">🟡 TB</span><span class="feat">Cảnh báo vượt TMĐT tự
+          động</span><span class="reason">Tăng giá trị CĐT — đối thủ: IBOM, PMS ĐT</span></div>
+      <div class="roadmap-item"><span class="pri pri-low">🟢 THẤP</span><span class="feat">Quản lý vật tư / tồn
+          kho</span><span class="reason">Mở rộng đến nhà thầu — đối thủ: FastCons, IBOM</span></div>
+      <div class="roadmap-item"><span class="pri pri-low">🟢 THẤP</span><span class="feat">Nhật ký thi công
+          mobile</span><span class="reason">Cho giai đoạn thi công — đối thủ: FastCons</span></div>
+    </div>
+
+    <!-- ========== SECTION 6: CIC PRICING PROPOSAL ========== -->
+    <h2>💼 6. Đề Xuất Bảng Giá CIC Smart PM (Bán Cho Khách Hàng)</h2>
+
+    <div class="alert alert-info">💡 <strong>Chiến lược giá:</strong> Định vị <strong>cao hơn GXD/PMS ĐT</strong> (vì
+      nhiều tính năng hơn), nhưng <strong>thấp hơn nhiều so với QLDA 360</strong> (vì chi phí infra thấp). Tạo lợi thế
+      cạnh tranh rõ ở phân khúc vốn đầu tư công.</div>
+
+    <div class="pricing-grid">
+      <div class="price-card best">
+        <div class="name">🟣 Gói Chuyên Nghiệp</div>
+        <div style="color:var(--text2);font-size:.78rem">Ban QLDA / Tư vấn QLDA</div>
+        <div class="price">50.000.000đ</div>
+        <div class="note">Phí duy trì: <strong>25.000.000đ/năm</strong></div>
+        <ul>
+          <li>10 tài khoản người dùng</li>
+          <li>Dự án không giới hạn</li>
+          <li>Dashboard + Gantt + Kanban</li>
+          <li>57+ biểu mẫu pháp lý đầy đủ</li>
+          <li>Quản lý hợp đồng + đấu thầu</li>
+          <li>Quản lý vốn + giải ngân</li>
+          <li>AI Trợ lý (Gemini)</li>
+          <li>BIM Viewer cơ bản</li>
+          <li>Hỗ trợ Zalo + điện thoại</li>
+        </ul>
+      </div>
+
+      <div class="price-card">
+        <div class="name">🔶 Gói Doanh Nghiệp</div>
+        <div style="color:var(--text2);font-size:.78rem">CĐT / Sở KH-ĐT / DN lớn</div>
+        <div class="price">100.000.000đ</div>
+        <div class="note">Phí duy trì: <strong>40.000.000đ/năm</strong></div>
+        <ul>
+          <li>30 tài khoản người dùng</li>
+          <li>Toàn bộ tính năng gói Chuyên Nghiệp</li>
+          <li>BIM Viewer nâng cao + GIS Maps</li>
+          <li>Quản lý nhân sự + Nhà thầu</li>
+          <li>KHLCNT + xuất kế hoạch đấu thầu</li>
+          <li>Audit Log + RBAC phân quyền</li>
+          <li>Report Center nâng cao</li>
+          <li>Đào tạo trực tiếp (2 buổi)</li>
+          <li>Hỗ trợ ưu tiên 24/7</li>
+        </ul>
+      </div>
+
+      <div class="price-card">
+        <div class="name">👑 Gói Enterprise</div>
+        <div style="color:var(--text2);font-size:.78rem">Tập đoàn / Server riêng</div>
+        <div class="price">200.000.000đ</div>
+        <div class="note">Phí duy trì: <strong>60.000.000đ/năm</strong></div>
+        <ul>
+          <li>Tài khoản không giới hạn</li>
+          <li>Toàn bộ tính năng gói Doanh Nghiệp</li>
+          <li>Server riêng (on-premise hoặc private cloud)</li>
+          <li>Tùy chỉnh theo yêu cầu</li>
+          <li>Tích hợp hệ thống sẵn có</li>
+          <li>Đào tạo tại chỗ không giới hạn</li>
+          <li>SLA cam kết uptime 99.5%</li>
+          <li>Account Manager chuyên biệt</li>
+        </ul>
+      </div>
+    </div>
+
+    <h3>📊 So sánh giá với đối thủ</h3>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Gói tương đương</th>
+            <th>CIC Smart PM</th>
+            <th>QLDA 360</th>
+            <th>So sánh</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Ban QLDA vừa</td>
+            <td><strong>50 triệu</strong> + 25M/năm</td>
+            <td>40 triệu + 7M/năm</td>
+            <td style="color:#4ade80;font-weight:700">Đắt hơn nhưng có AI + BIM + hỗ trợ chuyên sâu</td>
+          </tr>
+          <tr>
+            <td>CĐT / Sở KH-ĐT</td>
+            <td><strong>100 triệu</strong> + 40M/năm</td>
+            <td>70 triệu + 4M/năm (chưa BIM)</td>
+            <td style="color:#4ade80;font-weight:700">Cao hơn nhưng đã gồm BIM + GIS + AI + hỗ trợ 24/7</td>
+          </tr>
+          <tr>
+            <td>Enterprise (full BIM+CDE)</td>
+            <td><strong>200 triệu</strong> + 60M/năm</td>
+            <td>140 triệu + 8M/năm</td>
+            <td style="color:#4ade80;font-weight:700">Cao hơn nhưng server riêng + SLA + tùy chỉnh + AM</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="alert alert-success">✅ <strong>Chi phí vận hành:</strong> Hạ tầng ~13.5M + Nhân sự bảo trì ~10M =
+      <strong>~24M/năm</strong>.
+      Chỉ cần <strong>1 khách hàng gói CN</strong> (25M phí duy trì) là đã cover chi phí vận hành. Với 10 KH gói CN →
+      doanh thu <strong>500 triệu</strong> + <strong>250 triệu</strong> phí duy trì/năm.
+    </div>
+
+    <!-- ========== SECTION 7: CONCLUSION ========== -->
+    <h2>📌 7. Kết Luận</h2>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Kịch bản sử dụng</th>
+            <th>Lựa chọn tốt nhất</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Ban QLDA đầu tư công, cần all-in-one</td>
+            <td><strong style="color:var(--smart)">🟣 Smart PM</strong></td>
+          </tr>
+          <tr>
+            <td>Cá nhân, budget thấp, quen Excel</td>
+            <td>🔵 GXD (~1 triệu)</td>
+          </tr>
+          <tr>
+            <td>DN cần BIM 4D + CDE ISO 19650</td>
+            <td>🟢 QLDA 360</td>
+          </tr>
+          <tr>
+            <td>Quản lý đầu tư xây dựng miễn phí</td>
+            <td>🟠 IBOM.IM</td>
+          </tr>
+          <tr>
+            <td>Nhà thầu thi công chuyên sâu</td>
+            <td>🔴 FastCons</td>
+          </tr>
+          <tr>
+            <td>Ban QLDA nhỏ, xuất văn bản nhanh</td>
+            <td>🟤 PMS Đông Tây</td>
+          </tr>
+          <tr>
+            <td>Tập đoàn cần ERP toàn diện</td>
+            <td>⚫ DIGINET</td>
+          </tr>
+          <tr>
+            <td>Quản lý tài sản & đầu tư lớn</td>
+            <td>🔶 gAMSPro</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="conclusion">
+      <h3>🟣 Smart PM dẫn đầu phân khúc Đầu Tư Công</h3>
+      <p><strong>14 modules tích hợp</strong> — BIM Viewer — AI Gemini — Dashboard — Gantt/Kanban — Đấu thầu KHLCNT —
+        GIS — 57+ biểu mẫu — Nhân sự — Audit Log — với chi phí vận hành <strong>thấp nhất
+          (~$25/tháng)</strong>.<br><br>Chỉ cần bổ sung <strong>CDE (ISO 19650)</strong> + <strong>auto-update
+          luật</strong> là cạnh tranh toàn diện trên mọi phân khúc.</p>
+    </div>
+
+    <div class="footer">
+      Tài liệu so sánh nội bộ — CIC Smart Public Investment Manager — Cập nhật 25/02/2026
+    </div>
+
+  </div>
+</body>
+
+</html>
