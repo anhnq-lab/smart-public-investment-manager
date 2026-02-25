@@ -16,6 +16,8 @@ import { BimShortcutsModal } from '../bim/BimShortcutsModal';
 import { FacilityManagementPanel } from '../bim/FacilityManagementPanel';
 import { BimSectionPanel } from '../bim/BimSectionPanel';
 import { BimPerformanceStats } from '../bim/BimPerformanceStats';
+import { useBimWalkthrough } from '../bim/useBimWalkthrough';
+import { BimWalkthroughHUD } from '../bim/BimWalkthroughHUD';
 
 // ── Types ───────────────────────────────────────────
 interface ProjectBimTabProps {
@@ -61,6 +63,12 @@ const ProjectBimTabContent: React.FC = () => {
     const [bottomTab, setBottomTab] = useState<'properties' | 'operations'>('properties');
     const [isDraggingFile, setIsDraggingFile] = useState(false);
     const [showPerfStats, setShowPerfStats] = useState(false);
+
+    // ── First-person walkthrough ──────────
+    const walkthrough = useBimWalkthrough({
+        worldRef: engine.worldRef,
+        containerRef: containerRef as React.RefObject<HTMLDivElement | null>,
+    });
 
     // ── Resizable panels ──────────────────────
     const LEFT_DEFAULT = 280, LEFT_MIN = 200, LEFT_MAX = 500;
@@ -407,6 +415,9 @@ const ProjectBimTabContent: React.FC = () => {
                 case 'p': case 'P':
                     setShowPerfStats(prev => !prev);
                     break;
+                case 'g': case 'G':
+                    walkthrough.toggle();
+                    break;
             }
         };
         window.addEventListener('keydown', handleKeyDown);
@@ -685,6 +696,14 @@ const ProjectBimTabContent: React.FC = () => {
                 <BimPerformanceStats
                     visible={showPerfStats}
                     onClose={() => setShowPerfStats(false)}
+                />
+
+                {/* Walkthrough HUD */}
+                <BimWalkthroughHUD
+                    isActive={walkthrough.isActive}
+                    speed={walkthrough.speed}
+                    onExit={walkthrough.exit}
+                    isDark={isDark}
                 />
 
                 {/* Section Box Controls */}
