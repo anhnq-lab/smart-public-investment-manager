@@ -38,6 +38,7 @@ import PaymentList from './features/payments/PaymentList';
 import DocumentManager from './features/documents/DocumentManager';
 import ReportCenter from './features/reports/ReportCenter';
 import Regulations from './features/regulations/Regulations';
+import LegalDocumentSearch from './features/legal-documents/LegalDocumentSearch';
 import Settings from './features/settings/Settings';
 import AuditLogViewer from './features/admin/AuditLogViewer';
 
@@ -95,6 +96,7 @@ const App: React.FC = () => {
 
                                     {/* Documents & Reports */}
                                     <Route path="documents" element={<DocumentManager />} />
+                                    <Route path="legal-documents" element={<LegalDocumentSearch />} />
                                     <Route path="reports" element={<ReportCenter />} />
                                     <Route path="regulations" element={<Regulations />} />
 

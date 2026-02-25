@@ -16,6 +16,7 @@ import {
   User,
   ChevronLeft,
   ChevronRight,
+  Scale,
 } from 'lucide-react';
 
 // ========================================
@@ -45,6 +46,7 @@ const navItems: NavItem[] = [
   { name: 'Hợp đồng', path: '/contracts', icon: FileText },
   { name: 'Thanh toán', path: '/payments', icon: CreditCard },
   { name: 'Hồ sơ tài liệu', path: '/documents', icon: FileBox },
+  { name: 'Văn bản pháp luật', path: '/legal-documents', icon: Scale },
   { name: 'Báo cáo', path: '/reports', icon: BarChart2 },
   { name: 'Quy chế làm việc', path: '/regulations', icon: BookOpen },
 ];
