@@ -409,7 +409,9 @@ export const BimToolbar: React.FC<BimToolbarProps> = ({
                     { id: 'shading', icon: <CircleDot className="w-4 h-4" />, label: 'Shading', active: renderMode === 'shading', onClick: () => tools.setRenderMode('shading') },
                     { id: 'wireframe', icon: <Grid3X3 className="w-4 h-4" />, label: 'Wireframe', active: renderMode === 'wireframe', onClick: () => tools.setRenderMode('wireframe') },
                     { id: 'xray', icon: <ScanLine className="w-4 h-4" />, label: 'X-Ray', active: renderMode === 'xray', onClick: () => tools.setRenderMode('xray') },
-                    { id: 'ghosting', icon: <Pipette className="w-4 h-4" />, label: 'Ghosting', active: renderMode === 'ghosting', onClick: () => tools.setRenderMode('ghosting') },
+                    { id: 'ghosting', icon: <Pipette className="w-4 h-4" />, label: 'Ghosting', active: renderMode === 'ghosting', divider: true, onClick: () => tools.setRenderMode('ghosting') },
+                    { id: 'edge-outline', icon: <Layers className="w-4 h-4" />, label: 'Edge Outline', active: engine.edgeOutlineEnabled, onClick: () => engine.toggleEdgeOutline(!engine.edgeOutlineEnabled) },
+                    { id: 'ssao', icon: <Sun className="w-4 h-4" />, label: 'Ambient Occlusion', active: engine.aoEnabled, onClick: () => engine.toggleAO(!engine.aoEnabled) },
                 ]}
             />
 

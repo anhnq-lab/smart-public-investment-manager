@@ -88,6 +88,11 @@ export interface BimEngineAPI {
     zoomToObject: (object: THREE.Object3D) => void;
     zoomToExpressId: (expressId: number) => Promise<void>;
     orbit: (deltaAzimuth: number, deltaPolar: number) => void;
+    // Postproduction
+    edgeOutlineEnabled: boolean;
+    aoEnabled: boolean;
+    toggleEdgeOutline: (enabled: boolean) => void;
+    toggleAO: (enabled: boolean) => void;
 }
 
 export function useBimEngine(
@@ -101,6 +106,8 @@ export function useBimEngine(
     const [viewerReady, setViewerReady] = useState(false);
     const [cameraQuaternion, setCameraQuaternion] = useState(() => new THREE.Quaternion());
     const [initError, setInitError] = useState<string | null>(null);
+    const [edgeOutlineEnabled, setEdgeOutlineEnabled] = useState(true);
+    const [aoEnabled, setAoEnabled] = useState(false);
 
     // ── Initialize engine ───────────────────────────
     useEffect(() => {
@@ -165,6 +172,13 @@ export function useBimEngine(
                     renderer.toneMapping = THREE.ACESFilmicToneMapping;
                     renderer.toneMappingExposure = isDarkMode ? 1.2 : 1.0;
                     renderer.outputColorSpace = THREE.SRGBColorSpace;
+                }
+
+                // Enable postproduction edge outlines
+                const postproduction = (world.renderer as any).postproduction;
+                if (postproduction) {
+                    postproduction.enabled = true;
+                    postproduction.customEffects.outlineEnabled = true;
                 }
 
                 // Camera with smooth controls
@@ -483,6 +497,23 @@ export function useBimEngine(
         }
     }, [componentsRef, worldRef]);
 
+    // ── Postproduction toggles ────────────────────────
+    const toggleEdgeOutline = useCallback((enabled: boolean) => {
+        const pp = (worldRef.current?.renderer as any)?.postproduction;
+        if (pp) {
+            pp.customEffects.outlineEnabled = enabled;
+        }
+        setEdgeOutlineEnabled(enabled);
+    }, []);
+
+    const toggleAO = useCallback((enabled: boolean) => {
+        const pp = (worldRef.current?.renderer as any)?.postproduction;
+        if (pp) {
+            pp.customEffects.glossEnabled = enabled;
+        }
+        setAoEnabled(enabled);
+    }, []);
+
     return {
         componentsRef,
         worldRef,
@@ -496,5 +527,9 @@ export function useBimEngine(
         zoomToObject,
         zoomToExpressId,
         orbit,
+        edgeOutlineEnabled,
+        aoEnabled,
+        toggleEdgeOutline,
+        toggleAO,
     };
 }
