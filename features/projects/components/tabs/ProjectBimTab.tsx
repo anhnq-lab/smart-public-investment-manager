@@ -59,6 +59,56 @@ const ProjectBimTabContent: React.FC = () => {
     const [isFullscreen, setIsFullscreen] = useState(false);
     const [bottomTab, setBottomTab] = useState<'properties' | 'operations'>('properties');
     const [isDraggingFile, setIsDraggingFile] = useState(false);
+
+    // ── Resizable panels ──────────────────────
+    const LEFT_DEFAULT = 280, LEFT_MIN = 200, LEFT_MAX = 500;
+    const BOTTOM_DEFAULT = 240, BOTTOM_MIN = 100, BOTTOM_MAX = 500;
+    const [leftWidth, setLeftWidth] = useState(() => {
+        try { return parseInt(localStorage.getItem('bim-left-width') || '') || LEFT_DEFAULT; } catch { return LEFT_DEFAULT; }
+    });
+    const [bottomHeight, setBottomHeight] = useState(() => {
+        try { return parseInt(localStorage.getItem('bim-bottom-height') || '') || BOTTOM_DEFAULT; } catch { return BOTTOM_DEFAULT; }
+    });
+    const resizeDrag = useRef<{ type: 'left' | 'bottom'; startPos: number; startSize: number } | null>(null);
+
+    // Persist panel sizes
+    useEffect(() => { try { localStorage.setItem('bim-left-width', String(leftWidth)); } catch { } }, [leftWidth]);
+    useEffect(() => { try { localStorage.setItem('bim-bottom-height', String(bottomHeight)); } catch { } }, [bottomHeight]);
+
+    // Global mouse move/up for resize
+    useEffect(() => {
+        const onMouseMove = (e: MouseEvent) => {
+            const d = resizeDrag.current;
+            if (!d) return;
+            e.preventDefault();
+            if (d.type === 'left') {
+                const newW = Math.max(LEFT_MIN, Math.min(LEFT_MAX, d.startSize + (e.clientX - d.startPos)));
+                setLeftWidth(newW);
+            } else {
+                const newH = Math.max(BOTTOM_MIN, Math.min(BOTTOM_MAX, d.startSize - (e.clientY - d.startPos)));
+                setBottomHeight(newH);
+            }
+        };
+        const onMouseUp = () => { resizeDrag.current = null; document.body.style.cursor = ''; document.body.style.userSelect = ''; };
+        window.addEventListener('mousemove', onMouseMove);
+        window.addEventListener('mouseup', onMouseUp);
+        return () => { window.removeEventListener('mousemove', onMouseMove); window.removeEventListener('mouseup', onMouseUp); };
+    }, []);
+
+    const startResizeLeft = useCallback((e: React.MouseEvent) => {
+        e.preventDefault();
+        resizeDrag.current = { type: 'left', startPos: e.clientX, startSize: leftWidth };
+        document.body.style.cursor = 'col-resize';
+        document.body.style.userSelect = 'none';
+    }, [leftWidth]);
+
+    const startResizeBottom = useCallback((e: React.MouseEvent) => {
+        e.preventDefault();
+        resizeDrag.current = { type: 'bottom', startPos: e.clientY, startSize: bottomHeight };
+        document.body.style.cursor = 'row-resize';
+        document.body.style.userSelect = 'none';
+    }, [bottomHeight]);
+
     const wrapperRef = useRef<HTMLDivElement>(null);
     const contextMenuRef = useRef<HTMLDivElement>(null);
     const originalMaterialsRef = useRef(new WeakMap<THREE.Material, THREE.Material>());
@@ -474,8 +524,8 @@ const ProjectBimTabContent: React.FC = () => {
             style={{
                 ...(isFullscreen ? { width: '100vw', height: '100vh', position: 'fixed' as const, top: 0, left: 0, zIndex: 9999 } : {}),
                 display: 'grid',
-                gridTemplateColumns: showLeftPanel ? '280px 1fr' : '1fr',
-                gridTemplateRows: showBottomPanel ? '1fr 240px' : '1fr',
+                gridTemplateColumns: showLeftPanel ? `${leftWidth}px 6px 1fr` : '1fr',
+                gridTemplateRows: showBottomPanel ? `1fr 6px ${bottomHeight}px` : '1fr',
             }}
             onDragOver={handleDragOver}
             onDragLeave={handleDragLeave}
@@ -497,6 +547,24 @@ const ProjectBimTabContent: React.FC = () => {
                     <div className="flex-1 overflow-hidden flex flex-col min-h-0">
                         <BimPropertiesPanel isBottomPanel={false} />
                     </div>
+                </div>
+            )}
+
+            {/* ─── LEFT RESIZE HANDLE ─── */}
+            {showLeftPanel && (
+                <div
+                    className={`group relative cursor-col-resize flex items-center justify-center select-none
+                        ${isDark ? 'hover:bg-blue-500/20' : 'hover:bg-blue-500/10'}
+                        transition-colors
+                    `}
+                    style={{ gridRow: '1 / -1' }}
+                    onMouseDown={startResizeLeft}
+                    onDoubleClick={() => setLeftWidth(LEFT_DEFAULT)}
+                    title="Kéo để resize (double-click reset)"
+                >
+                    <div className={`w-0.5 h-8 rounded-full transition-all
+                        ${isDark ? 'bg-slate-700 group-hover:bg-blue-400' : 'bg-gray-300 group-hover:bg-blue-500'}
+                    `} />
                 </div>
             )}
 
@@ -679,13 +747,31 @@ const ProjectBimTabContent: React.FC = () => {
                 )}
             </div>
 
+            {/* ─── BOTTOM RESIZE HANDLE ─── */}
+            {showBottomPanel && (
+                <div
+                    className={`group relative cursor-row-resize flex items-center justify-center select-none
+                        ${isDark ? 'hover:bg-blue-500/20' : 'hover:bg-blue-500/10'}
+                        transition-colors
+                    `}
+                    style={{ gridColumn: showLeftPanel ? '3' : '1' }}
+                    onMouseDown={startResizeBottom}
+                    onDoubleClick={() => setBottomHeight(BOTTOM_DEFAULT)}
+                    title="Kéo để resize (double-click reset)"
+                >
+                    <div className={`h-0.5 w-12 rounded-full transition-all
+                        ${isDark ? 'bg-slate-700 group-hover:bg-blue-400' : 'bg-gray-300 group-hover:bg-blue-500'}
+                    `} />
+                </div>
+            )}
+
             {/* ─── BOTTOM PANEL: Operations Management ─── */}
             {showBottomPanel && (
                 <div
                     className={`flex flex-col overflow-hidden border-t z-20
                         ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-gray-200'}
                     `}
-                    style={{ gridColumn: showLeftPanel ? '2' : '1' }}
+                    style={{ gridColumn: showLeftPanel ? '3' : '1' }}
                 >
                     {/* Panel header */}
                     <div className={`
