@@ -8,6 +8,72 @@ import * as OBC from '@thatopen/components';
 import * as OBCF from '@thatopen/components-front';
 import * as THREE from 'three';
 
+// ── Sky gradient helper ─────────────────────────
+function createSkyGradientTexture(isDark: boolean): THREE.CanvasTexture {
+    const canvas = document.createElement('canvas');
+    canvas.width = 2;
+    canvas.height = 512;
+    const ctx = canvas.getContext('2d')!;
+    const gradient = ctx.createLinearGradient(0, 0, 0, 512);
+    if (isDark) {
+        // Deep space blue → slate-950 horizon → warm dark ground
+        gradient.addColorStop(0.0, '#0c1222');   // top: deep navy
+        gradient.addColorStop(0.3, '#0f172a');   // upper: slate-950
+        gradient.addColorStop(0.5, '#131c2e');   // mid: slightly lighter
+        gradient.addColorStop(0.7, '#1a2236');   // lower mid: warm tint
+        gradient.addColorStop(0.85, '#1e293b');  // horizon: slate-800
+        gradient.addColorStop(1.0, '#0f172a');   // bottom: back to dark
+    } else {
+        // Soft sky blue → white → warm ground
+        gradient.addColorStop(0.0, '#87CEEB');   // top: sky blue
+        gradient.addColorStop(0.2, '#B0D8F0');   // upper: lighter blue
+        gradient.addColorStop(0.45, '#dce8f2');  // mid: soft blue-white
+        gradient.addColorStop(0.6, '#f0f4f8');   // horizon: near white
+        gradient.addColorStop(0.75, '#f5f0eb');  // below: warm tone
+        gradient.addColorStop(1.0, '#e8e0d8');   // bottom: warm ground
+    }
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, 2, 512);
+    const texture = new THREE.CanvasTexture(canvas);
+    texture.mapping = THREE.EquirectangularReflectionMapping;
+    texture.needsUpdate = true;
+    return texture;
+}
+
+// ── Grid floor helper ───────────────────────────
+function createGridFloor(isDark: boolean): THREE.Group {
+    const group = new THREE.Group();
+    group.name = '__bim_grid_floor__';
+
+    // Major grid
+    const majorSize = 200;
+    const majorDivisions = 20;
+    const majorGrid = new THREE.GridHelper(
+        majorSize, majorDivisions,
+        isDark ? 0x2a3a4a : 0xc0c8d0,
+        isDark ? 0x1a2535 : 0xd8dce2
+    );
+    (majorGrid.material as THREE.Material).transparent = true;
+    (majorGrid.material as THREE.Material).opacity = isDark ? 0.4 : 0.35;
+    (majorGrid.material as THREE.Material).depthWrite = false;
+    majorGrid.position.y = -0.01;
+    group.add(majorGrid);
+
+    // Minor grid (finer)
+    const minorGrid = new THREE.GridHelper(
+        majorSize, majorDivisions * 5,
+        isDark ? 0x1e2d3d : 0xd0d4d8,
+        isDark ? 0x162030 : 0xe0e4e8
+    );
+    (minorGrid.material as THREE.Material).transparent = true;
+    (minorGrid.material as THREE.Material).opacity = isDark ? 0.15 : 0.15;
+    (minorGrid.material as THREE.Material).depthWrite = false;
+    minorGrid.position.y = -0.02;
+    group.add(minorGrid);
+
+    return group;
+}
+
 export interface BimEngineAPI {
     componentsRef: React.MutableRefObject<OBC.Components | null>;
     worldRef: React.MutableRefObject<OBC.World | null>;
@@ -60,9 +126,11 @@ export function useBimEngine(
                 // ── Professional lighting ──────────────────
                 const scene = world.scene.three as THREE.Scene;
 
-                // Gradient background
-                const bgColor = isDarkMode ? 0x0f172a : 0xf0f4f8;
-                scene.background = new THREE.Color(bgColor);
+                // Gradient sky background
+                scene.background = createSkyGradientTexture(isDarkMode);
+
+                // Grid floor
+                scene.add(createGridFloor(isDarkMode));
 
                 // Hemisphere light for ambient fill
                 const hemiLight = new THREE.HemisphereLight(
@@ -267,7 +335,16 @@ export function useBimEngine(
         const scene = worldRef.current?.scene?.three as THREE.Scene | undefined;
         if (!scene) return;
 
-        scene.background = new THREE.Color(isDarkMode ? 0x0f172a : 0xf0f4f8);
+        // Update gradient sky
+        if (scene.background instanceof THREE.CanvasTexture) {
+            scene.background.dispose();
+        }
+        scene.background = createSkyGradientTexture(isDarkMode);
+
+        // Update grid floor
+        const oldGrid = scene.getObjectByName('__bim_grid_floor__');
+        if (oldGrid) scene.remove(oldGrid);
+        scene.add(createGridFloor(isDarkMode));
 
         // Update lights
         scene.traverse((obj) => {
