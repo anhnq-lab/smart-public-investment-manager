@@ -8,6 +8,7 @@ const STORAGE_KEYS = {
     BOOKMARKS: 'legal-bookmarks',
     RECENTLY_VIEWED: 'legal-recently-viewed',
     READING_PREFS: 'legal-reading-prefs',
+    ARTICLE_EDITS: 'legal-edit-store',
 };
 
 export interface BookmarkItem {
@@ -126,4 +127,36 @@ export function useReadingPrefs() {
     }, []);
 
     return { prefs, setFontSize, toggleExpandAll };
+}
+
+// ── Manual Edits Hook ──
+export function useLegalEditStore() {
+    const [edits, setEdits] = useState<Record<string, string>>(() =>
+        loadFromStorage(STORAGE_KEYS.ARTICLE_EDITS, {})
+    );
+
+    useEffect(() => {
+        saveToStorage(STORAGE_KEYS.ARTICLE_EDITS, edits);
+    }, [edits]);
+
+    const saveEdit = useCallback((articleId: string, newContent: string) => {
+        setEdits(prev => ({
+            ...prev,
+            [articleId]: newContent
+        }));
+    }, []);
+
+    const getEdit = useCallback((articleId: string) => {
+        return edits[articleId];
+    }, [edits]);
+
+    const clearEdit = useCallback((articleId: string) => {
+        setEdits(prev => {
+            const next = { ...prev };
+            delete next[articleId];
+            return next;
+        });
+    }, []);
+
+    return { edits, saveEdit, getEdit, clearEdit };
 }

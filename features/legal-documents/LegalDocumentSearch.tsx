@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { legalDocuments, searchDocuments, getDocStats, deepSearchArticles, DocType } from './legalData';
-import { useBookmarks, useRecentlyViewed, useReadingPrefs } from './useLegalStorage';
+import { useBookmarks, useRecentlyViewed, useReadingPrefs, useLegalEditStore } from './useLegalStorage';
 import { LegalHeader } from './components/LegalHeader';
 import { LegalSidebar } from './components/LegalSidebar';
 import { LegalDetail } from './components/LegalDetail';
@@ -34,6 +34,7 @@ const LegalDocumentSearch: React.FC = () => {
     const { bookmarks, toggleBookmark, isBookmarked } = useBookmarks();
     const { recentlyViewed, addView } = useRecentlyViewed();
     const { prefs } = useReadingPrefs();
+    const { saveEdit, edits } = useLegalEditStore();
     const fontSizeMap = { sm: 13, base: 14, lg: 16 } as const;
     const fontSize = fontSizeMap[prefs?.fontSize || 'base'];
 
@@ -229,6 +230,8 @@ const LegalDocumentSearch: React.FC = () => {
                             handleCopy={handleCopy}
                             copiedLinkId={copiedLinkId}
                             handleCopyLink={handleCopyLink}
+                            edits={edits}
+                            onSaveEdit={saveEdit}
                         >
                             {/* Quick TOC (Right Mini Panel) */}
                             {showTOC && selectedDoc.chapters.length > 0 && !showPdfViewer && (
@@ -252,6 +255,7 @@ const LegalDocumentSearch: React.FC = () => {
                             activeArticleId={null} expandedArticles={new Set()}
                             toggleArticleExpansion={() => { }} copiedId={null} handleCopy={() => { }}
                             copiedLinkId={null} handleCopyLink={() => { }}
+                            edits={{}} onSaveEdit={() => { }}
                         />
                     )}
                 </div>

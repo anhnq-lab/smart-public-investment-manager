@@ -26,6 +26,8 @@ interface LegalDetailProps {
     copiedLinkId?: string | null;
     handleCopyLink?: (articleId: string) => void;
     children?: React.ReactNode;
+    edits: Record<string, string>;
+    onSaveEdit: (articleId: string, newContent: string) => void;
 }
 
 export const LegalDetail: React.FC<LegalDetailProps> = ({
@@ -33,7 +35,8 @@ export const LegalDetail: React.FC<LegalDetailProps> = ({
     readingMode, setReadingMode, handlePrint, fontSize, searchQuery,
     isBookmarked, toggleBookmark, expandedChapters, toggleChapter,
     activeArticleId, expandedArticles, toggleArticleExpansion,
-    copiedId, handleCopy, copiedLinkId, handleCopyLink, children
+    copiedId, handleCopy, copiedLinkId, handleCopyLink, children,
+    edits, onSaveEdit
 }) => {
     if (!selectedDoc) {
         return (
@@ -161,7 +164,11 @@ export const LegalDetail: React.FC<LegalDetailProps> = ({
                                                     return (
                                                         <LegalArticleCard
                                                             key={article.id}
-                                                            article={article}
+                                                            article={{
+                                                                ...article,
+                                                                content: edits[article.id] || article.content, // Overlay edit content
+                                                                fullContent: edits[article.id] || article.fullContent,
+                                                            }}
                                                             selectedDocId={selectedDoc.id}
                                                             isActive={isActive}
                                                             isExpanded={isExpanded}
@@ -171,6 +178,7 @@ export const LegalDetail: React.FC<LegalDetailProps> = ({
                                                             toggleArticleExpansion={toggleArticleExpansion}
                                                             toggleBookmark={toggleBookmark}
                                                             handleCopy={handleCopy}
+                                                            onSaveEdit={onSaveEdit}
                                                         />
                                                     );
                                                 })}
