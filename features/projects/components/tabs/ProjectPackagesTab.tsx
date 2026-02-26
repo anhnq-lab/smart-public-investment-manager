@@ -497,9 +497,10 @@ export const ProjectPackagesTab: React.FC<ProjectPackagesTabProps> = ({ projectI
                             <div className="overflow-x-auto">
                                 <table className="w-full text-xs border-collapse">
                                     <thead>
-                                        <tr className="bg-slate-100 dark:bg-slate-700 border-b border-slate-300 dark:border-slate-600">
-                                            <th className="border border-slate-300 px-1 py-2 text-center w-8"></th>
-                                            <th className="border border-slate-300 px-2 py-2 text-center w-10">
+                                        {/* Row 1 - Main headers with rowSpan=2 */}
+                                        <tr className="bg-slate-100 dark:bg-slate-700">
+                                            <th rowSpan={2} className="border border-slate-300 dark:border-slate-600 px-1 py-2 text-center w-8"></th>
+                                            <th rowSpan={2} className="border border-slate-300 dark:border-slate-600 px-2 py-2 text-center w-10">
                                                 <input
                                                     type="checkbox"
                                                     className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
@@ -515,17 +516,25 @@ export const ProjectPackagesTab: React.FC<ProjectPackagesTabProps> = ({ projectI
                                                     }}
                                                 />
                                             </th>
-                                            <th className="border border-slate-300 px-2 py-2 text-center font-bold text-slate-700 dark:text-slate-200 w-10">TT</th>
-                                            <th className="border border-slate-300 px-2 py-2 text-center font-bold text-slate-700 dark:text-slate-200 min-w-[200px]">Tên gói thầu</th>
-                                            <th className="border border-slate-300 px-2 py-2 text-center font-bold text-slate-700 dark:text-slate-200 w-[110px]">Giá gói thầu<br />(đồng)</th>
-                                            <th className="border border-slate-300 px-2 py-2 text-center font-bold text-slate-700 dark:text-slate-200 min-w-[80px]">Lĩnh vực</th>
-                                            <th className="border border-slate-300 px-2 py-2 text-center font-bold text-slate-700 dark:text-slate-200">Hình thức<br />LCNT</th>
-                                            <th className="border border-slate-300 px-2 py-2 text-center font-bold text-slate-700 dark:text-slate-200">Phương thức<br />LCNT</th>
-                                            <th className="border border-slate-300 px-2 py-2 text-center font-bold text-slate-700 dark:text-slate-200">Loại<br />hợp đồng</th>
-                                            <th className="border border-slate-300 px-2 py-2 text-center font-bold text-slate-700 dark:text-slate-200 w-[90px]">Thời gian<br />thực hiện</th>
-                                            <th className="border border-slate-300 px-2 py-2 text-center font-bold text-slate-700 dark:text-slate-200 w-[90px]">Trạng thái</th>
-                                            <th className="border border-slate-300 px-2 py-2 text-center font-bold text-slate-700 dark:text-slate-200 w-[60px]">MSC</th>
-                                            <th className="border border-slate-300 px-2 py-2 text-center font-bold text-slate-700 dark:text-slate-200 w-10">TT</th>
+                                            <th rowSpan={2} className="border border-slate-300 dark:border-slate-600 px-2 py-2 text-center font-bold text-slate-700 dark:text-slate-200 w-10">TT</th>
+                                            <th colSpan={2} className="border border-slate-300 dark:border-slate-600 px-2 py-2 text-center font-bold text-slate-700 dark:text-slate-200">Tên gói thầu</th>
+                                            <th rowSpan={2} className="border border-slate-300 dark:border-slate-600 px-2 py-2 text-center font-bold text-slate-700 dark:text-slate-200 w-[110px]">Giá gói thầu<br />(đồng)</th>
+                                            <th rowSpan={2} className="border border-slate-300 dark:border-slate-600 px-2 py-2 text-center font-bold text-slate-700 dark:text-slate-200 min-w-[100px]">Nguồn vốn</th>
+                                            <th rowSpan={2} className="border border-slate-300 dark:border-slate-600 px-2 py-2 text-center font-bold text-slate-700 dark:text-slate-200">Hình thức<br />lựa chọn<br />nhà thầu</th>
+                                            <th rowSpan={2} className="border border-slate-300 dark:border-slate-600 px-2 py-2 text-center font-bold text-slate-700 dark:text-slate-200">Phương thức<br />lựa chọn<br />nhà thầu</th>
+                                            <th rowSpan={2} className="border border-slate-300 dark:border-slate-600 px-2 py-2 text-center font-bold text-slate-700 dark:text-slate-200 w-[90px]">Thời gian<br />tổ chức<br />LCNT</th>
+                                            <th rowSpan={2} className="border border-slate-300 dark:border-slate-600 px-2 py-2 text-center font-bold text-slate-700 dark:text-slate-200 w-[90px]">Thời gian<br />bắt đầu<br />tổ chức<br />LCNT</th>
+                                            <th rowSpan={2} className="border border-slate-300 dark:border-slate-600 px-2 py-2 text-center font-bold text-slate-700 dark:text-slate-200">Loại<br />hợp đồng</th>
+                                            <th rowSpan={2} className="border border-slate-300 dark:border-slate-600 px-2 py-2 text-center font-bold text-slate-700 dark:text-slate-200 w-[90px]">Thời gian<br />thực hiện<br />gói thầu</th>
+                                            <th rowSpan={2} className="border border-slate-300 dark:border-slate-600 px-2 py-2 text-center font-bold text-slate-700 dark:text-slate-200 w-[60px]">Tùy chọn<br />mua thêm</th>
+                                            <th rowSpan={2} className="border border-slate-300 dark:border-slate-600 px-2 py-2 text-center font-bold text-slate-700 dark:text-slate-200 w-[90px]">Trạng thái</th>
+                                            <th rowSpan={2} className="border border-slate-300 dark:border-slate-600 px-2 py-2 text-center font-bold text-slate-700 dark:text-slate-200 w-[60px]">MSC</th>
+                                            <th rowSpan={2} className="border border-slate-300 dark:border-slate-600 px-2 py-2 text-center font-bold text-slate-700 dark:text-slate-200 w-10">TT</th>
+                                        </tr>
+                                        {/* Row 2 - Sub-headers for Tên gói thầu */}
+                                        <tr className="bg-slate-100 dark:bg-slate-700">
+                                            <th className="border border-slate-300 dark:border-slate-600 px-2 py-1 text-center font-bold text-slate-700 dark:text-slate-200 min-w-[120px]">Tên gói thầu</th>
+                                            <th className="border border-slate-300 dark:border-slate-600 px-2 py-1 text-center font-bold text-slate-700 dark:text-slate-200 min-w-[140px]">Tóm tắt công việc<br />chính của gói thầu</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -594,24 +603,19 @@ export const ProjectPackagesTab: React.FC<ProjectPackagesTabProps> = ({ projectI
                                                         </div>
                                                     </td>
 
+                                                    {/* Tóm tắt công việc chính */}
+                                                    <td className="border border-slate-200 dark:border-slate-700 px-2 py-3 text-slate-600 dark:text-slate-400 align-top">
+                                                        {pkg.Description || '-'}
+                                                    </td>
+
                                                     {/* Giá gói thầu */}
                                                     <td className="border border-slate-200 dark:border-slate-700 px-2 py-3 text-right font-bold text-slate-900 dark:text-slate-100 align-top whitespace-nowrap">
                                                         {formatCurrency(pkg.Price)}
                                                     </td>
 
-                                                    {/* Lĩnh vực */}
-                                                    <td className="border border-slate-200 dark:border-slate-700 px-2 py-3 text-center align-top">
-                                                        <span className={`text-[10px] px-1.5 py-0.5 rounded ${pkg.Field === 'Construction' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300' :
-                                                            pkg.Field === 'Consultancy' ? 'bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300' :
-                                                                pkg.Field === 'Goods' ? 'bg-orange-100 text-orange-700 dark:bg-orange-900/40 dark:text-orange-300' :
-                                                                    'bg-gray-100 text-gray-600 dark:bg-slate-700 dark:text-slate-400'
-                                                            }`}>
-                                                            {pkg.Field === 'Construction' ? 'Xây lắp' :
-                                                                pkg.Field === 'Consultancy' ? 'Tư vấn' :
-                                                                    pkg.Field === 'Goods' ? 'Hàng hóa' :
-                                                                        pkg.Field === 'NonConsultancy' ? 'Phi tư vấn' :
-                                                                            pkg.Field === 'Mixed' ? 'Hỗn hợp' : pkg.Field || '-'}
-                                                        </span>
+                                                    {/* Nguồn vốn */}
+                                                    <td className="border border-slate-200 dark:border-slate-700 px-2 py-3 text-slate-700 dark:text-slate-300 align-top">
+                                                        {pkg.FundingSource || 'NSNN'}
                                                     </td>
 
                                                     {/* Hình thức LCNT */}
@@ -640,6 +644,16 @@ export const ProjectPackagesTab: React.FC<ProjectPackagesTabProps> = ({ projectI
                                                                         pkg.SelectionProcedure === 'Normal' ? 'Thường' : '-'}
                                                     </td>
 
+                                                    {/* Thời gian tổ chức LCNT */}
+                                                    <td className="border border-slate-200 dark:border-slate-700 px-2 py-3 text-center text-slate-700 dark:text-slate-300 align-top">
+                                                        {pkg.SelectionDuration || '45 ngày'}
+                                                    </td>
+
+                                                    {/* Thời gian bắt đầu tổ chức LCNT */}
+                                                    <td className="border border-slate-200 dark:border-slate-700 px-2 py-3 text-center text-slate-700 dark:text-slate-300 align-top">
+                                                        {pkg.SelectionStartDate || '-'}
+                                                    </td>
+
                                                     {/* Loại hợp đồng */}
                                                     <td className="border border-slate-200 dark:border-slate-700 px-2 py-3 text-center text-slate-700 dark:text-slate-300 align-top">
                                                         {pkg.ContractType === 'LumpSum' ? 'Trọn gói' :
@@ -649,9 +663,14 @@ export const ProjectPackagesTab: React.FC<ProjectPackagesTabProps> = ({ projectI
                                                                         pkg.ContractType || '-'}
                                                     </td>
 
-                                                    {/* Thời gian thực hiện */}
+                                                    {/* Thời gian thực hiện gói thầu */}
                                                     <td className="border border-slate-200 dark:border-slate-700 px-2 py-3 text-center text-slate-700 dark:text-slate-300 align-top font-medium">
                                                         {pkg.Duration || '-'}
+                                                    </td>
+
+                                                    {/* Tùy chọn mua thêm */}
+                                                    <td className="border border-slate-200 dark:border-slate-700 px-2 py-3 text-center text-slate-700 dark:text-slate-300 align-top">
+                                                        {pkg.HasOption ? 'Có' : 'Không'}
                                                     </td>
 
                                                     {/* Trạng thái */}
