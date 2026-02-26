@@ -164,25 +164,7 @@ export function useBimEngine(
                 fillLight.position.set(-30, 20, -20);
                 scene.add(fillLight);
 
-                // Camera with smooth controls (MUST be before renderer for PostproductionRenderer)
-                world.camera = new OBC.SimpleCamera(components);
-                const camera = world.camera as OBC.SimpleCamera;
-                camera.controls.setLookAt(15, 15, 15, 0, 0, 0);
-
-                // Smooth camera controls
-                camera.controls.smoothTime = 0.35;
-                camera.controls.draggingSmoothTime = 0.15;
-
-                // Mouse button mapping (professional BIM style):
-                // Left = orbit, Middle = pan, Right = orbit, Scroll = zoom
-                try {
-                    const CC = (camera.controls as any).constructor;
-                    if (CC?.ACTION) {
-                        camera.controls.mouseButtons.middle = CC.ACTION.TRUCK;
-                    }
-                } catch { /* camera controls mapping not critical */ }
-
-                // Renderer setup (after camera)
+                // Renderer setup (MUST be before camera — SimpleCamera requires renderer)
                 world.renderer = new OBCF.PostproductionRenderer(components, containerRef.current!);
                 const renderer = (world.renderer as any).three;
                 if (renderer) {
@@ -198,6 +180,23 @@ export function useBimEngine(
                     postproduction.enabled = true;
                     postproduction.customEffects.outlineEnabled = true;
                 }
+
+                // Camera with smooth controls (after renderer)
+                world.camera = new OBC.SimpleCamera(components);
+                const camera = world.camera as OBC.SimpleCamera;
+                camera.controls.setLookAt(15, 15, 15, 0, 0, 0);
+
+                // Smooth camera controls
+                camera.controls.smoothTime = 0.35;
+                camera.controls.draggingSmoothTime = 0.15;
+
+                // Mouse button mapping (professional BIM style)
+                try {
+                    const CC = (camera.controls as any).constructor;
+                    if (CC?.ACTION) {
+                        camera.controls.mouseButtons.middle = CC.ACTION.TRUCK;
+                    }
+                } catch { /* camera controls mapping not critical */ }
 
                 await components.init();
 
