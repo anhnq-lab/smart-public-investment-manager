@@ -95,6 +95,11 @@ export const BiddingPackageDetail: React.FC<BiddingPackageDetailProps> = ({
 }) => {
     const [activeTab, setActiveTab] = useState<TabType>('khlcnt');
 
+    // Hooks MUST be called before any conditional return (React Rules of Hooks)
+    const { contracts } = useContracts();
+    const { payments } = usePayments();
+    const { contractors } = useContractors();
+
     if (!isOpen || !pkg) return null;
 
     // Get lifecycle stages based on package field type
@@ -102,11 +107,6 @@ export const BiddingPackageDetail: React.FC<BiddingPackageDetailProps> = ({
     const statusConfig = getStatusConfig(pkg.Status);
     const labels = getLabelMaps();
     const currentStage = statusConfig.stage;
-
-    // Fetch related data from Supabase
-    const { contracts } = useContracts();
-    const { payments } = usePayments();
-    const { contractors } = useContractors();
 
     // Get related data
     const relatedContract = contracts.find(c => c.PackageID === pkg.PackageID);

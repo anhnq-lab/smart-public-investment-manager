@@ -726,13 +726,13 @@ export const ProjectPackagesTab: React.FC<ProjectPackagesTabProps> = ({ projectI
                                     {group.packages.length > 0 && (
                                         <tfoot>
                                             <tr className="bg-slate-50 dark:bg-slate-750 font-bold">
-                                                <td colSpan={4} className="border border-slate-300 dark:border-slate-600 px-3 py-2 text-right text-slate-700 dark:text-slate-200 text-xs">
+                                                <td colSpan={5} className="border border-slate-300 dark:border-slate-600 px-3 py-2 text-right text-slate-700 dark:text-slate-200 text-xs">
                                                     Tổng ({group.packages.length} gói):
                                                 </td>
                                                 <td className="border border-slate-300 dark:border-slate-600 px-2 py-2 text-right text-slate-900 dark:text-slate-100 tabular-nums text-xs">
                                                     {formatCurrency(group.packages.reduce((sum, pkg) => sum + pkg.Price, 0))}
                                                 </td>
-                                                <td colSpan={8} className="border border-slate-300 dark:border-slate-600"></td>
+                                                <td colSpan={11} className="border border-slate-300 dark:border-slate-600"></td>
                                             </tr>
                                         </tfoot>
                                     )}
