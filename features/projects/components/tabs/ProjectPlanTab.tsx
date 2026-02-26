@@ -20,6 +20,7 @@ import { SubTaskDetailModal } from '../SubTaskDetailModal';
 import { TaskService } from '@/services/TaskService';
 import { supabase } from '@/lib/supabase';
 import { findByStepCode, buildTT24Key } from '@/utils/docStepMapping';
+import { LegalReferenceLink } from '@/components/common/LegalReferenceLink';
 
 
 interface ProjectPlanTabProps {
@@ -721,7 +722,7 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({
                         Kế hoạch thực hiện dự án
                     </h3>
                     <p className="text-xs text-blue-600 dark:text-blue-400 mt-1">
-                        Căn cứ theo Điều 4, Nghị định 175/NĐ-CP về trình tự đầu tư xây dựng.
+                        <LegalReferenceLink text="Căn cứ theo Điều 4, Nghị định 175/NĐ-CP về trình tự đầu tư xây dựng." />
                     </p>
                 </div>
                 <div className="flex items-center gap-3">
@@ -1062,7 +1063,7 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({
                                                             <div className="flex items-center gap-2">
                                                                 <Scale className="w-3.5 h-3.5 text-purple-500" />
                                                                 <span className="text-xs font-semibold text-purple-700 dark:text-purple-300">
-                                                                    Quy trình theo NĐ 175, Luật 135, NĐ 140, NĐ 144
+                                                                    <LegalReferenceLink text="Quy trình theo NĐ 175, Luật 135, NĐ 140, NĐ 144" />
                                                                 </span>
                                                             </div>
                                                             <div className="flex items-center gap-3">

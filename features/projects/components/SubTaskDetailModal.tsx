@@ -5,6 +5,7 @@ import {
     AlignLeft, BarChart3, Save, Zap, Download
 } from 'lucide-react';
 import { SubTaskDef } from '@/utils/stepSubtasksRegistry';
+import { LegalReferenceLink } from '@/components/common/LegalReferenceLink';
 import { Task, TaskStatus, TaskPriority, Employee, Project } from '@/types';
 import { useEmployees } from '@/hooks/useEmployees';
 import { ProgressSlider } from './ProgressSlider';
@@ -249,7 +250,9 @@ export const SubTaskDetailModal: React.FC<SubTaskDetailModalProps> = ({
                                         <Scale size={18} className="text-purple-600 dark:text-purple-400 mt-0.5 shrink-0" />
                                         <div>
                                             <p className="text-xs text-purple-500 dark:text-purple-400/70 font-medium">Căn cứ pháp lý</p>
-                                            <p className="text-sm text-purple-700 dark:text-purple-300">{subTask.legalBasis}</p>
+                                            <p className="text-sm text-purple-700 dark:text-purple-300">
+                                                <LegalReferenceLink text={subTask.legalBasis!} />
+                                            </p>
                                         </div>
                                     </div>
                                 )}
