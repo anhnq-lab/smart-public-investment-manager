@@ -108,7 +108,7 @@ const pl2Content = `Dữ liệu về quy hoạch đô thị và nông thôn
 <table>
 <thead><tr><th>STT</th><th>Thông tin về quy hoạch đô thị và nông thôn</th><th>Quy định về nhập thông tin</th><th>Ghi chú</th></tr></thead>
 <tbody>
-<tr><td colspan="4"><th class="section-header">I. THÔNG TIN CHUNG (để khởi tạo Mã số thông tin theo điểm a khoản 5 Điều 10 NĐ 111/2024)</th></td></tr>
+<tr><th colspan="4" class="section-header">I. THÔNG TIN CHUNG (để khởi tạo Mã số thông tin theo điểm a khoản 5 Điều 10 NĐ 111/2024)</th></td></tr>
 <tr><td class="col-stt">1</td><td>Tên quy hoạch</td><td>[Nhập thông tin]</td><td class="col-note" rowspan="11">CQTĐ QH phối hợp với CQ lập QH để cập nhật nội dung thông tin chung theo điểm a khoản 2 Điều 6 NĐ 111/2024. Dữ liệu mở bao gồm dữ liệu tại mục I và II.</td></tr>
 <tr><td class="col-stt">2</td><td>Loại quy hoạch</td><td>[Chọn loại quy hoạch]</td></tr>
 <tr><td class="col-stt">3</td><td>Cấp độ quy hoạch</td><td>[Chọn cấp độ quy hoạch]</td></tr>
@@ -120,14 +120,14 @@ const pl2Content = `Dữ liệu về quy hoạch đô thị và nông thôn
 <tr><td class="col-stt">9</td><td>Cơ quan tổ chức lập quy hoạch</td><td>[Nhập thông tin hoặc Mã ĐKKD]</td></tr>
 <tr><td class="col-stt">10</td><td>Cơ quan thẩm định quy hoạch</td><td>[Nhập thông tin]</td></tr>
 <tr><td class="col-stt">11</td><td>Cơ quan phê duyệt quy hoạch</td><td>[Nhập thông tin]</td></tr>
-<tr><td colspan="4"><th class="section-header">II. THÔNG TIN CHI TIẾT (CQ lập QH cập nhật theo điểm b khoản 5 Điều 10 NĐ 111/2024)</th></td></tr>
+<tr><th colspan="4" class="section-header">II. THÔNG TIN CHI TIẾT (CQ lập QH cập nhật theo điểm b khoản 5 Điều 10 NĐ 111/2024)</th></td></tr>
 <tr><td class="col-stt">1</td><td>Quy mô dân số dự báo</td><td>[Nhập thông tin]</td><td class="col-note" rowspan="6">CQ lập QH cập nhật. Dữ liệu mở bao gồm mục I và II.</td></tr>
 <tr><td class="col-stt">2</td><td>Thời hạn quy hoạch</td><td>[Nhập thông tin]</td></tr>
 <tr><td class="col-stt">3</td><td>Quy định quản lý theo quy hoạch</td><td>[File hồ sơ chứng thực ĐT theo TT 16/2025]</td></tr>
 <tr><td class="col-stt">4</td><td>Kế hoạch thực hiện QH chung</td><td>[File ký số hoặc chứng thực bản sao ĐT]</td></tr>
 <tr><td class="col-stt">5</td><td>Quy chế quản lý kiến trúc (nếu có)</td><td>[File hồ sơ chứng thực ĐT]</td></tr>
 <tr><td class="col-stt">6</td><td>Thông tin liên quan khác</td><td>6.1 Các NV QH liên quan [mã TTQH cấp trên/dưới]<br/>6.2 Chủ nhiệm lập QH [mã CCHN/CCCD]<br/>6.3 DS chủ trì bộ môn TK QH [mã CCHN/CCCD]<br/>6.4 Thông tin khác</td></tr>
-<tr><td colspan="4"><th class="section-header">III. HỒ SƠ NHIỆM VỤ QH, QH ĐÔ THỊ VÀ NÔNG THÔN</th></td></tr>
+<tr><th colspan="4" class="section-header">III. HỒ SƠ NHIỆM VỤ QH, QH ĐÔ THỊ VÀ NÔNG THÔN</th></td></tr>
 <tr><td class="col-stt">1</td><td>Cơ sở dữ liệu số cơ bản</td><td>[File bản vẽ và văn bản theo TT 16/2025]</td><td class="col-note" rowspan="3">Theo quy định TT 16/2025</td></tr>
 <tr><td class="col-stt">2</td><td>Cơ sở dữ liệu số pháp lý</td><td>[File số hóa, scan hoặc chứng thực ĐT]</td></tr>
 <tr><td class="col-stt">3</td><td>Cơ sở dữ liệu số địa lý (GIS)</td><td>[File chuyển đổi thành DL địa lý từ CSDL gốc]</td></tr>
@@ -147,8 +147,8 @@ BẢNG SỐ 01: Dữ liệu về dự án đầu tư xây dựng, công trình x
 <table>
 <thead><tr><th>Mục</th><th>Nội dung dữ liệu</th><th>Quy định nhập</th><th>Ghi chú</th></tr></thead>
 <tbody>
-<tr><td colspan="4"><th class="section-header">A. THẨM ĐỊNH BÁO CÁO NCKT ĐẦU TƯ XÂY DỰNG</th></td></tr>
-<tr><td colspan="4"><th class="section-header">A.I. Dữ liệu chung (CQCM nhập khi khởi tạo Mã số)</th></td></tr>
+<tr><th colspan="4" class="section-header">A. THẨM ĐỊNH BÁO CÁO NCKT ĐẦU TƯ XÂY DỰNG</th></td></tr>
+<tr><th colspan="4" class="section-header">A.I. Dữ liệu chung (CQCM nhập khi khởi tạo Mã số)</th></td></tr>
 <tr><td class="col-stt">1</td><td>Tên dự án ĐTXD</td><td>[Nhập thông tin]</td><td class="col-note" rowspan="7">CQCM về XD khởi tạo mã số khi có kết quả thẩm định theo điểm a khoản 2 Điều 10 NĐ 111/2024</td></tr>
 <tr><td class="col-stt">2</td><td>Nhóm dự án (A/B/C)</td><td>[Chọn nhóm]</td></tr>
 <tr><td class="col-stt">3</td><td>Địa điểm xây dựng</td><td>[Chọn tỉnh/TP]</td></tr>
@@ -156,7 +156,7 @@ BẢNG SỐ 01: Dữ liệu về dự án đầu tư xây dựng, công trình x
 <tr><td class="col-stt">5</td><td>Chủ đầu tư</td><td>[Nhập thông tin]</td></tr>
 <tr><td class="col-stt">6</td><td>Mục tiêu đầu tư</td><td>[Nhập thông tin]</td></tr>
 <tr><td class="col-stt">7</td><td>Quy mô đầu tư (*)</td><td>[Nhập quy mô XD chủ yếu]</td></tr>
-<tr><td colspan="4"><th class="section-header">A.II. Dữ liệu chi tiết (CĐT nhập trong 15 ngày kể từ khi nhận kết quả TĐ)</th></td></tr>
+<tr><th colspan="4" class="section-header">A.II. Dữ liệu chi tiết (CĐT nhập trong 15 ngày kể từ khi nhận kết quả TĐ)</th></td></tr>
 <tr><td class="col-stt">1</td><td>Văn bản về chủ trương đầu tư</td><td>[Đính kèm file]</td><td class="col-note" rowspan="8">CĐT nhập. Dữ liệu mở: mục A.I, A.II.4 và A.II.5</td></tr>
 <tr><td class="col-stt">2</td><td>QĐ phê duyệt QH làm cơ sở lập DA</td><td>[Nhập mã QH hoặc đính kèm]</td></tr>
 <tr><td class="col-stt">3</td><td>Kết quả thủ tục PCCC và bảo vệ MT</td><td>3.1 PCCC [file]<br/>3.2 Môi trường [file]</td></tr>
@@ -165,13 +165,13 @@ BẢNG SỐ 01: Dữ liệu về dự án đầu tư xây dựng, công trình x
 <tr><td class="col-stt">6</td><td>DL tổ chức/cá nhân tham gia</td><td>6.1-6.9: NT khảo sát, CN khảo sát, NT TK, CN TK, DS chủ trì bộ môn, NT thẩm tra, CN thẩm tra, DS chủ trì TT, NT thẩm tra ATGT</td></tr>
 <tr><td class="col-stt">7</td><td>Hồ sơ văn bản liên quan</td><td>7.1-7.9: Mã QH, loại DA, cấp CT, TMĐT, nguồn vốn, thời gian, hình thức QLDA, giải thưởng KT, DL loại hình BĐS</td></tr>
 <tr><td class="col-stt">8</td><td>Dữ liệu khác (nếu có)</td><td>[Nhập thông tin]</td></tr>
-<tr><td colspan="4"><th class="section-header">B. THẨM ĐỊNH TKXD TRIỂN KHAI SAU TKCS</th></td></tr>
+<tr><th colspan="4" class="section-header">B. THẨM ĐỊNH TKXD TRIỂN KHAI SAU TKCS</th></td></tr>
 <tr><td class="col-stt">B.I</td><td>Dữ liệu chung: 7 mục</td><td>Mã số DA, tên CT, loại CT, cấp CT, địa điểm, CĐT, quy mô</td><td class="col-note">Theo điểm a khoản 3 Điều 10 NĐ 111/2024</td></tr>
 <tr><td class="col-stt">B.II</td><td>Dữ liệu chi tiết: 7 mục</td><td>PCCC+MT, TB kết quả TĐ BCNCKT, TB kết quả TĐ TKXD, QĐ phê duyệt DA, QĐ phê duyệt TKXD, DL TC/CN, hồ sơ liên quan</td><td class="col-note">DL mở: B.I, B.II.2→B.II.5</td></tr>
-<tr><td colspan="4"><th class="section-header">C. CẤP GIẤY PHÉP XÂY DỰNG</th></td></tr>
+<tr><th colspan="4" class="section-header">C. CẤP GIẤY PHÉP XÂY DỰNG</th></td></tr>
 <tr><td class="col-stt">C.I</td><td>Dữ liệu chung: 5 mục</td><td>Tên CTXD, loại/cấp CT, địa điểm, CĐT, quy mô</td><td class="col-note">Theo điểm b khoản 2,3 Điều 10 NĐ 111/2024</td></tr>
 <tr><td class="col-stt">C.II</td><td>Dữ liệu chi tiết: 18 mục</td><td>GPXD, TB khởi công, giấy tờ đất đai, DL TC/CN, NT TVGS, GP MT, TT ATGT, BB nghiệm thu, TB nghiệm thu, kiểm định CT, bản vẽ hoàn công, QT vốn, giải thưởng, tiến độ (**), KL hoàn thành (**), thanh toán (**), vi phạm (***), sự cố (***), ATLĐ (***), bảo trì (***)</td><td class="col-note">DL mở: C.I, C.II.1, C.II.2</td></tr>
-<tr><td colspan="4"><th class="section-header">D. MIỄN GIẤY PHÉP XÂY DỰNG</th></td></tr>
+<tr><th colspan="4" class="section-header">D. MIỄN GIẤY PHÉP XÂY DỰNG</th></td></tr>
 <tr><td class="col-stt">D</td><td>CĐT nhập DL chung, DL chi tiết như mục C (trừ GPXD)</td><td>Tương tự mục C</td><td></td></tr>
 </tbody>
 </table>
