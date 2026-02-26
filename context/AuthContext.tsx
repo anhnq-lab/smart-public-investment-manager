@@ -16,12 +16,24 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     const [currentUser, setCurrentUser] = useState<Employee | null>(null);
 
-    // Persist login
+    // Persist login + Dev bypass
     useEffect(() => {
         const savedUser = localStorage.getItem('currentUser');
         if (savedUser) {
             setCurrentUser(JSON.parse(savedUser));
+            return;
         }
+
+        // Dev mode: auto-login as Admin without requiring credentials
+        if (import.meta.env.VITE_DEV_BYPASS_AUTH === 'true') {
+            console.log('%c[DEV MODE] Auto-login enabled — bypassing authentication', 'color: #f59e0b; font-weight: bold;');
+            login('Admin', '123456').then((success) => {
+                if (!success) {
+                    console.warn('[DEV MODE] Auto-login failed. Check Supabase connection or employee data.');
+                }
+            });
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const login = async (username: string, pass: string): Promise<boolean> => {

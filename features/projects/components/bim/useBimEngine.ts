@@ -127,6 +127,7 @@ export function useBimEngine(
                 >();
                 worldRef.current = world;
 
+                // Scene setup
                 world.scene = new OBC.SimpleScene(components);
                 world.scene.setup();
 
@@ -153,7 +154,7 @@ export function useBimEngine(
                     isDarkMode ? 1.2 : 1.0
                 );
                 keyLight.position.set(50, 100, 50);
-                keyLight.castShadow = false; // Shadow impacts performance, leave off for now
+                keyLight.castShadow = false;
                 scene.add(keyLight);
 
                 // Fill light (cooler, from opposite side)
@@ -183,6 +184,10 @@ export function useBimEngine(
 
                 // Camera with smooth controls (after renderer)
                 world.camera = new OBC.SimpleCamera(components);
+
+                // ── IMPORTANT: Initialize components AFTER scene+renderer+camera are all set ──
+                await components.init();
+
                 const camera = world.camera as OBC.SimpleCamera;
                 camera.controls.setLookAt(15, 15, 15, 0, 0, 0);
 
@@ -197,8 +202,6 @@ export function useBimEngine(
                         camera.controls.mouseButtons.middle = CC.ACTION.TRUCK;
                     }
                 } catch { /* camera controls mapping not critical */ }
-
-                await components.init();
 
                 // Initialize FragmentsManager — load worker
                 const fragments = components.get(OBC.FragmentsManager);
