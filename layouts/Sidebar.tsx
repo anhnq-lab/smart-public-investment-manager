@@ -17,6 +17,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Scale,
+  FolderTree,
 } from 'lucide-react';
 
 // ========================================
@@ -46,6 +47,7 @@ const navItems: NavItem[] = [
   { name: 'Hợp đồng', path: '/contracts', icon: FileText },
   { name: 'Thanh toán', path: '/payments', icon: CreditCard },
   { name: 'Hồ sơ tài liệu', path: '/documents', icon: FileBox },
+  { name: 'Môi trường dữ liệu chung', path: '/cde', icon: FolderTree },
   { name: 'Văn bản pháp luật', path: '/legal-documents', icon: Scale },
   { name: 'Báo cáo', path: '/reports', icon: BarChart2 },
   { name: 'Quy chế làm việc', path: '/regulations', icon: BookOpen },

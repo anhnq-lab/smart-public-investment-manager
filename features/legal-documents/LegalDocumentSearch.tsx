@@ -236,6 +236,7 @@ const LegalDocumentSearch: React.FC = () => {
                                     selectedDoc={selectedDoc}
                                     scrollToArticle={scrollToArticle}
                                     setExpandedChapters={setExpandedChapters}
+                                    activeArticleId={activeArticleId}
                                 />
                             )}
                         </LegalDetail>

@@ -112,8 +112,10 @@ export const LegalDetail: React.FC<LegalDetailProps> = ({
                 )}
             </div>
 
-            {/* Content Area with optional TOC next to it */}
+            {/* Content Area with TOC on the left */}
             <div className="flex-1 flex overflow-hidden">
+                {/* TOC renders here on the left */}
+                {children}
                 <div className="flex-1 overflow-hidden relative">
                     <div ref={contentRef} className="absolute inset-0 overflow-y-auto custom-scrollbar">
                         {showPdfViewer ? (
@@ -180,8 +182,6 @@ export const LegalDetail: React.FC<LegalDetailProps> = ({
                         )}
                     </div>
                 </div>
-                {/* TOC renders here as child */}
-                {children}
             </div>
         </div>
     );

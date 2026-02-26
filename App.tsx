@@ -36,6 +36,7 @@ import PaymentList from './features/payments/PaymentList';
 
 // Core Features (Documents, Reports, etc.)
 import DocumentManager from './features/documents/DocumentManager';
+import CDEPage from './features/cde/CDEPage';
 import ReportCenter from './features/reports/ReportCenter';
 import Regulations from './features/regulations/Regulations';
 import LegalDocumentSearch from './features/legal-documents/LegalDocumentSearch';
@@ -96,6 +97,7 @@ const App: React.FC = () => {
 
                                     {/* Documents & Reports */}
                                     <Route path="documents" element={<DocumentManager />} />
+                                    <Route path="cde" element={<CDEPage />} />
                                     <Route path="legal-documents" element={<LegalDocumentSearch />} />
                                     <Route path="reports" element={<ReportCenter />} />
                                     <Route path="regulations" element={<Regulations />} />
