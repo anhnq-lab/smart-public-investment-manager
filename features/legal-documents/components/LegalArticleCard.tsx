@@ -1,4 +1,4 @@
-import React, { memo } from 'react';
+import React, { memo, useMemo } from 'react';
 import { Bookmark, Link as LinkIcon, Check } from 'lucide-react';
 import { LegalArticle } from '../legalData';
 import { HighlightText } from './LegalUI';
@@ -15,6 +15,50 @@ interface LegalArticleCardProps {
     toggleBookmark: (articleId: string, docId: string) => void;
     handleCopy: (text: string, id: string) => void;
 }
+
+// ============================================
+// RICH CONTENT RENDERER - supports HTML tables in content
+// ============================================
+const RichLegalContent: React.FC<{ content: string; searchQuery: string }> = ({ content, searchQuery }) => {
+    const parts = useMemo(() => {
+        const raw = (content || '').replace(/\\n/g, '\n');
+        // Split content into text and HTML table blocks
+        const segments: { type: 'text' | 'html'; value: string }[] = [];
+        const tableRegex = /<table[\s\S]*?<\/table>/gi;
+        let lastIndex = 0;
+        let match;
+
+        while ((match = tableRegex.exec(raw)) !== null) {
+            if (match.index > lastIndex) {
+                segments.push({ type: 'text', value: raw.substring(lastIndex, match.index) });
+            }
+            segments.push({ type: 'html', value: match[0] });
+            lastIndex = match.index + match[0].length;
+        }
+        if (lastIndex < raw.length) {
+            segments.push({ type: 'text', value: raw.substring(lastIndex) });
+        }
+        return segments;
+    }, [content]);
+
+    return (
+        <>
+            {parts.map((part, i) =>
+                part.type === 'html' ? (
+                    <div
+                        key={i}
+                        className="legal-table-wrapper my-4 overflow-x-auto rounded-xl border border-gray-200 dark:border-slate-600"
+                        dangerouslySetInnerHTML={{ __html: part.value }}
+                    />
+                ) : (
+                    <div key={i} className="whitespace-pre-line">
+                        <HighlightText text={part.value} query={searchQuery} />
+                    </div>
+                )
+            )}
+        </>
+    );
+};
 
 const LegalArticleCard: React.FC<LegalArticleCardProps> = ({
     article, selectedDocId, isActive, isExpanded, bookmarked, searchQuery, copiedId,
@@ -61,8 +105,8 @@ const LegalArticleCard: React.FC<LegalArticleCardProps> = ({
                     <p className="text-gray-600 dark:text-slate-400 mb-4 pb-4 border-b border-dashed border-gray-200 dark:border-slate-700 italic opacity-80 leading-relaxed font-medium">
                         <HighlightText text={article.summary} query={searchQuery} />
                     </p>
-                    <div className="text-gray-800 dark:text-slate-200 leading-loose space-y-4 font-normal whitespace-pre-line">
-                        <HighlightText text={(article.content || '').replace(/\\n/g, '\n')} query={searchQuery} />
+                    <div className="text-gray-800 dark:text-slate-200 leading-loose space-y-2 font-normal">
+                        <RichLegalContent content={article.content || ''} searchQuery={searchQuery} />
                     </div>
                 </div>
             )}

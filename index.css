@@ -309,6 +309,64 @@
     @apply bg-gray-100 text-gray-700 dark:bg-slate-700 dark:text-slate-300;
   }
 
+  /* ── Legal Document Tables ── */
+  .legal-table-wrapper {
+    @apply text-sm;
+  }
+
+  .legal-table-wrapper table {
+    @apply w-full border-collapse;
+  }
+
+  .legal-table-wrapper th,
+  .legal-table-wrapper td {
+    @apply px-3 py-2.5 text-left border border-gray-200 dark:border-slate-600;
+    vertical-align: top;
+    line-height: 1.5;
+  }
+
+  .legal-table-wrapper thead th {
+    @apply bg-indigo-50 dark:bg-indigo-900/30 text-indigo-800 dark:text-indigo-300 font-bold text-xs uppercase tracking-wider;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+  }
+
+  .legal-table-wrapper tbody tr {
+    @apply transition-colors duration-150;
+  }
+
+  .legal-table-wrapper tbody tr:nth-child(even) {
+    @apply bg-gray-50/50 dark:bg-slate-700/20;
+  }
+
+  .legal-table-wrapper tbody tr:hover {
+    @apply bg-indigo-50/40 dark:bg-indigo-900/10;
+  }
+
+  /* Section header row inside table */
+  .legal-table-wrapper th.section-header {
+    @apply bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold text-sm normal-case tracking-normal;
+    letter-spacing: 0;
+  }
+
+  /* Numeric/code columns */
+  .legal-table-wrapper td.col-stt,
+  .legal-table-wrapper td.col-code {
+    @apply text-center font-mono text-xs font-bold text-gray-500 dark:text-slate-400;
+    white-space: nowrap;
+    width: 3rem;
+  }
+
+  /* Note/description columns */
+  .legal-table-wrapper td.col-note {
+    @apply text-xs text-gray-500 dark:text-slate-400 italic;
+  }
+
+  .legal-table-wrapper .table-caption {
+    @apply text-xs text-gray-500 dark:text-slate-400 italic mt-2 px-1;
+  }
+
   /* ── Dark Mode: Table Overrides (WCAG AA 4.5:1 contrast) ── */
   .dark table thead th {
     @apply text-slate-200 border-slate-600;
