@@ -7532,34 +7532,36 @@ Ghi chú: Trong quá trình thực hiện, Bảng mã này được cập nhật
                         title: 'Dữ liệu về quy hoạch đô thị và nông thôn',
                         summary: 'Bảng dữ liệu quy hoạch đô thị và nông thôn gồm 3 mục: I.Thông tin chung (11 trường: tên, loại, cấp độ, loại điều chỉnh, địa điểm, quy mô diện tích, QĐ phê duyệt nhiệm vụ, cơ quan lập/thẩm định/phê duyệt); II.Thông tin chi tiết (dân số dự báo, thời hạn, quy định quản lý, kế hoạch, QCQLKT); III.Hồ sơ (CSDL số cơ bản, pháp lý, GIS).',
                         content: `Dữ liệu về quy hoạch đô thị và nông thôn
-(Ban hành kèm theo Thông tư số 24/2025/TT-BXD ngày 29/08/2025)
+(Ban hành kèm theo Thông tư số 24/2025/TT-BXD ngày 29 tháng 8 năm 2025 của Bộ trưởng Bộ Xây dựng)
 
-<table>
-<thead><tr><th>STT</th><th>Thông tin về quy hoạch đô thị và nông thôn</th><th>Quy định về nhập thông tin</th><th>Ghi chú</th></tr></thead>
+<table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+<thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+<tr><th class="px-6 py-3 border border-gray-300 dark:border-slate-600">STT</th><th class="px-6 py-3 border border-gray-300 dark:border-slate-600">Thông tin về quy hoạch đô thị và nông thôn</th><th class="px-6 py-3 border border-gray-300 dark:border-slate-600">Quy định về nhập thông tin</th><th class="px-6 py-3 border border-gray-300 dark:border-slate-600">Ghi chú</th></tr>
+</thead>
 <tbody>
-<tr><th colspan="4" class="section-header">I. THÔNG TIN CHUNG (để khởi tạo Mã số thông tin theo điểm a khoản 5 Điều 10 NĐ 111/2024)</th></td></tr>
-<tr><td class="col-stt">1</td><td>Tên quy hoạch</td><td>[Nhập thông tin]</td><td class="col-note" rowspan="11">CQTĐ QH phối hợp với CQ lập QH để cập nhật nội dung thông tin chung theo điểm a khoản 2 Điều 6 NĐ 111/2024. Dữ liệu mở bao gồm dữ liệu tại mục I và II.</td></tr>
-<tr><td class="col-stt">2</td><td>Loại quy hoạch</td><td>[Chọn loại quy hoạch]</td></tr>
-<tr><td class="col-stt">3</td><td>Cấp độ quy hoạch</td><td>[Chọn cấp độ quy hoạch]</td></tr>
-<tr><td class="col-stt">4</td><td>Loại điều chỉnh quy hoạch</td><td>[Chọn loại điều chỉnh]</td></tr>
-<tr><td class="col-stt">5</td><td>Địa điểm quy hoạch</td><td>[Chọn tỉnh/TP, xã/phường hoặc nhập]</td></tr>
-<tr><td class="col-stt">6</td><td>Quy mô, diện tích lập quy hoạch</td><td>[Nhập thông tin (theo hecta)]</td></tr>
-<tr><td class="col-stt">7</td><td>Số quyết định phê duyệt nhiệm vụ QH</td><td>[Số quyết định]</td></tr>
-<tr><td class="col-stt">8</td><td>Cơ quan tổ chức lập nhiệm vụ QH</td><td>[Nhập thông tin hoặc Mã ĐKKD]</td></tr>
-<tr><td class="col-stt">9</td><td>Cơ quan tổ chức lập quy hoạch</td><td>[Nhập thông tin hoặc Mã ĐKKD]</td></tr>
-<tr><td class="col-stt">10</td><td>Cơ quan thẩm định quy hoạch</td><td>[Nhập thông tin]</td></tr>
-<tr><td class="col-stt">11</td><td>Cơ quan phê duyệt quy hoạch</td><td>[Nhập thông tin]</td></tr>
-<tr><th colspan="4" class="section-header">II. THÔNG TIN CHI TIẾT (CQ lập QH cập nhật theo điểm b khoản 5 Điều 10 NĐ 111/2024)</th></td></tr>
-<tr><td class="col-stt">1</td><td>Quy mô dân số dự báo</td><td>[Nhập thông tin]</td><td class="col-note" rowspan="6">CQ lập QH cập nhật. Dữ liệu mở bao gồm mục I và II.</td></tr>
-<tr><td class="col-stt">2</td><td>Thời hạn quy hoạch</td><td>[Nhập thông tin]</td></tr>
-<tr><td class="col-stt">3</td><td>Quy định quản lý theo quy hoạch</td><td>[File hồ sơ chứng thực ĐT theo TT 16/2025]</td></tr>
-<tr><td class="col-stt">4</td><td>Kế hoạch thực hiện QH chung</td><td>[File ký số hoặc chứng thực bản sao ĐT]</td></tr>
-<tr><td class="col-stt">5</td><td>Quy chế quản lý kiến trúc (nếu có)</td><td>[File hồ sơ chứng thực ĐT]</td></tr>
-<tr><td class="col-stt">6</td><td>Thông tin liên quan khác</td><td>6.1 Các NV QH liên quan [mã TTQH cấp trên/dưới]<br/>6.2 Chủ nhiệm lập QH [mã CCHN/CCCD]<br/>6.3 DS chủ trì bộ môn TK QH [mã CCHN/CCCD]<br/>6.4 Thông tin khác</td></tr>
-<tr><th colspan="4" class="section-header">III. HỒ SƠ NHIỆM VỤ QH, QH ĐÔ THỊ VÀ NÔNG THÔN</th></td></tr>
-<tr><td class="col-stt">1</td><td>Cơ sở dữ liệu số cơ bản</td><td>[File bản vẽ và văn bản theo TT 16/2025]</td><td class="col-note" rowspan="3">Theo quy định TT 16/2025</td></tr>
-<tr><td class="col-stt">2</td><td>Cơ sở dữ liệu số pháp lý</td><td>[File số hóa, scan hoặc chứng thực ĐT]</td></tr>
-<tr><td class="col-stt">3</td><td>Cơ sở dữ liệu số địa lý (GIS)</td><td>[File chuyển đổi thành DL địa lý từ CSDL gốc]</td></tr>
+<tr><th colspan="4" class="px-6 py-3 bg-gray-100 dark:bg-slate-800 font-bold border border-gray-300 dark:border-slate-600">I. THÔNG TIN CHUNG (để khởi tạo Mã số thông tin theo điểm a khoản 5 Điều 10 NĐ 111/2024)</th></tr>
+<tr><td class="px-6 py-4 border border-gray-300 dark:border-slate-700 text-center font-bold">1</td><td class="px-6 py-4 border border-gray-300 dark:border-slate-700">Tên quy hoạch</td><td class="px-6 py-4 border border-gray-300 dark:border-slate-700">[Nhập thông tin]</td><td class="px-6 py-4 border border-gray-300 dark:border-slate-700 italic text-xs text-gray-500" rowspan="11">CQTĐ QH phối hợp với CQ lập QH để cập nhật nội dung thông chung theo điểm a khoản 2 Điều 6 NĐ 111/2024. Dữ liệu mở bao gồm dữ liệu tại mục I và II.</td></tr>
+<tr><td class="px-6 py-4 border border-gray-300 dark:border-slate-700 text-center font-bold">2</td><td class="px-6 py-4 border border-gray-300 dark:border-slate-700">Loại quy hoạch</td><td class="px-6 py-4 border border-gray-300 dark:border-slate-700">[Chọn loại quy hoạch]</td></tr>
+<tr><td class="px-6 py-4 border border-gray-300 dark:border-slate-700 text-center font-bold">3</td><td class="px-6 py-4 border border-gray-300 dark:border-slate-700">Cấp độ quy hoạch</td><td class="px-6 py-4 border border-gray-300 dark:border-slate-700">[Chọn cấp độ quy hoạch]</td></tr>
+<tr><td class="px-6 py-4 border border-gray-300 dark:border-slate-700 text-center font-bold">4</td><td class="px-6 py-4 border border-gray-300 dark:border-slate-700">Loại điều chỉnh quy hoạch</td><td class="px-6 py-4 border border-gray-300 dark:border-slate-700">[Chọn loại điều chỉnh]</td></tr>
+<tr><td class="px-6 py-4 border border-gray-300 dark:border-slate-700 text-center font-bold">5</td><td class="px-6 py-4 border border-gray-300 dark:border-slate-700">Địa điểm quy hoạch</td><td class="px-6 py-4 border border-gray-300 dark:border-slate-700">[Chọn tỉnh/TP, xã/phường hoặc nhập]</td></tr>
+<tr><td class="px-6 py-4 border border-gray-300 dark:border-slate-700 text-center font-bold">6</td><td class="px-6 py-4 border border-gray-300 dark:border-slate-700">Quy mô, diện tích lập quy hoạch</td><td class="px-6 py-4 border border-gray-300 dark:border-slate-700">[Nhập thông tin (theo hecta)]</td></tr>
+<tr><td class="px-6 py-4 border border-gray-300 dark:border-slate-700 text-center font-bold">7</td><td class="px-6 py-4 border border-gray-300 dark:border-slate-700">Số quyết định phê duyệt nhiệm vụ QH</td><td class="px-6 py-4 border border-gray-300 dark:border-slate-700">[Số quyết định]</td></tr>
+<tr><td class="px-6 py-4 border border-gray-300 dark:border-slate-700 text-center font-bold">8</td><td class="px-6 py-4 border border-gray-300 dark:border-slate-700">Cơ quan tổ chức lập nhiệm vụ QH</td><td class="px-6 py-4 border border-gray-300 dark:border-slate-700">[Nhập thông tin hoặc Mã ĐKKD]</td></tr>
+<tr><td class="px-6 py-4 border border-gray-300 dark:border-slate-700 text-center font-bold">9</td><td class="px-6 py-4 border border-gray-300 dark:border-slate-700">Cơ quan tổ chức lập quy hoạch</td><td class="px-6 py-4 border border-gray-300 dark:border-slate-700">[Nhập thông tin hoặc Mã ĐKKD]</td></tr>
+<tr><td class="px-6 py-4 border border-gray-300 dark:border-slate-700 text-center font-bold">10</td><td class="px-6 py-4 border border-gray-300 dark:border-slate-700">Cơ quan thẩm định quy hoạch</td><td class="px-6 py-4 border border-gray-300 dark:border-slate-700">[Nhập thông tin]</td></tr>
+<tr><td class="px-6 py-4 border border-gray-300 dark:border-slate-700 text-center font-bold">11</td><td class="px-6 py-4 border border-gray-300 dark:border-slate-700">Cơ quan phê duyệt quy hoạch</td><td class="px-6 py-4 border border-gray-300 dark:border-slate-700">[Nhập thông tin]</td></tr>
+<tr><th colspan="4" class="px-6 py-3 bg-gray-100 dark:bg-slate-800 font-bold border border-gray-300 dark:border-slate-600">II. THÔNG TIN CHI TIẾT (CQ lập QH cập nhật theo điểm b khoản 5 Điều 10 NĐ 111/2024)</th></tr>
+<tr><td class="px-6 py-4 border border-gray-300 dark:border-slate-700 text-center font-bold">1</td><td class="px-6 py-4 border border-gray-300 dark:border-slate-700">Quy mô dân số dự báo</td><td class="px-6 py-4 border border-gray-300 dark:border-slate-700">[Nhập thông tin]</td><td class="px-6 py-4 border border-gray-300 dark:border-slate-700 italic text-xs text-gray-500" rowspan="6">CQ lập QH cập nhật. Dữ liệu mở bao gồm mục I và II.</td></tr>
+<tr><td class="px-6 py-4 border border-gray-300 dark:border-slate-700 text-center font-bold">2</td><td class="px-6 py-4 border border-gray-300 dark:border-slate-700">Thời hạn quy hoạch</td><td class="px-6 py-4 border border-gray-300 dark:border-slate-700">[Nhập thông tin]</td></tr>
+<tr><td class="px-6 py-4 border border-gray-300 dark:border-slate-700 text-center font-bold">3</td><td class="px-6 py-4 border border-gray-300 dark:border-slate-700">Quy định quản lý theo quy hoạch</td><td class="px-6 py-4 border border-gray-300 dark:border-slate-700">[File hồ sơ chứng thực ĐT theo TT 16/2025]</td></tr>
+<tr><td class="px-6 py-4 border border-gray-300 dark:border-slate-700 text-center font-bold">4</td><td class="px-6 py-4 border border-gray-300 dark:border-slate-700">Kế hoạch thực hiện QH chung</td><td class="px-6 py-4 border border-gray-300 dark:border-slate-700">[File ký số hoặc chứng thực bản sao ĐT]</td></tr>
+<tr><td class="px-6 py-4 border border-gray-300 dark:border-slate-700 text-center font-bold">5</td><td class="px-6 py-4 border border-gray-300 dark:border-slate-700">Quy chế quản lý kiến trúc (nếu có)</td><td class="px-6 py-4 border border-gray-300 dark:border-slate-700">[File hồ sơ chứng thực ĐT]</td></tr>
+<tr><td class="px-6 py-4 border border-gray-300 dark:border-slate-700 text-center font-bold">6</td><td class="px-6 py-4 border border-gray-300 dark:border-slate-700">Thông tin liên quan khác</td><td class="px-6 py-4 border border-gray-300 dark:border-slate-700">6.1 Các NV QH liên quan [mã TTQH cấp trên/dưới]<br/>6.2 Chủ nhiệm lập QH [mã CCHN/CCCD]<br/>6.3 DS chủ trì bộ môn TK QH [mã CCHN/CCCD]<br/>6.4 Thông tin khác</td></tr>
+<tr><th colspan="4" class="px-6 py-3 bg-gray-100 dark:bg-slate-800 font-bold border border-gray-300 dark:border-slate-600">III. HỒ SƠ NHIỆM VỤ QH, QH ĐÔ THỊ VÀ NÔNG THÔN</th></tr>
+<tr><td class="px-6 py-4 border border-gray-300 dark:border-slate-700 text-center font-bold">1</td><td class="px-6 py-4 border border-gray-300 dark:border-slate-700">Cơ sở dữ liệu số cơ bản</td><td class="px-6 py-4 border border-gray-300 dark:border-slate-700">[File bản vẽ và văn bản theo TT 16/2025]</td><td class="px-6 py-4 border border-gray-300 dark:border-slate-700 italic text-xs text-gray-500" rowspan="3">Theo quy định TT 16/2025</td></tr>
+<tr><td class="px-6 py-4 border border-gray-300 dark:border-slate-700 text-center font-bold">2</td><td class="px-6 py-4 border border-gray-300 dark:border-slate-700">Cơ sở dữ liệu số pháp lý</td><td class="px-6 py-4 border border-gray-300 dark:border-slate-700">[File số hóa, scan hoặc chứng thực ĐT]</td></tr>
+<tr><td class="px-6 py-4 border border-gray-300 dark:border-slate-700 text-center font-bold">3</td><td class="px-6 py-4 border border-gray-300 dark:border-slate-700">Cơ sở dữ liệu số địa lý (GIS)</td><td class="px-6 py-4 border border-gray-300 dark:border-slate-700">[File chuyển đổi thành DL địa lý từ CSDL gốc]</td></tr>
 </tbody>
 </table>`,
                     },
@@ -7571,65 +7573,71 @@ Ghi chú: Trong quá trình thực hiện, Bảng mã này được cập nhật
                         content: `Dữ liệu về dự án đầu tư xây dựng, công trình xây dựng
 (Ban hành kèm theo Thông tư số 24/2025/TT-BXD ngày 29/08/2025)
 
-BẢNG SỐ 01: Dữ liệu về dự án đầu tư xây dựng, công trình xây dựng
+<p class="font-bold my-4 uppercase text-center w-full">BẢNG SỐ 01: Dữ liệu về dự án đầu tư xây dựng, công trình xây dựng</p>
 
-<table>
-<thead><tr><th>Mục</th><th>Nội dung dữ liệu</th><th>Quy định nhập</th><th>Ghi chú</th></tr></thead>
+<table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+<thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+<tr><th class="px-6 py-3 border border-gray-300 dark:border-slate-600">Mục</th><th class="px-6 py-3 border border-gray-300 dark:border-slate-600">Nội dung dữ liệu</th><th class="px-6 py-3 border border-gray-300 dark:border-slate-600">Quy định nhập</th><th class="px-6 py-3 border border-gray-300 dark:border-slate-600">Ghi chú</th></tr>
+</thead>
 <tbody>
-<tr><th colspan="4" class="section-header">A. THẨM ĐỊNH BÁO CÁO NCKT ĐẦU TƯ XÂY DỰNG</th></td></tr>
-<tr><th colspan="4" class="section-header">A.I. Dữ liệu chung (CQCM nhập khi khởi tạo Mã số)</th></td></tr>
-<tr><td class="col-stt">1</td><td>Tên dự án ĐTXD</td><td>[Nhập thông tin]</td><td class="col-note" rowspan="7">CQCM về XD khởi tạo mã số khi có kết quả thẩm định theo điểm a khoản 2 Điều 10 NĐ 111/2024</td></tr>
-<tr><td class="col-stt">2</td><td>Nhóm dự án (A/B/C)</td><td>[Chọn nhóm]</td></tr>
-<tr><td class="col-stt">3</td><td>Địa điểm xây dựng</td><td>[Chọn tỉnh/TP]</td></tr>
-<tr><td class="col-stt">4</td><td>Người quyết định đầu tư</td><td>[Nhập thông tin]</td></tr>
-<tr><td class="col-stt">5</td><td>Chủ đầu tư</td><td>[Nhập thông tin]</td></tr>
-<tr><td class="col-stt">6</td><td>Mục tiêu đầu tư</td><td>[Nhập thông tin]</td></tr>
-<tr><td class="col-stt">7</td><td>Quy mô đầu tư (*)</td><td>[Nhập quy mô XD chủ yếu]</td></tr>
-<tr><th colspan="4" class="section-header">A.II. Dữ liệu chi tiết (CĐT nhập trong 15 ngày kể từ khi nhận kết quả TĐ)</th></td></tr>
-<tr><td class="col-stt">1</td><td>Văn bản về chủ trương đầu tư</td><td>[Đính kèm file]</td><td class="col-note" rowspan="8">CĐT nhập. Dữ liệu mở: mục A.I, A.II.4 và A.II.5</td></tr>
-<tr><td class="col-stt">2</td><td>QĐ phê duyệt QH làm cơ sở lập DA</td><td>[Nhập mã QH hoặc đính kèm]</td></tr>
-<tr><td class="col-stt">3</td><td>Kết quả thủ tục PCCC và bảo vệ MT</td><td>3.1 PCCC [file]<br/>3.2 Môi trường [file]</td></tr>
-<tr><td class="col-stt">4</td><td>Thông báo kết quả TĐ BCNCKT (DL mở)</td><td>[Đính kèm file]</td></tr>
-<tr><td class="col-stt">5</td><td>QĐ phê duyệt DA ĐTXD (DL mở)</td><td>[Đính kèm file]</td></tr>
-<tr><td class="col-stt">6</td><td>DL tổ chức/cá nhân tham gia</td><td>6.1-6.9: NT khảo sát, CN khảo sát, NT TK, CN TK, DS chủ trì bộ môn, NT thẩm tra, CN thẩm tra, DS chủ trì TT, NT thẩm tra ATGT</td></tr>
-<tr><td class="col-stt">7</td><td>Hồ sơ văn bản liên quan</td><td>7.1-7.9: Mã QH, loại DA, cấp CT, TMĐT, nguồn vốn, thời gian, hình thức QLDA, giải thưởng KT, DL loại hình BĐS</td></tr>
-<tr><td class="col-stt">8</td><td>Dữ liệu khác (nếu có)</td><td>[Nhập thông tin]</td></tr>
-<tr><th colspan="4" class="section-header">B. THẨM ĐỊNH TKXD TRIỂN KHAI SAU TKCS</th></td></tr>
-<tr><td class="col-stt">B.I</td><td>Dữ liệu chung: 7 mục</td><td>Mã số DA, tên CT, loại CT, cấp CT, địa điểm, CĐT, quy mô</td><td class="col-note">Theo điểm a khoản 3 Điều 10 NĐ 111/2024</td></tr>
-<tr><td class="col-stt">B.II</td><td>Dữ liệu chi tiết: 7 mục</td><td>PCCC+MT, TB kết quả TĐ BCNCKT, TB kết quả TĐ TKXD, QĐ phê duyệt DA, QĐ phê duyệt TKXD, DL TC/CN, hồ sơ liên quan</td><td class="col-note">DL mở: B.I, B.II.2→B.II.5</td></tr>
-<tr><th colspan="4" class="section-header">C. CẤP GIẤY PHÉP XÂY DỰNG</th></td></tr>
-<tr><td class="col-stt">C.I</td><td>Dữ liệu chung: 5 mục</td><td>Tên CTXD, loại/cấp CT, địa điểm, CĐT, quy mô</td><td class="col-note">Theo điểm b khoản 2,3 Điều 10 NĐ 111/2024</td></tr>
-<tr><td class="col-stt">C.II</td><td>Dữ liệu chi tiết: 18 mục</td><td>GPXD, TB khởi công, giấy tờ đất đai, DL TC/CN, NT TVGS, GP MT, TT ATGT, BB nghiệm thu, TB nghiệm thu, kiểm định CT, bản vẽ hoàn công, QT vốn, giải thưởng, tiến độ (**), KL hoàn thành (**), thanh toán (**), vi phạm (***), sự cố (***), ATLĐ (***), bảo trì (***)</td><td class="col-note">DL mở: C.I, C.II.1, C.II.2</td></tr>
-<tr><th colspan="4" class="section-header">D. MIỄN GIẤY PHÉP XÂY DỰNG</th></td></tr>
-<tr><td class="col-stt">D</td><td>CĐT nhập DL chung, DL chi tiết như mục C (trừ GPXD)</td><td>Tương tự mục C</td><td></td></tr>
+<tr><th colspan="4" class="px-6 py-3 bg-gray-100 dark:bg-slate-800 font-bold border border-gray-300 dark:border-slate-600">A. THẨM ĐỊNH BÁO CÁO NCKT ĐẦU TƯ XÂY DỰNG</th></tr>
+<tr><th colspan="4" class="px-6 py-3 bg-gray-50 dark:bg-slate-800/50 font-semibold border border-gray-300 dark:border-slate-600">A.I. Dữ liệu chung (CQCM nhập khi khởi tạo Mã số)</th></tr>
+<tr><td class="px-6 py-4 border border-gray-300 dark:border-slate-700 text-center font-bold">1</td><td class="px-6 py-4 border border-gray-300 dark:border-slate-700">Tên dự án ĐTXD</td><td class="px-6 py-4 border border-gray-300 dark:border-slate-700">[Nhập thông tin]</td><td class="px-6 py-4 border border-gray-300 dark:border-slate-700 italic text-xs text-gray-500" rowspan="7">CQCM về XD khởi tạo mã số khi có kết quả thẩm định theo điểm a khoản 2 Điều 10 NĐ 111/2024</td></tr>
+<tr><td class="px-6 py-4 border border-gray-300 dark:border-slate-700 text-center font-bold">2</td><td class="px-6 py-4 border border-gray-300 dark:border-slate-700">Nhóm dự án (A/B/C)</td><td class="px-6 py-4 border border-gray-300 dark:border-slate-700">[Chọn nhóm]</td></tr>
+<tr><td class="px-6 py-4 border border-gray-300 dark:border-slate-700 text-center font-bold">3</td><td class="px-6 py-4 border border-gray-300 dark:border-slate-700">Địa điểm xây dựng</td><td class="px-6 py-4 border border-gray-300 dark:border-slate-700">[Chọn tỉnh/TP]</td></tr>
+<tr><td class="px-6 py-4 border border-gray-300 dark:border-slate-700 text-center font-bold">4</td><td class="px-6 py-4 border border-gray-300 dark:border-slate-700">Người quyết định đầu tư</td><td class="px-6 py-4 border border-gray-300 dark:border-slate-700">[Nhập thông tin]</td></tr>
+<tr><td class="px-6 py-4 border border-gray-300 dark:border-slate-700 text-center font-bold">5</td><td class="px-6 py-4 border border-gray-300 dark:border-slate-700">Chủ đầu tư</td><td class="px-6 py-4 border border-gray-300 dark:border-slate-700">[Nhập thông tin]</td></tr>
+<tr><td class="px-6 py-4 border border-gray-300 dark:border-slate-700 text-center font-bold">6</td><td class="px-6 py-4 border border-gray-300 dark:border-slate-700">Mục tiêu đầu tư</td><td class="px-6 py-4 border border-gray-300 dark:border-slate-700">[Nhập thông tin]</td></tr>
+<tr><td class="px-6 py-4 border border-gray-300 dark:border-slate-700 text-center font-bold">7</td><td class="px-6 py-4 border border-gray-300 dark:border-slate-700">Quy mô đầu tư (*)</td><td class="px-6 py-4 border border-gray-300 dark:border-slate-700">[Nhập quy mô XD chủ yếu]</td></tr>
+<tr><th colspan="4" class="px-6 py-3 bg-gray-50 dark:bg-slate-800/50 font-semibold border border-gray-300 dark:border-slate-600">A.II. Dữ liệu chi tiết (CĐT nhập trong 15 ngày kể từ khi nhận kết quả TĐ)</th></tr>
+<tr><td class="px-6 py-4 border border-gray-300 dark:border-slate-700 text-center font-bold">1</td><td class="px-6 py-4 border border-gray-300 dark:border-slate-700">Văn bản về chủ trương đầu tư</td><td class="px-6 py-4 border border-gray-300 dark:border-slate-700">[Đính kèm file]</td><td class="px-6 py-4 border border-gray-300 dark:border-slate-700 italic text-xs text-gray-500" rowspan="8">CĐT nhập. Dữ liệu mở: mục A.I, A.II.4 và A.II.5</td></tr>
+<tr><td class="px-6 py-4 border border-gray-300 dark:border-slate-700 text-center font-bold">2</td><td class="px-6 py-4 border border-gray-300 dark:border-slate-700">QĐ phê duyệt QH làm cơ sở lập DA</td><td class="px-6 py-4 border border-gray-300 dark:border-slate-700">[Nhập mã QH hoặc đính kèm]</td></tr>
+<tr><td class="px-6 py-4 border border-gray-300 dark:border-slate-700 text-center font-bold">3</td><td class="px-6 py-4 border border-gray-300 dark:border-slate-700">Kết quả thủ tục PCCC và bảo vệ MT</td><td class="px-6 py-4 border border-gray-300 dark:border-slate-700">3.1 PCCC [file]<br/>3.2 Môi trường [file]</td></tr>
+<tr><td class="px-6 py-4 border border-gray-300 dark:border-slate-700 text-center font-bold">4</td><td class="px-6 py-4 border border-gray-300 dark:border-slate-700">Thông báo kết quả TĐ BCNCKT (DL mở)</td><td class="px-6 py-4 border border-gray-300 dark:border-slate-700">[Đính kèm file]</td></tr>
+<tr><td class="px-6 py-4 border border-gray-300 dark:border-slate-700 text-center font-bold">5</td><td class="px-6 py-4 border border-gray-300 dark:border-slate-700">QĐ phê duyệt DA ĐTXD (DL mở)</td><td class="px-6 py-4 border border-gray-300 dark:border-slate-700">[Đính kèm file]</td></tr>
+<tr><td class="px-6 py-4 border border-gray-300 dark:border-slate-700 text-center font-bold">6</td><td class="px-6 py-4 border border-gray-300 dark:border-slate-700">DL tổ chức/cá nhân tham gia</td><td class="px-6 py-4 border border-gray-300 dark:border-slate-700">6.1-6.9: NT khảo sát, CN khảo sát, NT TK, CN TK, DS chủ trì bộ môn, NT thẩm tra, CN thẩm tra, DS chủ trì TT, NT thẩm tra ATGT</td></tr>
+<tr><td class="px-6 py-4 border border-gray-300 dark:border-slate-700 text-center font-bold">7</td><td class="px-6 py-4 border border-gray-300 dark:border-slate-700">Hồ sơ văn bản liên quan</td><td class="px-6 py-4 border border-gray-300 dark:border-slate-700">7.1-7.9: Mã QH, loại DA, cấp CT, TMĐT, nguồn vốn, thời gian, hình thức QLDA, giải thưởng KT, DL loại hình BĐS</td></tr>
+<tr><td class="px-6 py-4 border border-gray-300 dark:border-slate-700 text-center font-bold">8</td><td class="px-6 py-4 border border-gray-300 dark:border-slate-700">Dữ liệu khác (nếu có)</td><td class="px-6 py-4 border border-gray-300 dark:border-slate-700">[Nhập thông tin]</td></tr>
+<tr><th colspan="4" class="px-6 py-3 bg-gray-100 dark:bg-slate-800 font-bold border border-gray-300 dark:border-slate-600">B. THẨM ĐỊNH TKXD TRIỂN KHAI SAU TKCS</th></tr>
+<tr><td class="px-6 py-4 border border-gray-300 dark:border-slate-700 text-center font-bold">B.I</td><td class="px-6 py-4 border border-gray-300 dark:border-slate-700">Dữ liệu chung: 7 mục</td><td class="px-6 py-4 border border-gray-300 dark:border-slate-700">Mã số DA, tên CT, loại CT, cấp CT, địa điểm, CĐT, quy mô</td><td class="px-6 py-4 border border-gray-300 dark:border-slate-700 italic text-xs text-gray-500">Theo điểm a khoản 3 Điều 10 NĐ 111/2024</td></tr>
+<tr><td class="px-6 py-4 border border-gray-300 dark:border-slate-700 text-center font-bold">B.II</td><td class="px-6 py-4 border border-gray-300 dark:border-slate-700">Dữ liệu chi tiết: 7 mục</td><td class="px-6 py-4 border border-gray-300 dark:border-slate-700">PCCC+MT, TB kết quả TĐ BCNCKT, TB kết quả TĐ TKXD, QĐ phê duyệt DA, QĐ phê duyệt TKXD, DL TC/CN, hồ sơ liên quan</td><td class="px-6 py-4 border border-gray-300 dark:border-slate-700 italic text-xs text-gray-500">DL mở: B.I, B.II.2→B.II.5</td></tr>
+<tr><th colspan="4" class="px-6 py-3 bg-gray-100 dark:bg-slate-800 font-bold border border-gray-300 dark:border-slate-600">C. CẤP GIẤY PHÉP XÂY DỰNG</th></tr>
+<tr><td class="px-6 py-4 border border-gray-300 dark:border-slate-700 text-center font-bold">C.I</td><td class="px-6 py-4 border border-gray-300 dark:border-slate-700">Dữ liệu chung: 5 mục</td><td class="px-6 py-4 border border-gray-300 dark:border-slate-700">Tên CTXD, loại/cấp CT, địa điểm, CĐT, quy mô</td><td class="px-6 py-4 border border-gray-300 dark:border-slate-700 italic text-xs text-gray-500">Theo điểm b khoản 2,3 Điều 10 NĐ 111/2024</td></tr>
+<tr><td class="px-6 py-4 border border-gray-300 dark:border-slate-700 text-center font-bold">C.II</td><td class="px-6 py-4 border border-gray-300 dark:border-slate-700">Dữ liệu chi tiết: 18 mục</td><td class="px-6 py-4 border border-gray-300 dark:border-slate-700">GPXD, TB khởi công, giấy tờ đất đai, nhà thầu thi công, giám sát, an toàn lao động, kiểm định chất lượng, nhật ký, bản vẽ hoàn công thi công...</td><td class="px-6 py-4 border border-gray-300 dark:border-slate-700 italic text-xs text-gray-500">DL mở: C.I, C.II.1, C.II.2</td></tr>
+<tr><th colspan="4" class="px-6 py-3 bg-gray-100 dark:bg-slate-800 font-bold border border-gray-300 dark:border-slate-600">D. MIỄN GIẤY PHÉP XÂY DỰNG</th></tr>
+<tr><td class="px-6 py-4 border border-gray-300 dark:border-slate-700 text-center font-bold">D</td><td class="px-6 py-4 border border-gray-300 dark:border-slate-700">CĐT nhập DL chung, DL chi tiết như mục C (trừ GPXD)</td><td class="px-6 py-4 border border-gray-300 dark:border-slate-700">Tương tự mục C</td><td class="px-6 py-4 border border-gray-300 dark:border-slate-700 italic text-xs text-gray-500"></td></tr>
 </tbody>
 </table>
 
-BẢNG SỐ 02: CT XD không yêu cầu lập DA, chỉ cấp GPXD
+<p class="font-bold my-4 uppercase text-center w-full">BẢNG SỐ 02: CT XD không yêu cầu lập DA, chỉ cấp GPXD</p>
 
-<table>
-<thead><tr><th>Mục</th><th>Nội dung dữ liệu</th><th>Quy định nhập</th></tr></thead>
+<table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+<thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+<tr><th class="px-6 py-3 border border-gray-300 dark:border-slate-600">Mục</th><th class="px-6 py-3 border border-gray-300 dark:border-slate-600">Nội dung dữ liệu</th><th class="px-6 py-3 border border-gray-300 dark:border-slate-600">Quy định nhập</th></tr>
+</thead>
 <tbody>
-<tr><td class="col-stt">I</td><td>Dữ liệu chung: 5 mục</td><td>Tên CTXD, loại/cấp CT, địa điểm, CĐT/chủ hộ, quy mô</td></tr>
-<tr><td class="col-stt">II</td><td>Dữ liệu chi tiết: 7 mục</td><td>GPXD, TB khởi công, giấy tờ đất đai, DL TC/CN, vi phạm HCXD, sự cố CTXD, sự cố ATLĐ</td></tr>
+<tr><td class="px-6 py-4 border border-gray-300 dark:border-slate-700 text-center font-bold">I</td><td class="px-6 py-4 border border-gray-300 dark:border-slate-700">Dữ liệu chung: 5 mục</td><td class="px-6 py-4 border border-gray-300 dark:border-slate-700">Tên CTXD, loại/cấp CT, địa điểm, CĐT/chủ hộ, quy mô</td></tr>
+<tr><td class="px-6 py-4 border border-gray-300 dark:border-slate-700 text-center font-bold">II</td><td class="px-6 py-4 border border-gray-300 dark:border-slate-700">Dữ liệu chi tiết: 7 mục</td><td class="px-6 py-4 border border-gray-300 dark:border-slate-700">GPXD, TB khởi công, giấy tờ đất đai, DL TC/CN, vi phạm HCXD, sự cố CTXD, sự cố ATLĐ</td></tr>
 </tbody>
 </table>
 
-BẢNG SỐ 03: CT XD miễn TĐ tại CQCM, miễn GPXD, chỉ thông báo khởi công
+<p class="font-bold my-4 uppercase text-center w-full">BẢNG SỐ 03: CT XD miễn TĐ tại CQCM, miễn GPXD, chỉ thông báo khởi công</p>
 
-<table>
-<thead><tr><th>STT</th><th>Nội dung dữ liệu</th></tr></thead>
+<table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+<thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+<tr><th class="px-6 py-3 border border-gray-300 dark:border-slate-600">STT</th><th class="px-6 py-3 border border-gray-300 dark:border-slate-600">Nội dung dữ liệu</th></tr>
+</thead>
 <tbody>
-<tr><td class="col-stt">1</td><td>Tên hạng mục công trình</td></tr>
-<tr><td class="col-stt">2</td><td>Địa điểm xây dựng</td></tr>
-<tr><td class="col-stt">3</td><td>CĐT/chủ hộ gia đình</td></tr>
-<tr><td class="col-stt">4</td><td>Số điện thoại liên lạc</td></tr>
-<tr><td class="col-stt">5</td><td>Quy mô ĐTXD chủ yếu (diện tích, số tầng, tổng DT sàn...)</td></tr>
-<tr><td class="col-stt">6</td><td>DL tổ chức/cá nhân tham gia</td></tr>
-<tr><td class="col-stt">7</td><td>Ngày khởi công/hoàn thành</td></tr>
-<tr><td class="col-stt">8</td><td>Vi phạm HCXD</td></tr>
-<tr><td class="col-stt">9</td><td>Sự cố CTXD</td></tr>
-<tr><td class="col-stt">10</td><td>Sự cố kỹ thuật ATLĐ</td></tr>
+<tr><td class="px-6 py-4 border border-gray-300 dark:border-slate-700 text-center font-bold">1</td><td class="px-6 py-4 border border-gray-300 dark:border-slate-700">Tên hạng mục công trình</td></tr>
+<tr><td class="px-6 py-4 border border-gray-300 dark:border-slate-700 text-center font-bold">2</td><td class="px-6 py-4 border border-gray-300 dark:border-slate-700">Địa điểm xây dựng</td></tr>
+<tr><td class="px-6 py-4 border border-gray-300 dark:border-slate-700 text-center font-bold">3</td><td class="px-6 py-4 border border-gray-300 dark:border-slate-700">CĐT/chủ hộ gia đình</td></tr>
+<tr><td class="px-6 py-4 border border-gray-300 dark:border-slate-700 text-center font-bold">4</td><td class="px-6 py-4 border border-gray-300 dark:border-slate-700">Số điện thoại liên lạc</td></tr>
+<tr><td class="px-6 py-4 border border-gray-300 dark:border-slate-700 text-center font-bold">5</td><td class="px-6 py-4 border border-gray-300 dark:border-slate-700">Quy mô ĐTXD chủ yếu (diện tích, số tầng, tổng DT sàn...)</td></tr>
+<tr><td class="px-6 py-4 border border-gray-300 dark:border-slate-700 text-center font-bold">6</td><td class="px-6 py-4 border border-gray-300 dark:border-slate-700">DL tổ chức/cá nhân tham gia</td></tr>
+<tr><td class="px-6 py-4 border border-gray-300 dark:border-slate-700 text-center font-bold">7</td><td class="px-6 py-4 border border-gray-300 dark:border-slate-700">Ngày khởi công/hoàn thành</td></tr>
+<tr><td class="px-6 py-4 border border-gray-300 dark:border-slate-700 text-center font-bold">8</td><td class="px-6 py-4 border border-gray-300 dark:border-slate-700">Vi phạm HCXD</td></tr>
+<tr><td class="px-6 py-4 border border-gray-300 dark:border-slate-700 text-center font-bold">9</td><td class="px-6 py-4 border border-gray-300 dark:border-slate-700">Sự cố CTXD</td></tr>
+<tr><td class="px-6 py-4 border border-gray-300 dark:border-slate-700 text-center font-bold">10</td><td class="px-6 py-4 border border-gray-300 dark:border-slate-700">Sự cố kỹ thuật ATLĐ</td></tr>
 </tbody>
 </table>
 
