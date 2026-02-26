@@ -114,8 +114,35 @@ export function useBimEngine(
         if (!containerRef.current) return;
         let disposed = false;
 
+        // Wait for container to have non-zero dimensions (tab might not be visible yet)
+        const waitForContainer = (): Promise<HTMLDivElement> => {
+            return new Promise((resolve, reject) => {
+                const el = containerRef.current;
+                if (!el) { reject(new Error('Container ref lost')); return; }
+                if (el.clientWidth > 0 && el.clientHeight > 0) { resolve(el); return; }
+                // Poll until visible (max 5 seconds)
+                let attempts = 0;
+                const interval = setInterval(() => {
+                    if (disposed) { clearInterval(interval); reject(new Error('Disposed')); return; }
+                    attempts++;
+                    if (el.clientWidth > 0 && el.clientHeight > 0) {
+                        clearInterval(interval);
+                        resolve(el);
+                    } else if (attempts > 50) {
+                        clearInterval(interval);
+                        // Force minimum size as fallback
+                        resolve(el);
+                    }
+                }, 100);
+            });
+        };
+
         const init = async () => {
             try {
+                // ── CRITICAL: Wait for container to be sized before creating renderer ──
+                const container = await waitForContainer();
+                if (disposed) return;
+
                 const components = new OBC.Components();
                 componentsRef.current = components;
 
@@ -142,13 +169,13 @@ export function useBimEngine(
 
                 // Hemisphere light for ambient fill
                 const hemiLight = new THREE.HemisphereLight(
-                    isDarkMode ? 0x94a3b8 : 0xffffff,  // sky color
-                    isDarkMode ? 0x1e293b : 0xe2e8f0,  // ground color
-                    isDarkMode ? 0.8 : 0.6             // intensity
+                    isDarkMode ? 0x94a3b8 : 0xffffff,
+                    isDarkMode ? 0x1e293b : 0xe2e8f0,
+                    isDarkMode ? 0.8 : 0.6
                 );
                 scene.add(hemiLight);
 
-                // Key directional light (warm, from top-right-front)
+                // Key directional light
                 const keyLight = new THREE.DirectionalLight(
                     isDarkMode ? 0xffffff : 0xffffff,
                     isDarkMode ? 1.2 : 1.0
@@ -157,7 +184,7 @@ export function useBimEngine(
                 keyLight.castShadow = false;
                 scene.add(keyLight);
 
-                // Fill light (cooler, from opposite side)
+                // Fill light
                 const fillLight = new THREE.DirectionalLight(
                     isDarkMode ? 0x64748b : 0x94a3b8,
                     isDarkMode ? 0.5 : 0.4
@@ -165,8 +192,8 @@ export function useBimEngine(
                 fillLight.position.set(-50, 50, -50);
                 scene.add(fillLight);
 
-                // Renderer setup (MUST be before camera — SimpleCamera requires renderer)
-                world.renderer = new OBCF.PostproductionRenderer(components, containerRef.current!);
+                // Renderer setup (needs sized container)
+                world.renderer = new OBCF.PostproductionRenderer(components, container);
                 const renderer = (world.renderer as any).three;
                 if (renderer) {
                     renderer.localClippingEnabled = true;
@@ -185,7 +212,7 @@ export function useBimEngine(
                 // Camera with smooth controls (after renderer)
                 world.camera = new OBC.SimpleCamera(components);
 
-                // ── IMPORTANT: Initialize components AFTER scene+renderer+camera are all set ──
+                // ── Initialize components AFTER scene+renderer+camera are all set ──
                 await components.init();
 
                 const camera = world.camera as OBC.SimpleCamera;
