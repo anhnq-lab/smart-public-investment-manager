@@ -7315,11 +7315,11 @@ Trần Hồng Hà`,
         effectiveDate: '15/10/2025',
         issuedBy: 'Bộ Xây dựng',
         status: 'hieu-luc',
-        summary: 'Hướng dẫn chi tiết nội dung quy định tại khoản 4 Điều 8 Nghị định 111/2024/NĐ-CP về thông tin chi tiết trong hệ thống thông tin, CSDL quốc gia về hoạt động xây dựng: thông tin quy hoạch đô thị/nông thôn, dự án ĐTXD/công trình XD, mã số thông tin, biểu mẫu dữ liệu mở.',
+        summary: 'Hướng dẫn chi tiết nội dung quy định tại khoản 4 Điều 8 Nghị định 111/2024/NĐ-CP về thông tin chi tiết trong hệ thống thông tin, CSDL quốc gia về hoạt động xây dựng: thông tin quy hoạch đô thị/nông thôn, dự án ĐTXD/công trình XD, mã số thông tin, biểu mẫu dữ liệu mở, bảng tổng hợp, mẫu phiếu cung cấp thông tin.',
         fileName: 'TT24-2025.pdf',
         filePath: '/resources/TT24-2025.pdf',
         fileSize: '26.1 MB',
-        tags: ['cơ sở dữ liệu', 'hệ thống thông tin', 'hoạt động xây dựng', 'mã số thông tin', 'quy hoạch', 'dữ liệu mở', 'biểu mẫu', 'NĐ 111/2024'],
+        tags: ['cơ sở dữ liệu', 'hệ thống thông tin', 'hoạt động xây dựng', 'mã số thông tin', 'quy hoạch', 'dữ liệu mở', 'biểu mẫu', 'NĐ 111/2024', 'bảng tổng hợp', 'năng lực nhà thầu'],
         relatedDocIds: ['nd-111-2024', 'nd-175-2024', 'luat-xay-dung-2025'],
         chapters: [
             {
@@ -7473,101 +7473,369 @@ Bùi Xuân Dũng`,
                 ]
             },
             {
-                id: 'tt24-ch4', code: 'Phụ lục', title: 'Các biểu mẫu và bảng dữ liệu',
+                id: 'tt24-ch4', code: 'Phụ lục', title: 'Các biểu mẫu, bảng dữ liệu và ví dụ minh họa',
                 articles: [
                     {
                         id: 'tt24-dpl1',
                         code: 'Phụ lục I',
-                        title: 'Ký hiệu mã tỉnh/thành phố trực thuộc trung ương',
-                        summary: 'Bảng mã tỉnh/thành phố nơi thực hiện quy hoạch, dự án ĐTXD/công trình xây dựng. Gồm 35 đơn vị hành chính cấp tỉnh.',
-                        content: `Bảng ký hiệu mã tỉnh/thành phố trực thuộc trung ương nơi thực hiện quy hoạch, dự án đầu tư xây dựng/công trình xây dựng. Gồm 35 đơn vị hành chính cấp tỉnh từ Hà Nội (01) đến Cà Mau (96), và mã liên tỉnh (00). Bảng mã được cập nhật theo quyết định của Thủ tướng Chính phủ về ban hành Bảng danh mục và mã số các đơn vị hành chính Việt Nam.`,
+                        title: 'Ký hiệu mã tỉnh/thành phố trực thuộc trung ương nơi thực hiện quy hoạch, dự án ĐTXD/công trình xây dựng',
+                        summary: 'Bảng ký hiệu mã 35 tỉnh/thành phố trực thuộc trung ương. Mã gồm 2 chữ số: Hà Nội (01), Cao Bằng (04), Tuyên Quang (08), Điện Biên (11), Lai Châu (12), Sơn La (14), Lào Cai (15), ... Cà Mau (96), Liên tỉnh (00).',
+                        content: `Bảng ký hiệu mã tỉnh/thành phố trực thuộc trung ương nơi thực hiện quy hoạch, dự án đầu tư xây dựng/công trình xây dựng.
+(Ban hành kèm theo Thông tư số 24/2025/TT-BXD ngày 29/08/2025 của Bộ trưởng Bộ Xây dựng)
+
+Danh sách 35 đơn vị hành chính cấp tỉnh:
+STT | Tên đơn vị hành chính | Mã
+1   | Thành phố Hà Nội     | 01
+2   | Tỉnh Cao Bằng        | 04
+3   | Tỉnh Tuyên Quang     | 08
+4   | Tỉnh Điện Biên       | 11
+5   | Tỉnh Lai Châu        | 12
+6   | Tỉnh Sơn La          | 14
+7   | Tỉnh Lào Cai         | 15
+8   | Tỉnh Thái Nguyên     | 19
+9   | Tỉnh Lạng Sơn        | 20
+10  | Tỉnh Quảng Ninh      | 22
+11  | Tỉnh Bắc Ninh        | 24
+12  | Tỉnh Phú Thọ         | 25
+13  | Thành phố Hải Phòng  | 31
+14  | Tỉnh Hưng Yên        | 33
+15  | Tỉnh Ninh Bình       | 37
+16  | Tỉnh Thanh Hóa       | 38
+17  | Tỉnh Nghệ An         | 40
+18  | Tỉnh Hà Tĩnh         | 42
+19  | Tỉnh Quảng Trị       | 44
+20  | Thành phố Huế         | 46
+21  | Thành phố Đà Nẵng    | 48
+22  | Tỉnh Quảng Ngãi      | 51
+23  | Tỉnh Gia Lai         | 52
+24  | Tỉnh Khánh Hòa       | 56
+25  | Tỉnh Đắk Lắk         | 66
+26  | Tỉnh Lâm Đồng        | 68
+27  | Tỉnh Đồng Nai        | 75
+28  | Thành phố Hồ Chí Minh| 79
+29  | Tỉnh Tây Ninh        | 80
+30  | Tỉnh Đồng Tháp       | 82
+31  | Tỉnh Vĩnh Long       | 86
+32  | Tỉnh An Giang        | 91
+33  | Thành phố Cần Thơ    | 92
+34  | Tỉnh Cà Mau          | 96
+35  | Liên tỉnh            | 00
+
+Ghi chú: Trong quá trình thực hiện, Bảng mã này được cập nhật, điều chỉnh theo quyết định của Thủ tướng Chính phủ về ban hành Bảng danh mục và mã số các đơn vị hành chính Việt Nam.`,
                     },
                     {
                         id: 'tt24-dpl2',
                         code: 'Phụ lục II',
                         title: 'Dữ liệu về quy hoạch đô thị và nông thôn',
-                        summary: 'Quy định nhập thông tin chung (tên, loại, cấp độ, địa điểm, cơ quan lập/thẩm định/phê duyệt) và chi tiết (quy mô dân số, thời hạn, quy định quản lý, hồ sơ CSDL số) về quy hoạch đô thị và nông thôn.',
-                        content: `Bảng dữ liệu về quy hoạch đô thị và nông thôn gồm 3 phần:
-I. Thông tin chung: Tên quy hoạch, loại quy hoạch, cấp độ, loại điều chỉnh, địa điểm, quy mô diện tích, số QĐ phê duyệt nhiệm vụ, cơ quan lập/thẩm định/phê duyệt.
-II. Thông tin chi tiết: Quy mô dân số dự báo, thời hạn quy hoạch, quy định quản lý, kế hoạch thực hiện, quy chế QLKT.
-III. Hồ sơ: CSDL số cơ bản, CSDL số pháp lý, CSDL số địa lý (GIS).
-Dữ liệu mở bao gồm dữ liệu tại mục I và II.`,
+                        summary: 'Bảng dữ liệu quy hoạch đô thị và nông thôn gồm 3 mục: I.Thông tin chung (11 trường: tên, loại, cấp độ, loại điều chỉnh, địa điểm, quy mô diện tích, QĐ phê duyệt nhiệm vụ, cơ quan lập/thẩm định/phê duyệt); II.Thông tin chi tiết (dân số dự báo, thời hạn, quy định quản lý, kế hoạch, QCQLKT); III.Hồ sơ (CSDL số cơ bản, pháp lý, GIS).',
+                        content: `Dữ liệu về quy hoạch đô thị và nông thôn
+(Ban hành kèm theo Thông tư số 24/2025/TT-BXD ngày 29/08/2025)
+
+I. THÔNG TIN CHUNG (để khởi tạo Mã số thông tin theo điểm a khoản 5 Điều 10 NĐ 111/2024):
+- Cơ quan thẩm định quy hoạch phối hợp với cơ quan lập quy hoạch để cập nhật nội dung thông tin chung.
+- Dữ liệu mở bao gồm dữ liệu tại mục I và II.
+
+1. Tên quy hoạch → [Nhập thông tin]
+2. Loại quy hoạch → [Chọn loại quy hoạch]
+3. Cấp độ quy hoạch → [Chọn cấp độ quy hoạch]
+4. Loại điều chỉnh quy hoạch → [Chọn loại điều chỉnh quy hoạch]
+5. Địa điểm quy hoạch → [Chọn tỉnh/thành phố, xã/phường hoặc nhập thông tin]
+6. Quy mô, diện tích lập quy hoạch → [Nhập thông tin (theo hecta)]
+7. Số quyết định phê duyệt nhiệm vụ QH → [Số quyết định]
+8. Cơ quan tổ chức lập nhiệm vụ QH → [Nhập thông tin hoặc Mã ĐKKD]
+9. Cơ quan tổ chức lập quy hoạch → [Nhập thông tin hoặc Mã ĐKKD]
+10. Cơ quan thẩm định quy hoạch → [Nhập thông tin]
+11. Cơ quan phê duyệt quy hoạch → [Nhập thông tin]
+
+II. THÔNG TIN CHI TIẾT (cơ quan lập QH cập nhật theo điểm b khoản 5 NĐ 111/2024):
+1. Quy mô dân số dự báo → [Nhập thông tin]
+2. Thời hạn quy hoạch → [Nhập thông tin]
+3. Quy định quản lý theo quy hoạch → [Nhập file hồ sơ chứng thực điện tử theo TT 16/2025]
+4. Kế hoạch thực hiện quy hoạch chung → [Đính kèm file ký số hoặc chứng thực bản sao điện tử]
+5. Quy chế quản lý kiến trúc (nếu có) → [Nhập file hồ sơ chứng thực điện tử]
+6. Thông tin liên quan khác:
+   6.1. Các nhiệm vụ QH, QH có liên quan → [Nhập mã thông tin QH cấp trên/dưới]
+   6.2. Chủ nhiệm lập quy hoạch → [Nhập mã CCHN hoặc CCCD]
+   6.3. Danh sách chủ trì các bộ môn thiết kế QH → [Nhập mã CCHN hoặc CCCD]
+   6.4. Thông tin khác (nếu có)
+
+III. HỒ SƠ NHIỆM VỤ QH, QH ĐÔ THỊ VÀ NÔNG THÔN:
+1. Cơ sở dữ liệu số cơ bản → [Các file bản vẽ và văn bản theo TT 16/2025]
+2. Cơ sở dữ liệu số pháp lý → [Các file số hóa, scan từ hồ sơ bản giấy hoặc chứng thực điện tử theo TT 16/2025]
+3. Cơ sở dữ liệu số địa lý (GIS) → [Các file chuyển đổi thành dữ liệu địa lý từ CSDL gốc theo TT 16/2025]`,
                     },
                     {
                         id: 'tt24-dpl3',
                         code: 'Phụ lục III',
                         title: 'Dữ liệu về dự án đầu tư xây dựng, công trình xây dựng',
-                        summary: 'Gồm 3 bảng: Bảng 01 - Dữ liệu về dự án ĐTXD, công trình XD (thẩm định BCNCKT, thiết kế, cấp GPXD); Bảng 02 - Công trình không yêu cầu lập dự án, chỉ cấp GPXD; Bảng 03 - Công trình miễn thẩm định, miễn GPXD, chỉ thông báo khởi công.',
-                        content: `Phụ lục III gồm 3 bảng:
-Bảng số 01: Dữ liệu về dự án đầu tư xây dựng, công trình xây dựng. Gồm các mục: A - Thẩm định BCNCKT (dữ liệu chung + chi tiết); B - Thẩm định thiết kế XD triển khai sau TKCS; C - Cấp giấy phép xây dựng; D - Miễn GPXD.
-Bảng số 02: Dữ liệu về công trình XD không yêu cầu lập dự án, chỉ yêu cầu cấp GPXD.
-Bảng số 03: Dữ liệu về công trình XD không thẩm định tại CQCM, không cấp GPXD, chỉ thông báo khởi công.
-Mỗi bảng quy định chi tiết nội dung nhập/cập nhật dữ liệu, phân công trách nhiệm, xác định dữ liệu mở.`,
+                        summary: 'Gồm 3 bảng: Bảng 01 - Dữ liệu DAĐTXD/CTXD (4 mục: A.Thẩm định BCNCKT gồm 7 DL chung + 8 DL chi tiết; B.Thẩm định TKXD gồm 7 DL chung + 7 DL chi tiết; C.Cấp GPXD gồm 5 DL chung + 18 DL chi tiết; D.Miễn GPXD). Bảng 02 - CT không lập DA, chỉ cấp GPXD (5 DL chung + 7 DL chi tiết). Bảng 03 - CT miễn TĐ/GPXD, chỉ thông báo khởi công (10 mục).',
+                        content: `Dữ liệu về dự án đầu tư xây dựng, công trình xây dựng
+(Ban hành kèm theo Thông tư số 24/2025/TT-BXD ngày 29/08/2025)
+
+BẢNG SỐ 01: Dữ liệu về dự án đầu tư xây dựng, công trình xây dựng
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+A. THẨM ĐỊNH BÁO CÁO NCKT ĐẦU TƯ XÂY DỰNG
+   (CQCM về XD khởi tạo mã số khi có kết quả thẩm định theo điểm a khoản 2 Điều 10 NĐ 111/2024)
+
+   I. Dữ liệu chung (CQCM nhập khi khởi tạo Mã số):
+      1. Tên dự án ĐTXD
+      2. Nhóm dự án (A/B/C)
+      3. Địa điểm xây dựng
+      4. Người quyết định đầu tư
+      5. Chủ đầu tư
+      6. Mục tiêu đầu tư
+      7. Quy mô đầu tư (quy mô XD chủ yếu theo PL về ĐTC, ĐT, XD, nhà ở, KDBĐS...)
+
+   II. Dữ liệu chi tiết (Chủ đầu tư nhập trong 15 ngày kể từ ngày nhận kết quả TĐ):
+      1. Văn bản về chủ trương đầu tư
+      2. QĐ phê duyệt quy hoạch làm cơ sở lập dự án
+      3. Kết quả thủ tục PCCC và bảo vệ môi trường (3.1 PCCC, 3.2 MT)
+      4. Thông báo kết quả thẩm định BCNCKT (DL mở)
+      5. QĐ phê duyệt dự án ĐTXD (DL mở)
+      6. Dữ liệu tổ chức/cá nhân tham gia (6.1-6.9: NT khảo sát, CN khảo sát, NT tư vấn TK, CN thiết kế, DS chủ trì bộ môn TK, NT thẩm tra TK, CN thẩm tra TK, DS chủ trì thẩm tra, NT thẩm tra ATGT)
+      7. Hồ sơ văn bản liên quan (7.1-7.9: Mã DL QH, loại DA, cấp CT, TMĐT, nguồn vốn, thời gian, hình thức QLDA, giải thưởng KT, DL loại hình BĐS)
+      8. Dữ liệu khác (nếu có)
+      → Dữ liệu mở: mục A.I, A.II.4 và A.II.5
+
+B. THẨM ĐỊNH THIẾT KẾ XD TRIỂN KHAI SAU TKCS
+   (Khởi tạo mã số khi có kết quả TĐ TKXD theo điểm a khoản 3 Điều 10 NĐ 111/2024)
+   I. Dữ liệu chung: 7 mục (Mã số DA, tên CT, loại CT, cấp CT, địa điểm, CĐT, quy mô)
+   II. Dữ liệu chi tiết: 7 mục (PCCC+MT, TB kết quả TĐ BCNCKT, TB kết quả TĐ TKXD, QĐ phê duyệt DA, QĐ phê duyệt TKXD, DL tổ chức/cá nhân, hồ sơ liên quan)
+   → Dữ liệu mở: B.I, B.II.2 đến B.II.5
+
+C. CẤP GIẤY PHÉP XÂY DỰNG
+   (Khởi tạo mã số khi cấp GPXD theo điểm b khoản 2 và điểm b khoản 3 Điều 10 NĐ 111/2024)
+   I. Dữ liệu chung: 5 mục (Tên CTXD, loại/cấp CT, địa điểm, CĐT, quy mô)
+   II. Dữ liệu chi tiết: 18 mục gồm:
+      1. GPXD
+      2. Thông báo khởi công
+      3. Giấy tờ đất đai (theo Điều 53 NĐ 175/2024)
+      4. DL tổ chức/cá nhân tham gia
+      5. Hồ sơ liên quan (5.1-5.18):
+         5.1. NT tư vấn giám sát, giám sát trưởng, TVQLDA
+         5.2. Giấy phép MT/kế hoạch an toàn MT
+         5.3. Thẩm tra ATGT trước khi đưa CT đường bộ vào khai thác
+         5.4. Biên bản nghiệm thu hoàn thành CT
+         5.5. TB kết quả kiểm tra công tác nghiệm thu
+         5.6. DL tổ chức kiểm định CT
+         5.7. Bản vẽ hoàn công
+         5.8. QĐ phê duyệt quyết toán vốn ĐTXD (vốn ĐTC/NN ngoài ĐTC/PPP)
+         5.9. Các giải thưởng CT (chất lượng, KT, tiết kiệm năng lượng)
+         5.10. Bảng tiến độ thực hiện DA (**)
+         5.11. Khối lượng hoàn thành theo thời gian thực tế (**)
+         5.12. Giá trị thanh toán khối lượng hoàn thành (**)
+         5.13. Vi phạm HCXD (***)
+         5.14. Sự cố CTXD trong thi công và khai thác (***)
+         5.15. Sự cố kỹ thuật gây mất ATLĐ (***)
+         5.16. Lịch sử bảo hành, bảo trì CTXD (***)
+         5.18. Dữ liệu khác
+   → Dữ liệu mở: C.I, C.II.1 và C.II.2
+
+D. MIỄN GIẤY PHÉP XÂY DỰNG
+   CĐT nhập DL chung, DL chi tiết như mục C (trừ GPXD)
+
+Ghi chú:
+(*) Quy mô ĐTXD chủ yếu: chi tiết theo từng lĩnh vực quản lý nhà nước (dân dụng, giao thông đường bộ/đường sắt, HTKT, phát triển đô thị, nhà ở và KDBĐS...)
+(**) CĐT nhập/cập nhật trong 20 ngày làm việc, liên kết hệ thống thanh toán/quyết toán Bộ Tài chính
+(***) Liên kết hệ thống xử phạt VPHC, báo cáo sự cố, lịch sử bảo trì; tự động nhập khi bảo đảm điều kiện công nghệ
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+BẢNG SỐ 02: Dữ liệu về CT XD không yêu cầu lập DA ĐTXD, chỉ yêu cầu cấp GPXD
+(Khởi tạo mã số khi cấp GPXD theo khoản 4 Điều 10 NĐ 111/2024)
+
+I. Dữ liệu chung: 5 mục (Tên CTXD, loại/cấp CT, địa điểm, CĐT/chủ hộ, quy mô)
+II. Dữ liệu chi tiết: 7 mục (GPXD, TB khởi công, giấy tờ đất đai, DL TC/CN, vi phạm HCXD, sự cố CTXD, sự cố kỹ thuật ATLĐ)
+→ Dữ liệu mở: mục C.I, C.II.1 và C.II.2
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+BẢNG SỐ 03: Dữ liệu về CT XD không thuộc đối tượng TĐ tại CQCM; không phải cấp GPXD; chỉ thông báo khởi công
+
+10 mục: Tên hạng mục CT, địa điểm, CĐT/chủ hộ, SĐT liên lạc, quy mô ĐTXD chủ yếu (diện tích, số tầng, tổng diện tích sàn...), DL TC/CN tham gia, ngày khởi công/hoàn thành, VPHCXD, sự cố CTXD, sự cố kỹ thuật ATLĐ
+→ Dữ liệu mở: mục 1 đến mục 3 và mục 5`,
                     },
                     {
                         id: 'tt24-dpl4',
                         code: 'Phụ lục IV',
                         title: 'Bảng tổng hợp dữ liệu, thông tin về hoạt động xây dựng',
-                        summary: 'Gồm 15 bảng tổng hợp: quy hoạch đô thị/nông thôn, tỷ lệ lập quy hoạch, dự án ĐTXD theo nguồn vốn, GPXD/khởi công/sự cố/vi phạm, năng lực nhà thầu, năng lực hành nghề cá nhân, lịch sử hoạt động nhà thầu, tình hình thực hiện dự án, suất vốn ĐT.',
-                        content: `Phụ lục IV gồm 15 bảng tổng hợp:
-Bảng 1: Tổng hợp thông tin quy hoạch đô thị và nông thôn
-Bảng 2: Tỷ lệ lập quy hoạch, quy chế QLKT
-Bảng 3: Dự án ĐTXD, công trình XD theo nguồn vốn (đầu tư công/ngoài ĐTC/PPP/vốn khác)
-Bảng 4: GPXD, khởi công, sự cố, vi phạm TTXD, kiểm tra nghiệm thu
-Bảng 5: Năng lực hoạt động XD của nhà thầu
-Bảng 6: Năng lực hành nghề XD của cá nhân
-Bảng 7: Lịch sử hoạt động nhà thầu
-Bảng 8-9: Tình hình thực hiện dự án vốn ĐTC
-Bảng 10-11: Tình hình dự án vốn khác
-Bảng 12-13: Công trình không lập dự án/miễn GPXD
-Bảng 14: Tình hình công trình theo địa phương
-Bảng 15: Ví dụ minh họa
-Thông tin có thể trích xuất theo yêu cầu đột xuất, hàng tháng, hàng quý, hàng năm.`,
+                        summary: 'Gồm 15 bảng tổng hợp + 5 ví dụ minh họa. Bảng 01: TH QH đô thị/nông thôn theo tỉnh. Bảng 02: Tỷ lệ lập QH, QCQLKT. Bảng 03: TH DA ĐTXD/CTXD theo nguồn vốn. Bảng 04: GPXD/khởi công/sự cố/vi phạm TTXD/nghiệm thu. Bảng 05-06: Năng lực TC/CN. Bảng 07: Lịch sử nhà thầu. Bảng 08-11: Tình hình DA vốn ĐTC/vốn khác. Bảng 12-13: CT không lập DA/miễn GPXD. Bảng 14: TH theo địa phương. Bảng 15: Ví dụ minh họa.',
+                        content: `Một số ví dụ minh họa về các bảng tổng hợp dữ liệu, thông tin về hoạt động xây dựng
+(Ban hành kèm theo Thông tư số 24/2025/TT-BXD ngày 29/08/2025)
+
+(*) Thông tin tại các bảng có thể trích xuất theo yêu cầu đột xuất, hàng tháng, hàng quý, hàng năm.
+
+BẢNG SỐ 01: Tổng hợp thông tin về quy hoạch đô thị và nông thôn
+- Theo tỉnh/TP: QH đô thị (QH chung, QH phân khu, QH chi tiết), QH nông thôn (QH chung, QH chi tiết), QH khu chức năng (QH chung, QH phân khu, QH chi tiết), QH chuyên ngành HTKT, QH không gian ngầm
+
+BẢNG SỐ 02: Tổng hợp thông tin về tỷ lệ lập quy hoạch, quy chế quản lý kiến trúc
+- Theo tỉnh/TP: Tỷ lệ lập QH chung (số lượng/kế hoạch, diện tích), tỷ lệ lập QHPK, tỷ lệ lập QHCT, tỷ lệ lập QCQLKT
+
+BẢNG SỐ 03: Tổng hợp dữ liệu DA ĐTXD sử dụng vốn ĐTC/NN ngoài ĐTC/PPP/vốn khác
+- Theo cấp xã/tỉnh/Bộ: Tổng số BCNCKT đã TĐ, tổng TMĐT đã phê duyệt, tổng số TKXD đã TĐ, tổng DT XD đã phê duyệt, tổng giá trị QT
+
+BẢNG SỐ 04: Tổng hợp dữ liệu GPXD, khởi công, sự cố, vi phạm TTXD, kiểm tra nghiệm thu
+- Theo cấp xã/tỉnh: Tổng số GPXD cấp, tổng CT khởi công mới, tổng sự cố CTXD, tổng sự cố kỹ thuật ATLĐ, tổng CT vi phạm TTXD, tổng CT đã kiểm tra nghiệm thu
+- Chi tiết theo loại CT: dân dụng/công nghiệp/HTKT/giao thông/nông nghiệp PTNT/nhà ở riêng lẻ
+
+BẢNG SỐ 05: Tổng hợp năng lực hoạt động XD của nhà thầu
+- Theo tỉnh/TP: Số lượng TC khảo sát (nhóm A/B/C), lập TK QH, thẩm tra ATGT, TK/thẩm tra TK XD (cấp I/II/III), TVQLDA, thi công (cấp I/II/III), tư vấn giám sát (cấp I/II/III)
+
+BẢNG SỐ 06: Tổng hợp năng lực hành nghề XD của cá nhân
+- Theo tỉnh/TP: Số lượng CCHN theo lĩnh vực (khảo sát, TK QH ĐT&NT, TK XD CT, giám sát, định giá, QLDA) và hạng (I/II/III)
+
+BẢNG SỐ 07: Tổng hợp lịch sử hoạt động nhà thầu
+- Theo nhà thầu: Mã số DN, các DA/CT đã thực hiện, giải thưởng KT QG, giải thưởng chất lượng CT, giải thưởng tiết kiệm năng lượng, sự cố, vi phạm HCXD, tài chính (doanh thu 3 năm, tổng tài sản, lợi nhuận, dư nợ)
+- Xếp hạng tự động theo: quy mô DA, giải thưởng, sự cố/vi phạm, tài chính
+
+BẢNG SỐ 08-09: Tình hình DA ĐTXD vốn ĐTC/NN ngoài ĐTC/PPP
+- Bảng 08 (từng DA): Tiến độ, tỷ lệ KL hoàn thành, tỷ lệ giải ngân theo KH vốn/HĐ, sự cố, vi phạm, cảnh báo chậm tiến độ, vướng mắc
+- Bảng 09 (tổng hợp theo cấp xã/tỉnh/Bộ/toàn quốc): Tổng số DA, tỷ lệ KL, giải ngân, sự cố, cảnh báo, vướng mắc (sử dụng AI tổng hợp, phân loại)
+
+BẢNG SỐ 10-11: Tình hình DA ĐTXD vốn khác
+- Bảng 10 (từng DA): Tiến độ, tỷ lệ KL hoàn thành, sự cố, vi phạm, cảnh báo, vướng mắc
+- Bảng 11 (tổng hợp theo cấp xã/tỉnh/toàn quốc)
+
+BẢNG SỐ 12: TH CT XD không lập DA, chỉ cấp GPXD
+- Theo cấp xã/tỉnh: Tổng số CT, tổng diện tích sàn, sự cố, vi phạm
+
+BẢNG SỐ 13: TH CT XD không TĐ tại CQCM, không cấp GPXD
+- Theo cấp xã/tỉnh: Tổng số CT, tổng diện tích sàn, sự cố, vi phạm
+
+BẢNG SỐ 14: TH theo địa phương về CT khởi công/thi công/hoàn thành/kiểm tra chất lượng
+- Chỉ tiêu: CT mới khởi công (dân dụng/CN/GT/HTKT), CT đang thi công, CT đã hoàn thành, CT kiểm tra CL (đạt/không đạt)
+
+BẢNG SỐ 15: Ví dụ minh họa
+- VD1: Tổng vốn ĐTXD toàn quốc (ĐTC, NN ngoài ĐTC, vốn khác)
+- VD2: Phân bố loại CT (nhà ở, khách sạn/nghỉ dưỡng, công nghiệp, HTKT, hạ tầng XH, khác)
+- VD3: Tình hình triển khai ĐTXD (chưa khởi công, đã khởi công, đã nghiệm thu)
+- VD4: Vi phạm TTXD theo tỉnh/toàn quốc (dự báo giảm theo năm)
+- VD5: Suất vốn ĐTXD thực tế sau QT theo loại DA và địa phương`,
                     },
                     {
                         id: 'tt24-dpl5',
                         code: 'Phụ lục V',
                         title: 'Biểu mẫu cung cấp thông tin về dữ liệu mở',
-                        summary: 'Gồm 6 bảng: cung cấp thông tin dữ liệu mở về quy hoạch đô thị/nông thôn, dự án ĐTXD/công trình XD, công trình không lập dự án (chỉ cấp GPXD), công trình miễn thẩm định/GPXD, năng lực hoạt động XD nhà thầu, năng lực hành nghề cá nhân.',
-                        content: `Phụ lục V gồm 6 bảng:
-Bảng 1: Cung cấp thông tin dữ liệu mở về quy hoạch đô thị và nông thôn
-Bảng 2: Cung cấp thông tin dữ liệu mở về dự án ĐTXD, công trình XD
-Bảng 3: Cung cấp thông tin dữ liệu mở về công trình XD không lập dự án, chỉ cấp GPXD
-Bảng 4: Cung cấp thông tin dữ liệu mở về công trình miễn thẩm định, miễn GPXD
-Bảng 5: Cung cấp thông tin dữ liệu mở về năng lực hoạt động XD nhà thầu
-Bảng 6: Cung cấp thông tin dữ liệu mở về năng lực hành nghề cá nhân`,
+                        summary: 'Gồm 6 bảng cung cấp thông tin dữ liệu mở: Bảng 01 - QH đô thị/nông thôn (17 mục: tên, loại, cấp độ, điều chỉnh, địa điểm, quy mô, QĐ phê duyệt, cơ quan, dân số dự báo, thời hạn, QĐQL, KH QHC, QCQLKT); Bảng 02 - DA ĐTXD/CTXD (3 phần: TĐ BCNCKT 9 mục, TĐ TKXD 11 mục, GPXD 7 mục); Bảng 03-04 - CT không lập DA/miễn GPXD; Bảng 05 - Năng lực nhà thầu (thông tin + DS + 4 bảng xếp hạng); Bảng 06 - Năng lực cá nhân hành nghề.',
+                        content: `Các biểu mẫu cung cấp thông tin về dữ liệu mở trong hệ thống thông tin, CSDL quốc gia về HĐXD
+(Ban hành kèm theo Thông tư số 24/2025/TT-BXD ngày 29/08/2025)
+
+BẢNG SỐ 01: Cung cấp thông tin dữ liệu mở QH đô thị và nông thôn
+17 mục: Tên QH (kèm Mã số TTQH), loại QH, cấp độ QH, loại điều chỉnh QH, địa điểm, quy mô diện tích, số QĐ phê duyệt nhiệm vụ, CQ lập nhiệm vụ, CQ lập QH, CQ thẩm định, CQ phê duyệt, dân số dự báo, thời hạn QH, QĐ quản lý theo QH, KH thực hiện QHC, QCQLKT
+
+BẢNG SỐ 02: Cung cấp thông tin dữ liệu mở DA ĐTXD/CTXD
+I. Thẩm định BCNCKT: 9 mục (tên DA kèm mã, nhóm DA, địa điểm, người QĐ ĐT, CĐT, mục tiêu, quy mô, TB kết quả TĐ, QĐ phê duyệt)
+II. Thẩm định TKXD: 11 mục (mã số DA, tên CT kèm mã, loại CT, cấp CT, địa điểm, CĐT, quy mô, TB kết quả TĐ BCNCKT, TB kết quả TĐ TKXD, QĐ phê duyệt DA, QĐ phê duyệt TKXD)
+III. GPXD: 7 mục (tên CT kèm mã, loại/cấp CT, địa điểm, CĐT, quy mô, GPXD, TB khởi công)
+
+BẢNG SỐ 03: DL mở CT XD không lập DA, chỉ cấp GPXD
+7 mục: Tên CTXD, loại/cấp CT, địa điểm, chủ hộ gia đình, quy mô, GPXD, TB khởi công
+
+BẢNG SỐ 04: DL mở CT XD miễn TĐ, miễn GPXD, chỉ TB khởi công
+4 mục: Tên hạng mục CT, địa điểm, CĐT/chủ hộ, quy mô ĐTXD chủ yếu
+
+BẢNG SỐ 05: DL mở năng lực hoạt động XD nhà thầu
+1. Thông tin năng lực (5 mục): Tên nhà thầu (công ty, mã số DN, địa chỉ), quy mô DA đã tham gia (nhóm A/B/C, cấp ĐB/I/II/III), giải thưởng, sự cố, vi phạm HCXD
+2. Danh sách nhà thầu theo lĩnh vực (TK XD/thi công XD/...)
+3. Bảng xếp hạng: (1) theo quy mô DA, (2) theo giải thưởng, (3) theo sự cố/vi phạm, (4) theo tài chính
+(*) Nhà thầu được tra cứu theo mã số DN, tạo hồ sơ năng lực trên nền tảng CSDLQG
+
+BẢNG SỐ 06: DL mở năng lực cá nhân hành nghề XD
+Thông tin theo từng lĩnh vực (khảo sát, TK QH, TK XD, giám sát, định giá, QLDA, chỉ huy trưởng, kiểm định...): Họ tên, mã số CCHN, tỉnh/TP/xã/phường/đặc khu, số lượng/quy mô DA đã thực hiện
+(*) Cá nhân được tra cứu theo số định danh cá nhân, tạo hồ sơ năng lực hành nghề`,
                     },
                     {
                         id: 'tt24-dpl6',
                         code: 'Phụ lục VI',
-                        title: 'Mẫu phiếu đề nghị và cung cấp thông tin',
-                        summary: 'Gồm 8 mẫu phiếu: đề nghị/cung cấp thông tin quy hoạch đô thị và nông thôn, dự án/công trình xây dựng, hoạt động đầu tư xây dựng, năng lực hoạt động xây dựng nhà thầu.',
-                        content: `Phụ lục VI gồm 8 mẫu phiếu:
-Mẫu 01: Phiếu đề nghị cung cấp thông tin về quy hoạch đô thị và nông thôn
-Mẫu 02: Phiếu cung cấp thông tin về quy hoạch phục vụ nhu cầu ĐTXD công trình
-Mẫu 03: Phiếu đề nghị cung cấp thông tin về dự án, công trình xây dựng
-Mẫu 04: Phiếu cung cấp thông tin về dự án, công trình xây dựng
-Mẫu 05: Phiếu đề nghị khai thác thông tin về hoạt động đầu tư xây dựng
-Mẫu 06: Phiếu cung cấp thông tin về hoạt động đầu tư xây dựng
-Mẫu 07: Phiếu đề nghị khai thác thông tin về năng lực hoạt động XD nhà thầu
-Mẫu 08: Phiếu cung cấp thông tin về năng lực hoạt động XD nhà thầu`,
+                        title: 'Mẫu phiếu đề nghị cung cấp, khai thác thông tin và mẫu phiếu cung cấp thông tin',
+                        summary: 'Gồm 8 mẫu phiếu: Mẫu 01 - Đề nghị cung cấp TT QH đô thị/nông thôn (thông tin TC/CN, phạm vi chỉ tiêu QH-KT). Mẫu 02 - Cung cấp TT QH phục vụ ĐTXD (11 chỉ tiêu QH-KT: vị trí, diện tích, mục đích đất, tầng cao, chiều cao, cốt XD, khoảng lùi, mật độ, hệ số sử dụng đất, hình khối/màu sắc...). Mẫu 03-04 - Đề nghị/cung cấp TT DA/CT XD (12 mục). Mẫu 05-06 - Đề nghị/cung cấp TT HĐĐTXD. Mẫu 07-08 - Đề nghị/cung cấp TT năng lực NT.',
+                        content: `Các mẫu phiếu đề nghị cung cấp, khai thác thông tin và mẫu phiếu cung cấp thông tin HĐXD
+(Ban hành kèm theo Thông tư số 24/2025/TT-BXD ngày 29/08/2025)
+
+(*) Thông tin được cung cấp theo lộ trình nhập, cập nhật DL và công bố dịch vụ chia sẻ DL.
+
+MẪU SỐ 01: Phiếu đề nghị cung cấp thông tin QH đô thị và nông thôn
+- Kính gửi: Cục Kinh tế - QLĐTXD - Bộ Xây dựng
+- I. Thông tin TC/CN đề nghị: Họ tên, ngày sinh, giới tính, số CCCD, nơi cư trú
+- II. Thông tin người đại diện (nếu có)
+- III. Nội dung đề nghị: Phạm vi chỉ tiêu QH-KT tại vị trí (liên kết DL QH và đất đai), mục đích khai thác, địa chỉ nhận kết quả
+
+MẪU SỐ 02: Phiếu cung cấp thông tin QH phục vụ nhu cầu ĐTXD công trình
+- Cơ quan cung cấp: Phòng/Đơn vị thuộc Cục KT-QLĐTXD
+- Nội dung: 11 chỉ tiêu QH-KT của thửa đất/ô đất/lô đất:
+  1. Vị trí địa điểm (tọa độ, mã số TTQH, theo GIS liên kết DL đất đai)
+  2. Diện tích lô đất
+  3. Mục đích sử dụng đất (theo QH đô thị và nông thôn)
+  4. Tầng cao
+  5. Chiều cao CT tối đa/tối thiểu đối với ô phố, lô phố
+  6. Cốt xây dựng
+  7. Khoảng lùi CT trên ô phố
+  8. Mật độ xây dựng
+  9. Hệ số sử dụng đất
+  10. Hình khối, màu sắc, hình thức kiến trúc chủ đạo
+  11. Giới hạn chiều cao tầng 1, kích thước và cốt cao độ ban công, lô gia, mái
+
+MẪU SỐ 03: Phiếu đề nghị cung cấp thông tin DA, CT XD
+- Nội dung chọn: Mục đích sử dụng đất, tiến độ theo chủ trương ĐT, tiến độ thực tế, giấy tờ đất đai, loại hình CT, quy mô ĐTXD, tài liệu pháp lý, DS nhà thầu, sự cố khai thác, bảo hành bảo trì
+
+MẪU SỐ 04: Phiếu cung cấp thông tin DA, CT XD (12 mục chi tiết)
+- Nội dung: Tên DA/CT (kèm mã), vị trí, mục đích đất, tiến độ theo chủ trương, tiến độ thực tế (chưa/đã GPXD, khởi công, nghiệm thu, đủ/chưa đủ ĐK kinh doanh BĐS), giấy tờ đất đai, loại hình CT (nhà ở, thương mại, công nghiệp...), quy mô ĐTXD, tài liệu pháp lý, DS nhà thầu, sự cố, bảo hành bảo trì
+
+MẪU SỐ 05: Phiếu đề nghị khai thác thông tin HĐĐTXD
+- Nội dung: Khai thác DL tại Phụ lục IV, tạo lập thông tin thị trường ĐTXD trên nền tảng CSDLQG
+
+MẪU SỐ 06: Phiếu cung cấp thông tin HĐĐTXD
+- Cung cấp tương ứng theo Phụ lục IV
+
+MẪU SỐ 07: Phiếu đề nghị khai thác TT năng lực NT
+- Nội dung: Khai thác DL lịch sử HĐXD nhà thầu, tạo lập hồ sơ năng lực trên nền tảng CSDLQG
+
+MẪU SỐ 08: Phiếu cung cấp TT năng lực NT
+- Nội dung: Cung cấp DL lịch sử + hồ sơ năng lực nhà thầu`,
                     },
                     {
                         id: 'tt24-dpl7',
                         code: 'Phụ lục VII',
-                        title: 'Ví dụ minh họa về mã số thông tin',
-                        summary: 'Ví dụ minh họa về mã số dữ liệu quy hoạch đô thị/nông thôn (12 ký tự) và mã số dữ liệu dự án đầu tư xây dựng (13 ký tự). Giải thích cấu trúc từng ký tự trong mã số.',
-                        content: `Ví dụ 1: Mã số dữ liệu quy hoạch đô thị và nông thôn - 12 ký tự
-012611088888 = Hà Nội (01) + Năm 2026 (26) + QH chung (1) + QH đô thị (1) + Lập lần đầu (0) + Số ngẫu nhiên (88888)
+                        title: 'Ví dụ minh họa về mã số dữ liệu QH đô thị/nông thôn và dự án ĐTXD',
+                        summary: 'Ví dụ 1: Mã QH đô thị/nông thôn gồm 12 ký tự - VD "012611088888" = Hà Nội (01) + Năm 2026 (26) + QH chung (1) + QH đô thị (1) + Lập lần đầu (0) + Số ngẫu nhiên (88888). Ví dụ 2: Mã DA ĐTXD gồm 13 ký tự - VD "2528110016803" = Phú Thọ (25) + Năm 2028 (28) + DA dân dụng (1) + TĐ CQCM (1) + Số ngẫu nhiên (00168) + Điều chỉnh lần 3 (03).',
+                        content: `Ví dụ minh họa về mã số dữ liệu QH đô thị và nông thôn, dự án đầu tư xây dựng
+(Ban hành kèm theo Thông tư số 24/2025/TT-BXD ngày 29/08/2025)
 
-Ví dụ 2: Mã số dữ liệu dự án ĐTXD - 13 ký tự
-2528110016803 = Phú Thọ (25) + Năm 2028 (28) + DA dân dụng (1) + Thẩm định CQCM (1) + Số ngẫu nhiên (00168) + Điều chỉnh lần 3 (03)`,
+VÍ DỤ 1: MÃ SỐ DỮ LIỆU QUY HOẠCH ĐÔ THỊ VÀ NÔNG THÔN (12 ký tự)
+
+Vị trí | 1  | 2  | 3  | 4  | 5  | 6  | 7  | 8  | 9  | 10 | 11 | 12
+Mã số  | 0  | 1  | 2  | 6  | 1  | 1  | 0  | 8  | 8  | 8  | 8  | 8
+
+Diễn giải:
+- Ký tự 1-2: Mã tỉnh/TP trực thuộc TW → "01" = Hà Nội
+- Ký tự 3-4: Năm trình phê duyệt QH → "26" = Năm 2026
+- Ký tự 5: Cấp độ QH → "1" = QH chung
+- Ký tự 6: Loại QH → "1" = QH đô thị
+- Ký tự 7: Loại điều chỉnh QH → "0" = Lập lần đầu hoặc lập mới
+- Ký tự 8-12: Dãy số ngẫu nhiên → "88888"
+
+→ Mã số 012611088888: Quy hoạch chung Hà Nội được lập mới, trình phê duyệt năm 2026
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+VÍ DỤ 2: MÃ SỐ DỮ LIỆU DỰ ÁN ĐẦU TƯ XÂY DỰNG (13 ký tự)
+
+Vị trí | 1  | 2  | 3  | 4  | 5  | 6  | 7  | 8  | 9  | 10 | 11 | 12 | 13
+Mã số  | 2  | 5  | 2  | 8  | 1  | 1  | 0  | 0  | 1  | 6  | 8  | 0  | 3
+
+Diễn giải:
+- Ký tự 1-2: Mã tỉnh/TP → "25" = Phú Thọ
+- Ký tự 3-4: Năm DA được thẩm định → "28" = Năm 2028
+- Ký tự 5: Loại DA → "1" = DA ĐTXD công trình dân dụng
+- Ký tự 6: Trình tự thủ tục → "1" = DA có yêu cầu TĐ tại CQCM về XD
+- Ký tự 7-11: Dãy số ngẫu nhiên → "00168"
+- Ký tự 12-13: Số lần điều chỉnh → "03" = Điều chỉnh lần 03
+
+→ Mã số 2528110016803: DA ĐTXD công trình dân dụng tại Phú Thọ, năm 2028, đã TĐ tại CQCM về XD, điều chỉnh 03 lần`,
                     },
                 ]
             },
         ]
     },
-    {
+{
         id: 'tt-06-2021',
         code: 'TT 06/2021/TT-BXD',
         title: 'Thông tư quy định về phân cấp công trình xây dựng và hướng dẫn áp dụng trong quản lý hoạt động đầu tư xây dựng',
