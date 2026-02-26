@@ -95,6 +95,13 @@ interface FormData {
     SelectionDuration: string;
     SelectionStartDate: string;
     HasOption: string;
+    // Plan Group fields
+    PlanGroupName: string;
+    PlanDecisionNumber: string;
+    PlanDecisionDate: string;
+    // MSC Integration
+    MSCPlanCode: string;
+    MSCPackageLink: string;
 }
 
 const FUNDING_SOURCE_OPTIONS = [
@@ -135,6 +142,13 @@ const initialFormData: FormData = {
     SelectionDuration: '45 ngày',
     SelectionStartDate: '',
     HasOption: 'false',
+    // Plan Group
+    PlanGroupName: '',
+    PlanDecisionNumber: '',
+    PlanDecisionDate: '',
+    // MSC
+    MSCPlanCode: '',
+    MSCPackageLink: '',
 };
 
 export const BiddingPackageModal: React.FC<BiddingPackageModalProps> = ({
@@ -196,6 +210,13 @@ export const BiddingPackageModal: React.FC<BiddingPackageModalProps> = ({
                 SelectionDuration: packageToEdit.SelectionDuration || '45 ngày',
                 SelectionStartDate: packageToEdit.SelectionStartDate || '',
                 HasOption: packageToEdit.HasOption ? 'true' : 'false',
+                // Plan Group
+                PlanGroupName: packageToEdit.PlanGroupName || '',
+                PlanDecisionNumber: packageToEdit.PlanDecisionNumber || '',
+                PlanDecisionDate: packageToEdit.PlanDecisionDate || '',
+                // MSC
+                MSCPlanCode: packageToEdit.MSCPlanCode || '',
+                MSCPackageLink: packageToEdit.MSCPackageLink || '',
             });
         } else {
             setFormData(initialFormData);
@@ -284,6 +305,13 @@ export const BiddingPackageModal: React.FC<BiddingPackageModalProps> = ({
             SelectionDuration: formData.SelectionDuration || undefined,
             SelectionStartDate: formData.SelectionStartDate || undefined,
             HasOption: formData.HasOption === 'true',
+            // Plan Group
+            PlanGroupName: formData.PlanGroupName || undefined,
+            PlanDecisionNumber: formData.PlanDecisionNumber || undefined,
+            PlanDecisionDate: formData.PlanDecisionDate || undefined,
+            // MSC
+            MSCPlanCode: formData.MSCPlanCode || undefined,
+            MSCPackageLink: formData.MSCPackageLink || undefined,
         };
 
         if (isEditMode) {
@@ -652,6 +680,80 @@ export const BiddingPackageModal: React.FC<BiddingPackageModalProps> = ({
                                                 placeholder="VD: Quý I/2026 hoặc Tháng 3/2026"
                                                 value={formData.SelectionStartDate}
                                                 onChange={(e) => handleChange('SelectionStartDate', e.target.value)}
+                                                className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Plan Group Section */}
+                                <div className="p-4 bg-indigo-50 rounded-xl">
+                                    <h4 className="font-semibold text-gray-800 mb-3">Nhóm Kế hoạch LCNT (giai đoạn)</h4>
+                                    <p className="text-xs text-gray-500 mb-3">Trên muasamcong.vn, mỗi KHLCNT (giai đoạn) có mã riêng. Dùng để group các gói thầu theo kế hoạch.</p>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="col-span-2">
+                                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                                Tên nhóm kế hoạch
+                                            </label>
+                                            <input
+                                                type="text"
+                                                placeholder="VD: KHLCNT giai đoạn 1 - Tư vấn"
+                                                value={formData.PlanGroupName}
+                                                onChange={(e) => handleChange('PlanGroupName', e.target.value)}
+                                                className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                                Số QĐ phê duyệt KH
+                                            </label>
+                                            <input
+                                                type="text"
+                                                placeholder="VD: 456/QĐ-UBND"
+                                                value={formData.PlanDecisionNumber}
+                                                onChange={(e) => handleChange('PlanDecisionNumber', e.target.value)}
+                                                className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                                Ngày QĐ phê duyệt KH
+                                            </label>
+                                            <input
+                                                type="date"
+                                                value={formData.PlanDecisionDate}
+                                                onChange={(e) => handleChange('PlanDecisionDate', e.target.value)}
+                                                className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* MSC Integration */}
+                                <div className="p-4 bg-teal-50 rounded-xl">
+                                    <h4 className="font-semibold text-gray-800 mb-3">Liên kết Muasamcong.vn</h4>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                                Mã KHLCNT trên MSC
+                                            </label>
+                                            <input
+                                                type="text"
+                                                placeholder="VD: PL2025..."
+                                                value={formData.MSCPlanCode}
+                                                onChange={(e) => handleChange('MSCPlanCode', e.target.value)}
+                                                className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                                Link gói thầu trên MSC
+                                            </label>
+                                            <input
+                                                type="url"
+                                                placeholder="https://muasamcong.mpi.gov.vn/..."
+                                                value={formData.MSCPackageLink}
+                                                onChange={(e) => handleChange('MSCPackageLink', e.target.value)}
                                                 className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500"
                                             />
                                         </div>

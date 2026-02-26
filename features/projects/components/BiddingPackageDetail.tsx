@@ -10,6 +10,7 @@ import { formatCurrency, formatDate } from '../../../utils/format';
 import { useContracts } from '../../../hooks/useContracts';
 import { usePayments } from '../../../hooks/usePayments';
 import { useContractors } from '../../../hooks/useContractors';
+import { getMSCRequirements, getMSCPlanLink, getMSCPackageLink } from '../../../utils/mscCompliance';
 
 // ========================================
 // BIDDING PACKAGE DETAIL - Full Lifecycle Management
@@ -333,6 +334,72 @@ export const BiddingPackageDetail: React.FC<BiddingPackageDetailProps> = ({
                                     <InfoRow label="Thời gian tổ chức" value={pkg.SelectionDuration || '45 ngày'} />
                                     <InfoRow label="Thời gian bắt đầu" value={pkg.SelectionStartDate || '-'} />
                                     <InfoRow label="Tùy chọn mua thêm" value={pkg.HasOption ? 'Có' : 'Không'} />
+                                    {pkg.PlanGroupName && (
+                                        <>
+                                            <div className="border-t border-gray-100 dark:border-slate-700 my-2" />
+                                            <InfoRow label="Nhóm KH" value={<span className="font-medium text-indigo-600 dark:text-indigo-400">{pkg.PlanGroupName}</span>} />
+                                            {pkg.PlanDecisionNumber && <InfoRow label="QĐ phê duyệt KH" value={pkg.PlanDecisionNumber} />}
+                                            {pkg.PlanDecisionDate && <InfoRow label="Ngày QĐ" value={formatDate(pkg.PlanDecisionDate)} />}
+                                        </>
+                                    )}
+                                </SectionCard>
+
+                                {/* MSC Compliance Checklist */}
+                                <SectionCard title="Đăng tải muasamcong.vn" icon={ExternalLink} color="green">
+                                    {(() => {
+                                        const reqs = getMSCRequirements(pkg);
+                                        if (reqs.length === 0) return (
+                                            <div className="text-center py-4">
+                                                <CheckCircle2 className="w-8 h-8 text-green-400 dark:text-green-500 mx-auto mb-2" />
+                                                <p className="text-sm text-gray-500 dark:text-slate-400">Không có yêu cầu đăng tải</p>
+                                            </div>
+                                        );
+                                        return (
+                                            <div className="space-y-2">
+                                                {reqs.map((req, i) => (
+                                                    <div key={i} className={`flex items-start gap-2 p-2 rounded-lg text-xs ${req.status === 'Done' ? 'bg-green-50 dark:bg-green-900/20' :
+                                                        req.status === 'Overdue' ? 'bg-red-50 dark:bg-red-900/20' :
+                                                            'bg-amber-50 dark:bg-amber-900/20'
+                                                        }`}>
+                                                        {req.status === 'Done' ? (
+                                                            <CheckCircle2 className="w-4 h-4 text-green-500 dark:text-green-400 mt-0.5 shrink-0" />
+                                                        ) : req.status === 'Overdue' ? (
+                                                            <AlertTriangle className="w-4 h-4 text-red-500 dark:text-red-400 mt-0.5 shrink-0" />
+                                                        ) : (
+                                                            <Clock className="w-4 h-4 text-amber-500 dark:text-amber-400 mt-0.5 shrink-0" />
+                                                        )}
+                                                        <div className="flex-1 min-w-0">
+                                                            <p className={`font-medium ${req.status === 'Done' ? 'text-green-800 dark:text-green-300' :
+                                                                req.status === 'Overdue' ? 'text-red-800 dark:text-red-300' :
+                                                                    'text-amber-800 dark:text-amber-300'
+                                                                }`}>{req.documentType}</p>
+                                                            <p className="text-gray-500 dark:text-slate-400 text-[10px] mt-0.5">
+                                                                {req.legalBasis}
+                                                                {req.deadline && ` • Hạn: ${req.deadline}`}
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                                {/* MSC Links */}
+                                                <div className="flex gap-2 mt-3 pt-2 border-t border-gray-100 dark:border-slate-700">
+                                                    {pkg.MSCPlanCode && (
+                                                        <a href={getMSCPlanLink(pkg.MSCPlanCode)} target="_blank" rel="noopener noreferrer"
+                                                            className="inline-flex items-center gap-1 px-2 py-1 text-[10px] font-mono text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 rounded hover:bg-blue-100 dark:hover:bg-blue-900/50">
+                                                            <ExternalLink className="w-3 h-3" />
+                                                            KHLCNT: {pkg.MSCPlanCode}
+                                                        </a>
+                                                    )}
+                                                    {pkg.NotificationCode && (
+                                                        <a href={getMSCPackageLink(pkg.NotificationCode)} target="_blank" rel="noopener noreferrer"
+                                                            className="inline-flex items-center gap-1 px-2 py-1 text-[10px] font-mono text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/30 rounded hover:bg-indigo-100 dark:hover:bg-indigo-900/50">
+                                                            <ExternalLink className="w-3 h-3" />
+                                                            TBMT: {pkg.NotificationCode}
+                                                        </a>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        );
+                                    })()}
                                 </SectionCard>
                             </div>
                         </div>

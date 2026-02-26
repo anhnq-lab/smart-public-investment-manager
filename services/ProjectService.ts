@@ -196,7 +196,8 @@ export class ProjectService {
             .from('bidding_packages')
             .select('*')
             .eq('project_id', projectId)
-            .order('created_at', { ascending: false });
+            .order('sort_order', { ascending: true })
+            .order('created_at', { ascending: true });
 
         if (error) throw new Error(`Failed to fetch packages: ${error.message}`);
         return (data || []).map(dbToBiddingPackage);

@@ -440,6 +440,29 @@ export interface BiddingPackage {
     EstimatePrice?: number;       // Giá gói thầu (dự toán)
     DecisionAgency?: string;      // Cơ quan phê duyệt
     DecisionFile?: string;        // Tên file quyết định
+
+    // Plan Group — Nhóm theo KHLCNT/giai đoạn
+    PlanGroupName?: string;         // Tên kế hoạch (VD: "KHLCNT giai đoạn 1")
+    PlanDecisionNumber?: string;    // Số QĐ phê duyệt KH
+    PlanDecisionDate?: string;      // Ngày QĐ phê duyệt KH
+
+    // Muasamcong.vn Integration
+    MSCPlanCode?: string;           // Mã KHLCNT trên muasamcong (PL..)
+    MSCPackageLink?: string;        // Link trực tiếp đến gói thầu trên MSC
+    MSCPublishStatus?: 'NotRequired' | 'Pending' | 'Published' | 'Overdue';
+
+    // Ordering
+    SortOrder?: number;             // Thứ tự hiển thị trong bảng KHLCNT
+}
+
+/** Tài liệu cần đăng tải trên muasamcong.vn */
+export interface MSCPublishingRequirement {
+    documentType: string;     // VD: "KHLCNT", "E-TBMT", "KQLCNT"
+    description: string;      // Mô tả
+    isRequired: boolean;      // Bắt buộc hay không
+    legalBasis: string;       // Căn cứ pháp lý
+    status: 'NotDone' | 'Done' | 'NotApplicable' | 'Overdue';
+    deadline?: string;        // Hạn đăng tải (nếu có)
 }
 
 export interface CapitalAllocation {

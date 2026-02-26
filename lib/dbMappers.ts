@@ -387,6 +387,23 @@ export const dbToBiddingPackage = (row: any): BiddingPackage => ({
     DecisionAgency: row.decision_agency || '',
     DecisionFile: row.decision_file || '',
     CapitalSource: row.capital_source || '',
+    // Plan Group
+    PlanGroupName: row.plan_group_name || '',
+    PlanDecisionNumber: row.plan_decision_number || '',
+    PlanDecisionDate: row.plan_decision_date || '',
+    // MSC Integration
+    MSCPlanCode: row.msc_plan_code || '',
+    MSCPackageLink: row.msc_package_link || '',
+    MSCPublishStatus: row.msc_publish_status || 'NotRequired',
+    // Ordering
+    SortOrder: row.sort_order ?? 0,
+    // KHLCNT Export
+    FundingSource: row.funding_source || '',
+    Description: row.description || '',
+    SelectionDuration: row.selection_duration || '',
+    SelectionStartDate: row.selection_start_date || '',
+    SelectionProcedure: row.selection_procedure || '',
+    HasOption: row.has_option || false,
 });
 
 export const biddingPackageToDb = (bp: Partial<BiddingPackage>) => ({
@@ -401,6 +418,29 @@ export const biddingPackageToDb = (bp: Partial<BiddingPackage>) => ({
     ...(bp.Status !== undefined && { status: bp.Status }),
     ...(bp.Duration !== undefined && { duration: bp.Duration }),
     ...(bp.CapitalSource !== undefined && { capital_source: bp.CapitalSource }),
+    // Plan Group
+    ...(bp.PlanGroupName !== undefined && { plan_group_name: bp.PlanGroupName }),
+    ...(bp.PlanDecisionNumber !== undefined && { plan_decision_number: bp.PlanDecisionNumber }),
+    ...(bp.PlanDecisionDate !== undefined && { plan_decision_date: bp.PlanDecisionDate }),
+    // MSC Integration
+    ...(bp.MSCPlanCode !== undefined && { msc_plan_code: bp.MSCPlanCode }),
+    ...(bp.MSCPackageLink !== undefined && { msc_package_link: bp.MSCPackageLink }),
+    ...(bp.MSCPublishStatus !== undefined && { msc_publish_status: bp.MSCPublishStatus }),
+    // Ordering
+    ...(bp.SortOrder !== undefined && { sort_order: bp.SortOrder }),
+    // KHLCNT Export
+    ...(bp.FundingSource !== undefined && { funding_source: bp.FundingSource }),
+    ...(bp.Description !== undefined && { description: bp.Description }),
+    ...(bp.SelectionDuration !== undefined && { selection_duration: bp.SelectionDuration }),
+    ...(bp.SelectionStartDate !== undefined && { selection_start_date: bp.SelectionStartDate }),
+    ...(bp.SelectionProcedure !== undefined && { selection_procedure: bp.SelectionProcedure }),
+    ...(bp.HasOption !== undefined && { has_option: bp.HasOption }),
+    ...(bp.NotificationCode !== undefined && { notification_code: bp.NotificationCode }),
+    ...(bp.KHLCNTCode !== undefined && { khlcnt_code: bp.KHLCNTCode }),
+    ...(bp.Field !== undefined && { field: bp.Field }),
+    ...(bp.DecisionNumber !== undefined && { decision_number: bp.DecisionNumber }),
+    ...(bp.DecisionDate !== undefined && { decision_date: bp.DecisionDate }),
+    ...(bp.DecisionAgency !== undefined && { decision_agency: bp.DecisionAgency }),
 });
 
 // ============================================================
