@@ -16,21 +16,21 @@ function createSkyGradientTexture(isDark: boolean): THREE.CanvasTexture {
     const ctx = canvas.getContext('2d')!;
     const gradient = ctx.createLinearGradient(0, 0, 0, 512);
     if (isDark) {
-        // Deep space blue → slate-950 horizon → warm dark ground
-        gradient.addColorStop(0.0, '#0c1222');   // top: deep navy
-        gradient.addColorStop(0.3, '#0f172a');   // upper: slate-950
-        gradient.addColorStop(0.5, '#131c2e');   // mid: slightly lighter
-        gradient.addColorStop(0.7, '#1a2236');   // lower mid: warm tint
-        gradient.addColorStop(0.85, '#1e293b');  // horizon: slate-800
-        gradient.addColorStop(1.0, '#0f172a');   // bottom: back to dark
+        // Deep space blue → slate-950 horizon → warm dark ground (Enhanced studio look)
+        gradient.addColorStop(0.0, '#020617');   // top: slate-950 (very dark)
+        gradient.addColorStop(0.3, '#0f172a');   // upper: slate-900
+        gradient.addColorStop(0.5, '#1e293b');   // mid: slate-800
+        gradient.addColorStop(0.55, '#334155');  // horizon line: slate-700
+        gradient.addColorStop(0.6, '#0f172a');   // below horizon: slate-900
+        gradient.addColorStop(1.0, '#020617');   // bottom: slate-950
     } else {
-        // Soft sky blue → white → warm ground
-        gradient.addColorStop(0.0, '#87CEEB');   // top: sky blue
-        gradient.addColorStop(0.2, '#B0D8F0');   // upper: lighter blue
-        gradient.addColorStop(0.45, '#dce8f2');  // mid: soft blue-white
-        gradient.addColorStop(0.6, '#f0f4f8');   // horizon: near white
-        gradient.addColorStop(0.75, '#f5f0eb');  // below: warm tone
-        gradient.addColorStop(1.0, '#e8e0d8');   // bottom: warm ground
+        // Soft sky blue → white → warm ground (Modern, clean look)
+        gradient.addColorStop(0.0, '#e0f2fe');   // top: sky-100
+        gradient.addColorStop(0.3, '#f0f9ff');   // upper: sky-50
+        gradient.addColorStop(0.5, '#ffffff');   // mid: white
+        gradient.addColorStop(0.55, '#f8fafc');  // horizon line: slate-50
+        gradient.addColorStop(0.7, '#f1f5f9');   // below horizon: slate-100
+        gradient.addColorStop(1.0, '#e2e8f0');   // bottom: slate-200
     }
     ctx.fillStyle = gradient;
     ctx.fillRect(0, 0, 2, 512);
@@ -141,27 +141,27 @@ export function useBimEngine(
 
                 // Hemisphere light for ambient fill
                 const hemiLight = new THREE.HemisphereLight(
-                    isDarkMode ? 0x607080 : 0xb0c4de,  // sky
-                    isDarkMode ? 0x202830 : 0x808090,    // ground
-                    isDarkMode ? 1.0 : 0.8
+                    isDarkMode ? 0x94a3b8 : 0xffffff,  // sky color
+                    isDarkMode ? 0x1e293b : 0xe2e8f0,  // ground color
+                    isDarkMode ? 0.8 : 0.6             // intensity
                 );
                 scene.add(hemiLight);
 
                 // Key directional light (warm, from top-right-front)
                 const keyLight = new THREE.DirectionalLight(
-                    isDarkMode ? 0xd0d8e8 : 0xffffff,
-                    isDarkMode ? 1.5 : 1.2
+                    isDarkMode ? 0xffffff : 0xffffff,
+                    isDarkMode ? 1.2 : 1.0
                 );
-                keyLight.position.set(50, 80, 40);
-                keyLight.castShadow = false;
+                keyLight.position.set(50, 100, 50);
+                keyLight.castShadow = false; // Shadow impacts performance, leave off for now
                 scene.add(keyLight);
 
                 // Fill light (cooler, from opposite side)
                 const fillLight = new THREE.DirectionalLight(
-                    isDarkMode ? 0x6080a0 : 0x8090a0,
-                    isDarkMode ? 0.4 : 0.3
+                    isDarkMode ? 0x64748b : 0x94a3b8,
+                    isDarkMode ? 0.5 : 0.4
                 );
-                fillLight.position.set(-30, 20, -20);
+                fillLight.position.set(-50, 50, -50);
                 scene.add(fillLight);
 
                 // Renderer setup (MUST be before camera — SimpleCamera requires renderer)
@@ -361,22 +361,22 @@ export function useBimEngine(
         if (oldGrid) scene.remove(oldGrid);
         scene.add(createGridFloor(isDarkMode));
 
-        // Update lights
+        // Update lights syncing with dark mode toggles
         scene.traverse((obj) => {
             if (obj instanceof THREE.HemisphereLight) {
-                obj.color.set(isDarkMode ? 0x607080 : 0xb0c4de);
-                obj.groundColor.set(isDarkMode ? 0x202830 : 0x808090);
-                obj.intensity = isDarkMode ? 1.0 : 0.8;
+                obj.color.set(isDarkMode ? 0x94a3b8 : 0xffffff);
+                obj.groundColor.set(isDarkMode ? 0x1e293b : 0xe2e8f0);
+                obj.intensity = isDarkMode ? 0.8 : 0.6;
             }
             if (obj instanceof THREE.DirectionalLight) {
                 if (obj.position.x > 0) {
                     // Key light
-                    obj.color.set(isDarkMode ? 0xd0d8e8 : 0xffffff);
-                    obj.intensity = isDarkMode ? 1.5 : 1.2;
+                    obj.color.set(isDarkMode ? 0xffffff : 0xffffff);
+                    obj.intensity = isDarkMode ? 1.2 : 1.0;
                 } else {
                     // Fill light
-                    obj.color.set(isDarkMode ? 0x6080a0 : 0x8090a0);
-                    obj.intensity = isDarkMode ? 0.4 : 0.3;
+                    obj.color.set(isDarkMode ? 0x64748b : 0x94a3b8);
+                    obj.intensity = isDarkMode ? 0.5 : 0.4;
                 }
             }
         });

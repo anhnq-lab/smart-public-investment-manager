@@ -49,14 +49,15 @@ const ToolBtn: React.FC<{
                 onClick={onClick}
                 disabled={disabled}
                 className={`
-                    relative w-9 h-9 flex items-center justify-center rounded-lg transition-all duration-150
+                    relative w-9 h-9 flex items-center justify-center rounded-lg transition-all duration-300 ease-out
                     ${active
-                        ? 'bg-blue-500/20 text-blue-400 ring-1 ring-blue-500/50 shadow-[0_0_8px_rgba(59,130,246,0.2)] hover:bg-blue-500/30'
+                        ? 'bg-blue-600/20 text-blue-500 ring-1 ring-blue-500/50 shadow-[0_0_12px_rgba(59,130,246,0.3)] hover:bg-blue-600/30 dark:bg-cyan-500/20 dark:text-cyan-400 dark:ring-cyan-500/50 dark:shadow-[0_0_15px_rgba(34,211,238,0.3)]'
                         : danger
-                            ? isDark ? 'text-red-400 hover:bg-red-500/10' : 'text-red-500 hover:bg-red-50'
-                            : isDark ? 'text-slate-400 hover:bg-white/10 hover:text-white' : 'text-gray-500 hover:bg-gray-200 hover:text-gray-800'
+                            ? isDark ? 'text-red-400 hover:bg-red-500/20 hover:text-red-300' : 'text-red-500 hover:bg-red-50 hover:text-red-600'
+                            : isDark ? 'text-slate-400 hover:bg-slate-700/50 hover:text-slate-200' : 'text-gray-500 hover:bg-gray-100/80 hover:text-gray-800'
                     }
                     ${disabled ? 'opacity-30 cursor-not-allowed' : 'cursor-pointer'}
+                    hover:scale-110 active:scale-95
                 `}
             >
                 {children}
@@ -101,7 +102,7 @@ const ToolBtn: React.FC<{
                         border-l-[5px] border-l-transparent
                         border-r-[5px] border-r-transparent
                         border-t-[5px]
-                        ${isDark ? 'border-t-slate-800' : 'border-t-gray-800'}
+                        ${isDark ? 'border-t-slate-800/95' : 'border-t-gray-800/95'}
                     `} />
                 </div>
             )}
@@ -169,12 +170,12 @@ const ToolDropdown: React.FC<{
                             <button
                                 onClick={() => { item.onClick(); setOpen(false); }}
                                 className={`
-                                    w-full flex items-center gap-3 px-3 py-2 text-sm transition-colors
+                                    w-full flex items-center gap-3 px-3 py-2 text-sm transition-all duration-200
                                     ${item.active
-                                        ? isDark ? 'bg-blue-500/10 text-blue-400' : 'bg-blue-50 text-blue-600'
+                                        ? isDark ? 'bg-cyan-500/10 text-cyan-400 font-medium' : 'bg-blue-50 text-blue-700 font-medium'
                                         : item.danger
-                                            ? isDark ? 'text-red-400 hover:bg-red-500/10' : 'text-red-500 hover:bg-red-50'
-                                            : isDark ? 'text-slate-300 hover:bg-white/5' : 'text-gray-700 hover:bg-gray-50'}
+                                            ? isDark ? 'text-red-400 hover:bg-red-500/15' : 'text-red-500 hover:bg-red-50'
+                                            : isDark ? 'text-slate-300 hover:bg-slate-700/60 hover:pl-4' : 'text-gray-700 hover:bg-gray-50 hover:pl-4'}
                                 `}
                             >
                                 <span className="w-5 h-5 flex items-center justify-center shrink-0">{item.icon}</span>
@@ -361,9 +362,9 @@ export const BimToolbar: React.FC<BimToolbarProps> = ({
             ref={toolbarRef}
             className={`
                 ${dragPos ? 'fixed' : 'absolute bottom-12 left-1/2 -translate-x-1/2'}
-                flex items-center gap-0.5 px-2 py-1.5 rounded-xl z-30
-                backdrop-blur-xl shadow-2xl border transition-shadow
-                ${isDarkMode ? 'bg-slate-800/95 border-slate-700/50' : 'bg-white/95 border-gray-200'}
+                flex items-center gap-0.5 px-2 py-1.5 rounded-2xl z-30
+                backdrop-blur-2xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] border transition-shadow duration-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.16)]
+                ${isDarkMode ? 'bg-slate-800/90 border-slate-700/60 shadow-black/40' : 'bg-white/90 border-gray-200'}
             `}
             style={dragPos ? { left: dragPos.x, top: dragPos.y } : undefined}
         >

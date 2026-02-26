@@ -616,8 +616,13 @@ const ProjectBimTabContent: React.FC = () => {
                         <StatusIcon />
                         <span>{upload.statusMessage}</span>
                         {(upload.status === 'loading' || upload.status === 'converting') && (
-                            <div className={`w-20 h-1.5 rounded-full overflow-hidden ${isDark ? 'bg-slate-700' : 'bg-gray-200'}`}>
-                                <div className="h-full bg-blue-500 rounded-full transition-all duration-300" style={{ width: `${upload.loadingProgress}%` }} />
+                            <div className={`w-24 h-1.5 rounded-full overflow-hidden shrink-0 shadow-inner ${isDark ? 'bg-slate-800' : 'bg-gray-200'}`}>
+                                <div
+                                    className="h-full bg-blue-500 rounded-full transition-all duration-300 relative overflow-hidden"
+                                    style={{ width: `${upload.loadingProgress}%` }}
+                                >
+                                    <div className="absolute top-0 bottom-0 left-0 right-0 w-full h-full animate-[shimmer_2s_infinite] bg-gradient-to-r from-transparent via-white/40 to-transparent transform -translate-x-full" />
+                                </div>
                             </div>
                         )}
                     </div>
@@ -731,15 +736,21 @@ const ProjectBimTabContent: React.FC = () => {
                             `}>
                                 <Building2 className={`w-8 h-8 ${isDark ? 'text-emerald-400' : 'text-blue-500'}`} />
                             </div>
-                            <h3 className={`text-base font-bold mb-2 ${isDark ? 'text-slate-100' : 'text-gray-800'}`}>
-                                Chưa có mô hình BIM
+                            <h3 className={`text-xl font-bold mb-3 ${isDark ? 'text-slate-100' : 'text-gray-800'}`}>
+                                Môi trường BIM 3D
                             </h3>
-                            <p className={`text-xs mb-5 leading-relaxed ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
-                                Upload hoặc kéo thả file IFC để bắt đầu xem mô hình 3D
+                            <p className={`text-sm mb-6 leading-relaxed ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
+                                Không tìm thấy mô hình BIM nào đang được liên kết với dự án này. Vui lòng tải lên tệp định dạng chuẩn <strong className={isDark ? 'text-slate-300' : 'text-gray-700'}>IFC</strong> để hệ thống tự động khởi tạo Viewport.
                             </p>
-                            <label className="inline-flex items-center gap-2 px-5 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl cursor-pointer text-sm font-medium transition-all hover:shadow-lg hover:shadow-emerald-500/25">
-                                <Upload className="w-4 h-4" />
-                                Upload IFC
+                            <label className={`inline-flex items-center gap-2.5 px-6 py-3 rounded-xl cursor-pointer text-sm font-semibold transition-all duration-300
+                                ${isDark
+                                    ? 'bg-blue-600 hover:bg-blue-500 text-white shadow-[0_0_20px_rgba(37,99,235,0.4)] hover:shadow-[0_0_30px_rgba(59,130,246,0.6)] border border-blue-500/50'
+                                    : 'bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-600/30'
+                                }
+                                hover:-translate-y-0.5
+                            `}>
+                                <Upload className="w-5 h-5" />
+                                Tải lên tệp IFC
                                 <input
                                     type="file"
                                     accept=".ifc"
@@ -756,11 +767,18 @@ const ProjectBimTabContent: React.FC = () => {
 
                 {/* Loading skeleton */}
                 {!engine.viewerReady && !engine.initError && (
-                    <div className="absolute inset-0 flex items-center justify-center z-10">
-                        <div className="text-center">
-                            <Loader2 className={`w-10 h-10 mx-auto mb-3 animate-spin ${isDark ? 'text-emerald-400' : 'text-blue-500'}`} />
-                            <p className={`text-sm font-medium ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
-                                Đang khởi tạo BIM Engine...
+                    <div className="absolute inset-0 flex items-center justify-center z-40 bg-black/20 backdrop-blur-sm">
+                        <div className={`text-center p-8 rounded-2xl border shadow-2xl backdrop-blur-xl ${isDark ? 'bg-slate-900/90 border-slate-700/50' : 'bg-white/95 border-gray-200'}`}>
+                            <div className="relative w-16 h-16 mx-auto mb-4">
+                                <div className={`absolute inset-0 border-4 border-t-transparent rounded-full animate-spin ${isDark ? 'border-blue-500' : 'border-blue-600'}`}></div>
+                                <div className={`absolute inset-2 border-4 border-b-transparent rounded-full animate-[spin_1.5s_linear_infinite_reverse] ${isDark ? 'border-cyan-400' : 'border-cyan-500'}`}></div>
+                                <Box className={`absolute inset-0 m-auto w-5 h-5 animate-pulse ${isDark ? 'text-blue-400' : 'text-blue-600'}`} />
+                            </div>
+                            <h3 className={`text-lg font-bold mb-1 ${isDark ? 'text-slate-200' : 'text-gray-800'}`}>
+                                Đang khởi tạo Engine
+                            </h3>
+                            <p className={`text-xs font-medium ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
+                                Đang tải WebAssembly và thiết lập WebGL...
                             </p>
                         </div>
                     </div>
