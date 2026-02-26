@@ -8,12 +8,12 @@ interface LegalHeaderProps {
     setSearchQuery: (val: string) => void;
     filterType: DocType | 'all';
     setFilterType: (type: DocType | 'all') => void;
-    stats: any; // { total, totalArticles, active, byType }
+    stats: any;
     showDeepSearch: boolean;
     setShowDeepSearch: (val: boolean) => void;
     deepSearchResults: FlatArticle[];
     navigateDeepSearch: (docId: string, chapterId: string) => void;
-    readingMode: boolean; // to conditionally hide/show or adjust layout
+    readingMode: boolean;
 }
 
 export const LegalHeader: React.FC<LegalHeaderProps> = ({
@@ -22,7 +22,7 @@ export const LegalHeader: React.FC<LegalHeaderProps> = ({
     readingMode
 }) => {
     return (
-        <div className={`flex flex-col gap-4 mb-5 \${readingMode ? '' : ''}`}>
+        <div className="flex flex-col gap-4 mb-5">
             <div className="flex items-center justify-between">
                 <div>
                     <h2 className="text-2xl font-black text-gray-800 dark:text-slate-100 tracking-tight uppercase flex items-center gap-3">
@@ -82,11 +82,11 @@ export const LegalHeader: React.FC<LegalHeaderProps> = ({
                         const count = type === 'all' ? stats.total : stats.byType[type];
                         return (
                             <button key={type} onClick={() => setFilterType(type)}
-                                className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold transition-all border \${isActive
+                                className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold transition-all border ${isActive
                                     ? 'bg-indigo-600 text-white border-indigo-600 shadow-md shadow-indigo-200 dark:shadow-indigo-900/30'
                                     : 'bg-white dark:bg-slate-800 text-gray-500 dark:text-slate-400 border-gray-200 dark:border-slate-600 hover:bg-gray-50 dark:hover:bg-slate-700'}`}>
                                 {label}
-                                <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-black \${isActive ? 'bg-white/20' : 'bg-gray-100 dark:bg-slate-700'}`}>{count}</span>
+                                <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-black ${isActive ? 'bg-white/20' : 'bg-gray-100 dark:bg-slate-700'}`}>{count}</span>
                             </button>
                         );
                     })}

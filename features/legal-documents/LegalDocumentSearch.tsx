@@ -34,7 +34,8 @@ const LegalDocumentSearch: React.FC = () => {
     const { bookmarks, toggleBookmark, isBookmarked } = useBookmarks();
     const { recentlyViewed, addView } = useRecentlyViewed();
     const { prefs } = useReadingPrefs();
-    const fontSize = prefs?.fontSize || 14;
+    const fontSizeMap = { sm: 13, base: 14, lg: 16 } as const;
+    const fontSize = fontSizeMap[prefs?.fontSize || 'base'];
 
     const contentRef = useRef<HTMLDivElement>(null);
 
@@ -129,7 +130,7 @@ const LegalDocumentSearch: React.FC = () => {
         });
 
         setTimeout(() => {
-            const element = document.getElementById(`article-\${articleId}`);
+            const element = document.getElementById(`article-${articleId}`);
             if (element && contentRef.current) {
                 const containerInfo = contentRef.current.getBoundingClientRect();
                 const elementInfo = element.getBoundingClientRect();
@@ -172,7 +173,7 @@ const LegalDocumentSearch: React.FC = () => {
     };
 
     return (
-        <div className={`flex flex-col \${readingMode ? 'fixed inset-0 z-50 bg-white dark:bg-slate-900 p-6' : 'h-[calc(100vh-140px)'} animate-in fade-in duration-300`}>
+        <div className={`flex flex-col ${readingMode ? 'fixed inset-0 z-50 bg-white dark:bg-slate-900 p-6' : 'h-[calc(100vh-140px)]'} animate-in fade-in duration-300`}>
             {/* Header Section */}
             <LegalHeader
                 searchQuery={searchQuery}
@@ -207,30 +208,28 @@ const LegalDocumentSearch: React.FC = () => {
                 <div className="flex-1 bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-gray-100 dark:border-slate-700 flex flex-col overflow-hidden">
                     {/* Content Area with optional TOC */}
                     {selectedDoc ? (
-                        <div className="flex-1 flex overflow-hidden">
-                            <LegalDetail
-                                selectedDoc={selectedDoc}
-                                contentRef={contentRef}
-                                showPdfViewer={showPdfViewer}
-                                setShowPdfViewer={setShowPdfViewer}
-                                readingMode={readingMode}
-                                setReadingMode={setReadingMode}
-                                handlePrint={handlePrint}
-                                fontSize={fontSize}
-                                searchQuery={debouncedSearchQuery}
-                                isBookmarked={isBookmarked}
-                                toggleBookmark={toggleBookmark}
-                                expandedChapters={expandedChapters}
-                                toggleChapter={toggleChapter}
-                                activeArticleId={activeArticleId}
-                                expandedArticles={expandedArticles}
-                                toggleArticleExpansion={toggleArticleExpansion}
-                                copiedId={copiedId}
-                                handleCopy={handleCopy}
-                                copiedLinkId={copiedLinkId}
-                                handleCopyLink={handleCopyLink}
-                            />
-
+                        <LegalDetail
+                            selectedDoc={selectedDoc}
+                            contentRef={contentRef}
+                            showPdfViewer={showPdfViewer}
+                            setShowPdfViewer={setShowPdfViewer}
+                            readingMode={readingMode}
+                            setReadingMode={setReadingMode}
+                            handlePrint={handlePrint}
+                            fontSize={fontSize}
+                            searchQuery={debouncedSearchQuery}
+                            isBookmarked={isBookmarked}
+                            toggleBookmark={toggleBookmark}
+                            expandedChapters={expandedChapters}
+                            toggleChapter={toggleChapter}
+                            activeArticleId={activeArticleId}
+                            expandedArticles={expandedArticles}
+                            toggleArticleExpansion={toggleArticleExpansion}
+                            copiedId={copiedId}
+                            handleCopy={handleCopy}
+                            copiedLinkId={copiedLinkId}
+                            handleCopyLink={handleCopyLink}
+                        >
                             {/* Quick TOC (Right Mini Panel) */}
                             {showTOC && selectedDoc.chapters.length > 0 && !showPdfViewer && (
                                 <LegalTOC
@@ -239,7 +238,7 @@ const LegalDocumentSearch: React.FC = () => {
                                     setExpandedChapters={setExpandedChapters}
                                 />
                             )}
-                        </div>
+                        </LegalDetail>
                     ) : (
                         <LegalDetail
                             selectedDoc={null}

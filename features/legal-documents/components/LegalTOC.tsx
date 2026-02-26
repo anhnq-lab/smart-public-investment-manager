@@ -36,7 +36,7 @@ export const LegalTOC: React.FC<LegalTOCProps> = ({ selectedDoc, scrollToArticle
                                         scrollToArticle(art.id, ch.id);
                                     }}
                                     className="w-full text-left text-[10px] py-1 px-2 rounded hover:bg-white dark:hover:bg-slate-700 text-gray-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors truncate flex items-center gap-1.5 group"
-                                    title={`\${art.code}: \${art.title}`}
+                                    title={`${art.code}: ${art.title}`}
                                 >
                                     <Hash className="w-3 h-3 opacity-40 group-hover:opacity-100 shrink-0" />
                                     <span className="truncate">{art.code}</span>

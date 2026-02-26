@@ -1,5 +1,5 @@
 import React from 'react';
-import { Share2, Printer, Download, Maximize2, Minimize2, FileText, FileDown, Bookmark, Link as LinkIcon, Check, ChevronDown, ChevronRight, Scale, Info } from 'lucide-react';
+import { Share2, Printer, Download, Maximize2, Minimize2, FileText, FileDown, Bookmark, Link as LinkIcon, Check, ChevronDown, ChevronRight, Scale, Info, Calendar, Shield, Building2 } from 'lucide-react';
 import { LegalDocument, DOC_TYPE_LABELS, DOC_STATUS_LABELS, DOC_TYPE_COLORS, DOC_STATUS_COLORS } from '../legalData';
 import { HighlightText, TYPE_ICONS } from './LegalUI';
 import LegalArticleCard from './LegalArticleCard';
@@ -23,6 +23,8 @@ interface LegalDetailProps {
     toggleArticleExpansion: (id: string, e: React.MouseEvent) => void;
     copiedId: string | null;
     handleCopy: (text: string, id: string) => void;
+    copiedLinkId?: string | null;
+    handleCopyLink?: (articleId: string) => void;
     children?: React.ReactNode;
 }
 
@@ -31,7 +33,7 @@ export const LegalDetail: React.FC<LegalDetailProps> = ({
     readingMode, setReadingMode, handlePrint, fontSize, searchQuery,
     isBookmarked, toggleBookmark, expandedChapters, toggleChapter,
     activeArticleId, expandedArticles, toggleArticleExpansion,
-    copiedId, handleCopy, children
+    copiedId, handleCopy, copiedLinkId, handleCopyLink, children
 }) => {
     if (!selectedDoc) {
         return (
@@ -48,18 +50,18 @@ export const LegalDetail: React.FC<LegalDetailProps> = ({
     const TypeIcon = TYPE_ICONS[selectedDoc.type];
 
     return (
-        <div className="flex-1 flex flex-col h-full bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-gray-100 dark:border-slate-700 overflow-hidden">
+        <div className="flex-1 flex flex-col h-full">
             {/* Document Header */}
             <div className="px-8 py-4 border-b border-gray-100 dark:border-slate-700 bg-gradient-to-r from-gray-50/80 to-white dark:from-slate-800/80 dark:to-slate-800 shrink-0">
                 <div className="flex items-start justify-between gap-4">
                     <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-3 mb-3">
-                            <span className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider title-shadow \${typeColor.bg} \${typeColor.text} \${typeColor.border} border \${typeColor.darkBg} \${typeColor.darkText} \${typeColor.darkBorder}`}>
+                            <span className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider title-shadow ${typeColor.bg} ${typeColor.text} ${typeColor.border} border ${typeColor.darkBg} ${typeColor.darkText} ${typeColor.darkBorder}`}>
                                 <TypeIcon className="w-3.5 h-3.5" />
                                 {DOC_TYPE_LABELS[selectedDoc.type]}
                             </span>
-                            <span className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[10px] font-bold border \${statusColor.bg} \${statusColor.text} \${statusColor.border}`}>
-                                <span className={`w-1.5 h-1.5 rounded-full animate-pulse \${statusColor.dot}`}></span>
+                            <span className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[10px] font-bold border ${statusColor.bg} ${statusColor.text} ${statusColor.border}`}>
+                                <span className={`w-1.5 h-1.5 rounded-full animate-pulse ${statusColor.dot}`}></span>
                                 {DOC_STATUS_LABELS[selectedDoc.status]}
                             </span>
                             <span className="px-2.5 py-1 rounded-lg text-[10px] font-bold bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-slate-300 border border-gray-200 dark:border-slate-600 flex items-center gap-1.5">
@@ -71,15 +73,15 @@ export const LegalDetail: React.FC<LegalDetailProps> = ({
                             {selectedDoc.title}
                         </h1>
                         <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-[11px] font-medium text-gray-500 dark:text-slate-400">
-                            <p className="flex items-center gap-1.5"><CalendarIcon className="w-3.5 h-3.5 text-gray-400" /> Ban hành: <span className="font-bold text-gray-700 dark:text-slate-300">{selectedDoc.issuedDate}</span></p>
-                            <p className="flex items-center gap-1.5"><ShieldCheckIcon className="w-3.5 h-3.5 text-emerald-500" /> Hiệu lực: <span className="font-bold text-gray-700 dark:text-slate-300">{selectedDoc.effectiveDate}</span></p>
-                            <p className="flex items-center gap-1.5"><BuildingIcon className="w-3.5 h-3.5 text-indigo-400" /> Cơ quan: <span className="font-bold text-gray-700 dark:text-slate-300">{selectedDoc.issuedBy}</span></p>
+                            <p className="flex items-center gap-1.5"><Calendar className="w-3.5 h-3.5 text-gray-400" /> Ban hành: <span className="font-bold text-gray-700 dark:text-slate-300">{selectedDoc.issuedDate}</span></p>
+                            <p className="flex items-center gap-1.5"><Shield className="w-3.5 h-3.5 text-emerald-500" /> Hiệu lực: <span className="font-bold text-gray-700 dark:text-slate-300">{selectedDoc.effectiveDate}</span></p>
+                            <p className="flex items-center gap-1.5"><Building2 className="w-3.5 h-3.5 text-indigo-400" /> Cơ quan: <span className="font-bold text-gray-700 dark:text-slate-300">{selectedDoc.issuedBy}</span></p>
                         </div>
                     </div>
 
                     <div className="flex items-center gap-2 shrink-0">
                         <button onClick={() => setShowPdfViewer(!showPdfViewer)}
-                            className={`p-2 rounded-xl transition-all \${showPdfViewer ? 'bg-indigo-100 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400' : 'bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-slate-300 hover:bg-gray-200 dark:hover:bg-slate-600'}`}
+                            className={`p-2 rounded-xl transition-all ${showPdfViewer ? 'bg-indigo-100 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400' : 'bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-slate-300 hover:bg-gray-200 dark:hover:bg-slate-600'}`}
                             title={showPdfViewer ? "Đóng PDF" : "Xem PDF bản gốc"}>
                             <FileDown className="w-5 h-5" />
                         </button>
@@ -93,7 +95,7 @@ export const LegalDetail: React.FC<LegalDetailProps> = ({
                             <Download className="w-5 h-5" />
                         </button>
                         <button onClick={() => setReadingMode(!readingMode)}
-                            className={`p-2 rounded-xl transition-all \${readingMode ? 'bg-indigo-600 text-white shadow-md' : 'bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-slate-300 hover:bg-gray-200 dark:hover:bg-slate-600'}`}
+                            className={`p-2 rounded-xl transition-all ${readingMode ? 'bg-indigo-600 text-white shadow-md' : 'bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-slate-300 hover:bg-gray-200 dark:hover:bg-slate-600'}`}
                             title={readingMode ? "Mặc định" : "Chế độ đọc tập trung"}>
                             {readingMode ? <Minimize2 className="w-5 h-5" /> : <Maximize2 className="w-5 h-5" />}
                         </button>
@@ -127,7 +129,7 @@ export const LegalDetail: React.FC<LegalDetailProps> = ({
                                 </div>
                             </div>
                         ) : (
-                            <div className="p-8 lg:px-12 xl:px-16 max-w-4xl mx-auto" style={{ fontSize: `\${fontSize}px` }}>
+                            <div className="p-8 lg:px-12 xl:px-16 max-w-4xl mx-auto" style={{ fontSize: `${fontSize}px` }}>
                                 {selectedDoc.chapters.map(chapter => (
                                     <div key={chapter.id} className="mb-10 last:mb-0">
                                         <div
@@ -184,36 +186,3 @@ export const LegalDetail: React.FC<LegalDetailProps> = ({
         </div>
     );
 };
-
-// SVG Icons
-const CalendarIcon = (props: React.SVGProps<SVGSVGElement>) => (
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
-        <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
-        <line x1="16" y1="2" x2="16" y2="6" />
-        <line x1="8" y1="2" x2="8" y2="6" />
-        <line x1="3" y1="10" x2="21" y2="10" />
-    </svg>
-);
-
-const ShieldCheckIcon = (props: React.SVGProps<SVGSVGElement>) => (
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
-        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-        <path d="m9 12 2 2 4-4" />
-    </svg>
-);
-
-const BuildingIcon = (props: React.SVGProps<SVGSVGElement>) => (
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
-        <rect x="4" y="2" width="16" height="20" rx="2" ry="2" />
-        <path d="M9 22v-4h6v4" />
-        <path d="M8 6h.01" />
-        <path d="M16 6h.01" />
-        <path d="M12 6h.01" />
-        <path d="M12 10h.01" />
-        <path d="M12 14h.01" />
-        <path d="M16 10h.01" />
-        <path d="M16 14h.01" />
-        <path d="M8 10h.01" />
-        <path d="M8 14h.01" />
-    </svg>
-);

@@ -25,16 +25,16 @@ export const LegalSidebar: React.FC<LegalSidebarProps> = ({
     setExpandedChapters, setShowPdfViewer, setShowDeepSearch
 }) => {
     return (
-        <div className={`\${readingMode ? 'hidden' : 'w-96'} bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-gray-100 dark:border-slate-700 flex flex-col overflow-hidden`}>
+        <div className={`${readingMode ? 'hidden' : 'w-96'} bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-gray-100 dark:border-slate-700 flex flex-col overflow-hidden`}>
             {/* Sidebar Header with tabs */}
             <div className="px-5 py-3 border-b border-gray-100 dark:border-slate-700 bg-gray-50/50 dark:bg-slate-800/50">
                 <div className="flex items-center gap-2">
                     <button onClick={() => setShowBookmarks(false)}
-                        className={`text-[10px] font-black uppercase tracking-[0.15em] px-3 py-1.5 rounded-lg transition-all \${!showBookmarks ? 'bg-indigo-600 text-white' : 'text-gray-400 dark:text-slate-500 hover:bg-gray-100 dark:hover:bg-slate-700'}`}>
+                        className={`text-[10px] font-black uppercase tracking-[0.15em] px-3 py-1.5 rounded-lg transition-all ${!showBookmarks ? 'bg-indigo-600 text-white' : 'text-gray-400 dark:text-slate-500 hover:bg-gray-100 dark:hover:bg-slate-700'}`}>
                         📄 Văn bản ({filteredDocs.length})
                     </button>
                     <button onClick={() => setShowBookmarks(true)}
-                        className={`text-[10px] font-black uppercase tracking-[0.15em] px-3 py-1.5 rounded-lg transition-all \${showBookmarks ? 'bg-amber-500 text-white' : 'text-gray-400 dark:text-slate-500 hover:bg-gray-100 dark:hover:bg-slate-700'}`}>
+                        className={`text-[10px] font-black uppercase tracking-[0.15em] px-3 py-1.5 rounded-lg transition-all ${showBookmarks ? 'bg-amber-500 text-white' : 'text-gray-400 dark:text-slate-500 hover:bg-gray-100 dark:hover:bg-slate-700'}`}>
                         🔖 Đánh dấu ({bookmarks.length})
                     </button>
                     {recentlyViewed.length > 0 && (
@@ -48,7 +48,6 @@ export const LegalSidebar: React.FC<LegalSidebarProps> = ({
 
             <div className="flex-1 overflow-y-auto p-3 space-y-1 custom-scrollbar">
                 {showBookmarks ? (
-                    // Bookmarks View
                     bookmarks.length === 0 ? (
                         <div className="flex flex-col items-center justify-center py-16 text-center">
                             <Bookmark className="w-12 h-12 text-gray-200 dark:text-slate-700 mb-4" />
@@ -80,7 +79,6 @@ export const LegalSidebar: React.FC<LegalSidebarProps> = ({
                         })
                     )
                 ) : (
-                    // Document List
                     filteredDocs.length === 0 ? (
                         <div className="flex flex-col items-center justify-center py-16 text-center">
                             <Search className="w-12 h-12 text-gray-200 dark:text-slate-700 mb-4" />
