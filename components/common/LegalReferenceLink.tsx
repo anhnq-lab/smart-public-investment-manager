@@ -54,6 +54,12 @@ const LEGAL_DOC_MAP: {
             articlePrefix: 'tt24',
             label: 'TT 24/2024/TT-BXD',
         },
+        {
+            patterns: [/NĐ\s*214/i, /Nghị\s*định\s*214/i, /NĐ[-\s]*214\/2025/i],
+            docId: 'nd-214-2025',
+            articlePrefix: 'nd214',
+            label: 'NĐ 214/2025/NĐ-CP',
+        },
     ];
 
 interface LegalRef {
