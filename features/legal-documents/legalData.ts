@@ -7308,38 +7308,261 @@ Trần Hồng Hà`,
     {
         id: 'tt-24-2025',
         code: 'TT 24/2025/TT-BXD',
-        title: 'Thông tư hướng dẫn Nghị định 175/2024/NĐ-CP và Nghị định 15/2021/NĐ-CP về quản lý dự án đầu tư xây dựng',
-        shortTitle: 'TT 24/2025 (hướng dẫn NĐ 175)',
+        title: 'Thông tư hướng dẫn một số thông tin chi tiết trong hệ thống thông tin, Cơ sở dữ liệu quốc gia về hoạt động xây dựng',
+        shortTitle: 'TT 24/2025 (CSDL quốc gia về XD)',
         type: 'thong-tu',
-        issuedDate: '2025',
-        effectiveDate: '2025',
+        issuedDate: '29/08/2025',
+        effectiveDate: '15/10/2025',
         issuedBy: 'Bộ Xây dựng',
         status: 'hieu-luc',
-        summary: 'Hướng dẫn chi tiết về quản lý dự án đầu tư xây dựng: phân loại dự án, lập/thẩm định BCNCKT, thiết kế, chi phí, QLCL, nghiệm thu, bàn giao; các biểu mẫu kèm theo.',
+        summary: 'Hướng dẫn chi tiết nội dung quy định tại khoản 4 Điều 8 Nghị định 111/2024/NĐ-CP về thông tin chi tiết trong hệ thống thông tin, CSDL quốc gia về hoạt động xây dựng: thông tin quy hoạch đô thị/nông thôn, dự án ĐTXD/công trình XD, mã số thông tin, biểu mẫu dữ liệu mở.',
         fileName: 'TT24-2025.pdf',
         filePath: '/resources/TT24-2025.pdf',
         fileSize: '26.1 MB',
-        tags: ['hướng dẫn NĐ 175', 'quản lý dự án', 'biểu mẫu', 'thẩm định', 'nghiệm thu'],
-        relatedDocIds: ['nd-175-2024', 'luat-xay-dung-2025'],
+        tags: ['cơ sở dữ liệu', 'hệ thống thông tin', 'hoạt động xây dựng', 'mã số thông tin', 'quy hoạch', 'dữ liệu mở', 'biểu mẫu', 'NĐ 111/2024'],
+        relatedDocIds: ['nd-111-2024', 'nd-175-2024', 'luat-xay-dung-2025'],
         chapters: [
             {
-                id: 'tt24-ch1', code: 'Chương I', title: 'Quy định chung',
+                id: 'tt24-ch1', code: 'Chương I', title: 'QUY ĐỊNH CHUNG',
                 articles: [
-                    { id: 'tt24-d1', code: 'Điều 1', title: 'Phạm vi điều chỉnh', summary: 'Hướng dẫn NĐ 175/2024 và NĐ 15/2021 về QLDA ĐTXD.' },
+                    {
+                        id: 'tt24-d1',
+                        code: 'Điều 1',
+                        title: 'Phạm vi điều chỉnh',
+                        summary: '1. Thông tư này hướng dẫn chi tiết nội dung quy định tại khoản 4 Điều 8 Nghị định số 111/2024/NĐ-CP ngày 06 tháng 9 năm 2024 của Chính phủ quy định về hệ thống thông tin, Cơ sở dữ liệu quốc gia về hoạt động xây dựng đã được sửa đổi, bổ sung tại Nghị...',
+                        content: `1. Thông tư này hướng dẫn chi tiết nội dung quy định tại khoản 4 Điều 8 Nghị định số 111/2024/NĐ-CP ngày 06 tháng 9 năm 2024 của Chính phủ quy định về hệ thống thông tin, Cơ sở dữ liệu quốc gia về hoạt động xây dựng đã được sửa đổi, bổ sung tại Nghị định số 178/2025/NĐ-CP ngày 01 tháng 7 năm 2025 của Chính phủ quy định chi tiết một số điều của Luật Quy hoạch đô thị và nông thôn (sau đây gọi chung là Nghị định số 111/2024/NĐ-CP), gồm:
+a) Thông tin chi tiết về quy hoạch đô thị và nông thôn (sau đây gọi chung là quy hoạch);
+b) Thông tin chi tiết về dự án đầu tư xây dựng, công trình xây dựng;
+c) Mã số thông tin trong hệ thống thông tin, Cơ sở dữ liệu quốc gia về hoạt động xây dựng.
+2. Thông tư này không áp dụng đối với thông tin, dữ liệu về quy hoạch, dự án đầu tư xây dựng, công trình xây dựng thuộc lĩnh vực quốc phòng, an ninh và cần đảm bảo bí mật nhà nước.`,
+                    },
+                    {
+                        id: 'tt24-d2',
+                        code: 'Điều 2',
+                        title: 'Đối tượng áp dụng',
+                        summary: 'Thông tư này áp dụng đối với cơ quan, tổ chức, cá nhân có liên quan đến việc xây dựng, cập nhật, điều chỉnh, duy trì, quản lý, khai thác và sử dụng hệ thống thông tin, Cơ sở dữ liệu quốc gia về hoạt động xây dựng.',
+                        content: `Thông tư này áp dụng đối với cơ quan, tổ chức, cá nhân có liên quan đến việc xây dựng, cập nhật, điều chỉnh, duy trì, quản lý, khai thác và sử dụng hệ thống thông tin, Cơ sở dữ liệu quốc gia về hoạt động xây dựng.`,
+                    },
                 ]
             },
             {
-                id: 'tt24-ch2', code: 'Chương II', title: 'Lập, thẩm định dự án và thiết kế',
+                id: 'tt24-ch2', code: 'Chương II', title: 'THÔNG TIN, DỮ LIỆU VỀ QUY HOẠCH, DỰ ÁN ĐẦU TƯ XÂY DỰNG, CÔNG TRÌNH XÂY DỰNG VÀ MÃ SỐ THÔNG TIN TRONG HỆ THỐNG THÔNG TIN, CƠ SỞ DỮ LIỆU QUỐC GIA VỀ HOẠT ĐỘNG XÂY DỰNG',
                 articles: [
-                    { id: 'tt24-d5', code: 'Điều 5', title: 'Hồ sơ trình thẩm định', summary: 'Thành phần hồ sơ trình thẩm định BCNCKT, thiết kế xây dựng.' },
+                    {
+                        id: 'tt24-d3',
+                        code: 'Điều 3',
+                        title: 'Thông tin, dữ liệu về quy hoạch, dự án đầu tư xây dựng, công trình xây dựng',
+                        summary: '1. Thông tin về mã số đơn vị hành chính cấp tỉnh nơi có quy hoạch được lập, nơi thực hiện dự án đầu tư xây dựng, công trình xây dựng thực hiện theo quy định của Thủ tướng Chính phủ về ban hành danh mục và mã số các đơn vị hành chính Việt Nam và được...',
+                        content: `1. Thông tin về mã số đơn vị hành chính cấp tỉnh nơi có quy hoạch được lập, nơi thực hiện dự án đầu tư xây dựng, công trình xây dựng thực hiện theo quy định của Thủ tướng Chính phủ về ban hành danh mục và mã số các đơn vị hành chính Việt Nam và được thể hiện tại Phụ lục I Thông tư này.
+2. Dữ liệu về quy hoạch được quy định tại Phụ lục II Thông tư này.
+3. Dữ liệu về dự án đầu tư xây dựng, công trình xây dựng được quy định tại Phụ lục III Thông tư này.
+4. Các bảng tổng hợp thông tin, dữ liệu về hoạt động xây dựng được quy định tại Phụ lục IV Thông tư này.`,
+                    },
+                    {
+                        id: 'tt24-d4',
+                        code: 'Điều 4',
+                        title: 'Quy định về mã số thông tin quy hoạch',
+                        summary: '1. Mã số thông tin về quy hoạch là một dãy số gồm 12 ký tự số. 2. 02 ký tự đầu tiên thể hiện mã số đơn vị hành chính cấp tỉnh nơi có quy hoạch được lập theo Phụ lục I Thông tư này. 3. 02 ký tự tiếp theo thể hiện hai số cuối của năm trình phê duyệt qu...',
+                        content: `1. Mã số thông tin về quy hoạch là một dãy số gồm 12 ký tự số.
+2. 02 ký tự đầu tiên thể hiện mã số đơn vị hành chính cấp tỉnh nơi có quy hoạch được lập theo Phụ lục I Thông tư này.
+3. 02 ký tự tiếp theo thể hiện hai số cuối của năm trình phê duyệt quy hoạch.
+4. 01 ký tự tiếp theo thể hiện cấp độ quy hoạch như sau:
+a) Số một “1” thể hiện là quy hoạch chung;
+b) Số hai “2” thể hiện là quy hoạch phân khu;
+c) Số ba “3” thể hiện là quy hoạch chi tiết;
+d) Số bốn “4” thể hiện là quy hoạch chi tiết được lập theo quy trình rút gọn (quy hoạch tổng mặt bằng).
+5. 01 ký tự tiếp theo thể hiện loại quy hoạch như sau:
+a) Số một “1” thể hiện là quy hoạch đô thị;
+b) Số hai “2” thể hiện là quy hoạch nông thôn;
+c) Số ba “3” thể hiện là quy hoạch khu chức năng;
+d) Số bốn “4” thể hiện là quy hoạch chuyên ngành hạ tầng kỹ thuật đối với thành phố trực thuộc trung ương;
+đ) Số năm “5” thể hiện là quy hoạch không gian ngầm đối với thành phố trực thuộc trung ương.
+6. 01 ký tự tiếp theo thể hiện loại điều chỉnh quy hoạch như sau:
+a) Số không “0” thể hiện là quy hoạch được lập lần đầu hoặc lập mới;
+b) Số một “1” thể hiện là điều chỉnh tổng thể quy hoạch;
+c) Số hai “2” thể hiện là điều chỉnh cục bộ quy hoạch.
+7. 05 ký tự tiếp theo thể hiện dãy số ngẫu nhiên.`,
+                    },
+                    {
+                        id: 'tt24-d5',
+                        code: 'Điều 5',
+                        title: 'Quy định về mã số thông tin dự án đầu tư xây dựng, công trình xây dựng',
+                        summary: '1. Mã số dữ liệu dự án đầu tư xây dựng, công trình xây dựng là một dãy gồm 13 ký tự số. 2. 02 ký tự đầu tiên thể hiện mã số đơn vị hành chính cấp tỉnh nơi thực hiện dự án đầu tư xây dựng, công trình xây dựng theo Phụ lục I Thông tư này. 3. 02 ký tự t...',
+                        content: `1. Mã số dữ liệu dự án đầu tư xây dựng, công trình xây dựng là một dãy gồm 13 ký tự số.
+2. 02 ký tự đầu tiên thể hiện mã số đơn vị hành chính cấp tỉnh nơi thực hiện dự án đầu tư xây dựng, công trình xây dựng theo Phụ lục I Thông tư này.
+3. 02 ký tự tiếp theo thể hiện hai số cuối của năm dự án, công trình được thẩm định hoặc cấp giấy phép xây dựng.
+4. 01 ký tự tiếp theo thể hiện loại dự án như sau:
+a) Số không “0” thể hiện loại công trình không phải lập dự án đầu tư xây dựng;
+b) Số một “1” thể hiện loại dự án đầu tư xây dựng công trình dân dụng;
+c) Số hai “2” thể hiện loại dự án đầu tư xây dựng công trình công nghiệp;
+d) Số ba “3” thể hiện loại dự án đầu tư xây dựng công trình hạ tầng kỹ thuật;
+đ) Số bốn “4” thể hiện loại dự án đầu tư xây dựng công trình giao thông;
+e) Số năm “5” thể hiện loại dự án đầu tư xây dựng công trình phục vụ nông nghiệp và phát triển nông thôn;
+g) Số sáu “6” thể hiện loại dự án đầu tư xây dựng có công năng phục vụ hỗn hợp.
+5. 01 ký tự tiếp theo thể hiện trình tự thủ tục như sau:
+a) Số một “1” thể hiện dự án đầu tư xây dựng có yêu cầu thẩm định tại cơ quan chuyên môn về xây dựng;
+b) Số hai “2” thể hiện thiết kế xây dựng triển khai sau thiết kế cơ sở có yêu cầu thẩm định tại cơ quan chuyên môn về xây dựng;
+c) Số ba “3” thể hiện công trình xây dựng được cấp giấy phép xây dựng.
+6. 05 ký tự tiếp theo thể hiện dãy số ngẫu nhiên.
+7. 02 ký tự tiếp theo thể hiện số lần thực hiện điều chỉnh thiết kế.`,
+                    },
                 ]
             },
             {
-                id: 'tt24-ph', code: 'Phụ lục', title: 'Các biểu mẫu',
+                id: 'tt24-ch3', code: 'Chương III', title: 'ĐIỀU KHOẢN THI HÀNH',
                 articles: [
-                    { id: 'tt24-pl1', code: 'Phụ lục I', title: 'Mẫu Tờ trình thẩm định', summary: 'Biểu mẫu tờ trình thẩm định dự án ĐTXD.' },
-                    { id: 'tt24-pl2', code: 'Phụ lục II', title: 'Mẫu Báo cáo kết quả thẩm định', summary: 'Biểu mẫu báo cáo kết quả thẩm định thiết kế.' },
-                    { id: 'tt24-pl3', code: 'Phụ lục III', title: 'Mẫu Quyết định phê duyệt', summary: 'Biểu mẫu QĐ phê duyệt dự án, thiết kế.' },
+                    {
+                        id: 'tt24-d6',
+                        code: 'Điều 6',
+                        title: 'Tổ chức thực hiện',
+                        summary: '1. Đối với quy hoạch xây dựng, quy hoạch đô thị được phê duyệt theo pháp luật về xây dựng, quy hoạch đô thị và cấp có thẩm quyền quyết định còn hiệu lực mà chưa xây dựng hoặc chưa đầy đủ cơ sở dữ liệu thì trước ngày 31/12/2025, cơ quan lập quy hoạch...',
+                        content: `1. Đối với quy hoạch xây dựng, quy hoạch đô thị được phê duyệt theo pháp luật về xây dựng, quy hoạch đô thị và cấp có thẩm quyền quyết định còn hiệu lực mà chưa xây dựng hoặc chưa đầy đủ cơ sở dữ liệu thì trước ngày 31/12/2025, cơ quan lập quy hoạch đô thị và nông thôn có trách nhiệm rà soát, bổ sung cơ sở dữ liệu số cơ bản và cơ sở dữ liệu số pháp lý theo quy định tại Thông tư số 16/2025/TT-BXD ngày 30/6/2025 của Bộ trưởng Bộ Xây dựng quy định chi tiết một số điều của Luật Quy hoạch đô thị và nông thôn để cập nhật vào Cơ sở dữ liệu quốc gia về hoạt động xây dựng theo quy định tại Thông tư này.
+2. Cơ quan thẩm định quy hoạch được giao nhiệm vụ cập nhật thông tin, dữ liệu quy hoạch có trách nhiệm phối hợp với cơ quan tổ chức lập quy hoạch để cập nhật thông tin chung về quy hoạch theo quy định tại Nghị định 111/2024/NĐ-CP và hướng dẫn tại Phụ lục II Thông tư này.
+3. Cơ quan thực hiện thủ tục hành chính theo phân cấp về thẩm định, cấp giấy phép xây dựng có trách nhiệm phân công công chức, viên chức nhập, cập nhật thông tin chung điều chỉnh (nếu có) về dự án đầu tư xây dựng, công trình xây dựng theo quy định tại Nghị định 111/2024/NĐ-CP và hướng dẫn tại Phụ lục III Thông tư này.
+4. Cơ quan, tổ chức lập quy hoạch, Chủ đầu tư (trừ chủ hộ gia đình đối với nhà ở riêng lẻ) hoặc người được chủ đầu tư ủy quyền theo quy định của pháp luật, các tổ chức có liên quan đến dự án đầu tư xây dựng, công trình xây dựng (nếu có) có trách nhiệm cập nhật thông tin chi tiết theo quy định tại Nghị định số 111/2024/NĐ-CP và hướng dẫn tại Phụ lục II và Phụ lục III Thông tư này.
+5. Cơ quan, tổ chức, cá nhân được giao nhiệm vụ nhập thông tin chung, cập nhật thông tin chi tiết theo quy định tại khoản 3 và khoản 4 Điều này có trách nhiệm kiểm tra tính đầy đủ, chính xác và kịp thời nhập và cập nhật dữ liệu vào hệ thống thông tin, Cơ sở dữ liệu quốc gia về hoạt động xây dựng.
+6. Người đứng đầu bộ, ngành, ủy ban nhân dân các cấp có trách nhiệm xây dựng quy chế về nhập, cập nhật dữ liệu về quy hoạch, dự án đầu tư xây dựng, công trình xây dựng thuộc trách nhiệm quản lý trong hệ thống thông tin, Cơ sở dữ liệu quốc gia về hoạt động xây dựng bảo đảm thi hành hiệu lực, hiệu quả phù hợp với quy định của Thông tư này và Nghị định số 111/2024/NĐ-CP.
+7. Việc nhập, cập nhật dữ liệu thực hiện trên hệ thống thông tin, Cơ sở dữ liệu quốc gia về hoạt động xây dựng tại địa chỉ https://csdlhdxd.gov.vn. Bộ Xây dựng ban hành hướng dẫn công tác nhập và lộ trình cập nhật dữ liệu bảo đảm phù hợp lộ trình thực hiện các công việc theo quy định tại khoản 2 Điều 15 Nghị định số 111/2024/NĐ-CP.
+8. Dữ liệu mở công bố trên cổng dữ liệu quốc gia, cổng thông tin điện tử của Bộ Xây dựng và trên nền tảng Cơ sở dữ liệu quốc gia về hoạt động xây dựng tại địa chỉ https://csdlhdxd.gov.vn bao gồm các dữ liệu sau:
+a) Dữ liệu mở về quy hoạch đô thị và nông thôn quy định tại mục I và mục II của Phụ lục II Thông tư này;
+b) Dữ liệu mở về dự án đầu tư xây dựng, công trình xây dựng tại mục A.I, A.II.4 và A.II.5, tại mục B.I, B.II.2 đến B.II.5, tại mục C.I, C.II.1 và C.II.2 Bảng số 01 Phụ lục III Thông tư này;
+c) Dữ liệu mở về công trình xây dựng không yêu cầu lập dự án đầu tư xây dựng chỉ yêu cầu cấp giấy phép xây dựng tại mục C.I, C.II.1 và C.II.2 Bảng số 02 Phụ lục III Thông tư này;
+d) Dữ liệu mở về công trình xây dựng không thuộc đối tượng thẩm định tại cơ quan chuyên môn về xây dựng, không yêu cầu cấp giấy phép xây dựng, chỉ yêu cầu thông báo khởi công xây dựng công trình tại mục 1 đến mục 3 và mục 5 Bảng số 03 Phụ lục III Thông tư này.
+9. Việc khai thác, sử dụng hệ thống thông tin, Cơ sở dữ liệu quốc gia về hoạt động xây dựng thực hiện theo quy định của Luật Dữ liệu, Nghị định của Chính phủ quy định chi tiết và biện pháp thi hành Luật Dữ liệu, Nghị định số 111/2024/NĐ-CP và pháp luật khác có liên quan.
+10. Việc khai thác và sử dụng thông tin không phải dữ liệu mở quy định tại khoản 7 Điều này được Cục Kinh tế - Quản lý đầu tư xây dựng cung cấp trực tuyến qua Cổng thông tin thuộc Cơ sở dữ liệu quốc gia về hoạt động xây dựng. Cục Kinh tế - Quản lý đầu tư xây dựng được ủy quyền cho đơn vị trực thuộc cung cấp thông tin trong hệ thống thông tin, Cơ sở dữ liệu quốc gia về hoạt động xây dựng theo quy định. Cụ thể như sau:
+a) Tổ chức, cá nhân có văn bản yêu cầu cung cấp, khai thác thông tin trong hệ thống thông tin, Cơ sở dữ liệu quốc gia về hoạt động xây dựng;
+b) Văn bản yêu cầu cung cấp thông tin trong hệ thống thông tin, Cơ sở dữ liệu quốc gia về hoạt động xây dựng phải nêu rõ mục đích, phạm vi thông tin cần cung cấp, khai thác và cam đoan chịu trách nhiệm trong việc sử dụng thông tin đúng mục đích và quy định của pháp luật khi được cung cấp;
+c) Trường hợp đồng ý cung cấp thông tin, trong thời hạn 03 ngày làm việc, kể từ ngày nhận được văn bản yêu cầu, đơn vị được phân cấp, ủy quyền có văn bản đồng ý theo nội dung đề nghị;
+d) Trường hợp không đồng ý cung cấp thông tin thì phải có văn bản trả lời và nêu rõ lý do;
+đ) Mẫu văn bản đề nghị cung cấp, khai thác thông tin và mẫu văn bản cung cấp thông tin về hoạt động xây dựng theo quy định tại Phụ lục VI Thông tư này.
+11. Phí khai thác và sử dụng thông tin trong hệ thống thông tin, Cơ sở dữ liệu quốc gia về hoạt động xây dựng tại khoản 10 Điều này thực hiện theo quy định của pháp luật về phí và lệ phí và pháp luật khác có liên quan.
+12. Một số ví dụ minh họa về mã số thông tin về quy hoạch đô thị và nông thôn, mã số thông tin về dự án đầu tư xây dựng theo hướng dẫn tại Phụ lục VII Thông tư này.`,
+                    },
+                    {
+                        id: 'tt24-d7',
+                        code: 'Điều 7',
+                        title: 'Hiệu lực thi hành',
+                        summary: '1. Thông tư này có hiệu lực thi hành kể từ ngày 15 tháng 10 năm 2025. 2. Trường hợp các văn bản quy phạm pháp luật viện dẫn trong Thông tư này được sửa đổi, bổ sung, thay thế thì áp dụng theo các văn bản sửa đổi, bổ sung, thay thế. 3. Cục Kinh tế - Q...',
+                        content: `1. Thông tư này có hiệu lực thi hành kể từ ngày 15 tháng 10 năm 2025.
+2. Trường hợp các văn bản quy phạm pháp luật viện dẫn trong Thông tư này được sửa đổi, bổ sung, thay thế thì áp dụng theo các văn bản sửa đổi, bổ sung, thay thế.
+3. Cục Kinh tế - Quản lý đầu tư xây dựng, Vụ Quy hoạch - Kiến trúc, Trung tâm Công nghệ thông tin của Bộ Xây dựng có trách nhiệm hướng dẫn, kiểm tra việc thực hiện các quy định tại Thông tư này./.
+Nơi nhận:
+- Thủ tướng Chính phủ (để báo cáo);
+- Các Phó Thủ tướng Chính phủ (để báo cáo);
+- Các Bộ, cơ quan ngang Bộ, cơ quan thuộc Chính phủ;
+- Văn phòng Quốc hội;
+- Văn phòng Chủ tịch nước;
+- Văn phòng Trung ương Đảng và các Ban của Đảng;
+- Tòa án nhân dân tối cao;
+- Viện Kiểm sát nhân dân tối cao;
+- Kiểm toán nhà nước;
+- Cơ quan Trung ương của các đoàn thể;
+- HĐND, UBND các tỉnh, thành phố;
+- HĐND, UBND các xã, phường, đặc khu trực thuộc tỉnh, thành phố;
+- Website của Chính phủ;
+- Công báo (02 bản);
+- Các đơn vị thuộc Bộ Xây dựng;
+- Cục Kiểm tra văn bản quy phạm pháp luật - Bộ Tư pháp;
+- Sở Xây dựng các tỉnh, thành phố;
+- Cổng thông tin điện tử của Bộ Xây dựng;
+- Lưu: VT, Cục KTQLXD.
+KT. BỘ TRƯỞNG
+THỨ TRƯỞNG
+Bùi Xuân Dũng`,
+                    },
+                ]
+            },
+            {
+                id: 'tt24-ch4', code: 'Phụ lục', title: 'Các biểu mẫu và bảng dữ liệu',
+                articles: [
+                    {
+                        id: 'tt24-dpl1',
+                        code: 'Phụ lục I',
+                        title: 'Ký hiệu mã tỉnh/thành phố trực thuộc trung ương',
+                        summary: 'Bảng mã tỉnh/thành phố nơi thực hiện quy hoạch, dự án ĐTXD/công trình xây dựng. Gồm 35 đơn vị hành chính cấp tỉnh.',
+                        content: `Bảng ký hiệu mã tỉnh/thành phố trực thuộc trung ương nơi thực hiện quy hoạch, dự án đầu tư xây dựng/công trình xây dựng. Gồm 35 đơn vị hành chính cấp tỉnh từ Hà Nội (01) đến Cà Mau (96), và mã liên tỉnh (00). Bảng mã được cập nhật theo quyết định của Thủ tướng Chính phủ về ban hành Bảng danh mục và mã số các đơn vị hành chính Việt Nam.`,
+                    },
+                    {
+                        id: 'tt24-dpl2',
+                        code: 'Phụ lục II',
+                        title: 'Dữ liệu về quy hoạch đô thị và nông thôn',
+                        summary: 'Quy định nhập thông tin chung (tên, loại, cấp độ, địa điểm, cơ quan lập/thẩm định/phê duyệt) và chi tiết (quy mô dân số, thời hạn, quy định quản lý, hồ sơ CSDL số) về quy hoạch đô thị và nông thôn.',
+                        content: `Bảng dữ liệu về quy hoạch đô thị và nông thôn gồm 3 phần:
+I. Thông tin chung: Tên quy hoạch, loại quy hoạch, cấp độ, loại điều chỉnh, địa điểm, quy mô diện tích, số QĐ phê duyệt nhiệm vụ, cơ quan lập/thẩm định/phê duyệt.
+II. Thông tin chi tiết: Quy mô dân số dự báo, thời hạn quy hoạch, quy định quản lý, kế hoạch thực hiện, quy chế QLKT.
+III. Hồ sơ: CSDL số cơ bản, CSDL số pháp lý, CSDL số địa lý (GIS).
+Dữ liệu mở bao gồm dữ liệu tại mục I và II.`,
+                    },
+                    {
+                        id: 'tt24-dpl3',
+                        code: 'Phụ lục III',
+                        title: 'Dữ liệu về dự án đầu tư xây dựng, công trình xây dựng',
+                        summary: 'Gồm 3 bảng: Bảng 01 - Dữ liệu về dự án ĐTXD, công trình XD (thẩm định BCNCKT, thiết kế, cấp GPXD); Bảng 02 - Công trình không yêu cầu lập dự án, chỉ cấp GPXD; Bảng 03 - Công trình miễn thẩm định, miễn GPXD, chỉ thông báo khởi công.',
+                        content: `Phụ lục III gồm 3 bảng:
+Bảng số 01: Dữ liệu về dự án đầu tư xây dựng, công trình xây dựng. Gồm các mục: A - Thẩm định BCNCKT (dữ liệu chung + chi tiết); B - Thẩm định thiết kế XD triển khai sau TKCS; C - Cấp giấy phép xây dựng; D - Miễn GPXD.
+Bảng số 02: Dữ liệu về công trình XD không yêu cầu lập dự án, chỉ yêu cầu cấp GPXD.
+Bảng số 03: Dữ liệu về công trình XD không thẩm định tại CQCM, không cấp GPXD, chỉ thông báo khởi công.
+Mỗi bảng quy định chi tiết nội dung nhập/cập nhật dữ liệu, phân công trách nhiệm, xác định dữ liệu mở.`,
+                    },
+                    {
+                        id: 'tt24-dpl4',
+                        code: 'Phụ lục IV',
+                        title: 'Bảng tổng hợp dữ liệu, thông tin về hoạt động xây dựng',
+                        summary: 'Gồm 15 bảng tổng hợp: quy hoạch đô thị/nông thôn, tỷ lệ lập quy hoạch, dự án ĐTXD theo nguồn vốn, GPXD/khởi công/sự cố/vi phạm, năng lực nhà thầu, năng lực hành nghề cá nhân, lịch sử hoạt động nhà thầu, tình hình thực hiện dự án, suất vốn ĐT.',
+                        content: `Phụ lục IV gồm 15 bảng tổng hợp:
+Bảng 1: Tổng hợp thông tin quy hoạch đô thị và nông thôn
+Bảng 2: Tỷ lệ lập quy hoạch, quy chế QLKT
+Bảng 3: Dự án ĐTXD, công trình XD theo nguồn vốn (đầu tư công/ngoài ĐTC/PPP/vốn khác)
+Bảng 4: GPXD, khởi công, sự cố, vi phạm TTXD, kiểm tra nghiệm thu
+Bảng 5: Năng lực hoạt động XD của nhà thầu
+Bảng 6: Năng lực hành nghề XD của cá nhân
+Bảng 7: Lịch sử hoạt động nhà thầu
+Bảng 8-9: Tình hình thực hiện dự án vốn ĐTC
+Bảng 10-11: Tình hình dự án vốn khác
+Bảng 12-13: Công trình không lập dự án/miễn GPXD
+Bảng 14: Tình hình công trình theo địa phương
+Bảng 15: Ví dụ minh họa
+Thông tin có thể trích xuất theo yêu cầu đột xuất, hàng tháng, hàng quý, hàng năm.`,
+                    },
+                    {
+                        id: 'tt24-dpl5',
+                        code: 'Phụ lục V',
+                        title: 'Biểu mẫu cung cấp thông tin về dữ liệu mở',
+                        summary: 'Gồm 6 bảng: cung cấp thông tin dữ liệu mở về quy hoạch đô thị/nông thôn, dự án ĐTXD/công trình XD, công trình không lập dự án (chỉ cấp GPXD), công trình miễn thẩm định/GPXD, năng lực hoạt động XD nhà thầu, năng lực hành nghề cá nhân.',
+                        content: `Phụ lục V gồm 6 bảng:
+Bảng 1: Cung cấp thông tin dữ liệu mở về quy hoạch đô thị và nông thôn
+Bảng 2: Cung cấp thông tin dữ liệu mở về dự án ĐTXD, công trình XD
+Bảng 3: Cung cấp thông tin dữ liệu mở về công trình XD không lập dự án, chỉ cấp GPXD
+Bảng 4: Cung cấp thông tin dữ liệu mở về công trình miễn thẩm định, miễn GPXD
+Bảng 5: Cung cấp thông tin dữ liệu mở về năng lực hoạt động XD nhà thầu
+Bảng 6: Cung cấp thông tin dữ liệu mở về năng lực hành nghề cá nhân`,
+                    },
+                    {
+                        id: 'tt24-dpl6',
+                        code: 'Phụ lục VI',
+                        title: 'Mẫu phiếu đề nghị và cung cấp thông tin',
+                        summary: 'Gồm 8 mẫu phiếu: đề nghị/cung cấp thông tin quy hoạch đô thị và nông thôn, dự án/công trình xây dựng, hoạt động đầu tư xây dựng, năng lực hoạt động xây dựng nhà thầu.',
+                        content: `Phụ lục VI gồm 8 mẫu phiếu:
+Mẫu 01: Phiếu đề nghị cung cấp thông tin về quy hoạch đô thị và nông thôn
+Mẫu 02: Phiếu cung cấp thông tin về quy hoạch phục vụ nhu cầu ĐTXD công trình
+Mẫu 03: Phiếu đề nghị cung cấp thông tin về dự án, công trình xây dựng
+Mẫu 04: Phiếu cung cấp thông tin về dự án, công trình xây dựng
+Mẫu 05: Phiếu đề nghị khai thác thông tin về hoạt động đầu tư xây dựng
+Mẫu 06: Phiếu cung cấp thông tin về hoạt động đầu tư xây dựng
+Mẫu 07: Phiếu đề nghị khai thác thông tin về năng lực hoạt động XD nhà thầu
+Mẫu 08: Phiếu cung cấp thông tin về năng lực hoạt động XD nhà thầu`,
+                    },
+                    {
+                        id: 'tt24-dpl7',
+                        code: 'Phụ lục VII',
+                        title: 'Ví dụ minh họa về mã số thông tin',
+                        summary: 'Ví dụ minh họa về mã số dữ liệu quy hoạch đô thị/nông thôn (12 ký tự) và mã số dữ liệu dự án đầu tư xây dựng (13 ký tự). Giải thích cấu trúc từng ký tự trong mã số.',
+                        content: `Ví dụ 1: Mã số dữ liệu quy hoạch đô thị và nông thôn - 12 ký tự
+012611088888 = Hà Nội (01) + Năm 2026 (26) + QH chung (1) + QH đô thị (1) + Lập lần đầu (0) + Số ngẫu nhiên (88888)
+
+Ví dụ 2: Mã số dữ liệu dự án ĐTXD - 13 ký tự
+2528110016803 = Phú Thọ (25) + Năm 2028 (28) + DA dân dụng (1) + Thẩm định CQCM (1) + Số ngẫu nhiên (00168) + Điều chỉnh lần 3 (03)`,
+                    },
                 ]
             },
         ]

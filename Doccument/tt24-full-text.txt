@@ -1,0 +1,735 @@
+﻿BỘ XÂY DỰNG 
+-------CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM
+Độc lập - Tự do - Hạnh phúc 
+---------------Số: 24/2025/TT-BXD Hà Nội, ngày 29 tháng 8 năm 2025 
+THÔNG TƯ
+HƯỚNG DẪN MỘT SỐ THÔNG TIN CHI TIẾT TRONG HỆ THỐNG THÔNG TIN, CƠ SỞ DỮ LIỆU QUỐC GIA VỀ HOẠT ĐỘNG XÂY DỰNG
+Căn cứ Luật Xây dựng ngày 18 tháng 6 năm 2014; Luật sửa đổi, bổ sung một số điều của Luật Xây dựng ngày 17 tháng 6 năm 2020; Luật Quy hoạch đô thị và nông thôn ngày 26 tháng 11 năm 2024;
+Căn cứ Luật Dữ liệu ngày 30 tháng 11 năm 2024;
+Căn cứ Nghị định số 111/2024/NĐ-CP ngày 06 tháng 9 năm 2024 của Chính phủ quy định về hệ thống thông tin, Cơ sở dữ liệu quốc gia về hoạt động xây dựng;
+Căn cứ Nghị định số 178/2025/NĐ-CP ngày 01 tháng 7 năm 2025 của Chính phủ quy định chi tiết một số điều của Luật Quy hoạch đô thị và nông thôn;
+Căn cứ Nghị định số 33/2025/NĐ-CP ngày 25 tháng 02 năm 2025 của Chính phủ quy định chức năng, nhiệm vụ, quyền hạn và cơ cấu tổ chức của Bộ Xây dựng;
+Theo đề nghị của Cục trưởng Cục Kinh tế - Quản lý đầu tư xây dựng;
+Bộ trưởng Bộ Xây dựng ban hành Thông tư hướng dẫn một số thông tin chi tiết trong hệ thống thông tin, Cơ sở dữ liệu quốc gia về hoạt động xây dựng.
+Chương I
+QUY ĐỊNH CHUNG
+Điều 1. Phạm vi điều chỉnh
+1. Thông tư này hướng dẫn chi tiết nội dung quy định tại khoản 4 Điều 8 Nghị định số 111/2024/NĐ-CP ngày 06 tháng 9 năm 2024 của Chính phủ quy định về hệ thống thông tin, Cơ sở dữ liệu quốc gia về hoạt động xây dựng đã được sửa đổi, bổ sung tại Nghị định số 178/2025/NĐ-CP ngày 01 tháng 7 năm 2025 của Chính phủ quy định chi tiết một số điều của Luật Quy hoạch đô thị và nông thôn (sau đây gọi chung là Nghị định số 111/2024/NĐ-CP), gồm:
+a) Thông tin chi tiết về quy hoạch đô thị và nông thôn (sau đây gọi chung là quy hoạch);
+b) Thông tin chi tiết về dự án đầu tư xây dựng, công trình xây dựng;
+c) Mã số thông tin trong hệ thống thông tin, Cơ sở dữ liệu quốc gia về hoạt động xây dựng.
+2. Thông tư này không áp dụng đối với thông tin, dữ liệu về quy hoạch, dự án đầu tư xây dựng, công trình xây dựng thuộc lĩnh vực quốc phòng, an ninh và cần đảm bảo bí mật nhà nước.
+Điều 2. Đối tượng áp dụng
+Thông tư này áp dụng đối với cơ quan, tổ chức, cá nhân có liên quan đến việc xây dựng, cập nhật, điều chỉnh, duy trì, quản lý, khai thác và sử dụng hệ thống thông tin, Cơ sở dữ liệu quốc gia về hoạt động xây dựng.
+Chương II
+THÔNG TIN, DỮ LIỆU VỀ QUY HOẠCH, DỰ ÁN ĐẦU TƯ XÂY DỰNG, CÔNG TRÌNH XÂY DỰNG VÀ MÃ SỐ THÔNG TIN TRONG HỆ THỐNG THÔNG TIN, CƠ SỞ DỮ LIỆU QUỐC GIA VỀ HOẠT ĐỘNG XÂY DỰNG
+Điều 3. Thông tin, dữ liệu về quy hoạch, dự án đầu tư xây dựng, công trình xây dựng
+1. Thông tin về mã số đơn vị hành chính cấp tỉnh nơi có quy hoạch được lập, nơi thực hiện dự án đầu tư xây dựng, công trình xây dựng thực hiện theo quy định của Thủ tướng Chính phủ về ban hành danh mục và mã số các đơn vị hành chính Việt Nam và được thể hiện tại Phụ lục I Thông tư này.
+2. Dữ liệu về quy hoạch được quy định tại Phụ lục II Thông tư này.
+3. Dữ liệu về dự án đầu tư xây dựng, công trình xây dựng được quy định tại Phụ lục III Thông tư này.
+4. Các bảng tổng hợp thông tin, dữ liệu về hoạt động xây dựng được quy định tại Phụ lục IV Thông tư này.
+Điều 4. Quy định về mã số thông tin quy hoạch
+1. Mã số thông tin về quy hoạch là một dãy số gồm 12 ký tự số.
+2. 02 ký tự đầu tiên thể hiện mã số đơn vị hành chính cấp tỉnh nơi có quy hoạch được lập theo Phụ lục I Thông tư này.
+3. 02 ký tự tiếp theo thể hiện hai số cuối của năm trình phê duyệt quy hoạch.
+4. 01 ký tự tiếp theo thể hiện cấp độ quy hoạch như sau:
+a) Số một “1” thể hiện là quy hoạch chung;
+b) Số hai “2” thể hiện là quy hoạch phân khu;
+c) Số ba “3” thể hiện là quy hoạch chi tiết;
+d) Số bốn “4” thể hiện là quy hoạch chi tiết được lập theo quy trình rút gọn (quy hoạch tổng mặt bằng).
+5. 01 ký tự tiếp theo thể hiện loại quy hoạch như sau:
+a) Số một “1” thể hiện là quy hoạch đô thị;
+b) Số hai “2” thể hiện là quy hoạch nông thôn;
+c) Số ba “3” thể hiện là quy hoạch khu chức năng;
+d) Số bốn “4” thể hiện là quy hoạch chuyên ngành hạ tầng kỹ thuật đối với thành phố trực thuộc trung ương; 
+đ) Số năm “5” thể hiện là quy hoạch không gian ngầm đối với thành phố trực thuộc trung ương.
+6. 01 ký tự tiếp theo thể hiện loại điều chỉnh quy hoạch như sau:
+a) Số không “0” thể hiện là quy hoạch được lập lần đầu hoặc lập mới;
+b) Số một “1” thể hiện là điều chỉnh tổng thể quy hoạch;
+c) Số hai “2” thể hiện là điều chỉnh cục bộ quy hoạch.
+7. 05 ký tự tiếp theo thể hiện dãy số ngẫu nhiên.
+Điều 5. Quy định về mã số thông tin dự án đầu tư xây dựng, công trình xây dựng
+1. Mã số dữ liệu dự án đầu tư xây dựng, công trình xây dựng là một dãy gồm 13 ký tự số.
+2. 02 ký tự đầu tiên thể hiện mã số đơn vị hành chính cấp tỉnh nơi thực hiện dự án đầu tư xây dựng, công trình xây dựng theo Phụ lục I Thông tư này.
+3. 02 ký tự tiếp theo thể hiện hai số cuối của năm dự án, công trình được thẩm định hoặc cấp giấy phép xây dựng.
+4. 01 ký tự tiếp theo thể hiện loại dự án như sau:
+a) Số không “0” thể hiện loại công trình không phải lập dự án đầu tư xây dựng;
+b) Số một “1” thể hiện loại dự án đầu tư xây dựng công trình dân dụng;
+c) Số hai “2” thể hiện loại dự án đầu tư xây dựng công trình công nghiệp;
+d) Số ba “3” thể hiện loại dự án đầu tư xây dựng công trình hạ tầng kỹ thuật;
+đ) Số bốn “4” thể hiện loại dự án đầu tư xây dựng công trình giao thông;
+e) Số năm “5” thể hiện loại dự án đầu tư xây dựng công trình phục vụ nông nghiệp và phát triển nông thôn;
+g) Số sáu “6” thể hiện loại dự án đầu tư xây dựng có công năng phục vụ hỗn hợp.
+5. 01 ký tự tiếp theo thể hiện trình tự thủ tục như sau:
+a) Số một “1” thể hiện dự án đầu tư xây dựng có yêu cầu thẩm định tại cơ quan chuyên môn về xây dựng;
+b) Số hai “2” thể hiện thiết kế xây dựng triển khai sau thiết kế cơ sở có yêu cầu thẩm định tại cơ quan chuyên môn về xây dựng;
+c) Số ba “3” thể hiện công trình xây dựng được cấp giấy phép xây dựng.
+6. 05 ký tự tiếp theo thể hiện dãy số ngẫu nhiên.
+7. 02 ký tự tiếp theo thể hiện số lần thực hiện điều chỉnh thiết kế.
+Chương III
+ĐIỀU KHOẢN THI HÀNH
+Điều 6. Tổ chức thực hiện
+1. Đối với quy hoạch xây dựng, quy hoạch đô thị được phê duyệt theo pháp luật về xây dựng, quy hoạch đô thị và cấp có thẩm quyền quyết định còn hiệu lực mà chưa xây dựng hoặc chưa đầy đủ cơ sở dữ liệu thì trước ngày 31/12/2025, cơ quan lập quy hoạch đô thị và nông thôn có trách nhiệm rà soát, bổ sung cơ sở dữ liệu số cơ bản và cơ sở dữ liệu số pháp lý theo quy định tại Thông tư số 16/2025/TT-BXD ngày 30/6/2025 của Bộ trưởng Bộ Xây dựng quy định chi tiết một số điều của Luật Quy hoạch đô thị và nông thôn để cập nhật vào Cơ sở dữ liệu quốc gia về hoạt động xây dựng theo quy định tại Thông tư này.
+2. Cơ quan thẩm định quy hoạch được giao nhiệm vụ cập nhật thông tin, dữ liệu quy hoạch có trách nhiệm phối hợp với cơ quan tổ chức lập quy hoạch để cập nhật thông tin chung về quy hoạch theo quy định tại Nghị định 111/2024/NĐ-CP và hướng dẫn tại Phụ lục II Thông tư này.
+3. Cơ quan thực hiện thủ tục hành chính theo phân cấp về thẩm định, cấp giấy phép xây dựng có trách nhiệm phân công công chức, viên chức nhập, cập nhật thông tin chung điều chỉnh (nếu có) về dự án đầu tư xây dựng, công trình xây dựng theo quy định tại Nghị định 111/2024/NĐ-CP và hướng dẫn tại Phụ lục III Thông tư này.
+4. Cơ quan, tổ chức lập quy hoạch, Chủ đầu tư (trừ chủ hộ gia đình đối với nhà ở riêng lẻ) hoặc người được chủ đầu tư ủy quyền theo quy định của pháp luật, các tổ chức có liên quan đến dự án đầu tư xây dựng, công trình xây dựng (nếu có) có trách nhiệm cập nhật thông tin chi tiết theo quy định tại Nghị định số 111/2024/NĐ-CP và hướng dẫn tại Phụ lục II và Phụ lục III Thông tư này.
+5. Cơ quan, tổ chức, cá nhân được giao nhiệm vụ nhập thông tin chung, cập nhật thông tin chi tiết theo quy định tại khoản 3 và khoản 4 Điều này có trách nhiệm kiểm tra tính đầy đủ, chính xác và kịp thời nhập và cập nhật dữ liệu vào hệ thống thông tin, Cơ sở dữ liệu quốc gia về hoạt động xây dựng.
+6. Người đứng đầu bộ, ngành, ủy ban nhân dân các cấp có trách nhiệm xây dựng quy chế về nhập, cập nhật dữ liệu về quy hoạch, dự án đầu tư xây dựng, công trình xây dựng thuộc trách nhiệm quản lý trong hệ thống thông tin, Cơ sở dữ liệu quốc gia về hoạt động xây dựng bảo đảm thi hành hiệu lực, hiệu quả phù hợp với quy định của Thông tư này và Nghị định số 111/2024/NĐ-CP.
+7. Việc nhập, cập nhật dữ liệu thực hiện trên hệ thống thông tin, Cơ sở dữ liệu quốc gia về hoạt động xây dựng tại địa chỉ https://csdlhdxd.gov.vn. Bộ Xây dựng ban hành hướng dẫn công tác nhập và lộ trình cập nhật dữ liệu bảo đảm phù hợp lộ trình thực hiện các công việc theo quy định tại khoản 2 Điều 15 Nghị định số 111/2024/NĐ-CP.
+8. Dữ liệu mở công bố trên cổng dữ liệu quốc gia, cổng thông tin điện tử của Bộ Xây dựng và trên nền tảng Cơ sở dữ liệu quốc gia về hoạt động xây dựng tại địa chỉ https://csdlhdxd.gov.vn bao gồm các dữ liệu sau:
+a) Dữ liệu mở về quy hoạch đô thị và nông thôn quy định tại mục I và mục II của Phụ lục II Thông tư này;
+b) Dữ liệu mở về dự án đầu tư xây dựng, công trình xây dựng tại mục A.I, A.II.4 và A.II.5, tại mục B.I, B.II.2 đến B.II.5, tại mục C.I, C.II.1 và C.II.2 Bảng số 01 Phụ lục III Thông tư này;
+c) Dữ liệu mở về công trình xây dựng không yêu cầu lập dự án đầu tư xây dựng chỉ yêu cầu cấp giấy phép xây dựng tại mục C.I, C.II.1 và C.II.2 Bảng số 02 Phụ lục III Thông tư này;
+d) Dữ liệu mở về công trình xây dựng không thuộc đối tượng thẩm định tại cơ quan chuyên môn về xây dựng, không yêu cầu cấp giấy phép xây dựng, chỉ yêu cầu thông báo khởi công xây dựng công trình tại mục 1 đến mục 3 và mục 5 Bảng số 03 Phụ lục III Thông tư này.
+9. Việc khai thác, sử dụng hệ thống thông tin, Cơ sở dữ liệu quốc gia về hoạt động xây dựng thực hiện theo quy định của Luật Dữ liệu, Nghị định của Chính phủ quy định chi tiết và biện pháp thi hành Luật Dữ liệu, Nghị định số 111/2024/NĐ-CP và pháp luật khác có liên quan.
+10. Việc khai thác và sử dụng thông tin không phải dữ liệu mở quy định tại khoản 7 Điều này được Cục Kinh tế - Quản lý đầu tư xây dựng cung cấp trực tuyến qua Cổng thông tin thuộc Cơ sở dữ liệu quốc gia về hoạt động xây dựng. Cục Kinh tế - Quản lý đầu tư xây dựng được ủy quyền cho đơn vị trực thuộc cung cấp thông tin trong hệ thống thông tin, Cơ sở dữ liệu quốc gia về hoạt động xây dựng theo quy định. Cụ thể như sau:
+a) Tổ chức, cá nhân có văn bản yêu cầu cung cấp, khai thác thông tin trong hệ thống thông tin, Cơ sở dữ liệu quốc gia về hoạt động xây dựng;
+b) Văn bản yêu cầu cung cấp thông tin trong hệ thống thông tin, Cơ sở dữ liệu quốc gia về hoạt động xây dựng phải nêu rõ mục đích, phạm vi thông tin cần cung cấp, khai thác và cam đoan chịu trách nhiệm trong việc sử dụng thông tin đúng mục đích và quy định của pháp luật khi được cung cấp;
+c) Trường hợp đồng ý cung cấp thông tin, trong thời hạn 03 ngày làm việc, kể từ ngày nhận được văn bản yêu cầu, đơn vị được phân cấp, ủy quyền có văn bản đồng ý theo nội dung đề nghị;
+d) Trường hợp không đồng ý cung cấp thông tin thì phải có văn bản trả lời và nêu rõ lý do;
+đ) Mẫu văn bản đề nghị cung cấp, khai thác thông tin và mẫu văn bản cung cấp thông tin về hoạt động xây dựng theo quy định tại Phụ lục VI Thông tư này.
+11. Phí khai thác và sử dụng thông tin trong hệ thống thông tin, Cơ sở dữ liệu quốc gia về hoạt động xây dựng tại khoản 10 Điều này thực hiện theo quy định của pháp luật về phí và lệ phí và pháp luật khác có liên quan.
+12. Một số ví dụ minh họa về mã số thông tin về quy hoạch đô thị và nông thôn, mã số thông tin về dự án đầu tư xây dựng theo hướng dẫn tại Phụ lục VII Thông tư này.
+Điều 7. Hiệu lực thi hành
+1. Thông tư này có hiệu lực thi hành kể từ ngày 15 tháng 10 năm 2025.
+2. Trường hợp các văn bản quy phạm pháp luật viện dẫn trong Thông tư này được sửa đổi, bổ sung, thay thế thì áp dụng theo các văn bản sửa đổi, bổ sung, thay thế.
+3. Cục Kinh tế - Quản lý đầu tư xây dựng, Vụ Quy hoạch - Kiến trúc, Trung tâm Công nghệ thông tin của Bộ Xây dựng có trách nhiệm hướng dẫn, kiểm tra việc thực hiện các quy định tại Thông tư này./.
+
+
+Nơi nhận:
+- Thủ tướng Chính phủ (để báo cáo);
+- Các Phó Thủ tướng Chính phủ (để báo cáo);
+- Các Bộ, cơ quan ngang Bộ, cơ quan thuộc Chính phủ;
+- Văn phòng Quốc hội;
+- Văn phòng Chủ tịch nước;
+- Văn phòng Trung ương Đảng và các Ban của Đảng;
+- Tòa án nhân dân tối cao;
+- Viện Kiểm sát nhân dân tối cao;
+- Kiểm toán nhà nước;
+- Cơ quan Trung ương của các đoàn thể;
+- HĐND, UBND các tỉnh, thành phố;
+- HĐND, UBND các xã, phường, đặc khu trực thuộc tỉnh, thành phố;
+- Website của Chính phủ;
+- Công báo (02 bản);
+- Các đơn vị thuộc Bộ Xây dựng;
+- Cục Kiểm tra văn bản quy phạm pháp luật - Bộ Tư pháp;
+- Sở Xây dựng các tỉnh, thành phố;
+- Cổng thông tin điện tử của Bộ Xây dựng;
+- Lưu: VT, Cục KTQLXD.KT. BỘ TRƯỞNG 
+THỨ TRƯỞNG
+
+
+
+
+Bùi Xuân Dũng
+PHỤ LỤC I
+KÝ HIỆU MÃ TỈNH/THÀNH PHỐ TRỰC THUỘC TRUNG ƯƠNG NƠI THỰC HIỆN QUY HOẠCH, DỰ ÁN ĐẦU TƯ XÂY DỰNG/CÔNG TRÌNH XÂY DỰNG*
+(Ban hành kèm theo Thông tư số 24/2025/TT-BXD ngày 29 tháng 08 năm 2025 của Bộ trưởng Bộ Xây dựng)
+STTTên đơn vị hành chínhMã1Thành phố Hà Nội012Tỉnh Cao Bằng043Tỉnh Tuyên Quang084Tỉnh Điện Biên115Tỉnh Lai Châu126Tỉnh Sơn La147Tỉnh Lào Cai158Tỉnh Thái Nguyên199Tỉnh Lạng Sơn2010Tỉnh Quảng Ninh2211Tỉnh Bắc Ninh2412Tỉnh Phú Thọ2513Thành phố Hải Phòng3114Tỉnh Hưng Yên3315Tỉnh Ninh Bình3716Tỉnh Thanh Hóa3817Tỉnh Nghệ An4018Tỉnh Hà Tĩnh4219Tỉnh Quảng Trị4420Thành phố Huế4621Thành phố Đà Nẵng4822Tỉnh Quảng Ngãi5123Tỉnh Gia Lai5224Tỉnh Khánh Hòa5625Tỉnh Đắk Lắk6626Tỉnh Lâm Đồng6827Tỉnh Đồng Nai7528Thành phố Hồ Chí Minh7929Tỉnh Tây Ninh8030Tỉnh Đồng Tháp8231Tỉnh Vĩnh Long8632Tỉnh An Giang9133Thành phố Cần Thơ9234Tỉnh Cà Mau9635Liên tỉnh00(*): Trong quá trình thực hiện, Bảng mã này được cập nhật, điều chỉnh theo quyết định của Thủ tướng Chính phủ về ban hành Bảng danh mục và mã số các đơn vị hành chính Việt Nam.
+
+PHỤ LỤC II
+DỮ LIỆU VỀ QUY HOẠCH ĐÔ THỊ VÀ NÔNG THÔN
+(Ban hành kèm theo Thông tư số 24/2025/TT-BXD ngày 29 tháng 08 năm 2025 của Bộ trưởng Bộ Xây dựng)
+STTThông tin về quy hoạch đô thị và nông thônQuy định về nhập thông tinIThông tin chungĐể khởi tạo Mã số thông tin theo quy định tại điểm a khoản 5 Điều 10 Nghị định số 111/2024/NĐ-CP1Tên quy hoạch[Nhập thông tin]- Cơ quan thẩm định quy hoạch phối hợp với cơ quan lập quy hoạch để cập nhật nội dung về thông tin chung theo quy định tại điểm a khoản 2 Điều 6 Nghị định số 111/2024/NĐ-CP.
+- Dữ liệu mở bao gồm dữ liệu tại mục I và II.2Loại quy hoạch[Chọn loại quy hoạch]3Cấp độ quy hoạch[Chọn cấp độ quy hoạch]4Loại điều chỉnh quy hoạch[Chọn loại điều chỉnh quy hoạch]5Địa điểm quy hoạch (nơi quy hoạch được lập)[Chọn tỉnh/thành phố, xã/phường hoặc nhập thông tin địa điểm quy hoạch đối với quy hoạch liên phường, liên xã]6Quy mô, diện tích lập quy hoạch[Nhập thông tin (theo hecta)]7Số quyết định phê duyệt nhiệm vụ quy hoạch (đối với các quy hoạch có yêu cầu phải lập nhiệm vụ quy hoạch)[Số quyết định]8Cơ quan tổ chức lập nhiệm vụ quy hoạch (đối với các quy hoạch có yêu cầu phải lập nhiệm vụ quy hoạch)[Nhập thông tin hoặc Mã đăng ký kinh doanh (nếu có)]9Cơ quan tổ chức lập quy hoạch[Nhập thông tin hoặc Mã đăng ký kinh doanh (nếu có)]10Cơ quan thẩm định quy hoạch[Nhập thông tin]11Cơ quan phê duyệt quy hoạch[Nhập thông tin]IIThông tin chi tiếtCơ quan tổ chức lập quy hoạch cập nhật nội dung thông tin chi tiết vào hệ thống Cơ sở dữ liệu theo quy định tại điểm b khoản 5 Nghị định số 111/2024/NĐ-CP1Quy mô dân số dự báo[Nhập thông tin]2Thời hạn quy hoạch[Nhập thông tin]3Quy định quản lý theo quy hoạch[Nhập file hồ sơ đã được chứng thực điện tử và file dữ liệu điện tử của hồ sơ theo quy định tại Thông tư số 16/2025/TT-BXD ngày 30/6/2025 của Bộ trưởng Bộ Xây dựng quy định chi tiết một số điều của Luật Quy hoạch đô thị và nông thôn]4Kế hoạch thực hiện quy hoạch chung[Đính kèm file được ký số hoặc Chứng thực bản sao điện tử từ bản chính]5Quy chế quản lý kiến trúc trong phạm vi lập quy hoạch (nếu có)[Nhập file hồ sơ đã được chứng thực điện tử và file dữ liệu điện tử của quy chế quản lý kiến trúc]6Thông tin liên quan khác (nếu có)6.1Các nhiệm vụ quy hoạch, quy hoạch có liên quan[Nhập mã thông tin của quy hoạch cấp trên, cấp dưới có liên quan]6.2Chủ nhiệm lập quy hoạchNhập thông tin mã số chứng chỉ hành nghề hoạt động xây dựng hoặc căn cước công dân (đối với trường hợp không có chứng chỉ hành nghề) (Liên kết với cơ sở dữ liệu về năng lực hoạt động xây dựng của tổ chức, cá nhân)6.3Danh sách chủ trì các bộ môn thiết kế quy hoạchNhập thông tin mã số chứng chỉ hành nghề hoạt động xây dựng hoặc căn cước công dân (đối với trường hợp không có chứng chỉ hành nghề) (Liên kết với cơ sở dữ liệu về năng lực hoạt động xây dựng của tổ chức, cá nhân)6.4Thông tin khác (nếu có)IIIHồ sơ nhiệm vụ quy hoạch, quy hoạch đô thị và nông thôn, thiết kế đô thị riêng chi tiết1Cơ sở dữ liệu số cơ bản[các tệp tin (file) bản vẽ và văn bản được in ấn thành một phần của hồ sơ bản giấy không bao gồm các văn bản, tài liệu liên quan theo quy định tại Thông tư số 16/2025/TT-BXD ngày 30/6/2025 của Bộ trưởng Bộ Xây dựng quy định chi tiết một số điều của Luật Quy hoạch đô thị và nông thôn]2Cơ sở dữ liệu số pháp lý[Các tệp tin (file) được số hóa, quét (scan) từ hồ sơ bằng bản giấy hoặc chứng thực điện tử theo quy định tại Thông tư số 16/2025/TT-BXD ngày 30/6/2025 của Bộ trưởng Bộ Xây dựng quy định chi tiết một số điều của Luật Quy hoạch đô thị và nông thôn]3Cơ sở dữ liệu số địa lý (GIS) quy hoạch (đối với các quy hoạch được phê duyệt theo pháp luật về quy hoạch đô thị và nông thôn)[Các tệp tin (file) được chuyển đổi thành dữ liệu địa lý từ cơ sở dữ liệu gốc theo quy định tại Thông tư số 16/2025/TT-BXD ngày 30/6/2025 của Bộ trưởng Bộ Xây dựng quy định chi tiết một số điều của Luật Quy hoạch đô thị và nông thôn]
+PHỤ LỤC III
+DỮ LIỆU VỀ DỰ ÁN ĐẦU TƯ XÂY DỰNG, CÔNG TRÌNH XÂY DỰNG
+(Ban hành kèm theo Thông tư số 24/2025/TT-BXD ngày 29 tháng 08 năm 2025 của Bộ trưởng Bộ Xây dựng)
+Bảng số 01Dữ liệu về dự án đầu tư xây dựng, công trình xây dựngBảng số 02Dữ liệu về công trình xây dựng không yêu cầu lập dự án đầu tư xây dựng, chỉ yêu cầu cấp giấy phép xây dựngBảng số 03Dữ liệu về công trình xây dựng không thuộc đối tượng thẩm định tại cơ quan chuyên môn về xây dựng; không phải cấp giấy phép xây dựng; chỉ thông báo khởi công xây dựng công trình
+Phụ lục III - Bảng số 01
+Dữ liệu về dự án đầu tư xây dựng, công trình xây dựng
+STTNội dung nhập, cập nhật dữ liệu về dự án đầu tư xây dựng, công trình xây dựngGhi chú quy định về nhập, cập nhật dữ liệu, dữ liệu mởAThẩm định Báo cáo nghiên cứu khả thi đầu tư xây dựng
+(Cơ quan chuyên môn về xây dựng khởi tạo mã số thông tin khi có kết quả thẩm định Báo cáo nghiên cứu khả thi đầu tư xây dựng theo quy định tại điểm a khoản 2 Điều 10 Nghị định số 111/2024/NĐ-CP)IDữ liệu chungCơ quan thực hiện thủ tục hành chính theo phân cấp nhập dữ liệu chung khi khởi tạo Mã số thông tin theo quy định tại điểm a khoản 6 Điều 10 Nghị định số 111/2024/NĐ-CP1Tên dự án đầu tư xây dựng:[Nhập dữ liệu]- Nhập nội dung dữ liệu chung về dự án đầu tư xây dựng quy định tại điểm a khoản 1 Điều 7 Nghị định số 111/2024/NĐ-CP.
+- Cơ quan chuyên môn về xây dựng theo phân cấp phải nhập dữ liệu ngay khi có kết quả thẩm định (khởi tạo mã số thông tin) làm cơ sở điền mã số thông tin dự án vào thông báo kết quả thẩm định (theo mẫu thông báo kết quả thẩm định quy định tại Nghị định số 175/2024/NĐ-CP).2Nhóm dự án:Chọn trong các ô: Nhóm A/B/C3Địa điểm xây dựng:[Chọn tỉnh/thành phố, xã/phường/đặc khu]4Người quyết định đầu tư:[Nhập tên Người quyết định đầu tư]5Chủ đầu tư:[Nhập tên Chủ đầu tư]6Mục tiêu đầu tư:[Nhập dữ liệu] theo quy định pháp luật về đầu tư và pháp luật khác có liên quan7Quy mô đầu tư[Nhập dữ liệu] (quy mô đầu tư xây dựng chủ yếu theo quy định pháp luật về đầu tư công, đầu tư, xây dựng, nhà ở, kinh doanh bất động sản, đường bộ, đường sắt và pháp luật khác có liên quan)*IIDữ liệu chi tiếtChủ đầu tư cập nhật nhập dữ liệu chi tiết quy định tại điểm b khoản 6 Điều 10 Nghị định số 111/2024/NĐ-CP1Văn bản về chủ trương đầu tư của cơ quan nhà nước có thẩm quyền[Nhập số:.., ngày .... tháng .... năm...., cơ quan ban hành văn bản]
+[Đính kèm file được ký số hoặc được chứng thực bản sao điện tử từ bản chính]- Nhập nội dung dữ liệu chi tiết quy định tại điểm b khoản 1 Điều 7 Nghị định số 111/2024/NĐ-CP
+- Chủ đầu tư phải nhập dữ liệu trong thời hạn 15 ngày kể từ ngày nhận được kết quả thẩm định (theo quy định tại điểm b khoản 6 Nghị định số 111/2024/NĐ-CP).
+- Dữ liệu mở bao gồm dữ liệu quy định tại mục A. I, A. II.4 và A.II.5.2Quyết định phê duyệt quy hoạch hoặc quy hoạch có tính chất kỹ thuật chuyên ngành khác được sử dụng làm cơ sở lập dự án đầu tư xây dựng[Nhập số:.., ngày .... tháng .... năm...., cơ quan ban hành văn bản]
+[Đính kèm file được ký số hoặc được chứng thực bản sao điện tử từ bản chính]3Kết quả thực hiện thủ tục về phòng cháy chữa cháy và bảo vệ môi trường3.1Kết quả thực hiện thủ tục về phòng cháy chữa cháy
+(nếu có theo quy định của pháp luật về phòng cháy, chữa cháy)[Nhập số:.., ngày .... tháng .... năm...., cơ quan ban hành văn bản]
+[Đính kèm file được ký số hoặc được chứng thực bản sao điện tử từ bản chính]Liên kết với dữ liệu, dữ liệu của cơ quan có thẩm quyền về PCCC (nếu có)3.2Kết quả thực hiện thủ tục về môi trường[Nhập số:.., ngày .... tháng .... năm...., cơ quan ban hành văn bản]
+[Đính kèm file được ký số hoặc được chứng thực bản sao điện tử từ bản chính]
+Liên kết với dữ liệu, dữ liệu của cơ quan có thẩm quyền về bảo vệ môi trường (nếu có)4Văn bản thông báo kết quả thẩm định Báo cáo nghiên cứu khả thi đầu tư xây dựng[Nhập số:.., ngày .... tháng .... năm...., cơ quan ban hành văn bản]
+[Đính kèm file được ký số hoặc được chứng thực bản sao điện tử từ bản chính của văn bản, tệp tin mô hình BIM (nếu có)]5Quyết định phê duyệt dự án đầu tư xây dựng[Nhập số:.., ngày .... tháng .... năm...., cơ quan ban hành văn bản]
+[Đính kèm file được ký số hoặc được chứng thực bản sao điện tử từ bản chính]6Dữ liệu về các tổ chức, cá nhân tham gia khảo sát, lập báo cáo nghiên cứu khả thi đầu tư xây dựng dự ánLiên kết với cơ sở dữ liệu về năng lực hoạt động xây dựng của tổ chức, cá nhân; Hệ thống dữ liệu quốc gia về đăng ký doanh nghiệp và Cơ sở dữ liệu quốc gia về dân cư (nếu có)6.1Nhà thầu khảo sát xây dựng[Nhập Mã đăng ký kinh doanh của tổ chức]6.2Chủ nhiệm khảo sát xây dựng[Nhập Mã số chứng chỉ hành nghề hoạt động xây dựng của cá nhân hoặc căn cước công dân (trường hợp không có Mã số hành nghề hoạt động xây dựng)]6.3Nhà thầu tư vấn thiết kế[Nhập Mã đăng ký kinh doanh của tổ chức]6.4Chủ nhiệm thiết kế[Nhập Mã số chứng chỉ hành nghề hoạt động xây dựng của cá nhân hoặc căn cước công dân (trường hợp không có Mã số hành nghề hoạt động xây dựng)]6.5Danh mục chủ trì các bộ môn thiết kế[Nhập Mã số chứng chỉ hành nghề hoạt động xây dựng của cá nhân hoặc căn cước công dân (trường hợp không có Mã số hành nghề hoạt động xây dựng)]6.6Nhà thầu thẩm tra thiết kế (nếu có)[Nhập Mã đăng ký kinh doanh của tổ chức]6.7Chủ nhiệm thẩm tra thiết kế[Nhập Mã số chứng chỉ hành nghề hoạt động xây dựng của cá nhân hoặc căn cước công dân (trường hợp không có Mã số hành nghề hoạt động xây dựng)]6.8Danh mục chủ trì thẩm tra các bộ môn thiết kế[Nhập Mã số chứng chỉ hành nghề hoạt động xây dựng của cá nhân hoặc căn cước công dân (trường hợp không có Mã số hành nghề hoạt động xây dựng)]6.9Nhà thầu thẩm tra an toàn giao thông (nếu có)[Nhập Mã đăng ký kinh doanh của tổ chức]7Hồ sơ, văn bản có liên quan khác7.1Mã dữ liệu quy hoạch có liên quan làm cơ sở lập dự án (nếu có)[Nhập các mã dữ liệu quy hoạch có liên quan quy hoạch chung, quy hoạch phân khu, quy hoạch chi tiết,…] (nếu có) hoặc liên kết với hệ thống thông tin về quy hoạch7.2Loại dự án đầu tư xây dựngChọn trong các ô: Dân dụng/Công nghiệp/Hạ tầng kỹ thuật/Giao thông/Nông nghiệp phát triển nông thôn/Hỗn hợp7.3Cấp công trình cao nhất thuộc dự ánChọn trong các ô: Cấp đặc biệt/I/II/III/IV7.4Giá trị tổng mức đầu tư dự án... tỷ đồng, trong đó nhập dữ liệu về:
+- Chi phí xây dựng ... tỷ đồng;
+- Chi phí thiết bị ... tỷ đồng.7.5Nguồn vốn đầu tưChọn trong các ô: vốn đầu tư công/vốn nhà nước ngoài đầu tư công/vốn khác/thực hiện theo phương thức PPP.7.6Thời gian thực hiện dự án:[Chọn từ ngày/tháng/năm] đến [Chọn ngày/tháng/năm]7.7Hình thức tổ chức quản lý dự ánChọn trong các ô: Ban QLDAĐTXD chuyên ngành/Ban QLDAĐTXD khu vực/Ban QLDAĐTXD một dự án/Chủ đầu tư sử dụng bộ máy chuyên môn trực thuộc để quản lý dự án/tổ chức tư vấn quản lý dự án7.8Giải thưởng kiến trúc
+(giải thưởng được UBND cấp tỉnh, cấp bộ, cơ quan trung ương, chính phủ tổ chức)[Nhập số:.., ngày .... tháng .... năm...., cơ quan ban hành văn bản]
+Nhập kết quả giải thưởng:7.9Dữ liệu về loại hình bất động sảnChọn các ô:
+- Nhà ở riêng lẻ/nhà ở thương mại/nhà ở công vụ/ Nhà ở phục vụ tái định cư/ Nhà ở xã hội/ Nhà lưu trú công nhân/ Nhà ở cho lực lượng vũ trang nhân dân
+- Công trình xây dựng có công năng phục vụ mục đích giáo dục/y tế/thể thao/văn hóa/văn phòng/ thương mại, dịch vụ/du lịch/lưu trú/công nghiệp và công trình xây dựng có công năng phục vụ hỗn hợp
+- Các loại công trình xây dựng khác theo quy định của pháp luật về xây dựng, kinh doanh bất động sản, nhà ở và pháp luật khác có liên quan8Dữ liệu khác (nếu có)BThẩm định thiết kế xây dựng triển khai sau thiết kế cơ sở đối với trường hợp công trình xây dựng phải thẩm định tại cơ quan chuyên môn về xây dựng
+(Cơ quan chuyên môn về xây dựng khởi tạo mã số thông tin khi có kết quả thẩm định thiết kế xây dựng triển khai sau thiết kế cơ sở theo quy định tại điểm a khoản 3 Điều 10 Nghị định số 111/2024/NĐ-CP)IDữ liệu chungCơ quan thực hiện thủ tục hành chính theo phân cấp nhập dữ liệu chung khi khởi tạo Mã số thông tin theo quy định tại điểm a khoản 6 Điều 10 Nghị định số 111/2024/NĐ-CP1Mã số dữ liệu dự án đầu tư xây dựng[Nhập dữ liệu]
+Liên kết với mã số dữ liệu dự án đã được khởi tạo (đã thẩm định, thẩm định điều chỉnh) (nếu có)- Nhập nội dung dữ liệu chung về công trình xây dựng quy định tại điểm a khoản 2 Điều 7 Nghị định số 111/2024/NĐ-CP
+- Cơ quan chuyên môn về xây dựng theo phân cấp phải nhập dữ liệu ngay khi có kết quả thẩm định (khởi tạo mã số thông tin) làm cơ sở điền mã số thông tin công trình vào thông báo kết quả thẩm định (theo mẫu thông báo kết quả thẩm định quy định tại Nghị định số 175/2024/NĐ-CP).2Tên công trình[Nhập dữ liệu tên công trình]3Loại công trình[Chọn loại công trình] theo Phụ lục I thông tư số 06/2021/TT-BXD ngày 30/6/2021 (1.1.1.1 Nhà trẻ, trường mẫu giáo, trường mầm; 1.2.1.2 Nhà máy sản xuất clinker, xi măng; 1.4.1.1 Đường ô tô cao tốc; 1.4.6.1 Nhà ga hàng không (Nhà ga chính);…)]4Cấp công trình[Chọn cấp công trình] (Đặc biệt, I, II, III, IV]5Địa điểm xây dựng[Chọn tỉnh/thành phố, xã/phường/đặc khu]/hoặc trích xuất từ dữ liệu dự án đã liên kết (nếu có)]6Chủ đầu tư[Nhập dữ liệu]/hoặc trích xuất từ dữ liệu dự án đã liên kết (nếu có)7Quy mô đầu tư xây dựng chủ yếu[Nhập dữ liệu]IIDữ liệu chi tiếtChủ đầu tư cập nhật nhập dữ liệu chi tiết quy định tại điểm b khoản 6 Điều 10 Nghị định số 111/2024/NĐ- CP1Kết quả thực hiện thủ tục về phòng cháy chữa cháy và bảo vệ môi trường- Nhập nội dung dữ liệu chi tiết quy định tại điểm b khoản 2 Điều 7 Nghị định số 111/2024/NĐ-CP
+- Chủ đầu tư phải nhập dữ liệu trong thời hạn 15 ngày kể từ ngày nhận được kết quả thẩm định (theo quy định tại điểm b khoản 6 Nghị định số 111/2024/NĐ-CP)
+- Dữ liệu mở bao gồm dữ liệu tại mục B.I, mục B.II.2 đến B.II.5.1.1Kết quả thực hiện thủ tục về phòng cháy chữa cháy
+(nếu có theo quy định của pháp luật về phòng cháy, chữa cháy)[Nhập số:.., ngày .... tháng .... năm...., cơ quan ban hành văn bản]
+[Đính kèm file được ký số hoặc Chứng thực bản sao điện tử từ bản chính] Liên kết với dữ liệu, dữ liệu của cơ quan có thẩm quyền về PCCC (nếu có)1.2Kết quả thực hiện thủ tục về môi trường[Nhập số:.., ngày .... tháng .... năm...., cơ quan ban hành văn bản]
+[Đính kèm file được ký số hoặc Chứng thực bản sao điện tử từ bản chính]
+Liên kết với dữ liệu, dữ liệu của cơ quan có thẩm quyền về bảo vệ môi trường (nếu có)2Thông báo kết quả thẩm định Báo cáo nghiên cứu khả thi đầu tư xây dựng[Nhập số:.., ngày .... tháng .... năm...., cơ quan ban hành văn bản]
+[Đính kèm file được ký số hoặc Chứng thực bản sao điện tử từ bản chính]
+Liên kết với mã số dữ liệu dự án đã được khởi tạo (nếu có)3Thông báo kết quả thẩm định thiết kế xây dựng triển khai sau thiết kế cơ sở[Nhập số:.., ngày .... tháng .... năm...., cơ quan ban hành văn bản]
+[Đính kèm file được ký số hoặc Chứng thực bản sao điện tử từ bản chính]4Quyết định phê duyệt dự án đầu tư xây dựng[Nhập số:.., ngày .... tháng .... năm...., cơ quan ban hành văn bản]
+[Đính kèm file được ký số hoặc Chứng thực bản sao điện tử từ bản chính]
+Liên kết với mã số dữ liệu dự án đã được khởi tạo (nếu có)5Quyết định phê duyệt thiết kế xây dựng triển khai sau thiết kế cơ sở[Nhập số:.., ngày .... tháng .... năm...., cơ quan ban hành văn bản]
+[Đính kèm file được ký số hoặc Chứng thực bản sao điện tử từ bản chính]6Dữ liệu về các tổ chức, cá nhân tham gia khảo sát, thiết kế, thi công xây dựng công trình[Liên kết với cơ sở dữ liệu về năng lực hoạt động xây dựng của tổ chức, cá nhân Hệ thống dữ liệu quốc gia về đăng ký doanh nghiệp và Cơ sở dữ liệu quốc gia về dân cư (nếu có)]
++ [Nhập Mã đăng ký kinh doanh của tổ chức]
++ [Nhập Mã số chứng chỉ hành nghề hoạt động xây dựng của cá nhân hoặc căn cước công dân (trường hợp không có Mã số hành nghề hoạt động xây dựng)]6.1Nhà thầu khảo sát xây dựng+ [Nhập Mã đăng ký kinh doanh của tổ chức khảo sát]6.2Chủ nhiệm khảo sát xây dựng[Nhập Mã số chứng chỉ hành nghề hoạt động xây dựng của cá nhân hoặc căn cước công dân (trường hợp không có Mã số hành nghề hoạt động xây dựng)]6.3Nhà thầu tư vấn thiết kế+ [Nhập Mã đăng ký kinh doanh của tổ chức)6.4Chủ nhiệm thiết kế[Nhập Mã số chứng chỉ hành nghề hoạt động xây dựng của cá nhân hoặc căn cước công dân (trường hợp không có Mã số hành nghề hoạt động xây dựng)]6.5Danh mục chủ trì các bộ môn thiết kế[Nhập Mã số chứng chỉ hành nghề hoạt động xây dựng của cá nhân hoặc căn cước công dân (trường hợp không có Mã số hành nghề hoạt động xây dựng)]6.6Nhà thầu thẩm tra thiết kế (nếu có)+ [Nhập hoặc liên kết Mã đăng ký kinh doanh của tổ chức)6.7Chủ nhiệm thẩm tra thiết kế[Nhập Mã số chứng chỉ hành nghề hoạt động xây dựng của cá nhân hoặc căn cước công dân (trường hợp không có Mã số hành nghề hoạt động xây dựng)]6.8Danh mục chủ trì thẩm tra các bộ môn thiết kế[Nhập Mã số chứng chỉ hành nghề hoạt động xây dựng của cá nhân hoặc căn cước công dân (trường hợp không có Mã số hành nghề hoạt động xây dựng)]6.9Nhà thầu thẩm tra an toàn giao thông (nếu có)[Nhập hoặc liên kết Mã đăng ký kinh doanh của tổ chức]7Hồ sơ, văn bản có liên quan khácCCấp giấy phép xây dựng
+(Cơ quan nhà nước có thẩm quyền về cấp giấy phép xây dựng khởi tạo mã số thông tin khi cấp giấy phép xây dựng theo quy định tại điểm b khoản 2 và điểm b khoản 3 Điều 10 Nghị định số 111/2024/NĐ-CP)IDữ liệu chungCơ quan thực hiện thủ tục hành chính theo phân cấp nhập dữ liệu chung khi khởi tạo Mã số thông tin theo quy định tại điểm a khoản 6 Điều 10 Nghị định số 111/2024/NĐ-CP1Tên công trình xây dựng:[Nhập dữ liệu]- Nhập nội dung dữ liệu chung theo quy định tại điểm a khoản 3 Điều 7 Nghị định số 111/2024/NĐ-CP.2Loại, cấp công trình[Chọn loại, cấp công trình]3Địa điểm xây dựng[Chọn tỉnh/thành phố, xã/phường/đặc khu]/hoặc trích xuất từ dữ liệu dự án đã liên kết (nếu có)4Chủ đầu tư[Nhập dữ liệu tên chủ đầu tư]/hoặc trích xuất từ dữ liệu dự án đã liên kết (nếu có)- Cơ quan thực hiện thủ tục cấp Giấy phép xây dựng theo phân cấp phải nhập dữ liệu ngay khi có Giấy phép xây dựng (khởi tạo mã số thông tin) làm cơ sở điền mã số thông tin công trình vào Giấy phép xây dựng (theo mẫu Giấy phép xây dựng quy định tại Nghị định số 175/2024/NĐ-CP).5Quy mô đầu tư xây dựng chủ yếu[Nhập dữ liệu] [1]IIDữ liệu chi tiết1Giấy phép xây dựng[Nhập số:.., ngày .... tháng .... năm...., cơ quan ban hành văn bản]
+[Đính kèm file Văn bản Giấy phép xây dựng được ký số hoặc Chứng thực bản sao điện tử từ bản chính]- Chủ đầu tư phải nhập nội dung dữ liệu từ mục C.II.1 đến C.II.5.2 trong thời hạn 15 ngày kể từ ngày nhận được kết quả thẩm định (theo quy định tại điểm b khoản 6 Nghị định số 111/2024/NĐ-CP)
+- Đối với các nội dung dữ liệu còn lại (từ mục C.II.5.3 đến C.II.5.18), chủ đầu tư (nhập dữ liệu từ điểm C.II.5.3 đến C.II.5.12), các cơ quan, tổ chức, đơn vị có liên quan có trách nhiệm nhập, cập nhật dữ liệu còn lại trong thời hạn 20 ngày làm việc kể từ khi các công việc tương ứng tại Bảng này hoàn thành theo quy định của pháp luật có liên quan.
+- Dữ liệu mở bao gồm dữ liệu tại mục C.I, mục C.II.1 và C.II.2.2Thông báo khởi công công trình xây dựng[Nhập số:.., ngày .... tháng .... năm...., tổ chức/cá nhân ban hành văn bản]
+Nhập dữ liệu chủ yếu theo Phụ lục V ban hành kèm theo Nghị định số 06/2021/NĐ-CP và file thông báo khởi công3Giấy tờ hợp pháp về đất đai[Nhập số:.., ngày .... tháng .... năm...., cơ quan ban hành văn bản]
+[Đính kèm file Giấy tờ hợp pháp về đất đai theo quy định tại Điều 53 Nghị định số 175/2024] hoặc liên kết với dữ liệu về đất đai (nếu có)4Dữ liệu về tổ chức, cá nhân tham gia khảo sát, lập, thẩm tra thiết kế, thi công xây dựng công trình, chỉ huy trưởng của nhà thầu thi công xây dựng công trình (nếu có)[Liên kết với cơ sở dữ liệu về năng lực hoạt động xây dựng của tổ chức, cá nhân Hệ thống dữ liệu quốc gia về đăng ký doanh nghiệp và Cơ sở dữ liệu quốc gia về dân cư (nếu có)]
++ [Nhập hoặc liên kết Mã đăng ký kinh doanh của tổ chức]
++ [Nhập Mã số chứng chỉ hành nghề hoạt động xây dựng của cá nhân hoặc căn cước công dân (trường hợp không có Mã số hành nghề hoạt động xây dựng)]5Hồ sơ, văn bản có liên quan khác (nếu có)5.1Dữ liệu về nhà thầu tư vấn giám sát, giám sát trưởng của đơn vị tư vấn giám sát; tư vấn quản lý dự án (nếu có)[Liên kết với cơ sở dữ liệu về năng lực hoạt động xây dựng của tổ chức, cá nhân Hệ thống dữ liệu quốc gia về đăng ký doanh nghiệp và Cơ sở dữ liệu quốc gia về dân cư (nếu có)]
++ [Nhập hoặc liên kết Mã đăng ký kinh doanh của tổ chức]
++ [Nhập Mã số chứng chỉ hành nghề hoạt động xây dựng của cá nhân hoặc căn cước công dân (trường hợp không có Mã số hành nghề hoạt động xây dựng)]5.2Giấy phép môi trường/kế hoạch an toàn về môi trường[Nhập số:.., ngày .... tháng .... năm...., cơ quan ban hành văn bản]
+(liên kết với hệ thống dữ liệu chuyên ngành của Bộ Nông nghiệp và Môi trường)5.3Báo cáo thẩm tra an toàn giao thông giai đoạn trước khi đưa công trình đường bộ vào khai thác (nếu có)[Nhập số:.., ngày .... tháng .... năm...., cơ quan/đơn vị ban hành văn bản]
+[Đính kèm tệp tin đã được số hóa của Báo cáo thẩm tra an toàn giao thông]5.4Biên bản nghiệm thu hoàn thành công trình[Nhập số:.., ngày .... tháng .... năm...., cơ quan ban hành văn bản]
+[Đính kèm file Văn bản được ký số hoặc Chứng thực bản sao điện tử từ bản chính]5.5Thông báo kết quả kiểm tra công tác nghiệm thu[Nhập số:.., ngày .... tháng .... năm...., cơ quan ban hành văn bản]
+[Đính kèm tệp tin đã được số hóa của thông báo kết quả kiểm tra công tác nghiệm thu]5.6Dữ liệu về tổ chức kiểm định công trình được cấp giấy phép xây dựng (nếu có)[Liên kết với cơ sở dữ liệu về năng lực hoạt động xây dựng của tổ chức, cá nhân Hệ thống dữ liệu quốc gia về đăng ký doanh nghiệp và Cơ sở dữ liệu quốc gia về dân cư (nếu có)] 
++ [Nhập hoặc liên kết Mã đăng ký kinh doanh của tổ chức]
++ [Nhập Mã số chứng chỉ hành nghề hoạt động xây dựng của cá nhân hoặc căn cước công dân (trường hợp không có Mã số hành nghề hoạt động xây dựng)]5.7Bản vẽ hoàn công[nhập ngày ... tháng .... năm hoàn công]
+[Đính kèm file bản vẽ có các thông số chủ yếu được ký số hoặc Chứng thực bản sao điện tử từ bản chính]5.8Quyết định phê duyệt quyết toán vốn đầu tư xây dựng
+(chỉ áp dụng với dự án sử dụng vốn đầu tư công/nhà nước ngoài đầu tư công/dự án PPP)[Nhập số:.., ngày .... tháng .... năm...., đơn vị/cơ quan quyết toán]
+- Giá trị quyết toán được duyệt:
++ Giá trị xây lắp:
++ Giá trị thiết bị:
+(Nhập dữ liệu/tích hợp từ hệ thống khác có liên quan nếu có)5.9Các giải thưởng đối với công trình (nếu có)[Nhập số:.., ngày .... tháng .... năm...., cơ quan/đơn vị ban hành văn bản]
+[Nhập giải thưởng đạt được, loại giải thưởng]
+(Giải thưởng chất lượng công trình xây dựng; giải thưởng kiến trúc; giải thưởng công trình xây dựng sử dụng tiết kiệm, hiệu quả năng lượng, tài nguyên, bảo đảm yêu cầu về bảo vệ môi trường[2])5.10Bảng tiến độ thực hiện dự án theo quy định**Upload file bảng tổng hợp tiến độ chi tiết thực hiện dự án được phê duyệt5.11Khối lượng hoàn thành theo thời gian thực tế**Nhập dữ liệu hoặc tích hợp dữ liệu từ GIS-BIM (nếu có)5.12Giá trị thanh toán khối lượng hoàn thành**
+(chỉ áp dụng với dự án sử dụng vốn đầu tư công/nhà nước ngoài đầu tư công/dự án PPP)Nhập dữ liệu/tích hợp từ hệ thống khác có liên quan (nếu có)5.13Vi phạm hành chính về xây dựng***Nhập dữ liệu về lỗi vi phạm hành chính về xây dựng/tích hợp từ hệ thống khác có liên quanCơ quan nhà nước có thẩm quyền xử phạt vi phạm được cung cấp account để nhập dữ liệu5.14Sự cố công trình xây dựng trong quá trình thi công và khai thác, vận hành***[Nhập số:.., ngày .... tháng .... năm...., cơ quan ban hành văn bản]
+- Báo cáo sự cố công trình:
+- Chọn trong các ô dữ liệu sự cố: Cấp I/II/III
+- Kết quả giám định sự cố (nếu có):
+[Đính kèm file Văn bản được ký số hoặc Chứng thực bản sao điện tử từ bản chính]UBND cấp xã được cung cấp account để nhập, cập nhật dữ liệu5.15Sự cố kỹ thuật gây mất an toàn lao động trong thi công xây dựng***[Nhập số:.., ngày .... tháng .... năm...., cơ quan ban hành văn bản]
+- Báo cáo sự cố công trình:
+- Chọn trong các ô dữ liệu sự cố về: Máy/thiết bị/tai nạn lao động
+[Đính kèm file Văn bản được ký số hoặc Chứng thực bản sao điện tử từ bản chính]UBND cấp xã được cung cấp account để nhập, cập nhật dữ liệu5.16Lịch sử bảo hành, bảo trì công trình xây dựng*** (nếu có)- Kết quả các lần kiểm định, đánh giá an toàn công trình:
+- Dữ liệu tổ chức đánh giá an toàn sự cố:
+[Đính kèm file Văn bản được ký số hoặc Chứng thực bản sao điện tử từ bản chính]Cơ quan, tổ chức, đơn vị được giao quản lý tài sản được cung cấp account để nhập, cập nhật dữ liệu5.18Dữ liệu khác (nếu có)DMiễn giấy phép xây dựngChủ đầu tư/người được chủ đầu tư ủy quyền theo quy định của pháp luật nhập dữ liệu chung, dữ liệu chi tiết như mục C Bảng này (trừ giấy phép xây dựng)Ghi chú:
+(*): Về quy mô đầu tư xây dựng chủ yếu, đối với dự án đầu tư xây dựng công trình chuyên ngành thuộc lĩnh vực quản lý nhà nước của Bộ Xây dựng cần nhập dữ liệu chủ yếu như sau:
+(i) Đối với lĩnh vực quản lý nhà nước về dự án đầu tư xây dựng công trình dân dụng, công nghiệp nhẹ, công nghiệp sản xuất vật liệu xây dựng, sản phẩm xây dựng, cần nhập dữ liệu: Loại dự án đầu tư xây dựng công trình (nhà ở/công cộng/giáo dục/đào tạo/nghiên cứu/y tế/thể thao/văn hóa/tôn giáo/tín ngưỡng/thương mại, dịch vụ/trụ sở, văn phòng làm việc/phục vụ dân sinh khác/...; tổng diện tích đất lập dự án, diện tích xây dựng, tổng diện tích sàn, số tầng cao (từ ... đến ... tầng).
+(ii) Đối với lĩnh vực quản lý nhà nước về dự án đầu tư xây dựng công trình giao thông vận tải đường bộ, cần nhập dữ liệu như sau:
+- Dữ liệu về đường bộ, bao gồm: Bề rộng nền; bề rộng mặt; chiều dài; số làn xe; kết cấu mặt đường; vận tốc thiết kế/cấp đường;
+- Dữ liệu về cầu, bao gồm: Bề rộng, chiều dài; sơ đồ nhịp; kết cấu nhịp; kết cấu mố/trụ, móng;
+- Dữ liệu về hầm, bao gồm: Bề rộng, chiều dài, kết cấu hầm; số ống hầm; số làn; kết cấu mặt đường trong hầm.
+(iii) Đối với lĩnh vực quản lý nhà nước về dự án đầu tư xây dựng công trình đường sắt, cần nhập dữ liệu: Loại công trình đường sắt; hướng tuyến, tốc độ thiết kế, khổ đường sắt, tải trọng trục, chiều dài tuyến, số lượng ga; loại kết cấu chính trên tuyến (kết cấu cầu, chiều dài tuyến; kết cấu hầm, chiều dài tuyến; kết cấu nền đất, chiều dài tuyến).
+(iv) Đối với lĩnh vực quản lý nhà nước về dự án đầu tư xây dựng công trình hạ tầng kỹ thuật, cần nhập dữ liệu về công suất hoặc dữ liệu về kích thước, diện tích, dung tích.
+(v) Đối với lĩnh vực quản lý nhà nước về phát triển đô thị, cần nhập dữ liệu về công trình hạ tầng xã hội như: y tế, giáo dục, văn hóa, thể dục thể thao,... được phân loại chi tiết theo cấp độ quốc tế/quốc gia/vùng/cấp đô thị và cấp đơn vị ở.
+(vi) Đối với lĩnh vực quản lý nhà nước về nhà ở và kinh doanh bất động sản cần nhập dữ liệu: tổng diện tích sàn xây dựng nhà ở/nhà ở công vụ/nhà ở xã hội/nhà lưu trú công nhân, tổng số căn hộ nhà ở/nhà ở công vụ/nhà ở xã hội/nhà lưu trú công nhân/nhà ở sinh viên; tổng số căn nhà ở liên kế, tổng diện tích sàn nhà ở liên kế; tổng số căn nhà ở biệt thự, tổng diện tích sàn nhà ở biệt thự; tổng diện tích sàn công trình khách sạn/loại hình du lịch, nghỉ dưỡng khác, tổng số phòng nghỉ.
+(vii) Đối với các lĩnh vực quản lý nhà nước về các dự án đầu tư xây dựng công trình khác, nhập dữ liệu về quy mô đầu tư xây dựng chủ yếu theo quy định quản lý của ngành, lĩnh vực có liên quan.
+(**): Chủ đầu tư/tổ chức, cá nhân được ủy quyền của Chủ đầu tư nhập, cập nhật dữ liệu về tiến độ thực hiện dự án, khối lượng nghiệm thu hoàn thành, giá trị thanh toán khối lượng hoàn thành, quyết toán vốn đầu tư xây dựng theo quy định của pháp luật (liên kết với hệ thống thông tin, cơ sở dữ liệu về thanh toán, quyết toán của Bộ Tài chính). Chủ đầu tư có trách nhiệm nhập dữ liệu trong thời hạn 20 ngày làm việc kể từ khi các công việc đã nêu hoàn thành theo quy định của pháp luật có liên quan, bảo đảm đáp ứng kịp thời theo yêu cầu báo cáo định kỳ hoặc đột xuất của Chính phủ, Thủ tướng Chính phủ, Bộ, Ngành, UBND cấp tỉnh, UBND cấp xã và các cấp có thẩm quyền khác có liên quan.
+(***): Liên kết với hệ thống thông tin, cơ sở dữ liệu về xử phạt vi phạm hành chính về xây dựng, báo cáo sự cố công trình xây dựng trong quá trình thi công và khai thác, vận hành, sự cố kỹ thuật gây mất an toàn lao động trong thi công xây dựng; lịch sử bảo hành, bảo trì công trình xây dựng (nếu có); khi bảo đảm điều kiện công nghệ, trình tự thủ tục toàn trình, các thành phần dữ liệu này sẽ được tự động nhập, cập nhật.
+
+Phụ lục III - Bảng số 02
+Dữ liệu về công trình xây dựng không yêu cầu lập dự án đầu tư xây dựng, chỉ yêu cầu cấp giấy phép xây dựng
+STTNội dung nhập, cập nhật dữ liệu về công trình xây dựngGhi chú quy định về nhập dữ liệuCấp giấy phép xây dựng
+(Cơ quan nhà nước có thẩm quyền về cấp giấy phép xây dựng khởi tạo mã số thông tin khi cấp giấy phép xây dựng theo quy định tại khoản 4 Điều 10 Nghị định số 111/2024/NĐ-CP)IDữ liệu chungCơ quan thực hiện thủ tục hành chính theo phân cấp nhập dữ liệu chung khi khởi tạo Mã số thông tin theo quy định tại điểm a khoản 6 Điều 10 Nghị định số 111/2024/NĐ-CP1Tên công trình xây dựng:[Nhập dữ liệu]- Nhập nội dung dữ liệu chung theo quy định tại điểm a khoản 3 Điều 7 Nghị định số 111/2024/NĐ-CP.
+- Cơ quan thực hiện thủ tục cấp Giấy phép xây dựng theo phân cấp phải nhập dữ liệu ngay khi có Giấy phép xây dựng (khởi tạo mã số thông tin) làm cơ sở điền mã số thông tin công trình vào Giấy phép xây dựng (theo mẫu Giấy phép xây dựng quy định tại Nghị định số 175/2024/NĐ-CP).2Loại, cấp công trình[Chọn cấp công trình] (Đặc biệt, I, II, III, IV]3Địa điểm xây dựng[Chọn tỉnh/thành phố, xã/phường/đặc khu]/hoặc trích xuất từ dữ liệu dự án đã liên kết (nếu có)4Chủ đầu tư (Chủ hộ gia đình)[Nhập dữ liệu tên chủ hộ]5Quy mô đầu tư xây dựng chủ yếu[Nhập dữ liệu][3]IIDữ liệu chi tiếtChủ đầu tư cập nhật dữ liệu chi tiết theo quy định tại điểm b khoản 6 Điều 10 Nghị định số 111/2024/NĐ-CP1Giấy phép xây dựng[Nhập số:.., ngày .... tháng .... năm...., cơ quan ban hành văn bản] 
+[Đính kèm file Văn bản Giấy phép xây dựng được ký số hoặc Chứng thực bản sao điện tử từ bản chính]- Chủ đầu tư phải nhập nội dung dữ liệu từ mục II.1 đến C.II.4 trong thời hạn 15 ngày kể từ ngày nhận được kết quả thẩm định (theo quy định tại điểm b khoản 6 Nghị định số 111/2024/NĐ-CP)
+- Dữ liệu mở bao gồm dữ liệu tại mục C.I, mục C.II.1 và C.II.2.2Thông báo khởi công công trình xây dựng[Nhập số:.., ngày .... tháng .... năm...., cơ quan ban hành văn bản] 
+Nhập dữ liệu chủ yếu theo Phụ lục V ban hành kèm theo Nghị định số 06/2021/NĐ-CP và file thông báo khởi công3Giấy tờ hợp pháp về đất đai[Nhập số:.., ngày .... tháng .... năm...., cơ quan ban hành văn bản]
+[Đính kèm file Giấy tờ hợp pháp về đất đai theo quy định tại Điều 53 Nghị định số 175/2024] hoặc liên kết với dữ liệu về đất đai (nếu có)4Dữ liệu về tổ chức, cá nhân tham gia khảo sát, lập, thẩm tra thiết kế (nếu có)[Liên kết với cơ sở dữ liệu về năng lực hoạt động xây dựng của tổ chức, cá nhân Hệ thống dữ liệu quốc gia về đăng ký doanh nghiệp và Cơ sở dữ liệu quốc gia về dân cư (nếu có)]
++ [Nhập hoặc liên kết Mã đăng ký kinh doanh của tổ chức]
++ [Nhập Mã số chứng chỉ hành nghề hoạt động xây dựng của cá nhân hoặc căn cước công dân (trường hợp không có Mã số hành nghề hoạt động xây dựng)]5Vi phạm hành chính về xây dựng*[Nhập số:.., ngày .... tháng .... năm...., cơ quan ban hành văn bản] 
+Nhập dữ liệu về lỗi vi phạm hành chính về xây dựng/tích hợp từ hệ thống khác có liên quanCơ quan có thẩm quyền xử lý vi phạm, giải quyết sự cố công trình xây dựng có trách nhiệm nhập, cập nhật dữ liệu trong thời hạn 20 ngày làm việc kể từ khi các công việc tương ứng tại Bảng này hoàn thành (nếu có)6Sự cố công trình xây dựng trong quá trình thi công và khai thác, vận hành*[Nhập số:.., ngày .... tháng .... năm...., cơ quan ban hành văn bản]
+- Báo cáo sự cố công trình:
+- Chọn trong các ô dữ liệu sự cố: Cấp I/II/III
+- Kết quả giám định sự cố (nếu có):
+[Đính kèm file Văn bản được ký số hoặc Chứng thực bản sao điện tử từ bản chính]7Sự cố kỹ thuật gây mất an toàn lao động trong thi công xây dựng*[Nhập số:.., ngày .... tháng .... năm...., cơ quan ban hành văn bản]
+- Chọn trong các ô dữ liệu sự cố về: Máy/thiết bị/tai nạn lao động.
+[Đính kèm file Văn bản được ký số hoặc Chứng thực bản sao điện tử từ bản chính]Ghi chú:
+(*): Liên kết với hệ thống thông tin, cơ sở dữ liệu về xử phạt vi phạm hành chính về xây dựng, báo cáo sự cố công trình xây dựng trong quá trình thi công và khai thác, vận hành, sự cố kỹ thuật gây mất an toàn lao động trong thi công xây dựng (nếu có); khi bảo đảm điều kiện công nghệ, trình tự thủ tục toàn trình, các thành phần dữ liệu này sẽ được tự động nhập, cập nhật.
+
+Phụ lục III - Bảng số 03
+Dữ liệu về công trình xây dựng không thuộc đối tượng thẩm định tại cơ quan chuyên môn về xây dựng; không phải cấp giấy phép xây dựng; chỉ thông báo khởi công xây dựng công trình
+STTNội dung nhập, cập nhật dữ liệu về công trình xây dựngGhi chú quy định về nhập dữ liệu1Tên hạng mục công trình, công trình xây dựng[Nhập dữ liệu]- Chủ đầu tư/Chủ hộ được cung cấp account để nhập thông tin từ mục 1 đến mục 7 trước khi gửi thông báo khởi công xây dựng công trình đến cơ quan có thẩm quyền.
+- Dữ liệu mở bao gồm dữ liệu tại mục 1 đến mục 3 và mục 5.2Địa điểm xây dựng[Chọn tỉnh/thành phố, xã/phường/đặc khu]/hoặc trích xuất từ dữ liệu quy hoạch đô thị và nông thôn + dữ liệu quy hoạch sử dụng đất (nếu có)3Chủ đầu tư/chủ hộ[Nhập dữ liệu tên chủ hộ]4Số điện thoại liên lạc[Nhập số điện thoại của Chủ đầu tư/chủ hộ]5Quy mô đầu tư xây dựng chủ yếu[Nhập dữ liệu: Diện tích ô đất; diện tích xây dựng; số tầng hầm + tầng cao; chiều cao công trình; tổng diện tích sàn xây dựng; cốt sàn tầng 1 (tầng trệt) so với cốt vỉa hè/đường nội bộ]6Dữ liệu về tổ chức, cá nhân tham gia khảo sát, lập, thẩm tra thiết kế (nếu có)[Liên kết với cơ sở dữ liệu về năng lực hoạt động xây dựng của tổ chức, cá nhân Hệ thống dữ liệu quốc gia về đăng ký doanh nghiệp và Cơ sở dữ liệu quốc gia về dân cư (nếu có)]
++ [Nhập hoặc liên kết Mã đăng ký kinh doanh của tổ chức]
++ [Nhập Mã số chứng chỉ hành nghề hoạt động xây dựng của cá nhân hoặc căn cước công dân (trường hợp không có Mã số hành nghề hoạt động xây dựng)]7Ngày khởi công và ngày hoàn thành (dự kiến)[Nhập dữ liệu]8Vi phạm hành chính về xây dựng[Nhập số:.., ngày .... tháng .... năm...., cơ quan ban hành văn bản]
+Nhập dữ liệu về lỗi vi phạm hành chính về xây dựng/tích hợp từ hệ thống khác có liên quanCơ quan có thẩm quyền xử lý vi phạm, giải quyết sự cố công trình xây dựng có trách nhiệm nhập, cập nhật dữ liệu trong thời hạn 20 ngày làm việc kể từ khi các công việc tương ứng tại Bảng này hoàn thành.9Sự cố công trình xây dựng trong quá trình thi công và khai thác, vận hành[Nhập số:.., ngày .... tháng .... năm...., cơ quan ban hành văn bản]
+- Báo cáo sự cố công trình:
+- Chọn trong các ô dữ liệu sự cố: Cấp I/II/III
+- Kết quả giám định sự cố (nếu có):
+[Đính kèm file Văn bản được ký số hoặc Chứng thực bản sao điện tử từ bản chính]10Sự cố kỹ thuật gây mất an toàn lao động trong thi công xây dựng[Nhập số:.., ngày .... tháng .... năm...., cơ quan ban hành văn bản]
+- Báo cáo sự cố công trình:
+- Chọn trong các ô dữ liệu sự cố về: Máy/thiết bị/tai nạn lao động.
+[Đính kèm file Văn bản được ký số hoặc Chứng thực bản sao điện tử từ bản chính]
+PHỤ LỤC IV
+MỘT SỐ VÍ DỤ MINH HỌA VỀ CÁC BẢNG TỔNG HỢP DỮ LIỆU, THÔNG TIN VỀ HOẠT ĐỘNG XÂY DỰNG*
+(Ban hành kèm theo Thông tư số 24/2025/TT-BXD ngày 29 tháng 08 năm 2025 của Bộ trưởng Bộ Xây dựng)
+Bảng số 01Tổng hợp thông tin về quy hoạch đô thị và nông thônBảng số 02Tổng hợp thông tin về tỷ lệ lập quy hoạch, quy chế quản lý kiến trúcBảng số 03Tổng hợp dữ liệu về dự án đầu tư xây dựng, công trình xây dựng sử dụng vốn đầu tư công/vốn nhà nước ngoài đầu tư công/dự án PPP/vốn khácBảng số 04Tổng hợp dữ liệu về giấy phép xây dựng, khởi công xây dựng, sự cố công trình, vi phạm trật tự xây dựng, kiểm tra công tác nghiệm thuBảng số 05Tổng hợp dữ liệu năng lực hoạt động xây dựng của nhà thầu đã tham gia hoạt động xây dựngBảng số 06Tổng hợp dữ liệu về năng lực hành nghề hoạt động xây dựng của cá nhân đã tham gia hoạt động xây dựngBảng số 07Tổng hợp dữ liệu về lịch sử hoạt động của nhà thầu đã tham gia hoạt động xây dựngBảng số 08Bảng dữ liệu thực tế về tình hình thực hiện của từng dự án đầu tư xây dựng sử dụng vốn đầu tư công, nhà nước ngoài đầu tư công, dự án PPP tại từng đơn vị hành chính cấp xã, cấp tỉnh; các dự án thuộc quản lý của Bộ, Cơ quan ngang bộ, Ngành và trên toàn quốcBảng số 09Bảng tổng hợp dữ liệu thực tế về tình hình thực hiện dự án đầu tư xây dựng sử dụng vốn đầu tư công, nhà nước ngoài đầu tư công, dự án PPP tại từng đơn vị hành chính cấp xã, cấp tỉnh; các dự án thuộc quản lý của Bộ, Cơ quan ngang bộ, Ngành và trên toàn quốcBảng số 10Bảng dữ liệu thực tế về tình hình thực hiện của từng dự án đầu tư xây dựng sử dụng vốn khác tại từng đơn vị hành chính cấp xã, cấp tỉnh và trên toàn quốcBảng số 11Bảng tổng hợp dữ liệu thực tế về tình hình thực hiện của tổng thể các dự án đầu tư xây dựng sử dụng vốn khác tại từng đơn vị hành chính cấp xã, cấp tỉnh và trên toàn quốcBảng số 12Bảng tổng hợp dữ liệu về công trình xây dựng không yêu cầu lập dự án đầu tư xây dựng, chỉ yêu cầu cấp giấy phép xây dựng tại từng đơn vị hành chính cấp xã, cấp tỉnh và trên toàn quốcBảng số 13Bảng tổng hợp dữ liệu về công trình xây dựng không thuộc đối tượng thẩm định tại cơ quan chuyên môn về xây dựng; không phải cấp giấy phép xây dựng tại từng đơn vị hành chính cấp xã, cấp tỉnh và trên toàn quốcBảng số 14Bảng tổng hợp dữ liệu của địa phương về tình hình công trình mới được khởi công; đang được thi công xây dựng; đã hoàn thành, đưa vào sử dụng và số công trình được kiểm tra, đánh giá chất lượng tại từng đơn vị hành chính cấp xã, cấp tỉnh và trên toàn quốcBảng số 15Một số ví dụ minh họa thông tin về hoạt động xây dựng(*): Thông tin tại các bảng tổng hợp dữ liệu, thông tin về hoạt động xây dựng tại Phụ lục này có thể trích xuất theo yêu cầu đột xuất, hàng tháng, hàng quý, hàng năm đáp ứng yêu cầu quản lý, điều hành và các yêu cầu khác có liên quan.
+Thông tin về các bảng tổng hợp dữ liệu, thông tin về hoạt động xây dựng được cung cấp theo lộ trình nhập, cập nhật dữ liệu; được nghiên cứu để liên tục phát triển đáp ứng yêu cầu phục vụ quản lý, quản trị của cơ quan nhà nước có thẩm quyền và tổ chức, cá nhân có nhu cầu hoạt động đầu tư xây dựng và các hoạt động khác có liên quan.
+
+Phụ lục IV- Bảng số 01
+Tổng hợp thông tin về quy hoạch đô thị và nông thôn
+TTTỉnh/thành phốQuy hoạch đô thịQuy hoạch nông thônQuy hoạch khu chức năngQuy hoạch chuyên ngành hạ tầng (lập/ chưa lập)Quy hoạch không gian ngầm (lập/ chưa lập)Quy hoạch chungTổng diện tích quy hoạch phân khuTổng diện tích quy hoạch chi tiếtQuy hoạch chungTổng diện tích quy hoạch chi tiếtQuy hoạch chungTổng diện tích quy hoạch phân khuTổng diện tích quy hoạch chi tiếtSố lượng quy hoạch chungTổng diện tích đất xây dựngSố lượng quy hoạch chungTổng diện tích đất xây dựngSố lượng quy hoạch chungTổng diện tích đất xây dựng1Hà Nội2Cao Bằng3Tuyên Quang4Điện Biên5Lai Châu6Sơn La......34Cà MauTổng cộng cả nước
+Phụ lục IV - Bảng số 02
+Tổng hợp thông tin về tỷ lệ lập quy hoạch, quy chế quản lý kiến trúc
+TTTỉnh/thành phốTỷ lệ lập quy hoạch chungTỷ lệ lập quy hoạch phân khu (Tổng diện tích lập quy hoạch phân khu/ tổng diện tích khu vực cần lập QHPK theo QHC)Tỷ lệ lập quy hoạch chi tiếtTỷ lệ lập quy chế quản lý kiến trúc (Tổng diện tích lập quy chế quản lý kiến trúc/tổng diện tích tự nhiên của tỉnh)Số lượng quy hoạch chung được lập/kế hoạch lập quy hoạchDiện tích lập quy hoạch chungTổng diện tích lập quy hoạch chi tiết và quy hoạch tổng mặt bằng/tổng diện tích lập quy hoạch chungTổng diện tích lập thiết kế đô thị riêng/Tổng diện tích thiết kế đô thị cần lập theo kế hoạch1Hà Nội2Cao Bằng3Tuyên Quang4Điện Biên5Lai Châu6Sơn La......34Cà MauTổng cộng cả nước
+Phụ lục IV- Bảng số 03
+Tổng hợp dữ liệu về dự án đầu tư xây dựng, công trình xây dựng sử dụng vốn đầu tư công/vốn nhà nước ngoài đầu tư công/PPP/vốn khác
+(tương ứng chia theo các loại dự án đầu tư xây dựng công trình dân dụng, công nghiệp/hạ tầng kỹ thuật/giao thông/phục vụ nông nghiệp và phát triển nông thôn theo Phụ lục X ban hành kèm theo Nghị định số 175/2024/NĐ-CP)
+TTCơ quan quản lý nhà nước có thẩm quyềnTổng số Báo cáo nghiên cứu khả thi đã được cơ quan chuyên môn về xây dựng thẩm địnhTổng giá trị tổng mức đầu tư của các dự án đã được phê duyệtTổng số thiết kế xây dựng triển khai sau thiết kế cơ sở đã được cơ quan chuyên môn về xây dựng thẩm địnhTổng giá trị dự toán xây dựng của các dự án đã được phê duyệtTổng giá trị vốn đầu tư xây dựng được quyết toánICác xã, phường, đặc khu thuộc tỉnh, thành phố trực thuộc Trung ương123......3321ICác tỉnh, thành phố trực thuộc Trung ương1Hà Nội2Cao Bằng3Tuyên Quang4Điện Biên5Lai Châu6Sơn La.....................34Cà MauIICác bộ quản lý công trình xây dựng chuyên ngành1Bộ Xây dựng2Bộ Công Thương3Bộ Nông nghiệp và Môi trườngTổng cộng cả nướcGhi chú: Tổng hợp dữ liệu về dự án đầu tư xây dựng, công trình xây dựng sử dụng vốn đầu tư công/vốn nhà nước ngoài đầu tư công/PPP/vốn khác làm cơ sở đánh giá tình hình đầu tư xây dựng từng xã, phường, đặc khu, tỉnh/thành phố, Bộ, Ngành và cả nước, thực hiện các hoạt động quản lý khác có liên quan.
+
+Phụ lục IV - Bảng số 04
+Tổng hợp dữ liệu về giấy phép xây dựng, khởi công xây dựng, sự cố công trình, vi phạm trật tự xây dựng, kiểm tra công tác nghiệm thu
+TTXã/phường/ đặc khu; Tỉnh/thành phốTổng số giấy phép xây dựng được cấp*Tổng số công trình khởi công mới*Tổng số sự cố công trình xây dựngTổng số sự cố kỹ thuật gây mất an toàn lao động trong thi công xây dựngTổng số công trình vi phạm trật tự xây dựngTổng số công trình đã được kiểm tra công tác nghiệm thu, chấp thuận đưa vào sử dụng*ICác xã, phường, đặc khu thuộc tỉnh, thành phố trực thuộc Trung ương12......3321IITỉnh/thành phố trực thuộc Trung ương1Hà Nội2Cao Bằng3Tuyên Quang4Điện Biên5Lai Châu6Sơn La............34Cà MauTổng cộng cả nướcGhi chú:
+- Tổng số giấy phép xây dựng được cấp; tổng số công trình khởi công mới; tổng số công trình đã được kiểm tra công tác nghiệm thu, chấp thuận đưa vào sử dụng được tổng hợp tương ứng theo từng loại công trình xây dựng gồm công trình dân dụng/công nghiệp/hạ tầng kỹ thuật/giao thông/nông nghiệp và phát triển nông thôn theo Phục lục I Nghị định số 06/2021/NĐ-CP/nhà ở riêng lẻ; tương ứng chia nhỏ đến từng cấp xã/phường/đặc khu thuộc tỉnh/thành phố trực thuộc trung ương.
+- Tổng hợp dữ liệu về giấy phép xây dựng, khởi công xây dựng, sự cố công trình, vi phạm trật tự xây dựng, kiểm tra công tác nghiệm thu làm cơ sở đánh giá tình hình hoạt động xây dựng từng địa phương và cả nước, thực hiện các hoạt động quản lý khác có liên quan.
+(*) Đối với lĩnh vực quản lý nhà nước về nhà ở, kinh doanh bất động sản cần trích xuất được dữ liệu tổng hợp (đầu ra) về các loại hình bất động sản tại từng xã, phường, đặc khu, tỉnh/thành phố và trên cả nước như: tổng diện tích sàn xây dựng nhà ở/nhà ở công vụ/nhà ở xã hội/nhà lưu trú công nhân/nhà ở sinh viên, tổng số căn hộ nhà ở/nhà ở công vụ/nhà ở xã hội/nhà lưu trú công nhân/nhà ở sinh viên; tổng số căn nhà ở liên kế, tổng diện tích sàn nhà ở liên kế; tổng số căn nhà ở biệt thự, tổng diện tích sàn nhà ở biệt thự; tổng diện tích sàn công trình khách sạn/loại hình du lịch, nghỉ dưỡng khác, tổng số phòng nghỉ.
+Nhà ở, công trình hỗn hợp có nhà ở/Công trình xây dựng du lịch, nghỉ dưỡng/Công trình xây dựng khác theo lĩnh vực quản lý về nhà ở và kinh doanh bất động sản.
+
+Phụ lục IV - Bảng số 05
+Tổng hợp dữ liệu năng lực hoạt động xây dựng của nhà thầu đã tham gia hoạt động xây dựng
+(tương ứng chia theo lĩnh vực hoạt động xây dựng theo quy định của Nghị định số 175/2024)
+TTTỉnh/thành phốSố lượng tổ chức khảo sát xây dựng[4]Số lượng tổ chức lập thiết kế quy hoạch đô thị và nông thônSố lượng tổ chức thẩm tra an toàn giao thông đường bộSố lượng tổ chức thiết kế, thẩm tra thiết kế xây dựng[5]Số lượng tổ chức tư vấn quản lý dự án đầu tư xây dựngSố lượng tổ chức thi công xây dựng công trình[6]Số lượng tổ chức tư vấn giám sát thi công xây dựng công trình[7]1Hà Nội- Nhóm A:...
+- Nhóm B;...
+- Nhóm C:...- Thủ tướng phê duyệt: ..
+- UBND TP Hà Nội phê duyệt:..
+- UBND cấp xã phê duyệt......- Công trình cấp I;...
+- Công trình cấp II:...
+- Công trình cấp III:...- Công trình cấp I;...
+- Công trình cấp II:...
+- Công trình cấp III:...- Công trình cấp I;...
+- Công trình cấp II:...
+- Công trình cấp III:...- Công trình cấp I;...
+- Công trình cấp II:...
+- Công trình cấp III:...2Cao Bằng- Nhóm A:...
+- Nhóm B;...
+- Nhóm C:...- Thủ tướng phê duyệt: ..
+- UBND TP Hà Nội phê duyệt:..
+- UBND cấp xã phê duyệt.......- Công trình cấp I;...
+- Công trình cấp II:...
+- Công trình cấp III:...- Công trình cấp I;...
+- Công trình cấp II:...
+- Công trình cấp III:...- Công trình cấp I;...
+- Công trình cấp II:...
+- Công trình cấp III:...- Công trình cấp I;...
+- Công trình cấp II:...
+- Công trình cấp III:...............34Cà MauTổng cộng cả nước- Nhóm A:...
+- Nhóm B;...
+- Nhóm C:...- Thủ tướng phê duyệt: ..
+- UBND TP Hà Nội phê duyệt:..
+- UBND cấp xã phê duyệt......- Công trình cấp I;...
+- Công trình cấp II:...
+- Công trình cấp III:...- Công trình cấp I;...
+- Công trình cấp II:...
+- Công trình cấp III:...- Công trình cấp I;...
+- Công trình cấp II:...
+- Công trình cấp III:...- Công trình cấp I;...
+- Công trình cấp II:...
+- Công trình cấp III:...Ghi chú: Mục đích tổng hợp được năng lực tham gia hoạt động xây dựng theo từng lĩnh vực của tổ chức đăng ký hoạt động trên địa bàn tỉnh, thành phố, toàn quốc.
+Dữ liệu của tổ chức tham gia hoạt động xây dựng làm cơ sở lựa chọn nhà thầu tham gia hoạt động xây dựng; thẩm định Báo cáo nghiên cứu khả thi đầu tư xây dựng, thiết kế xây dựng triển khai sau thiết kế cơ sở; thực hiện các thủ tục hành chính khác có liên quan; tổng hợp về dữ liệu của tổ chức tham gia hoạt động xây dựng của địa phương và cả nước; thực hiện các hoạt động quản lý khác có liên quan.
+
+Phụ lục IV - Bảng số 06
+Tổng hợp dữ liệu về năng lực hành nghề hoạt động xây dựng của cá nhân đã tham gia hoạt động xây dựng
+(tương ứng chia theo lĩnh vực hành nghề hoạt động xây dựng được cấp chứng chỉ hành nghề theo quy định của Nghị định số 175/2024)
+TTTỉnh/thành phốSố lượng chứng chỉ khảo sát xây dựng[8]Số lượng chứng chỉ thiết kế quy hoạch đô thị và nông thônSố lượng chứng chỉ hành nghề thiết kế xây dựng công trình[9]Số lượng chứng chỉ hành nghề giám sát thi công xây dựng[10]Số lượng chứng chỉ hành nghề định giá xây dựngSố lượng chứng chỉ hành nghề quản lý dự án đầu tư xây dựng1Hà NộiHạng I;... Hạng II:... Hạng III:...Hạng I;... Hạng II:... Hạng III:...Hạng I;... Hạng II:... Hạng III:...Hạng I;... Hạng II:... Hạng III:...Hạng I;... Hạng II:... Hạng III:...Hạng I;... Hạng II:... Hạng III:...2Cao BằngHạng I;... Hạng II:... Hạng III:...Hạng I;... Hạng II:... Hạng III:...Hạng I;... Hạng II:... Hạng III:...Hạng I;... Hạng II:... Hạng III:...Hạng I;... Hạng II:... Hạng III:...Hạng I;... Hạng II:... Hạng III:...3Tuyên QuangHạng I;... Hạng II:... Hạng III:...Hạng I;... Hạng II:... Hạng III:...Hạng I;... Hạng II:... Hạng III:...Hạng I;... Hạng II:... Hạng III:...Hạng I;... Hạng II:... Hạng III:...Hạng I;... Hạng II:... Hạng III:...4Điện BiênHạng I;... Hạng II:... Hạng III:...Hạng I;... Hạng II:... Hạng III:...Hạng I;... Hạng II:... Hạng III:...Hạng I;... Hạng II:... Hạng III:...Hạng I;... Hạng II:... Hạng III:...Hạng I;... Hạng II:... Hạng III:...5Lai ChâuHạng I;... Hạng II:... Hạng III:...Hạng I;... Hạng II:... Hạng III:...Hạng I;... Hạng II:... Hạng III:...Hạng I;... Hạng II:... Hạng III:...Hạng I;... Hạng II:... Hạng III:...Hạng I;... Hạng II:... Hạng III:...6Sơn LaHạng I;... Hạng II:... Hạng III:...Hạng I;... Hạng II:... Hạng III:...Hạng I;... Hạng II:... Hạng III:...Hạng I;... Hạng II:... Hạng III:...Hạng I;... Hạng II:... Hạng III:...Hạng I;... Hạng II:... Hạng III:...............34Cà MauHạng I;... Hạng II:... Hạng III:...Hạng I;... Hạng II:... Hạng III:...Hạng I;... Hạng II:... Hạng III:...Hạng I;... Hạng II:... Hạng III:...Hạng I;... Hạng II:... Hạng III:...Hạng I;... Hạng II:... Hạng III:...Tổng cộng cả nướcHạng I;... Hạng II:... Hạng III:...Hạng I;... Hạng II:... Hạng III:...Hạng I;... Hạng II:... Hạng III:...Hạng I;... Hạng II:... Hạng III:...Hạng I;... Hạng II:... Hạng III:...Hạng I;... Hạng II:... Hạng III:...Ghi chú: Mục đích tổng hợp được năng lực tham gia hoạt động xây dựng theo từng lĩnh vực của cá nhân hoạt động xây dựng có đăng ký thường trú/cư trú trên địa bàn tỉnh, thành phố, toàn quốc.
+Dữ liệu về năng lực hành nghề hoạt động xây dựng của cá nhân tham gia hoạt động xây dựng làm cơ sở để thực hiện thẩm định Báo cáo nghiên cứu khả thi đầu tư xây dựng, thiết kế xây dựng triển khai sau thiết kế cơ sở; lựa chọn cá nhân tham gia hoạt động xây dựng; thực hiện các thủ tục hành chính khác có liên quan; tổng hợp về năng lực hành nghề hoạt động xây dựng của địa phương và cả nước; thực hiện các hoạt động quản lý khác có liên quan.
+
+Phụ lục IV - Bảng số 07
+Tổng hợp dữ liệu về lịch sử hoạt động của nhà thầu đã tham gia hoạt động xây dựng
+STTTên nhà thầuMã số doanh nghiệpCác dự án/công trình xây dựng đã thực hiệnGiải thưởng kiến trúc Quốc giaGiải thưởng chất lượng công trình xây dựngGiải thưởng công trình xây dựng sử dụng tiết kiệm, hiệu quả năng lượng, tài nguyên, bảo đảm yêu cầu về bảo vệ môi trườngSự cố trong quá trình thi công xây dựng và khai thác, sử dụng công trìnhSự cố kỹ thuật gây mất an toàn lao động trong thi công xây dựngVi phạm hành chính về xây dựngTài chính*123......Ghi chú: Dữ liệu về tổ chức tham gia hoạt động xây dựng làm cơ sở xem xét, lựa chọn nhà thầu theo quy định của pháp luật về đấu thầu, xây dựng và pháp luật khác có liên quan; thực hiện các hoạt động quản lý khác có liên quan.
+(*) Liên kết với hệ thống dữ liệu có liên quan về: (i) Doanh thu của 03 năm gần nhất; (ii) Tổng tài sản (kết thúc năm tài chính); (iii) Lợi nhuận 03 năm gần nhất; (iv) Tổng dư nợ phải trả để đánh giá xếp hạng về năng lực tài chính của các tổ chức tham gia hoạt động xây dựng.
+Việc sắp xếp thứ hạng các nhà thầu tham gia hoạt động xây dựng (riêng cho từng lĩnh vực quy hoạch, khảo sát xây dựng, thiết kế xây dựng, thẩm tra thiết kế xây dựng, thi công xây dựng, tư vấn giám sát, tư vấn quản lý dự án) được ứng dụng công nghệ để đánh giá tự động theo từng tiêu chí (khen thưởng, vi phạm, sự cố, công trình đã thực hiện, năng lực tài chính...), từng lĩnh vực.
+
+Phụ lục IV - Bảng số 08
+Bảng dữ liệu thực tế về tình hình thực hiện của từng dự án đầu tư xây dựng sử dụng vốn đầu tư công, nhà nước ngoài đầu tư công, dự án PPP tại từng đơn vị hành chính cấp xã, cấp tỉnh; các dự án thuộc quản lý của Bộ, Cơ quan ngang bộ, Ngành và trên toàn quốc
+Cơ quan quản lý nhà nước (UBND xã, phường, đặc khu; UBND tỉnh; Bộ, Ngành)Mã số dự án đầu tư xây dựngTiến độ thực hiệnTỷ lệ % khối lượng hoàn thànhTỷ lệ % giải ngân theo kế hoạch vốnTỷ lệ % giải ngân theo hợp đồngSự cố trong quá trình thi công xây dựng và khai thác, sử dụng công trìnhSự cố kỹ thuật gây mất an toàn lao động trong thi công xây dựngVi phạm hành chính về xây dựngCảnh báo (nếu có) về chậm tiến độBáo cáo vướng mắc (nếu có)1Đã cấp giấy phép xây dựng/Đã khởi công/đã nghiệm thu lần 1,2,3,.../hoàn thành đưa vào sử dụng23...Toàn quốc
+Phụ lục IV - Bảng số 09
+Bảng tổng hợp dữ liệu thực tế về tình hình thực hiện dự án đầu tư xây dựng sử dụng vốn đầu tư công, nhà nước ngoài đầu tư công, dự án PPP tại từng đơn vị hành chính cấp xã, cấp tỉnh; các dự án thuộc quản lý của Bộ, Cơ quan ngang bộ, Ngành và trên toàn quốc
+TTXã/phường/ đặc khu; Tỉnh/thành phố; Bộ, ngành; toàn quốcTổng số dự án đầu tư công (Tổng hợp theo nguồn vốn, theo loại dự án hoặc tổng thể)Tỷ lệ % khối lượng hoàn thành (Tổng hợp theo nguồn vốn, theo loại dự án hoặc tổng thể)Tỷ lệ % giải ngân theo kế hoạch vốn (Tổng hợp theo nguồn vốn, theo loại dự án hoặc tổng thể)Tỷ lệ % giải ngân theo hợp đồng (Tổng hợp theo nguồn vốn, theo loại dự án hoặc tổng thể)Sự cố trong quá trình thi công xây dựng và khai thác, sử dụng công trìnhSự cố kỹ thuật gây mất an toàn lao động trong thi công xây dựngVi phạm hành chính về xây dựngCảnh báo (nếu có) về chậm tiến độTổng hợp vướng mắc (Tổng hợp theo nguồn vốn, theo loại dự án hoặc tổng thể)*ICác xã, phường, đặc khu thuộc tỉnh, thành phố trực thuộc Trung ương12......3321IITỉnh/thành phố trực thuộc Trung ương1Hà Nội2Cao Bằng3Tuyên Quang4Điện Biên5Lai Châu6Sơn La............34Cà MauIIIBộ, Cơ quan ngang Bộ, NgànhTổng cộng toàn quốc(*): Sử dụng hệ thống trí tuệ nhân tạo để tổng hợp, phân loại vướng mắc theo ngành, lĩnh vực, đề xuất giải pháp chuyển đến cơ quan có thẩm quyền theo chức năng nhiệm vụ để quyết định.
+
+Phụ lục IV - Bảng số 10
+Bảng dữ liệu thực tế về tình hình thực hiện của từng dự án đầu tư xây dựng sử dụng vốn khác tại từng đơn vị hành chính cấp xã, cấp tỉnh và trên toàn quốc
+Cơ quan quản lý nhà nước (UBND xã, phường, đặc khu; UBND tỉnh)Mã số dự án đầu tư xây dựngTiến độ thực hiệnTỷ lệ % khối lượng hoàn thànhSự cố trong quá trình thi công xây dựng và khai thác, sử dụng công trìnhSự cố kỹ thuật gây mất an toàn lao động trong thi công xây dựngVi phạm hành chính về xây dựngCảnh báo (nếu có) về chậm tiến độBáo cáo vướng mắc (nếu có)1Đã cấp giấy phép xây dựng/Đã thông báo khởi công xây dựng/đã khởi công xây dựng/đã nghiệm thu giai đoạn 1,2,3,.../hoàn thành đưa vào sử dụng23...Toàn quốc
+Phụ lục IV - Bảng 11
+Bảng tổng hợp dữ liệu thực tế về tình hình thực hiện của tổng thể các dự án đầu tư xây dựng sử dụng vốn khác tại từng đơn vị hành chính cấp xã, cấp tỉnh và trên toàn quốc
+TTXã/phường/ đặc khu; Tỉnh/thành phốTổng số dự án (Tổng hợp theo từng loại dự án đầu tư xây dựng)Tỷ lệ % khối lượng hoàn thành (Tổng hợp theo từng loại dự án đầu tư xây dựng hoặc tổng thể)Sự cố trong quá trình thi công xây dựng và khai thác, sử dụng công trìnhSự cố kỹ thuật gây mất an toàn lao động trong thi công xây dựngVi phạm hành chính về xây dựngCảnh báo (nếu có) về chậm tiến độTổng hợp vướng mắc (Tổng hợp theo từng loại dự án đầu tư xây dựng hoặc tổng thể)*ICác xã, phường, đặc khu thuộc tỉnh, thành phố trực thuộc Trung ương12......3321IITỉnh/thành phố trực thuộc Trung ương1Hà Nội2Cao Bằng3Tuyên Quang4Điện Biên5Lai Châu6Sơn La............34Cà MauTổng cộng toàn quốc
+Phụ lục IV - Bảng số 12
+Bảng tổng hợp dữ liệu về công trình xây dựng không yêu cầu lập dự án đầu tư xây dựng, chỉ yêu cầu cấp giấy phép xây dựng tại từng đơn vị hành chính cấp xã, cấp tỉnh và trên toàn quốc
+TTXã/phường/ đặc khu; Tỉnh/thành phốTổng số công trình (Tổng hợp theo từng loại công trình xây dựng)Tổng diện tích sàn xây dựng (Tổng hợp theo từng loại công trình xây dựng)Sự cố trong quá trình thi công xây dựng và khai thác, sử dụng công trìnhSự cố kỹ thuật gây mất an toàn lao động trong thi công xây dựngVi phạm hành chính về xây dựngTổng hợp vướng mắc (Tổng hợp theo từng loại dự án đầu tư xây dựng hoặc tổng thể)*ICác xã, phường, đặc khu thuộc tỉnh, thành phố trực thuộc Trung ương12......3321IITỉnh/thành phố trực thuộc Trung ương1Hà Nội2Cao Bằng3Tuyên Quang4Điện Biên5Lai Châu6Sơn La............34Cà MauTổng cộng toàn quốc
+Phụ lục IV - Bảng số 13
+Bảng tổng hợp dữ liệu về công trình xây dựng không thuộc đối tượng thẩm định tại cơ quan chuyên môn về xây dựng; không phải cấp giấy phép xây dựng tại từng đơn vị hành chính cấp xã, cấp tỉnh và trên toàn quốc
+TTXã/phường/ đặc khu; Tỉnh/thành phốTổng số công trình (Tổng hợp theo từng loại công trình xây dựng)Tổng diện tích sàn xây dựng (Tổng hợp theo từng loại công trình xây dựng)Sự cố trong quá trình thi công xây dựng và khai thác, sử dụng công trìnhSự cố kỹ thuật gây mất an toàn lao động trong thi công xây dựngVi phạm hành chính về xây dựngTổng hợp vướng mắc (Tổng hợp theo từng loại dự án đầu tư xây dựng hoặc tổng thể)*ICác xã, phường, đặc khu thuộc tỉnh, thành phố trực thuộc Trung ương12......3321IITỉnh/thành phố trực thuộc Trung ương1Hà Nội2Cao Bằng3Tuyên Quang4Điện Biên5Lai Châu6Sơn La............34Cà MauTổng cộng toàn quốc(*): Sử dụng hệ thống trí tuệ nhân tạo để tổng hợp, phân loại vướng mắc theo ngành, lĩnh vực, đề xuất giải pháp chuyển đến cơ quan có thẩm quyền theo chức năng nhiệm vụ để quyết định.
+
+Phụ lục IV - Bảng số 14
+Bảng tổng hợp dữ liệu của địa phương về tình hình công trình mới được khởi công; đang được thi công xây dựng; đã hoàn thành, đưa vào sử dụng và số công trình được kiểm tra, đánh giá chất lượng tại từng đơn vị hành chính cấp xã, cấp tỉnh và trên toàn quốc[11]
+Tên địa phương: ……….TTTên chỉ tiêuĐơn vị tínhSố liệu thống kê trong năm (từ 01/01 đến 31/12 hàng năm)Ghi chú123461Tổng số công trình mới được khởi công, đang được thi công xây dựng và đã hoàn thành và đưa vào sử dụngCông trình1.1Số công trình mới khởi công phân theo loại công trìnhnt1.1.1Dân dụngnt1.1.2Công nghiệp nhẹ và VLXDnt1.1.3Giao thôngnt1.1.4Hạ tầng kỹ thuậtnt1.2Số công trình đang thi công xây dựng phân theo loại công trìnhnt1.2.1Dân dụngnt1.2.2Công nghiệp nhẹ và VLXDnt1.2.3Giao thôngnt1.2.4Hạ tầng kỹ thuậtnt1.3Số công trình đã hoàn thành và đưa vào sử dụng phân theo loại công trìnhnt1.3.1Dân dụngnt1.3.2Công nghiệp nhẹ và VLXDnt1.3.3Giao thôngnt1.3.4Hạ tầng kỹ thuậtnt2Tổng số công trình được kiểm tra, đánh giá chất lượngnt2.1Số công trình đạt yêu cầu về chất lượngnt2.2Số công trình không đạt yêu cầu về chất lượngnt
+Phụ lục IV - Bảng số 15
+Một số ví dụ minh họa thông tin về hoạt động xây dựng 
+Ví dụ 1. Thông tin về tổng vốn đầu tư xây dựng (tổng mức đầu tư của toàn bộ dự án đầu tư xây dựng) và phân bố tổng vốn theo loại dự án đầu tư xây dựng trong xã, phường, đặc khu hoặc tỉnh/thành phố hoặc toàn quốc[12]
+
+Tổng vốn đầu tư xây dựng toàn quốc năm 2025: 1000.000 tỷ đồng bao gồm:
+- Tổng vốn đầu tư xây dựng sử dụng vốn đầu tư công (bao gồm ODA) 500.000 tỷ
+- Tổng vốn đầu tư xây dựng sử dụng vốn nhà nước ngoài đầu tư công: 100.000 tỷ đồng
+- Tổng vốn đầu tư đầu tư xây dựng sử dụng vốn khác: 400.000 tỷ đồng
+Thông tin tại Bảng này có thể trích xuất theo yêu cầu đột xuất, hàng tháng, hàng quý, hàng năm.
+
+Ví dụ 2. Thông tin phân bố các loại công trình trong xã, phường, đặc khu hoặc tỉnh/thành phố hoặc toàn quốc
+
+Ghi chú: Các màu được sử dụng để quản lý theo quy hoạch đô thị và nông thôn.
+Tổng số dự án đầu tư xây dựng: .... dự án, trong đó:
+- Nhà ở, khu đô thị có ở, khu nhà ở: ... dự án, chiếm 40,4%
+- Khách sạn, nghỉ dưỡng, condotel,... (dịch vụ lưu trú du lịch khác): .... dự án, chiếm 10,1%
+- Công nghiệp, kho bãi: ... dự án, chiếm 10,1%
+- Hạ tầng kỹ thuật: ... dự án, chiếm 15,5%
+- Hạ tầng xã hội: ... dự án, chiếm 15,15%
+- Dự án khác: .... dự án, chiếm 10,1%.
+
+Ví dụ 3. Dữ liệu về tình hình triển khai đầu tư xây dựng
+
+Tổng số dự án đầu tư xây dựng: .... dự án, trong đó:
+- Nhà ở, khu đô thị có ở, khu nhà ở: ... dự án, trong đó: chưa thông báo khởi công ...dự án, chiếm tỷ lệ ...%; đã thông báo khởi công... dự án, chiếm tỷ lệ ...%; đã nghiệm thu bàn giao đưa vào sử dụng ...dự án, chiếm tỷ lệ ...%.
+- Khách sạn, nghỉ dưỡng, condotel,... (dịch vụ lưu trú du lịch khác): .... dự án, chưa thông báo khởi công ...dự án, chiếm tỷ lệ ...%; đã thông báo khởi công... dự án, chiếm tỷ lệ ...%; đã nghiệm thu bàn giao đưa vào sử dụng ...dự án, chiếm tỷ lệ ...%.
+- Công nghiệp, kho bãi: ... dự án; chưa thông báo khởi công ...dự án, chiếm tỷ lệ ...%; đã thông báo khởi công... dự án, chiếm tỷ lệ ...%; đã nghiệm thu bàn giao đưa vào sử dụng ...dự án, chiếm tỷ lệ ...%.
+- Hạ tầng kỹ thuật: ... dự án, chưa thông báo khởi công ...dự án, chiếm tỷ lệ ...%; đã thông báo khởi công... dự án, chiếm tỷ lệ ...%; đã nghiệm thu bàn giao đưa vào sử dụng ...dự án, chiếm tỷ lệ ...%.
+- Hạ tầng xã hội: ... dự án; chưa thông báo khởi công ...dự án, chiếm tỷ lệ ...%; đã thông báo khởi công... dự án, chiếm tỷ lệ ...%; đã nghiệm thu bàn giao đưa vào sử dụng ...dự án, chiếm tỷ lệ ...%.
+- Dự án khác: .... dự án; chưa thông báo khởi công ...dự án, chiếm tỷ lệ ...%; đã thông báo khởi công... dự án, chiếm tỷ lệ ...%; đã nghiệm thu bàn giao đưa vào sử dụng ...dự án, chiếm tỷ lệ ...%.
+Thông tin tại Bảng này có thể trích xuất theo yêu cầu đột xuất, hàng tháng, hàng quý, hàng năm.
+
+Ví dụ 4. Số lượng và phân bổ vi phạm trật tự xây dựng theo tỉnh, toàn quốc
+
+Tổng số vi phạm trật tự xây dựng trên toàn quốc: 3.500 vi phạm, trong đó:
+TP Hồ Chí Minh: 850 vi phạm, chiếm ...%; Hà Nội: 750 vi phạm, chiếm ...%; tỉnh .....
+
+
+Tổng số vi phạm trật tự xây dựng năm 2025 tại Hà Nội là 2.000 vi phạm. Vi phạm trật tự xây dựng giảm hàng năm, đến 2035 có 693 vi phạm, tương ứng giảm 65,35%.
+Thông tin tại Bảng này có thể trích xuất theo yêu cầu đột xuất, hàng tháng, hàng quý, hàng năm.
+
+Ví dụ 5. Thông tin về suất vốn đầu tư xây dựng thực tế sau quyết toán vốn đầu tư xây dựng của từng loại dự án đầu tư xây dựng
+TTCơ quan quản lý nhà nước có thẩm quyềnSuất vốn đầu tư của dự án đầu tư xây dựng công trình dân dụng (chi tiết các loại dự án theo Mục I Phụ lục X NĐ 175/2024)Suất vốn đầu tư của dự án đầu tư xây dựng công trình công nghiệp (chi tiết các loại dự án theo Mục II Phụ lục X NĐ 175/2024)Suất vốn đầu tư của dự án đầu tư xây dựng công trình hạ tầng kỹ thuật (chi tiết các loại dự án theo Mục III Phụ lục X NĐ 175/2024)Suất vốn đầu tư của dự án đầu tư xây dựng công trình giao thông (chi tiết các loại dự án theo Mục IV Phụ lục X NĐ 175/2024)Suất vốn đầu tư của dự án đầu tư xây dựng công trình giao thông (chi tiết các loại dự án theo Mục V Phụ lục X NĐ 175/2024)Suất vốn đầu tư của dự án đầu tư xây dựng có công năng phục vụ hỗn hợp (chi tiết các loại dự án theo Mục VII Phụ lục X NĐ 175/2025)ITỉnh/thành phố trực thuộc Trung ương1Thành phố Hà Nội2Cao Bằng3Tuyên Quang4Điện Biên5Lai Châu6Sơn La..................34Cà MauIICác bộ quản lý công trình xây dựng chuyên ngành1Bộ Xây dựng2Bộ Công Thương3Bộ Nông nghiệp và Môi trườngTrung bình suất vốn đầu tư cả nướcGhi chú: Thông tin về suất vốn đầu tư xây dựng thực tế sau quyết toán vốn đầu tư xây dựng của từng loại dự án đầu tư xây dựng làm cơ sở xem xét quyết định/chấp thuận chủ trương đầu tư dự án đầu tư xây dựng; thẩm định Báo cáo nghiên cứu khả thi đầu tư xây dựng, thực hiện các hoạt động quản lý khác có liên quan.
+Thông tin tại Bảng này có thể trích xuất theo yêu cầu đột xuất, hàng tháng, hàng quý, hàng năm.
+
+PHỤ LỤC V
+CÁC BIỂU MẪU CUNG CẤP THÔNG TIN VỀ DỮ LIỆU MỞ TRONG HỆ THỐNG THÔNG TIN, CƠ SỞ DỮ LIỆU QUỐC GIA VỀ HOẠT ĐỘNG XÂY DỰNG ĐƯỢC CÔNG BỐ, CÔNG KHAI THEO QUY ĐỊNH
+(Ban hành kèm theo Thông tư số 24/2025/TT-BXD ngày 29 tháng 08 năm 2025 của Bộ trưởng Bộ Xây dựng)
+Bảng số 01Cung cấp thông tin về dữ liệu mở của quy hoạch đô thị và nông thônBảng số 02Cung cấp thông tin về dữ liệu mở của dự án đầu tư xây dựng, công trình xây dựngBảng số 03Cung cấp thông tin về dữ liệu mở của công trình xây dựng không yêu cầu lập dự án đầu tư xây dựng chỉ yêu cầu cấp giấy phép xây dựngBảng số 04Cung cấp thông tin về dữ liệu mở của công trình xây dựng không thuộc đối tượng thẩm định tại cơ quan chuyên môn về xây dựng, không yêu cầu cấp giấy phép xây dựng, chỉ yêu cầu thông báo khởi công xây dựng công trìnhBảng số 05Cung cấp thông tin về dữ liệu mở về năng lực hoạt động xây dựng của nhà thầu đã tham gia hoạt động xây dựngBảng số 06Cung cấp thông tin về dữ liệu mở về năng lực hoạt động xây dựng của cá nhân hành nghề hoạt động xây dựng
+Phụ lục V - Bảng số 01
+Cung cấp thông tin về dữ liệu mở của quy hoạch đô thị và nông thôn
+STTThông tin về dữ liệu mở về quy hoạch đô thị và nông thônNội dung1Tên quy hoạch... (Mã số thông tin quy hoạch: ....)2Loại quy hoạch3Cấp độ quy hoạch4Loại điều chỉnh quy hoạch5Địa điểm quy hoạch (nơi quy hoạch được lập)6Quy mô, diện tích lập quy hoạch7Số quyết định phê duyệt nhiệm vụ quy hoạch (đối với các quy hoạch có yêu cầu phải lập nhiệm vụ quy hoạch)8Cơ quan tổ chức lập nhiệm vụ quy hoạch (đối với các quy hoạch có yêu cầu phải lập nhiệm vụ quy hoạch)9Cơ quan tổ chức lập quy hoạch10Cơ quan thẩm định quy hoạch11Cơ quan phê duyệt quy hoạch13Quy mô dân số dự báo14Thời hạn quy hoạch15Quy định quản lý theo quy hoạch16Kế hoạch thực hiện quy hoạch chung17Quy chế quản lý kiến trúc trong phạm vi lập quy hoạch (nếu có)
+Phụ lục V - Bảng số 02
+Cung cấp thông tin về dữ liệu mở của dự án đầu tư xây dựng, công trình xây dựng
+STTThông tin về dữ liệu mở của dự án đầu tư xây dựng, công trình xây dựngNội dung thông tinIThẩm định Báo cáo nghiên cứu khả thi đầu tư xây dựng1Tên dự án.... (Mã số thông tin dự án:...)2Nhóm dự án3Địa điểm xây dựng4Người quyết định đầu tư5Chủ đầu tư6Mục tiêu đầu tư7Quy mô đầu tư8Văn bản thông báo kết quả thẩm định Báo cáo nghiên cứu khả thi đầu tư xây dựng9Quyết định phê duyệt dự án đầu tư xây dựngIIThẩm định thiết kế xây dựng triển khai sau thiết kế cơ sở đối với trường hợp công trình xây dựng phải thẩm định tại cơ quan chuyên môn về xây dựng1Mã số thông tin dự án đầu tư xây dựng2Tên công trình.... (Mã số thông tin công trình:...)3Loại công trình4Cấp công trình5Địa điểm xây dựng6Chủ đầu tư7Quy mô đầu tư xây dựng chủ yếu8Thông báo kết quả thẩm định Báo cáo nghiên cứu khả thi đầu tư xây dựng9Thông báo kết quả thẩm định thiết kế xây dựng triển khai sau thiết kế cơ sở10Quyết định phê duyệt dự án đầu tư xây dựng11Quyết định phê duyệt thiết kế xây dựng triển khai sau thiết kế cơ sởIIIGiấy phép xây dựng1Tên công trình xây dựng.... (Mã số thông tin công trình:...)2Loại, cấp công trình3Địa điểm xây dựng4Chủ đầu tư5Quy mô đầu tư xây dựng chủ yếu6Giấy phép xây dựng7Thông báo khởi công công trình xây dựng
+Phụ lục V - Bảng số 03
+Cung cấp thông tin về dữ liệu mở về công trình xây dựng không yêu cầu lập dự án đầu tư xây dựng chỉ yêu cầu cấp giấy phép xây dựng
+STTCấp giấy phép xây dựngNội dung1Tên công trình xây dựng2Loại, cấp công trình3Địa điểm xây dựng4Chủ hộ gia đình5Quy mô đầu tư xây dựng chủ yếu6Giấy phép xây dựng7Thông báo khởi công công trình xây dựng
+Phụ lục V - Bảng số 04
+Cung cấp thông tin về dữ liệu mở của công trình xây dựng không thuộc đối tượng thẩm định tại cơ quan chuyên môn về xây dựng, không yêu cầu cấp giấy phép xây dựng, chỉ yêu cầu thông báo khởi công xây dựng công trình
+STTThông báo khởi công xây dựng công trìnhNội dung1Tên hạng mục công trình, công trình xây dựng2Địa điểm xây dựng3Chủ đầu tư/chủ hộ4Quy mô đầu tư xây dựng chủ yếu
+Phụ lục V - Bảng số 05
+Cung cấp thông tin về dữ liệu mở về năng lực hoạt động xây dựng của nhà thầu đã tham gia hoạt động xây dựng
+(Dữ liệu lịch sử năng lực hoạt động xây dựng của nhà thầu*)
+1. Thông tin năng lực hoạt động xây dựng của Nhà thầu
+STTThông tin năng lực hoạt động xây dựng của Nhà thầuNội dung1Tên Nhà thầu- Công ty ....;
+- Mã số doanh nghiệp:....;
+- Địa chỉ trụ sở chính: ....1Quy mô các dự án đã tham giaSố lượng dự án nhóm A, B, C; cấp đặc biệt, I, II, III2Các giải thưởng đã đạt đượcThông tin về các loại giải thưởng của Nhà thầu3Các sự cốThông tin về các sự cố có liên quan đến nhà thầu4Vi phạm hành chính về xây dựngThông tin về các vi phạm hành chính đối với nhà thầu2. Danh sách nhà thầu theo lĩnh vực hoạt động xây dựng
+STTThiết kế xây dựng/Thi công xây dựng/...Số lượng và quy mô dự án đã thực hiện1- Công ty ....;
+- Mã số doanh nghiệp:....;
+- Địa chỉ trụ sở chính: ....... dự án nhóm A, ... nhóm B, nhóm ...C; ... công trình cấp đặc biệt; ... công trình cấp I; .... công trình cấp II; ... công trình cấp III.2- Công ty ....;
+- Mã số doanh nghiệp:....;
+- Địa chỉ trụ sở chính: ....... dự án nhóm A, ... nhóm B, nhóm ...C; ... công trình cấp đặc biệt; ... công trình cấp I; .... công trình cấp II; ... công trình cấp III.3- Công ty ....;
+- Mã số doanh nghiệp:....;
+- Địa chỉ trụ sở chính: ....... dự án nhóm A, ... nhóm B, nhóm ...C; ... công trình cấp đặc biệt; ... công trình cấp I; .... công trình cấp II; ... công trình cấp III....3. Bảng xếp hạng nhà thầu được lựa chọn theo từng tiêu chí
+Bảng 1. Bảng xếp hạng nhà thầu theo quy mô dự án đã được hiện
+STTBảng xếp hạng nhà thầu thi công xây dựng/thiết kế xây dựng/... theo quy mô dự án đã được hiện1- Công ty ....;
+- Mã số doanh nghiệp:....;
+- Địa chỉ trụ sở chính: ....2- Công ty ....;
+- Mã số doanh nghiệp:....;
+- Địa chỉ trụ sở chính: ....3- Công ty ....;
+- Mã số doanh nghiệp:....;
+- Địa chỉ trụ sở chính: .......- Công ty ....;
+- Mã số doanh nghiệp:....;
+- Địa chỉ trụ sở chính: ....Bảng 2. Xếp hạng nhà thầu theo các giải thưởng đã đạt được
+STTBảng xếp hạng nhà thầu thi công xây dựng/thiết kế xây dựng/... theo các giải thưởng đã đạt được1- Công ty ....;
+- Mã số doanh nghiệp:....;
+- Địa chỉ trụ sở chính: ....2- Công ty ....;
+- Mã số doanh nghiệp:....;
+- Địa chỉ trụ sở chính: ....3- Công ty ....;
+- Mã số doanh nghiệp:....;
+- Địa chỉ trụ sở chính: .......Bảng 3. Xếp hạng nhà thầu theo sự cố, vi phạm hành chính về xây dựng có liên quan
+STTBảng xếp hạng nhà thầu thi công xây dựng/thiết kế xây dựng/... theo sự cố, vi phạm hành chính về xây dựng liên quan đến nhà thầu1- Công ty ....;
+- Mã số doanh nghiệp:....;
+- Địa chỉ trụ sở chính: ....2- Công ty ....;
+- Mã số doanh nghiệp:....;
+- Địa chỉ trụ sở chính: ....3- Công ty ....;
+- Mã số doanh nghiệp:....;
+- Địa chỉ trụ sở chính: .......Bảng 4. Xếp hạng nhà thầu theo thông tin tài chính của nhà thầu tham gia hoạt động
+STTBảng xếp hạng nhà thầu thi công xây dựng/thiết kế xây dựng/... theo thông tin tài chính của nhà thầu tham gia hoạt động1- Công ty ....;
+- Mã số doanh nghiệp:....;
+- Địa chỉ trụ sở chính: ....2- Công ty ....;
+- Mã số doanh nghiệp:....;
+- Địa chỉ trụ sở chính: ....3- Công ty ....;
+- Mã số doanh nghiệp:....;
+- Địa chỉ trụ sở chính: .......(*): Nhà thầu hoạt động xây dựng được tra cứu (theo mã số doanh nghiệp), tạo hồ sơ năng lực hoạt động xây dựng trên cơ sở dữ liệu lịch sử được cung cấp. Nhà thầu hoạt động xây dựng có quyền phản ánh thông tin không chính xác liên quan đến lịch sử hoạt động xây dựng của mình đến cơ quan, tổ chức có trách nhiệm nhập, cập nhật dữ liệu theo quy định tại khoản 7 Điều 10 Nghị định số 111/2024.
+
+Phụ lục V - Bảng số 06
+Cung cấp thông tin về dữ liệu mở về năng lực hoạt động xây dựng của cá nhân hành nghề hoạt động xây dựng*
+(Dữ liệu về lịch sử hành nghề hoạt động xây dựng**)
+STTKhảo sát xây dựng/Thiết kế quy hoạch đô thị và nông thôn/Thiết kế xây dựng...[13]Mã số chứng chỉ hành nghề hoạt động xây dựngTỉnh/thành phố/xã/ phường/đặc khuSố lượng và quy mô dự án đã thực hiện1Vũ Thành ............ dự án nhóm A, ... nhóm B, nhóm ...C; ... công trình cấp đặc biệt; ... công trình cấp I; .... công trình cấp II; ... công trình cấp III/loại đồ án quy hoạch đô thị nông thôn đã thực hiện.2Bùi Quang ...........3Nguyễn Thanh ............. dự án nhóm A, ... nhóm B, nhóm ...C; ... công trình cấp đặc biệt; ... công trình cấp I; .... công trình cấp II; ... công trình cấp III/loại đồ án quy hoạch đô thị nông thôn đã thực hiện................(*): Chi tiết lĩnh vực hoạt động xây dựng của cá nhân hành nghề hoạt động xây dựng theo Phụ lục VII ban hành kèm theo Nghị định số 175/2024.
+Danh sách và năng lực hành nghề Khảo sát xây dựng/Thiết kế quy hoạch đô thị và nông thôn/Thiết kế xây dựng/Giám sát thi công xây dựng/Định giá xây dựng/Quản lý dự án đầu tư xây dựng/Chỉ huy trưởng công trường/Kiểm định xây dựng... có thể tra cứu theo địa bàn từng tỉnh, thành phố, xã, phường, đặc khu.
+(**): Cá nhân hành nghề hoạt động xây dựng được tra cứu (theo số định danh cá nhân), tạo hồ sơ năng lực hành nghề trên cơ sở dữ liệu lịch sử được cung cấp. Cá nhân hành nghề hoạt động xây dựng có quyền đề xuất, phản hồi thông tin không chính xác liên quan đến lịch sử hành nghề của mình đến cơ quan, tổ chức có trách nhiệm nhập, cập nhật dữ liệu theo quy định tại khoản 7 Điều 10 Nghị định số 111/2024.
+
+PHỤ LỤC VI
+CÁC MẪU PHIẾU ĐỀ NGHỊ CUNG CẤP, KHAI THÁC THÔNG TIN VÀ MẪU PHIẾU CUNG CẤP THÔNG TIN HOẠT ĐỘNG XÂY DỰNG PHỤC VỤ TỔ CHỨC, CÁ NHÂN CÓ NHU CẦU HOẠT ĐỘNG ĐẦU TƯ XÂY DỰNG VÀ CÁC HOẠT ĐỘNG KHÁC CÓ LIÊN QUAN*
+(Ban hành kèm theo Thông tư số 24/2025/TT-BXD ngày 29 tháng 08 năm 2025 của Bộ trưởng Bộ Xây dựng)
+Mẫu số 01Phiếu đề nghị cung cấp thông tin về quy hoạch đô thị và nông thônMẫu số 02Phiếu cung cấp thông tin về quy hoạch đô thị và nông thôn phục vụ nhu cầu đầu tư xây dựng công trìnhMẫu số 03Phiếu đề nghị cung cấp thông tin về dự án, công trình xây dựngMẫu số 04Phiếu cung cấp thông tin về dự án, công trình xây dựngMẫu số 05Phiếu đề nghị khai thác thông tin về hoạt động đầu tư xây dựngMẫu số 06Phiếu cung cấp thông tin về về hoạt động đầu tư xây dựngMẫu số 07Phiếu đề nghị khai thác thông tin về năng lực hoạt động xây dựng của nhà thầu đã tham gia hoạt động xây dựngMẫu số 08Phiếu cung cấp thông tin về năng lực hoạt động xây dựng của nhà thầu đã tham gia hoạt động xây dựng(*): Thông tin về hoạt động xây dựng được cung cấp theo lộ trình nhập, cập nhật dữ liệu và công bố các dịch vụ chia sẻ dữ liệu thuộc phạm vi Cơ sở dữ liệu quốc gia về hoạt động xây dựng theo quy định.
+Các dịch vụ chia sẻ dữ liệu được nghiên cứu để liên tục phát triển đáp ứng yêu cầu phục vụ tổ chức, cá nhân có nhu cầu hoạt động đầu tư xây dựng và các hoạt động khác có liên quan.
+
+Phụ lục VI - Mẫu số 01
+Phiếu đề nghị cung cấp thông tin về quy hoạch đô thị và nông thôn
+CỘNG HOÀ XÃ HỘI CHỦ NGHĨA VIỆT NAM
+Độc lập - Tự do - Hạnh phúc
+---------------
+..., ngày ...tháng ... năm …
+PHIẾU ĐỀ NGHỊ
+Cung cấp thông tin về quy hoạch đô thị và nông thôn trên môi trường mạng 
+(trong hệ thống thông tin, Cơ sở dữ liệu quốc gia về hoạt động xây dựng) 
+Kính gửi: Cục Kinh tế - Quản lý đầu tư xây dựng - Bộ Xây dựng
+I. THÔNG TIN CÁ NHÂN, TỔ CHỨC ĐỀ NGHỊ
+1. Họ và tên người/người đại diện tổ chức đề nghị:………………………………
+2. Ngày, tháng, năm sinh:……/……./……; 3. Giới tính:……………………......
+4. Số định danh cá nhân: 
+5. Nơi cư trú (2):……………………………………………………………..........
+II. THÔNG TIN NGƯỜI ĐẠI DIỆN THỰC HIỆN THỦ TỤC (nếu có)
+1. Họ, chữ đệm và tên:………………………………………………………..…
+2. Ngày, tháng, năm sinh:……/……./……; 3. Giới tính:……………………....
+4. Số định danh cá nhân: 
+III. NỘI DUNG ĐỀ NGHỊ(3):
+1. Phạm vi đề nghị cung cấp chỉ tiêu quy hoạch - kiến trúc tại: ........ (ghi rõ vị trí địa điểm của thửa đất/ô đất/lô đất (liên kết dữ liệu về quy hoạch và đất đai để xác định vị trí kèm tọa độ).
+2. Mục đích yêu cầu khai thác:…………………………………………………
+3. Địa chỉ nhận kết quả:…………………………………………………………
+…………………………………………………………………………………..
+
+
+Nơi nhận:
+- Như trên; 
+..... TM. TỔ CHỨC, DOANH NGHIỆP
+(hoặc người gửi đề nghị)
+(Ký, ghi rõ họ tên, đóng dấu đối với doanh nghiệp)
+Phụ lục VI - Mẫu số 02
+Phiếu cung cấp thông tin về quy hoạch đô thị và nông thôn phục vụ nhu cầu đầu tư xây dựng công trình
+CỤC KINH TẾ - QUẢN LÝ 
+ĐẦU TƯ XÂY DỰNG 
+PHÒNG/ĐƠN VỊ
+CUNG CẤP THÔNG TIN
+-------CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM
+Độc lập - Tự do - Hạnh phúc 
+---------------…., ngày … tháng…. năm …. 
+PHIẾU CUNG CẤP THÔNG TIN QUY HOẠCH ĐÔ THỊ VÀ NÔNG THÔN 
+(Trong hệ thống thông tin, Cơ sở dữ liệu quốc gia về hoạt động xây dựng)
+Kính gửi:…………………………………………….
+I. Thông tin cá nhân, cơ quan, tổ chức đề nghị cung cấp thông tin:
+1. Họ và tên của cá nhân hoặc người đại diện cơ quan, tổ chức:
+2. Số định danh cá nhân: 
+II. Thông tin trong hệ thống thông tin, Cơ sở dữ liệu quốc gia về hoạt động xây dựng: 
+Phòng/Đơn vị cung cấp thông tin theo yêu cầu tại Phiếu số: ……………................................. 
+Kết quả như sau:
+STTChỉ tiêu quy hoạch - kiến trúc của thửa đất/ô đất/lô đấtThông sốGhi chú1Vị trí địa điểmTọa độ (Mã số thông tin quy hoạch)Theo GIS 
+(liên kết với hệ thống dữ liệu về đất đai)2Diện tích lô đất.....3Mục đích sử dụng đất (theo quy hoạch đô thị và nông thôn)..........4Tầng cao5Chiều cao công trình tối đa, tối thiểu đối với ô phố, lô phố (nếu có)6Cốt xây dựng7Khoảng lùi công trình trên ô phố (nếu có)8Mật độ xây dựng (nếu có)9Hệ số sử dụng đất (nếu có)10Hình khối, màu sắc, hình thức kiến trúc chủ đạo của công trình (nếu có)11Giới hạn chiều cao tầng một (hoặc tầng trệt) trở xuống, kích thước và cốt cao độ của các ban công, lô gia, mái (nếu có)
+…….., ngày……..tháng………năm….. 
+TM. THỦ TRƯỞNG PHÒNG/ĐƠN VỊ 
+(Ký tên, đóng dấu hoặc ký số)
+Phụ lục VI - Mẫu số 03
+Phiếu đề nghị cung cấp thông tin về dự án, công trình xây dựng
+CỘNG HOÀ XÃ HỘI CHỦ NGHĨA VIỆT NAM
+Độc lập - Tự do - Hạnh phúc
+---------------
+..., ngày ...tháng ... năm …
+PHIẾU ĐỀ NGHỊ
+Cung cấp thông tin về dự án, công trình xây dựng
+(trong hệ thống thông tin, Cơ sở dữ liệu quốc gia về hoạt động xây dựng) 
+Kính gửi: Cục Kinh tế - Quản lý đầu tư xây dựng - Bộ Xây dựng
+I. THÔNG TIN CÁ NHÂN, TỔ CHỨC ĐỀ NGHỊ
+1. Họ và tên người/người đại diện tổ chức đề nghị:………………………………
+2. Ngày, tháng, năm sinh:……/……./……; 3. Giới tính:……………………......
+4. Số định danh cá nhân: 
+5. Nơi cư trú (2):……………………………………………………………..........
+II. THÔNG TIN NGƯỜI ĐẠI DIỆN THỰC HIỆN THỦ TỤC (nếu có)
+1. Họ, chữ đệm và tên:………………………………………………………..…
+2. Ngày, tháng, năm sinh:……/……./……; 3. Giới tính:……………………....
+4. Số định danh cá nhân: 
+III. NỘI DUNG ĐỀ NGHỊ
+1. Phạm vi đề nghị cung cấp thông tin về dự án, công trình xây dựng: ..... (nhập tên dự án/công trình xây dựng; vị trí địa điểm (liên kết dữ liệu về quy hoạch và đất đai để xác định vị trí kèm tọa độ).
+Chọn các thông tin đề nghị cung cấp: Mục đích sử dụng đất (theo quy hoạch đô thị và nông thôn)/Tiến độ thực hiện dự án theo chủ trương đầu tư được phê duyệt hoặc chấp thuận/Tiến độ thực tế triển khai/Các giấy tờ hợp pháp đất đai/Loại hình công trình/ Quy mô đầu tư xây dựng chủ yếu/Tài liệu pháp lý có liên quan/Danh sách nhà thầu tham gia dự án/Sự cố phát sinh trong quá trình khai thác sử dụng công trình/Thông tin về bảo hành, bảo trì.
+2. Mục đích yêu cầu khai thác:…………………………………………………
+3. Địa chỉ nhận kết quả:…………………………………………………………
+…………………………………………………………………………………..
+
+
+Nơi nhận:
+- Như trên; 
+..... TM. TỔ CHỨC, DOANH NGHIỆP
+(hoặc người gửi đề nghị)
+(Ký, ghi rõ họ tên, đóng dấu đối với doanh nghiệp)
+Phụ lục VI - Mẫu số 04
+Phiếu cung cấp thông tin về dự án, công trình xây dựng
+CỤC KINH TẾ - QUẢN LÝ 
+ĐẦU TƯ XÂY DỰNG 
+PHÒNG/ĐƠN VỊ
+CUNG CẤP THÔNG TIN
+-------CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM
+Độc lập - Tự do - Hạnh phúc 
+---------------…., ngày … tháng…. năm …. 
+PHIẾU CUNG CẤP THÔNG TIN VỀ DỰ ÁN, CÔNG TRÌNH XÂY DỰNG
+(Trong hệ thống thông tin, Cơ sở dữ liệu quốc gia về hoạt động xây dựng)
+Kính gửi:…………………………………………….
+I. Thông tin cá nhân, cơ quan, tổ chức đề nghị cung cấp thông tin:
+1. Họ và tên của cá nhân hoặc người đại diện cơ quan, tổ chức:
+2. Số định danh cá nhân: 
+II. Thông tin trong hệ thống thông tin, Cơ sở dữ liệu quốc gia về hoạt động xây dựng: 
+Phòng/Đơn vị cung cấp thông tin theo yêu cầu tại Phiếu số: ……………………………….. 
+Kết quả như sau (được cung cấp tương ứng theo nội dung đề nghị):
+STTThông tin về dự án, công trình xây dựngThông sốGhi chú1Tên dự án/công trình xây dựng...
+(Mã số thông tin dự án/công trình xây dựng)Cung cấp theo nội dung được đề nghị2Vị trí địa điểm...3Mục đích sử dụng đất (theo quy hoạch đô thị và nông thôn)...4Tiến độ thực hiện dự án theo chủ trương đầu tư được phê duyệt/chấp thuận...5Tiến độ thực tế triển khai- Chưa được cấp giấy phép xây dựng/ Đã cấp giấy phép xây dựng
+- Chưa thông báo khởi công/Đã thông báo khởi công
+- Chưa được chấp thuận nghiệm thu lần 1,2,3.../Đã chấp thuận nghiệm thu lần 1,2,3...
+- Đủ điều kiện/chưa đủ điều kiện đưa bất động sản vào kinh doanh6Các giấy tờ hợp pháp đất đaiTheo quy định tại Điều 53 Nghị định số 175/20247Loại hình công trình- Nhà ở riêng lẻ/nhà ở thương mại/nhà ở công vụ/ Nhà ở phục vụ tái định cư/ Nhà ở xã hội/ Nhà lưu trú công nhân/ Nhà ở cho lực lượng vũ trang nhân dân
+- Công trình xây dựng có công năng phục vụ mục đích giáo dục/y tế/thể thao/văn hóa/văn phòng/ thương mại, dịch vụ/du lịch/lưu trú/công nghiệp và công trình xây dựng có công năng phục vụ hỗn hợp
+- Các loại công trình xây dựng khác theo quy định của pháp luật về xây dựng, kinh doanh bất động sản, nhà ở và pháp luật khác có liên quan.8Quy mô đầu tư xây dựng chủ yếuTheo Giấy phép xây dựng (đối với trường hợp phải cấp phép/thiết kế được thẩm định đối với trường hợp miễn phép9Tài liệu pháp lý có liên quan- Thông báo kết quả thẩm định Báo cáo nghiên cứu khả thi đầu tư xây dựng; Thông báo kết quả thẩm định thiết kế xây dựng triển khai sau thiết kế cơ sở; Quyết định phê duyệt dự án; Quyết định phê duyệt thiết kế xây dựng triển khai sau thiết kế cơ sở/Các kết quả điều chỉnh (nếu có)
+- Giấy phép xây dựng/GPXD điều chỉnh (nếu có)
+- Tài liệu kiểm tra, chấp thuận nghiệm thu, bàn giao đưa vào sử dụng.10Danh sách nhà thầu tham gia dự ánKhảo sát; thiết kế xây dựng, thẩm tra, thi công, quản lý dự án, giám sát.11Sự cố phát sinh trong quá trình khai thác sử dụng công trìnhDữ liệu về sự cố phát sinh trong quá trình sử dụng công trình.12Thông tin về bảo hành, bảo trìLịch sử bảo hành, bảo trì công trình xây dựng
+…….., ngày……..tháng………năm….. 
+TM. THỦ TRƯỞNG PHÒNG/ĐƠN VỊ 
+(Ký tên, đóng dấu hoặc ký số)
+Phụ lục VI - Mẫu số 05
+Phiếu đề nghị khai thác thông tin về hoạt động đầu tư xây dựng
+CỘNG HOÀ XÃ HỘI CHỦ NGHĨA VIỆT NAM
+Độc lập - Tự do - Hạnh phúc
+---------------
+..., ngày ...tháng ... năm …
+PHIẾU ĐỀ NGHỊ
+Cung cấp thông tin về hoạt động đầu tư xây dựng
+(trong hệ thống thông tin, Cơ sở dữ liệu quốc gia về hoạt động xây dựng) 
+Kính gửi: Cục Kinh tế - Quản lý đầu tư xây dựng - Bộ Xây dựng
+I. THÔNG TIN TỔ CHỨC ĐỀ NGHỊ
+1. Tên tổ chức:....; Mã số doanh nghiệp: .....
+2. Họ và tên người/người đại diện tổ chức đề nghị:………………………………
+3. Ngày, tháng, năm sinh:……/……./……; 3. Giới tính:……………………......
+4. Số định danh cá nhân: 
+5. Nơi cư trú:……………………………………………………………..........
+II. NỘI DUNG ĐỀ NGHỊ
+1. Phạm vi đề nghị khai thác thông tin về hoạt động đầu tư xây dựng:
+- Khai thác đầy đủ dữ liệu tại các bảng tổng hợp dữ liệu, thông tin về hoạt động xây dựng theo Phục lục IV ban hành kèm theo Thông tư này.
+- Tạo lập thông tin về thị trường đầu tư xây dựng trên nền tảng của Cơ sở dữ liệu quốc gia về hoạt động xây dựng.
+2. Mục đích yêu cầu khai thác:…………………………………………………
+3. Địa chỉ nhận kết quả:…………………………………………………………
+…………………………………………………………………………………..
+
+
+Nơi nhận:
+- Như trên; 
+..... TM. TỔ CHỨC, DOANH NGHIỆP
+(hoặc người gửi đề nghị)
+(Ký, ghi rõ họ tên, đóng dấu đối với doanh nghiệp)
+Phụ lục VI - Mẫu số 06
+Phiếu cung cấp thông tin về hoạt động đầu tư xây dựng
+CỤC KINH TẾ - QUẢN LÝ 
+ĐẦU TƯ XÂY DỰNG 
+PHÒNG/ĐƠN VỊ
+CUNG CẤP THÔNG TIN
+-------CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM
+Độc lập - Tự do - Hạnh phúc 
+---------------…., ngày … tháng…. năm …. 
+PHIẾU CUNG CẤP THÔNG TIN VỀ HOẠT ĐỘNG ĐẦU TƯ XÂY DỰNG
+(Trong hệ thống thông tin, Cơ sở dữ liệu quốc gia về hoạt động xây dựng)
+Kính gửi:…………………………………………….
+I. Thông tin cá nhân, cơ quan, tổ chức đề nghị cung cấp thông tin:
+1. Tên tổ chức: ....; mã số doanh nghiệp: ..........
+2. Họ và tên của cá nhân hoặc người đại diện cơ quan, tổ chức:
+2. Số định danh cá nhân: 
+II. Thông tin trong hệ thống thông tin, Cơ sở dữ liệu quốc gia về hoạt động xây dựng: 
+Phòng/Đơn vị cung cấp thông tin theo yêu cầu tại Phiếu số: ……………………………….. 
+Kết quả như sau (cung cấp tương ứng theo nội dung đề nghị):
+Thông tin hoạt động đầu tư xây dựng:
+- Các bảng tổng hợp dữ liệu, thông tin về hoạt động xây dựng theo Phục lục IV ban hành kèm theo Thông tư này.
+- Được tạo lập thông tin về thị trường đầu tư xây dựng trên nền tảng của Cơ sở dữ liệu quốc gia về hoạt động xây dựng.
+
+…….., ngày……..tháng………năm….. 
+TM. THỦ TRƯỞNG PHÒNG/ĐƠN VỊ 
+(Ký tên, đóng dấu hoặc ký số)
+Phụ lục VI - Mẫu số 07
+Phiếu đề nghị khai thác thông tin về năng lực hoạt động xây dựng của nhà thầu
+CỘNG HOÀ XÃ HỘI CHỦ NGHĨA VIỆT NAM
+Độc lập - Tự do - Hạnh phúc
+---------------
+..., ngày ...tháng ... năm …
+PHIẾU ĐỀ NGHỊ
+Cung cấp thông tin về năng lực hoạt động xây dựng của nhà thầu
+(trong hệ thống thông tin, Cơ sở dữ liệu quốc gia về hoạt động xây dựng) 
+Kính gửi: Cục Kinh tế - Quản lý đầu tư xây dựng - Bộ Xây dựng
+I. THÔNG TỔ CHỨC ĐỀ NGHỊ
+1. Tên tổ chức: ....; mã số doanh nghiệp (trường hợp là doanh nghiệp): .....
+2. Họ và tên người/người đại diện tổ chức đề nghị:………………………………
+3. Ngày, tháng, năm sinh:……/……./……; 3. Giới tính:……………………......
+4. Số định danh cá nhân: 
+5. Nơi cư trú:……………………………………………………………..........
+II. NỘI DUNG ĐỀ NGHỊ
+1. Phạm vi đề nghị cung cấp thông tin về năng lực hoạt động xây dựng của nhà thầu:
+- Khai đầy đủ dữ liệu lịch sử hoạt động xây dựng của nhà thầu trong Cơ sở dữ liệu quốc gia về hoạt động xây dựng;
+- Tạo lập hồ sơ năng lực hoạt động xây dựng trên nền tảng của Cơ sở dữ liệu quốc gia về hoạt động xây dựng.
+2. Mục đích yêu cầu khai thác:…………………………………………………
+3. Địa chỉ nhận kết quả:…………………………………………………………
+…………………………………………………………………………………..
+
+
+Nơi nhận:
+- Như trên; 
+.....TM. TỔ CHỨC, DOANH NGHIỆP
+(Ký, ghi rõ họ tên, đóng dấu đối với doanh nghiệp)
+Phụ lục VI - Mẫu số 08
+Phiếu cung cấp thông tin về năng lực hoạt động xây dựng của nhà thầu
+CỤC KINH TẾ - QUẢN LÝ 
+ĐẦU TƯ XÂY DỰNG 
+PHÒNG/ĐƠN VỊ
+CUNG CẤP THÔNG TIN
+-------CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM
+Độc lập - Tự do - Hạnh phúc 
+---------------…., ngày … tháng…. năm …. 
+PHIẾU CUNG CẤP THÔNG TIN VỀ NĂNG LỰC HOẠT ĐỘNG XÂY DỰNG CỦA CÁ NHÂN HÀNH NGHỀ HOẠT ĐỘNG XÂY DỰNG
+(Trong hệ thống thông tin, Cơ sở dữ liệu quốc gia về hoạt động xây dựng)
+Kính gửi:…………………………………………….
+I. Thông tin tổ chức đề nghị cung cấp thông tin:
+1. Tên tổ chức: ....; mã số doanh nghiệp (trường hợp là doanh nghiệp): .....
+2. Họ và tên của cá nhân hoặc người đại diện cơ quan, tổ chức:
+3. Số định danh cá nhân: 
+II. Thông tin trong hệ thống thông tin, Cơ sở dữ liệu quốc gia về hoạt động xây dựng: 
+Phòng/Đơn vị cung cấp thông tin theo yêu cầu tại Phiếu số: ……………………………….. 
+Kết quả như sau (cung cấp tương ứng theo nội dung đề nghị):
+- Được khai đầy đủ dữ liệu lịch sử hoạt động xây dựng của nhà thầu trong Cơ sở dữ liệu quốc gia về hoạt động xây dựng;
+- Được tạo lập hồ sơ năng lực hoạt động xây dựng trên nền tảng của Cơ sở dữ liệu quốc gia về hoạt động xây dựng.
+
+…….., ngày……..tháng………năm….. 
+TM. THỦ TRƯỞNG PHÒNG/ĐƠN VỊ 
+(Ký tên, đóng dấu hoặc ký số)
+PHỤ LỤC VII
+VÍ DỤ MINH HỌA VỀ MÃ SỐ DỮ LIỆU VỀ QUY HOẠCH ĐÔ THỊ VÀ NÔNG THÔN, DỰ ÁN ĐẦU TƯ XÂY DỰNG
+(Ban hành kèm theo Thông tư số 24/2025/TT-BXD ngày 29 tháng 08 năm 2025 của Bộ trưởng Bộ Xây dựng)
+Ví dụ 1. Ví dụ mã số dữ liệu về quy hoạch đô thị và nông thôn
+STT123456789101112Diễn giảiMã tỉnh/thành phố trực thuộc trung ương nơi lập quy hoạchNăm trình phê duyệt quy hoạchCấp độ quy hoạchLoại quy hoạchLoại điều chỉnh quy hoạchDãy số ngẫu nhiênMã số TTQH012611088888Dữ liệuHà NộiNăm trình phê duyệt là năm 2026Quy hoạch chungQuy hoạch đô thịQuy hoạch lập lần đầu hoặc lập mới88888Thông tin: Mã số 012611088888 là thông tin Quy hoạch chung Hà Nội được lập mới và trình phê duyệt vào năm 2026, số ngẫu nhiên 88888Ví dụ 2. Ví dụ về mã số dữ liệu dự án đầu tư xây dựng
+STT12345678910111213Diễn giảiMã tỉnh/thành phố trực thuộc trung ươngNăm dự án được thẩm địnhLoại dự ánTrình tự thủ tụcDãy số ngẫu nhiênSố lần thực hiện điều chỉnhMã số TTDA2528110016803Dữ liệuPhú Thọ2028Dự án đầu tư xây dựng công trình dân dụngDự án đầu tư xây dựng có yêu cầu thẩm định tại cơ quan chuyên môn về xây dựng00168Điều chỉnh lần 03Thông tin: Mã số dự án 2528110016803 là mã số dữ liệu dự án đầu tư xây dựng công trình tại tỉnh Phú Thọ, năm 2028, loại dự án công trình dân dụng đã được cơ quan chuyên môn về xây dựng thẩm định, điều chỉnh bổ sung 03 lần.
+
+[1] Dữ liệu quy mô đầu tư xây dựng chủ yếu theo giấy phép xây dựng được cấp.
+[2] Được Bộ Xây dựng, các tổ chức có uy tín trong nước và quốc tế đánh giá, trao giải thưởng cho công trình này.
+[3] Dữ liệu chủ yếu được lấy theo giấy phép xây dựng được cấp đối với đối tượng phải cấp giấy phép xây dựng;
+[4] Tổng hợp dữ liệu gồm về năng lực hoạt động xây dựng: (1) Khảo sát địa hình; (2) Khảo sát địa chất công trình.
+[5] Tổng hợp dữ liệu năng lực hoạt động xây dựng: (1) Thiết kế, thẩm tra thiết kế xây dựng công trình dân dụng - nhà công nghiệp; (2) Thiết kế, thẩm tra thiết kế xây dựng công trình khai thác mỏ và chế biến khoáng sản; (3) Thiết kế, thẩm tra thiết kế xây dựng công trình công nghiệp dầu khí; (4) Thiết kế, thẩm tra thiết kế xây dựng công trình công nghiệp năng lượng (không bao gồm các nội dung về công nghệ thuộc chuyên ngành điện) gồm: (i) Nhiệt điện, điện địa nhiệt; (ii) Điện hạt nhân; (iii) Thủy điện; (iv) Điện gió, điện mặt trời, điện thủy triều; (v) Điện sinh khối, điện rác, điện khí biogas; (vi) Đường dây và trạm biến áp; (5) Thiết kế, thẩm tra thiết kế xây dựng công trình giao thông gồm: (i) Đường bộ; (ii) Đường sắt; (iii) Cầu - hầm; (iv) Đường thủy nội địa, hàng hải; (6) Thiết kế, thẩm tra thiết kế xây dựng công trình nông nghiệp và phát triển nông thôn (thủy lợi, đê điều); (7) Thiết kế, thẩm tra thiết kế xây dựng công trình hạ tầng kỹ thuật gồm: (i) Cấp nước, thoát nước; (ii) Xử lý chất thải; (8) Thiết kế, thẩm tra thiết kế xây dựng chuyên biệt (cọc; gia cố, xử lý nền, móng, kết cấu công trình; kết cấu ứng suất trước; kế cấu ứng suất trước; kết cấu bao che, mặt dựng công trình; ...).
+[6] Tổng hợp dữ liệu năng lực hoạt động xây dựng: (1) Thi công công tác xây dựng công trình dân dụng - nhà công nghiệp; (2) Thi công công tác xây dựng công trình công nghiệp khai thác mỏ và chế biến khoáng sản; (3) Thi công công tác xây dựng công trình công nghiệp dầu khí; (4) Thi công công tác xây dựng công trình công nghiệp năng lượng (không bao gồm các nội dung về công nghệ thuộc chuyên ngành điện), gồm: (i) Nhiệt điện, điện địa nhiệt; (ii) Điện hạt nhân; (iii) Thủy điện; (iv) Điện gió, điện mặt trời, điện thủy triều; (v) Điện sinh khối, điện rác, điện khí biogas; (vi) Đường dây và trạm biến áp; (5) Thi công công tác xây dựng công trình giao thông gồm: (i) Đường bộ; (ii) Đường sắt; (iii) Cầu - hầm; (iv) Đường thủy nội địa - hàng hải; (6) Thi công công tác xây dựng công trình nông nghiệp và phát triển nông thôn (thủy lợi, đê điều); (7) Thi công công tác xây dựng công trình hạ tầng kỹ thuật gồm: (i) Cấp nước, thoát nước; (ii) Xử lý chất thải rắn; (8) Thi công công tác lắp đặt thiết bị công trình; (9) Thi công công tác xây dựng chuyên biệt (cọc; gia cố, xử lý nền, móng, kết cấu công trình; kết cấu ứng suất trước; kết cấu ứng suất trước; kết cấu bao che, mặt dựng công trình; ...)
+[7] Tổng hợp dữ liệu năng lực hoạt động xây dựng: (1) Tư vấn giám sát công tác xây dựng công trình dân dụng - công nghiệp - hạ tầng kỹ thuật; (2) Tư vấn giám sát công tác xây dựng công trình giao thông; (3) Tư vấn giám sát công tác xây dựng công trình phục vụ nông nghiệp và phát triển nông thôn; (4) Tư vấn giám sát công tác lắp đặt thiết bị công trình.
+[8] Tổng hợp dữ liệu gồm các loại chứng chỉ hành nghề: (1) Khảo sát địa hình; (2) khảo sát địa chất
+[9] Tổng hợp dữ liệu gồm các loại chứng chỉ hành nghề: (1) Kết cấu công trình; (2) Công trình khai thác mỏ; (3) Công trình đường bộ; (4) Công trình đường sắt; (5) Công trình cầu - hầm; (6) Công trình đường thủy nội địa - hàng hải; (7) Công trình thủy lợi, đê điều; (8) Công trình cấp nước - thoát nước; (9) Công trình xử lý chất thải rắn; (10) Thiết kế cơ - điện; (11) Thiết kế hệ thống - cấp thoát nước công trình; (12) Thiết kế hệ thống thông gió - cấp thoát nhiệt.
+[10] Tổng hợp dữ liệu gồm các loại chứng chỉ hành nghề: (1) Giám sát công tác xây dựng công trình; (2) Giám sát công tác lắp đặt thiết bị công trình.
+[11] Việc kết nối, liên kết, đồng bộ dữ liệu giữa hệ thống dữ liệu, Cơ sở dữ liệu quốc gia về hoạt động xây dựng với hệ thống về “Giải pháp chuyển đổi số” của Cục Giám định nhà nước về chất lượng công trình xây dựng được thực hiện theo quy định của pháp luật.
+[12] Thông tin này phục vụ để đánh giá quy mô thị trường xây dựng, dự báo, xây dựng kế hoạch.
+[13] Chi tiết lĩnh vực hoạt động xây dựng của cá nhân hành nghề hoạt động xây dựng theo Phụ lục VII ban hành kèm theo Nghị định số 175/2024
+---------------
+
+------------------------------------------------------------
+
+---------------
+
+------------------------------------------------------------
+
