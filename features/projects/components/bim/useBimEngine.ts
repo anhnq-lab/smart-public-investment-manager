@@ -16,20 +16,24 @@ function createSkyGradientTexture(isDark: boolean): THREE.CanvasTexture {
     const ctx = canvas.getContext('2d')!;
     const gradient = ctx.createLinearGradient(0, 0, 0, 512);
     if (isDark) {
-        // Deep space blue → slate-950 horizon → warm dark ground (Enhanced studio look)
-        gradient.addColorStop(0.0, '#020617');   // top: slate-950 (very dark)
-        gradient.addColorStop(0.3, '#0f172a');   // upper: slate-900
-        gradient.addColorStop(0.5, '#1e293b');   // mid: slate-800
-        gradient.addColorStop(0.55, '#334155');  // horizon line: slate-700
-        gradient.addColorStop(0.6, '#0f172a');   // below horizon: slate-900
-        gradient.addColorStop(1.0, '#020617');   // bottom: slate-950
+        // Rich midnight navy → indigo → steel blue horizon → deep ground
+        gradient.addColorStop(0.0, '#0a0f1e');   // top: deep midnight
+        gradient.addColorStop(0.15, '#0d1b3e');  // upper: dark navy
+        gradient.addColorStop(0.35, '#132347');   // mid-upper: rich navy
+        gradient.addColorStop(0.48, '#1a2d5a');   // approaching horizon: steel blue
+        gradient.addColorStop(0.52, '#233a6b');   // horizon glow: bright steel
+        gradient.addColorStop(0.56, '#1a2d5a');   // below horizon mirror
+        gradient.addColorStop(0.7, '#0f1a38');    // below: dark indigo
+        gradient.addColorStop(1.0, '#080e1f');    // bottom: near-black navy
     } else {
-        // Soft sky blue → white → warm ground (Modern, clean look)
-        gradient.addColorStop(0.0, '#e0f2fe');   // top: sky-100
-        gradient.addColorStop(0.3, '#f0f9ff');   // upper: sky-50
-        gradient.addColorStop(0.5, '#ffffff');   // mid: white
-        gradient.addColorStop(0.55, '#f8fafc');  // horizon line: slate-50
-        gradient.addColorStop(0.7, '#f1f5f9');   // below horizon: slate-100
+        // Atmospheric sky — powder blue → ivory → warm cream horizon
+        gradient.addColorStop(0.0, '#bfdbfe');   // top: soft sky blue
+        gradient.addColorStop(0.2, '#dbeafe');   // upper: lighter blue
+        gradient.addColorStop(0.4, '#eff6ff');   // mid: ice blue
+        gradient.addColorStop(0.48, '#fefce8');  // horizon warm: cream
+        gradient.addColorStop(0.52, '#fef9c3');  // horizon glow: warm ivory
+        gradient.addColorStop(0.56, '#fefce8');  // below horizon: cream
+        gradient.addColorStop(0.7, '#f1f5f9');   // lower: cool gray
         gradient.addColorStop(1.0, '#e2e8f0');   // bottom: slate-200
     }
     ctx.fillStyle = gradient;
@@ -40,39 +44,6 @@ function createSkyGradientTexture(isDark: boolean): THREE.CanvasTexture {
     return texture;
 }
 
-// ── Grid floor helper ───────────────────────────
-function createGridFloor(isDark: boolean): THREE.Group {
-    const group = new THREE.Group();
-    group.name = '__bim_grid_floor__';
-
-    // Major grid
-    const majorSize = 200;
-    const majorDivisions = 20;
-    const majorGrid = new THREE.GridHelper(
-        majorSize, majorDivisions,
-        isDark ? 0x2a3a4a : 0xc0c8d0,
-        isDark ? 0x1a2535 : 0xd8dce2
-    );
-    (majorGrid.material as THREE.Material).transparent = true;
-    (majorGrid.material as THREE.Material).opacity = isDark ? 0.4 : 0.35;
-    (majorGrid.material as THREE.Material).depthWrite = false;
-    majorGrid.position.y = -0.01;
-    group.add(majorGrid);
-
-    // Minor grid (finer)
-    const minorGrid = new THREE.GridHelper(
-        majorSize, majorDivisions * 5,
-        isDark ? 0x1e2d3d : 0xd0d4d8,
-        isDark ? 0x162030 : 0xe0e4e8
-    );
-    (minorGrid.material as THREE.Material).transparent = true;
-    (minorGrid.material as THREE.Material).opacity = isDark ? 0.15 : 0.15;
-    (minorGrid.material as THREE.Material).depthWrite = false;
-    minorGrid.position.y = -0.02;
-    group.add(minorGrid);
-
-    return group;
-}
 
 export interface BimEngineAPI {
     componentsRef: React.MutableRefObject<OBC.Components | null>;
@@ -106,7 +77,7 @@ export function useBimEngine(
     const [viewerReady, setViewerReady] = useState(false);
     const [cameraQuaternion, setCameraQuaternion] = useState(() => new THREE.Quaternion());
     const [initError, setInitError] = useState<string | null>(null);
-    const [edgeOutlineEnabled, setEdgeOutlineEnabled] = useState(true);
+    const [edgeOutlineEnabled, setEdgeOutlineEnabled] = useState(false);
     const [aoEnabled, setAoEnabled] = useState(false);
 
     // ── Initialize engine ───────────────────────────
@@ -164,14 +135,11 @@ export function useBimEngine(
                 // Gradient sky background
                 scene.background = createSkyGradientTexture(isDarkMode);
 
-                // Grid floor
-                scene.add(createGridFloor(isDarkMode));
-
-                // Hemisphere light for ambient fill
+                // Hemisphere light for ambient fill — warmer sky, cooler ground
                 const hemiLight = new THREE.HemisphereLight(
-                    isDarkMode ? 0x94a3b8 : 0xffffff,
-                    isDarkMode ? 0x1e293b : 0xe2e8f0,
-                    isDarkMode ? 0.8 : 0.6
+                    isDarkMode ? 0xa0b4cc : 0xfff8f0,
+                    isDarkMode ? 0x152238 : 0xdce4ef,
+                    isDarkMode ? 0.9 : 0.65
                 );
                 scene.add(hemiLight);
 
@@ -187,40 +155,49 @@ export function useBimEngine(
                 // Fill light
                 const fillLight = new THREE.DirectionalLight(
                     isDarkMode ? 0x64748b : 0x94a3b8,
-                    isDarkMode ? 0.5 : 0.4
+                    isDarkMode ? 0.4 : 0.3
                 );
                 fillLight.position.set(-50, 50, -50);
                 scene.add(fillLight);
 
-                // Renderer setup (needs sized container)
+                // Renderer setup — optimized for performance
                 world.renderer = new OBCF.PostproductionRenderer(components, container);
                 const renderer = (world.renderer as any).three;
+                const MAX_PIXEL_RATIO = 1.5;
                 if (renderer) {
                     renderer.localClippingEnabled = true;
-                    renderer.toneMapping = THREE.ACESFilmicToneMapping;
-                    renderer.toneMappingExposure = isDarkMode ? 1.2 : 1.0;
+                    renderer.toneMapping = THREE.NoToneMapping;
                     renderer.outputColorSpace = THREE.SRGBColorSpace;
+                    renderer.setPixelRatio(Math.min(window.devicePixelRatio, MAX_PIXEL_RATIO));
+                    renderer.sortObjects = true;
                 }
 
-                // Enable postproduction edge outlines
-                const postproduction = (world.renderer as any).postproduction;
-                if (postproduction) {
-                    postproduction.enabled = true;
-                    postproduction.customEffects.outlineEnabled = true;
-                }
-
-                // Camera with smooth controls (after renderer)
+                // Camera with smooth controls
                 world.camera = new OBC.SimpleCamera(components);
 
                 // ── Initialize components AFTER scene+renderer+camera are all set ──
                 await components.init();
 
+                // Postproduction — disable all effects individually for performance
+                // (Keep postproduction.enabled = true so the renderer pipeline works,
+                //  but all actual effects are off — minimal overhead)
+                const postproduction = (world.renderer as any).postproduction;
+                if (postproduction) {
+                    postproduction.enabled = true;
+                    if (postproduction.customEffects) {
+                        postproduction.customEffects.outlineEnabled = false;
+                        postproduction.customEffects.glossEnabled = false;
+                        postproduction.customEffects.gammaEnabled = false;
+                    }
+                }
+
                 const camera = world.camera as OBC.SimpleCamera;
                 camera.controls.setLookAt(15, 15, 15, 0, 0, 0);
 
-                // Smooth camera controls
-                camera.controls.smoothTime = 0.35;
-                camera.controls.draggingSmoothTime = 0.15;
+                // Smooth camera controls (optimized for BIM navigation)
+                camera.controls.smoothTime = 0.18;
+                camera.controls.draggingSmoothTime = 0.08;
+
 
                 // Mouse button mapping (professional BIM style)
                 try {
@@ -332,9 +309,10 @@ export function useBimEngine(
 
                         // 2. Directly resize ALL canvas elements in container
                         const canvases = container.querySelectorAll('canvas');
+                        const limitedDpr = Math.min(window.devicePixelRatio || 1, MAX_PIXEL_RATIO);
                         canvases.forEach((canvas: HTMLCanvasElement) => {
-                            canvas.width = w * (window.devicePixelRatio || 1);
-                            canvas.height = h * (window.devicePixelRatio || 1);
+                            canvas.width = w * limitedDpr;
+                            canvas.height = h * limitedDpr;
                             canvas.style.width = '100%';
                             canvas.style.height = '100%';
                         });
@@ -386,23 +364,22 @@ export function useBimEngine(
         }
         scene.background = createSkyGradientTexture(isDarkMode);
 
-        // Update grid floor
-        const oldGrid = scene.getObjectByName('__bim_grid_floor__');
-        if (oldGrid) scene.remove(oldGrid);
-        scene.add(createGridFloor(isDarkMode));
-
         // Update lights syncing with dark mode toggles
         scene.traverse((obj) => {
             if (obj instanceof THREE.HemisphereLight) {
-                obj.color.set(isDarkMode ? 0x94a3b8 : 0xffffff);
-                obj.groundColor.set(isDarkMode ? 0x1e293b : 0xe2e8f0);
-                obj.intensity = isDarkMode ? 0.8 : 0.6;
+                obj.color.set(isDarkMode ? 0xa0b4cc : 0xfff8f0);
+                obj.groundColor.set(isDarkMode ? 0x152238 : 0xdce4ef);
+                obj.intensity = isDarkMode ? 0.9 : 0.65;
             }
             if (obj instanceof THREE.DirectionalLight) {
                 if (obj.position.x > 0) {
                     // Key light
                     obj.color.set(isDarkMode ? 0xffffff : 0xffffff);
                     obj.intensity = isDarkMode ? 1.2 : 1.0;
+                } else if (obj.position.z < -50) {
+                    // Rim light
+                    obj.color.set(isDarkMode ? 0x3b82f6 : 0x93c5fd);
+                    obj.intensity = isDarkMode ? 0.35 : 0.25;
                 } else {
                     // Fill light
                     obj.color.set(isDarkMode ? 0x64748b : 0x94a3b8);

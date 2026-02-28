@@ -7,7 +7,7 @@
  * - Fragment-aware raycasting
  * - Proper renderer clipping plane management
  */
-import { useRef, useState, useCallback, useEffect } from 'react';
+import React, { useRef, useState, useCallback, useEffect } from 'react';
 import * as THREE from 'three';
 import * as OBC from '@thatopen/components';
 import type { ActiveTool } from './useBimTools';

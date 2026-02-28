@@ -3,51 +3,47 @@ import React from 'react';
 import { HashRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
+import { ErrorBoundary } from './components/ui/ErrorBoundary';
 import MainLayout from './layouts/MainLayout';
 
-// Auth Features
+// Auth Features (eager load - needed immediately)
 import Login from './features/auth/Login';
 
-// Dashboard Features
-import Dashboard from './features/dashboard/Dashboard';
-import PersonalDashboard from './features/dashboard/PersonalDashboard';
-
-// Projects Features
-import ProjectList from './features/projects/ProjectList';
-import ProjectDetail from './features/projects/ProjectDetail';
-import PackageDetail from './features/projects/PackageDetail';
-
-// Contracts Features
-import ContractList from './features/contracts/ContractList';
-import ContractDetail from './features/contracts/ContractDetail';
-import ContractorList from './features/contractors/ContractorList';
-import ContractorDetail from './features/contractors/ContractorDetail';
-
-// HR Features
-import EmployeeList from './features/employees/EmployeeList';
-import EmployeeDetail from './features/employees/EmployeeDetail';
-
-// Task Features
-import TaskList from './features/tasks/TaskList';
-import TaskDetail from './features/tasks/TaskDetail';
-
-// Finance Features
-import PaymentList from './features/payments/PaymentList';
-
-// Core Features (Documents, Reports, etc.)
-import DocumentManager from './features/documents/DocumentManager';
-import CDEPage from './features/cde/CDEPage';
-import ReportCenter from './features/reports/ReportCenter';
-import Regulations from './features/regulations/Regulations';
-import LegalDocumentSearch from './features/legal-documents/LegalDocumentSearch';
-import Settings from './features/settings/Settings';
-import AuditLogViewer from './features/admin/AuditLogViewer';
+// Lazy-loaded Feature Modules (code splitting)
+const Dashboard = React.lazy(() => import('./features/dashboard/Dashboard'));
+const PersonalDashboard = React.lazy(() => import('./features/dashboard/PersonalDashboard'));
+const ProjectList = React.lazy(() => import('./features/projects/ProjectList'));
+const ProjectDetail = React.lazy(() => import('./features/projects/ProjectDetail'));
+const PackageDetail = React.lazy(() => import('./features/projects/PackageDetail'));
+const ContractList = React.lazy(() => import('./features/contracts/ContractList'));
+const ContractDetail = React.lazy(() => import('./features/contracts/ContractDetail'));
+const ContractorList = React.lazy(() => import('./features/contractors/ContractorList'));
+const ContractorDetail = React.lazy(() => import('./features/contractors/ContractorDetail'));
+const EmployeeList = React.lazy(() => import('./features/employees/EmployeeList'));
+const EmployeeDetail = React.lazy(() => import('./features/employees/EmployeeDetail'));
+const TaskList = React.lazy(() => import('./features/tasks/TaskList'));
+const TaskDetail = React.lazy(() => import('./features/tasks/TaskDetail'));
+const PaymentList = React.lazy(() => import('./features/payments/PaymentList'));
+const DocumentManager = React.lazy(() => import('./features/documents/DocumentManager'));
+const CDEPage = React.lazy(() => import('./features/cde/CDEPage'));
+const ReportCenter = React.lazy(() => import('./features/reports/ReportCenter'));
+const Regulations = React.lazy(() => import('./features/regulations/Regulations'));
+const LegalDocumentSearch = React.lazy(() => import('./features/legal-documents/LegalDocumentSearch'));
+const Settings = React.lazy(() => import('./features/settings/Settings'));
+const AuditLogViewer = React.lazy(() => import('./features/admin/AuditLogViewer'));
 
 import { ToastProvider } from './components/ui/Toast';
 
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { QueryClient, QueryClientProvider, MutationCache } from '@tanstack/react-query';
+
+const mutationCache = new MutationCache({
+    onError: (error) => {
+        console.error('[Global Mutation Error]', error);
+    },
+});
 
 const queryClient = new QueryClient({
+    mutationCache,
     defaultOptions: {
         queries: {
             staleTime: 1000 * 60 * 5, // 5 minutes
@@ -58,65 +54,67 @@ const queryClient = new QueryClient({
 
 const App: React.FC = () => {
     return (
-        <QueryClientProvider client={queryClient}>
-            <ThemeProvider>
-                <AuthProvider>
-                    <ToastProvider>
-                        <Router>
-                            <Routes>
-                                <Route path="/login" element={<Login />} />
+        <ErrorBoundary>
+            <QueryClientProvider client={queryClient}>
+                <ThemeProvider>
+                    <AuthProvider>
+                        <ToastProvider>
+                            <Router>
+                                <Routes>
+                                    <Route path="/login" element={<Login />} />
 
-                                {/* Protected Routes inside MainLayout */}
-                                <Route path="/" element={<MainLayout />}>
-                                    <Route index element={<Dashboard />} />
-                                    <Route path="my-dashboard" element={<PersonalDashboard />} />
+                                    {/* Protected Routes inside MainLayout */}
+                                    <Route path="/" element={<MainLayout />}>
+                                        <Route index element={<Dashboard />} />
+                                        <Route path="my-dashboard" element={<PersonalDashboard />} />
 
-                                    {/* Projects Routes */}
-                                    <Route path="projects" element={<ProjectList />} />
-                                    <Route path="projects/:id" element={<ProjectDetail />} />
-                                    <Route path="projects/:projectId/packages/:packageId" element={<PackageDetail />} />
+                                        {/* Projects Routes */}
+                                        <Route path="projects" element={<ProjectList />} />
+                                        <Route path="projects/:id" element={<ProjectDetail />} />
+                                        <Route path="projects/:projectId/packages/:packageId" element={<PackageDetail />} />
 
-                                    {/* Tasks Routes */}
-                                    <Route path="tasks" element={<TaskList />} />
-                                    <Route path="tasks/:id" element={<TaskDetail />} />
+                                        {/* Tasks Routes */}
+                                        <Route path="tasks" element={<TaskList />} />
+                                        <Route path="tasks/:id" element={<TaskDetail />} />
 
-                                    {/* HR Routes */}
-                                    <Route path="employees" element={<EmployeeList />} />
-                                    <Route path="employees/:id" element={<EmployeeDetail />} />
+                                        {/* HR Routes */}
+                                        <Route path="employees" element={<EmployeeList />} />
+                                        <Route path="employees/:id" element={<EmployeeDetail />} />
 
-                                    {/* Contractor Routes */}
-                                    <Route path="contractors" element={<ContractorList />} />
-                                    <Route path="contractors/:id" element={<ContractorDetail />} />
+                                        {/* Contractor Routes */}
+                                        <Route path="contractors" element={<ContractorList />} />
+                                        <Route path="contractors/:id" element={<ContractorDetail />} />
 
-                                    {/* Contract Routes */}
-                                    <Route path="contracts" element={<ContractList />} />
-                                    <Route path="contracts/:id" element={<ContractDetail />} />
+                                        {/* Contract Routes */}
+                                        <Route path="contracts" element={<ContractList />} />
+                                        <Route path="contracts/:id" element={<ContractDetail />} />
 
-                                    {/* Finance Routes */}
-                                    <Route path="payments" element={<PaymentList />} />
+                                        {/* Finance Routes */}
+                                        <Route path="payments" element={<PaymentList />} />
 
-                                    {/* Documents & Reports */}
-                                    <Route path="documents" element={<DocumentManager />} />
-                                    <Route path="cde" element={<CDEPage />} />
-                                    <Route path="legal-documents" element={<LegalDocumentSearch />} />
-                                    <Route path="reports" element={<ReportCenter />} />
-                                    <Route path="regulations" element={<Regulations />} />
+                                        {/* Documents & Reports */}
+                                        <Route path="documents" element={<DocumentManager />} />
+                                        <Route path="cde" element={<CDEPage />} />
+                                        <Route path="legal-documents" element={<LegalDocumentSearch />} />
+                                        <Route path="reports" element={<ReportCenter />} />
+                                        <Route path="regulations" element={<Regulations />} />
 
-                                    {/* Admin */}
-                                    <Route path="audit-log" element={<AuditLogViewer />} />
+                                        {/* Admin */}
+                                        <Route path="audit-log" element={<AuditLogViewer />} />
 
-                                    {/* Settings */}
-                                    <Route path="settings" element={<Settings />} />
+                                        {/* Settings */}
+                                        <Route path="settings" element={<Settings />} />
 
-                                    {/* Fallback */}
-                                    <Route path="*" element={<Navigate to="/" replace />} />
-                                </Route>
-                            </Routes>
-                        </Router>
-                    </ToastProvider>
-                </AuthProvider>
-            </ThemeProvider>
-        </QueryClientProvider>
+                                        {/* Fallback */}
+                                        <Route path="*" element={<Navigate to="/" replace />} />
+                                    </Route>
+                                </Routes>
+                            </Router>
+                        </ToastProvider>
+                    </AuthProvider>
+                </ThemeProvider>
+            </QueryClientProvider>
+        </ErrorBoundary>
     );
 };
 

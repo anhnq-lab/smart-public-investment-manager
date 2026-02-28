@@ -1,7 +1,7 @@
 import React, { useRef, useEffect, useState, useCallback, useMemo } from 'react';
 import * as THREE from 'three';
 import * as OBC from '@thatopen/components';
-import { Upload, Loader2, Building2, AlertCircle, CheckCircle, Maximize2, Minimize2, Info, LocateFixed, EyeOff, Focus, FileUp, Box } from 'lucide-react';
+import { Upload, Loader2, Building2, AlertCircle, CheckCircle, Maximize2, Minimize2, Info, LocateFixed, EyeOff, Focus, FileUp, Box, Keyboard, X as XIcon } from 'lucide-react';
 import { useTheme } from '../../../../context/ThemeContext';
 
 // BIM hooks and context
@@ -48,6 +48,7 @@ const ProjectBimTabContent: React.FC = () => {
         selection,
         section,
         measure,
+        keyboard,
         opRefreshTrigger,
         handleExtractFromBIM,
         contextMenu,
@@ -123,18 +124,9 @@ const ProjectBimTabContent: React.FC = () => {
     const contextMenuRef = useRef<HTMLDivElement>(null);
     const originalMaterialsRef = useRef(new WeakMap<THREE.Material, THREE.Material>());
 
-    // Debug mount/unmount
-    useEffect(() => {
-        console.log('[BimTab] ✅ MOUNTED ProjectBimTabContent');
-        return () => console.log('[BimTab] ❌ UNMOUNTED ProjectBimTabContent');
-    }, []);
-
     const hasModels = upload.disciplineModels.length > 0;
 
-
-
     const cursorClass = getCursorClass(tools.activeTool);
-
 
     // ── Responsive check ───────────────────
     useEffect(() => {
@@ -337,8 +329,9 @@ const ProjectBimTabContent: React.FC = () => {
 
             // Directly resize canvas elements
             container.querySelectorAll('canvas').forEach((c: HTMLCanvasElement) => {
-                c.width = w * (window.devicePixelRatio || 1);
-                c.height = h * (window.devicePixelRatio || 1);
+                const limitedDpr = Math.min(window.devicePixelRatio || 1, 1.5);
+                c.width = w * limitedDpr;
+                c.height = h * limitedDpr;
                 c.style.width = '100%';
                 c.style.height = '100%';
             });
@@ -488,16 +481,9 @@ const ProjectBimTabContent: React.FC = () => {
         e.preventDefault();
         e.stopPropagation();
         setIsDraggingFile(false);
-        const file = e.dataTransfer.files?.[0];
-        if (file && file.name.toLowerCase().endsWith('.ifc')) {
-            // Create a synthetic event for the upload handler
-            const dt = new DataTransfer();
-            dt.items.add(file);
-            const input = document.createElement('input');
-            input.type = 'file';
-            input.files = dt.files;
-            const syntheticEvent = { target: input } as any;
-            upload.handleFileUpload(syntheticEvent);
+        const files = e.dataTransfer.files;
+        if (files && files.length > 0) {
+            upload.handleMultiFileUpload(files);
         }
     }, [upload]);
 
@@ -591,8 +577,9 @@ const ProjectBimTabContent: React.FC = () => {
                     <div className={`
                         absolute top-3 left-1/2 -translate-x-1/2 z-30 px-4 py-1.5 rounded-full
                         flex items-center gap-2 text-xs font-medium
-                        backdrop-blur-xl shadow-lg border
-                        ${isDark ? 'bg-slate-900/80 text-blue-300 border-slate-700/60' : 'bg-white/90 text-blue-700 border-blue-200'}
+                        backdrop-blur-xl shadow-xl border
+                        animate-[fadeSlideIn_0.25s_cubic-bezier(0.16,1,0.3,1)]
+                        ${isDark ? 'bg-slate-900/85 text-blue-300 border-slate-600/40' : 'bg-white/92 text-blue-700 border-blue-200/60'}
                     `}>
                         <span>{activeToolLabel}</span>
                         <button
@@ -609,19 +596,20 @@ const ProjectBimTabContent: React.FC = () => {
                 {/* Status bar */}
                 {upload.status !== 'idle' && !activeToolLabel && (
                     <div className={`
-                        absolute top-3 left-1/2 -translate-x-1/2 z-30 px-4 py-2 rounded-xl flex items-center gap-2
-                        shadow-lg backdrop-blur-xl text-xs font-medium
-                        ${isDark ? 'bg-slate-900/90 text-slate-300 border border-slate-700/60' : 'bg-white/95 text-gray-700 border border-gray-200'}
+                        absolute top-3 left-1/2 -translate-x-1/2 z-30 px-4 py-2 rounded-xl flex items-center gap-2.5
+                        shadow-xl backdrop-blur-xl text-xs font-medium
+                        animate-[fadeSlideIn_0.25s_cubic-bezier(0.16,1,0.3,1)]
+                        ${isDark ? 'bg-slate-900/90 text-slate-300 border border-slate-600/40' : 'bg-white/95 text-gray-700 border border-gray-200/80'}
                     `}>
                         <StatusIcon />
                         <span>{upload.statusMessage}</span>
                         {(upload.status === 'loading' || upload.status === 'converting') && (
-                            <div className={`w-24 h-1.5 rounded-full overflow-hidden shrink-0 shadow-inner ${isDark ? 'bg-slate-800' : 'bg-gray-200'}`}>
+                            <div className={`w-28 h-1.5 rounded-full overflow-hidden shrink-0 shadow-inner ${isDark ? 'bg-slate-800' : 'bg-gray-200'}`}>
                                 <div
-                                    className="h-full bg-blue-500 rounded-full transition-all duration-300 relative overflow-hidden"
+                                    className="h-full bg-gradient-to-r from-blue-500 to-cyan-400 rounded-full transition-all duration-300 relative overflow-hidden"
                                     style={{ width: `${upload.loadingProgress}%` }}
                                 >
-                                    <div className="absolute top-0 bottom-0 left-0 right-0 w-full h-full animate-[shimmer_2s_infinite] bg-gradient-to-r from-transparent via-white/40 to-transparent transform -translate-x-full" />
+                                    <div className="absolute top-0 bottom-0 left-0 right-0 w-full h-full animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-white/40 to-transparent transform -translate-x-full" />
                                 </div>
                             </div>
                         )}
@@ -649,10 +637,18 @@ const ProjectBimTabContent: React.FC = () => {
 
                 {/* Drag & Drop overlay */}
                 {isDraggingFile && (
-                    <div className="absolute inset-0 z-40 flex items-center justify-center backdrop-blur-sm border-2 border-dashed border-blue-400/60 rounded-lg bg-blue-500/5">
+                    <div className="absolute inset-0 z-40 flex items-center justify-center backdrop-blur-sm rounded-lg"
+                        style={{
+                            background: isDark ? 'rgba(6,182,212,0.04)' : 'rgba(59,130,246,0.04)',
+                            border: '2px dashed',
+                            borderColor: isDark ? 'rgba(6,182,212,0.5)' : 'rgba(59,130,246,0.4)',
+                            animation: 'borderDash 1s linear infinite',
+                        }}
+                    >
                         <div className="text-center">
-                            <FileUp className="w-12 h-12 mx-auto mb-2 text-blue-400 animate-bounce" />
-                            <p className="text-sm font-medium text-blue-400">Thả file IFC vào đây</p>
+                            <FileUp className={`w-12 h-12 mx-auto mb-3 animate-bounce ${isDark ? 'text-cyan-400' : 'text-blue-500'}`} />
+                            <p className={`text-sm font-semibold ${isDark ? 'text-cyan-300' : 'text-blue-600'}`}>Thả file IFC vào đây</p>
+                            <p className={`text-xs mt-1 ${isDark ? 'text-cyan-500/60' : 'text-blue-400/60'}`}>.ifc format</p>
                         </div>
                     </div>
                 )}
@@ -728,25 +724,24 @@ const ProjectBimTabContent: React.FC = () => {
                         <div className={`
                             text-center p-10 rounded-2xl pointer-events-auto max-w-sm
                             ${isDark ? 'bg-slate-900/95' : 'bg-white/95'} backdrop-blur-xl
-                            border ${isDark ? 'border-slate-800' : 'border-gray-200'}
+                            border ${isDark ? 'border-slate-700/40' : 'border-gray-200'}
                             shadow-2xl
                         `}>
                             <div className={`w-16 h-16 mx-auto mb-5 rounded-2xl flex items-center justify-center
-                                ${isDark ? 'bg-emerald-500/10' : 'bg-blue-50'}
+                                animate-[float_3s_ease-in-out_infinite]
+                                ${isDark ? 'bg-gradient-to-br from-cyan-500/15 to-blue-500/10' : 'bg-gradient-to-br from-blue-50 to-cyan-50'}
                             `}>
-                                <Building2 className={`w-8 h-8 ${isDark ? 'text-emerald-400' : 'text-blue-500'}`} />
+                                <Building2 className={`w-8 h-8 ${isDark ? 'text-cyan-400' : 'text-blue-500'}`} />
                             </div>
-                            <h3 className={`text-xl font-bold mb-3 ${isDark ? 'text-slate-100' : 'text-gray-800'}`}>
+                            <h3 className={`text-xl font-bold mb-3 ${isDark ? 'bg-gradient-to-r from-slate-100 to-cyan-200 bg-clip-text text-transparent' : 'text-gray-800'}`}>
                                 Môi trường BIM 3D
                             </h3>
                             <p className={`text-sm mb-6 leading-relaxed ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
                                 Không tìm thấy mô hình BIM nào đang được liên kết với dự án này. Vui lòng tải lên tệp định dạng chuẩn <strong className={isDark ? 'text-slate-300' : 'text-gray-700'}>IFC</strong> để hệ thống tự động khởi tạo Viewport.
                             </p>
                             <label className={`inline-flex items-center gap-2.5 px-6 py-3 rounded-xl cursor-pointer text-sm font-semibold transition-all duration-300
-                                ${isDark
-                                    ? 'bg-blue-600 hover:bg-blue-500 text-white shadow-[0_0_20px_rgba(37,99,235,0.4)] hover:shadow-[0_0_30px_rgba(59,130,246,0.6)] border border-blue-500/50'
-                                    : 'bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-600/30'
-                                }
+                                bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-500 hover:to-cyan-400 text-white
+                                shadow-[0_4px_20px_rgba(37,99,235,0.35)] hover:shadow-[0_6px_28px_rgba(59,130,246,0.5)]
                                 hover:-translate-y-0.5
                             `}>
                                 <Upload className="w-5 h-5" />
@@ -768,13 +763,14 @@ const ProjectBimTabContent: React.FC = () => {
                 {/* Loading skeleton */}
                 {!engine.viewerReady && !engine.initError && (
                     <div className="absolute inset-0 flex items-center justify-center z-40 bg-black/20 backdrop-blur-sm">
-                        <div className={`text-center p-8 rounded-2xl border shadow-2xl backdrop-blur-xl ${isDark ? 'bg-slate-900/90 border-slate-700/50' : 'bg-white/95 border-gray-200'}`}>
+                        <div className={`text-center p-8 rounded-2xl border shadow-2xl backdrop-blur-xl ${isDark ? 'bg-slate-900/92 border-slate-600/30' : 'bg-white/95 border-gray-200'}`}>
                             <div className="relative w-16 h-16 mx-auto mb-4">
                                 <div className={`absolute inset-0 border-4 border-t-transparent rounded-full animate-spin ${isDark ? 'border-blue-500' : 'border-blue-600'}`}></div>
                                 <div className={`absolute inset-2 border-4 border-b-transparent rounded-full animate-[spin_1.5s_linear_infinite_reverse] ${isDark ? 'border-cyan-400' : 'border-cyan-500'}`}></div>
-                                <Box className={`absolute inset-0 m-auto w-5 h-5 animate-pulse ${isDark ? 'text-blue-400' : 'text-blue-600'}`} />
+                                <div className={`absolute inset-4 border-2 border-l-transparent rounded-full animate-[spin_2s_linear_infinite] ${isDark ? 'border-blue-300/60' : 'border-blue-400/60'}`}></div>
+                                <Box className={`absolute inset-0 m-auto w-4 h-4 animate-pulse ${isDark ? 'text-cyan-400' : 'text-blue-600'}`} />
                             </div>
-                            <h3 className={`text-lg font-bold mb-1 ${isDark ? 'text-slate-200' : 'text-gray-800'}`}>
+                            <h3 className={`text-lg font-bold mb-1 ${isDark ? 'bg-gradient-to-r from-slate-200 to-cyan-300 bg-clip-text text-transparent' : 'text-gray-800'}`}>
                                 Đang khởi tạo Engine
                             </h3>
                             <p className={`text-xs font-medium ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
@@ -864,8 +860,9 @@ const ProjectBimTabContent: React.FC = () => {
             {contextMenu.visible && (
                 <div
                     ref={contextMenuRef}
-                    className={`fixed z-[99999] w-44 py-1 rounded-lg shadow-2xl border backdrop-blur-xl
-                        ${isDark ? 'bg-slate-900/98 border-slate-700/80 text-slate-200' : 'bg-white/98 border-gray-200 text-gray-800'}
+                    className={`fixed z-[99999] w-48 py-1.5 rounded-xl shadow-2xl border backdrop-blur-xl
+                        animate-[fadeSlideIn_0.15s_cubic-bezier(0.16,1,0.3,1)]
+                        ${isDark ? 'bg-slate-900/96 border-slate-600/40 text-slate-200' : 'bg-white/98 border-gray-200/80 text-gray-800'}
                     `}
                     style={{ left: contextMenu.x, top: contextMenu.y }}
                     onClick={(e) => e.stopPropagation()}
@@ -922,6 +919,65 @@ const ProjectBimTabContent: React.FC = () => {
                         <Focus className="w-3.5 h-3.5 text-purple-400" />
                         <span>Cô lập đối tượng</span>
                     </button>
+                </div>
+            )}
+
+            {/* ─── SHORTCUT TOAST ─── */}
+            {keyboard.lastShortcutLabel && (
+                <div className={`fixed bottom-6 left-1/2 -translate-x-1/2 z-[99999] px-4 py-2 rounded-xl text-xs font-semibold shadow-xl animate-[fadeSlideIn_0.15s_ease-out] backdrop-blur-lg
+                    ${isDark ? 'bg-slate-800/90 text-slate-200 border border-slate-700/50' : 'bg-white/95 text-gray-700 border border-gray-200'}
+                `}>
+                    <span className="font-mono">{keyboard.lastShortcutLabel}</span>
+                </div>
+            )}
+
+            {/* ─── VALIDATION ERROR TOAST ─── */}
+            {upload.validationError && (
+                <div className={`fixed bottom-6 left-1/2 -translate-x-1/2 z-[99999] flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-medium shadow-xl animate-[fadeSlideIn_0.2s_ease-out] backdrop-blur-lg
+                    ${isDark ? 'bg-red-500/20 text-red-300 border border-red-500/30' : 'bg-red-50 text-red-600 border border-red-200'}
+                `}>
+                    <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+                    {upload.validationError}
+                </div>
+            )}
+
+            {/* ─── SHORTCUTS HELP OVERLAY ─── */}
+            {keyboard.showShortcutsHelp && (
+                <div className="fixed inset-0 z-[99999] flex items-center justify-center" onClick={keyboard.toggleShortcutsHelp}>
+                    <div className={`absolute inset-0 ${isDark ? 'bg-black/60' : 'bg-black/30'} backdrop-blur-sm`} />
+                    <div
+                        className={`relative w-96 max-h-[80vh] overflow-y-auto rounded-2xl shadow-2xl p-6 animate-[fadeSlideIn_0.2s_cubic-bezier(0.16,1,0.3,1)]
+                            ${isDark ? 'bg-slate-900 border border-slate-700/50' : 'bg-white border border-gray-200'}
+                        `}
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <div className="flex items-center justify-between mb-4">
+                            <div className="flex items-center gap-2">
+                                <Keyboard className={`w-5 h-5 ${isDark ? 'text-cyan-400' : 'text-blue-500'}`} />
+                                <h3 className={`font-bold text-sm ${isDark ? 'text-white' : 'text-gray-800'}`}>Phím tắt BIM Viewer</h3>
+                            </div>
+                            <button onClick={keyboard.toggleShortcutsHelp} className={`p-1 rounded-lg ${isDark ? 'hover:bg-white/10 text-slate-400' : 'hover:bg-gray-100 text-gray-500'}`}>
+                                <XIcon className="w-4 h-4" />
+                            </button>
+                        </div>
+                        <div className="space-y-3">
+                            {[
+                                { group: 'Di chuyển', keys: [['W/A/S/D', 'Di chuyển camera'], ['Q/E', 'Lên/Xuống'], ['Mũi tên', 'Xoay camera'], ['+/-', 'Zoom in/out']] },
+                                { group: 'Hiển thị', keys: [['F / Home', 'Fit All'], ['1-7', 'Preset views (Front, Back, Left, Right, Top, Bottom, Iso)'], ['?', 'Bảng phím tắt']] },
+                                { group: 'Tương tác', keys: [['ESC', 'Hủy tool / Bỏ chọn'], ['Delete', 'Xóa clip plane'], ['Double-click', 'Đo lường (khi đang đo)'], ['Shift+Drag', 'Pan camera']] },
+                            ].map(section => (
+                                <div key={section.group}>
+                                    <p className={`text-[10px] font-bold uppercase mb-1.5 ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>{section.group}</p>
+                                    {section.keys.map(([key, desc]) => (
+                                        <div key={key} className={`flex items-center justify-between py-1 ${isDark ? 'text-slate-300' : 'text-gray-600'}`}>
+                                            <kbd className={`text-[10px] font-mono px-1.5 py-0.5 rounded ${isDark ? 'bg-slate-800 text-cyan-300' : 'bg-gray-100 text-blue-600'}`}>{key}</kbd>
+                                            <span className="text-xs">{desc}</span>
+                                        </div>
+                                    ))}
+                                </div>
+                            ))}
+                        </div>
+                    </div>
                 </div>
             )}
         </div>

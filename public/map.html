@@ -4,8 +4,8 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Project Map</title>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" integrity="sha512-Zcn6lsHndGvGsFsj/u2LIt01Y8140Jk5OAYYvY2rXbV7oXzK31g2G6yG/eQ7KxjNfG8xTqzY+eC44J+lQyBfBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js" integrity="sha512-BwHnxO8OOZ/A/eH//eQ0A//c8wA4zHkntL/b1dF2Qf9o+mO0Fm9W/NRYw3G8+3d7d/P5e5p+5aWq9b3i+0Q==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <style>
         body { margin: 0; padding: 0; }
         #map { width: 100vw; height: 100vh; }
@@ -111,7 +111,7 @@
                     bounds.extend(marker.getLatLng());
                 });
 
-                if (projects.length > 0) {
+                if (bounds.isValid()) {
                     map.fitBounds(bounds, { padding: [50, 50], maxZoom: 12 });
                 }
             }

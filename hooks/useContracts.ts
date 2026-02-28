@@ -1,6 +1,6 @@
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { contractService } from '../services/contract.service';
+import { ContractService } from '../services/ContractService';
 import { Contract } from '../types';
 
 export const useContracts = () => {
@@ -8,11 +8,11 @@ export const useContracts = () => {
 
     const { data: contracts = [], isLoading, error } = useQuery({
         queryKey: ['contracts'],
-        queryFn: contractService.getAll
+        queryFn: () => ContractService.getAll()
     });
 
     const createMutation = useMutation({
-        mutationFn: contractService.create,
+        mutationFn: (contract: Partial<Contract>) => ContractService.create(contract),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['contracts'] });
         }

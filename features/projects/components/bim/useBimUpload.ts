@@ -29,11 +29,14 @@ export interface BimUploadAPI {
     ifcDataMapRef: React.MutableRefObject<Map<string, Uint8Array>>;
     // Actions
     handleFileUpload: (e: React.ChangeEvent<HTMLInputElement>) => void;
+    handleMultiFileUpload: (files: FileList) => void;
     loadExistingModels: () => Promise<void>;
     toggleDisciplineVisibility: (index: number) => void;
     handleDeleteModel: (index: number) => void;
     retryFailedModel: (index: number) => void;
     clearStatus: () => void;
+    cancelUpload: () => void;
+    validationError: string | null;
 }
 
 export function useBimUpload(
@@ -51,6 +54,24 @@ export function useBimUpload(
 
     // Store raw IFC data for property lookups
     const ifcDataMapRef = useRef<Map<string, Uint8Array>>(new Map());
+    const abortControllerRef = useRef<AbortController | null>(null);
+    const [validationError, setValidationError] = useState<string | null>(null);
+
+    // ── File validation ────────────────────────
+    const MAX_FILE_SIZE = 150 * 1024 * 1024; // 150MB
+    const validateFile = useCallback((file: File): string | null => {
+        const ext = file.name.toLowerCase().split('.').pop();
+        if (ext !== 'ifc') {
+            return `"${file.name}" không phải file IFC. Chỉ chấp nhận file .ifc`;
+        }
+        if (file.size > MAX_FILE_SIZE) {
+            return `"${file.name}" quá lớn (${(file.size / 1024 / 1024).toFixed(0)}MB). Giới hạn ${MAX_FILE_SIZE / 1024 / 1024}MB`;
+        }
+        if (file.size < 100) {
+            return `"${file.name}" quá nhỏ, có thể bị lỗi`;
+        }
+        return null;
+    }, []);
 
     // ── Load existing models from Supabase ──────────
     const loadExistingModels = useCallback(async () => {
@@ -133,6 +154,15 @@ export function useBimUpload(
         if (!file || !componentsRef.current || !worldRef.current) return;
         e.target.value = '';
 
+        // Validate
+        const error = validateFile(file);
+        if (error) {
+            setValidationError(error);
+            setTimeout(() => setValidationError(null), 5000);
+            return;
+        }
+        setValidationError(null);
+
         try {
             setStatus('loading');
             setStatusMessage(`Đang upload ${file.name} (${(file.size / 1024 / 1024).toFixed(1)} MB)...`);
@@ -161,8 +191,21 @@ export function useBimUpload(
             if (groupUuid) ifcDataMapRef.current.set(groupUuid, uint8Array);
             ifcDataMapRef.current.set(file.name, uint8Array);
 
-            // Mark model as ready (IFC file already uploaded by uploadIFCFile)
-            const elementCount = (model as any).elementCount || 0;
+            // Calculate element count from fragments safely
+            let elementCount = (model as any).elementCount || 0;
+            if (elementCount === 0 && (model as any).children) {
+                const ids = new Set<number>();
+                (model as any).children.forEach((child: any) => {
+                    if (child.itemIDs && typeof child.itemIDs.forEach === 'function') {
+                        child.itemIDs.forEach((id: number) => ids.add(id));
+                    } else if (Array.isArray(child.items)) {
+                        child.items.forEach((id: number) => ids.add(id));
+                    }
+                });
+                elementCount = ids.size;
+            }
+
+            // Mark model as ready
             await updateModelStatus(record.id, 'ready', { element_count: elementCount });
             setLoadingProgress(90);
 
@@ -180,12 +223,18 @@ export function useBimUpload(
 
             // Fit camera to model
             const camera = worldRef.current.camera as OBC.SimpleCamera;
-            const box = new THREE.Box3().setFromObject((model as any).object || worldRef.current.scene.three);
-            if (!box.isEmpty()) {
-                const sphere = new THREE.Sphere();
-                box.getBoundingSphere(sphere);
-                camera.controls.fitToSphere(sphere, true);
-
+            let targetObj = (model as any).object || model; // In TOC v2, model itself is a THREE.Group
+            try {
+                if (targetObj instanceof THREE.Object3D) {
+                    const box = new THREE.Box3().setFromObject(targetObj);
+                    if (!box.isEmpty()) {
+                        const sphere = new THREE.Sphere();
+                        box.getBoundingSphere(sphere);
+                        camera.controls.fitToSphere(sphere, true);
+                    }
+                }
+            } catch (err) {
+                console.warn('Could not fit camera to model automatically:', err);
             }
 
             setStatus('success');
@@ -251,7 +300,47 @@ export function useBimUpload(
     const clearStatus = useCallback(() => {
         setStatus('idle');
         setStatusMessage('');
+        setValidationError(null);
     }, []);
+
+    // ── Cancel upload ──────────────────────────
+    const cancelUpload = useCallback(() => {
+        if (abortControllerRef.current) {
+            abortControllerRef.current.abort();
+            abortControllerRef.current = null;
+        }
+        setStatus('idle');
+        setStatusMessage('Upload bị hủy');
+        setLoadingProgress(0);
+        setTimeout(() => setStatusMessage(''), 3000);
+    }, []);
+
+    // ── Multi-file upload (drag & drop) ────────
+    const handleMultiFileUpload = useCallback(async (files: FileList) => {
+        if (!componentsRef.current || !worldRef.current) return;
+        const validFiles: File[] = [];
+        for (const file of Array.from(files)) {
+            const err = validateFile(file);
+            if (err) {
+                setValidationError(err);
+                setTimeout(() => setValidationError(null), 5000);
+            } else {
+                validFiles.push(file);
+            }
+        }
+        if (validFiles.length === 0) return;
+
+        // Upload files sequentially to avoid overwhelming the engine
+        for (let i = 0; i < validFiles.length; i++) {
+            const file = validFiles[i];
+            const fakeEvent = { target: { files: [file], value: '' } } as any;
+            // Reuse single file upload logic
+            try {
+                setStatusMessage(`Đang xử lý ${i + 1}/${validFiles.length}: ${file.name}`);
+                await handleFileUpload(fakeEvent);
+            } catch { /* individual errors handled in handleFileUpload */ }
+        }
+    }, [componentsRef, worldRef, validateFile, handleFileUpload]);
 
     return {
         status,
@@ -261,10 +350,13 @@ export function useBimUpload(
         objectCount,
         ifcDataMapRef,
         handleFileUpload,
+        handleMultiFileUpload,
         loadExistingModels,
         toggleDisciplineVisibility,
         handleDeleteModel,
         retryFailedModel,
         clearStatus,
+        cancelUpload,
+        validationError,
     };
 }

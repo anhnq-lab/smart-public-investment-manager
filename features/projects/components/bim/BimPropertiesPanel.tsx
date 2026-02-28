@@ -7,7 +7,7 @@ import React, { useState, useMemo } from 'react';
 import {
     ChevronDown, ChevronRight, Copy, Search, X,
     Crosshair, Layers, Link2, Tag, Hash, Box,
-    Ruler, Square, Maximize, Weight
+    Ruler, Square, Maximize, Weight, ChevronsUpDown, Download, Check
 } from 'lucide-react';
 import { useBimContext } from './context/BimContext';
 
@@ -89,6 +89,23 @@ function getQuantityIcon(name: string) {
     return <Hash className="w-3 h-3 text-slate-400" />;
 }
 
+// ── Search highlight helper ──────────────────────────
+function highlightMatch(text: string, query: string, isDarkMode: boolean): React.ReactNode {
+    if (!query.trim()) return text;
+    const idx = text.toLowerCase().indexOf(query.toLowerCase());
+    if (idx === -1) return text;
+    const before = text.slice(0, idx);
+    const match = text.slice(idx, idx + query.length);
+    const after = text.slice(idx + query.length);
+    return (
+        <>
+            {before}
+            <span className={`font-bold ${isDarkMode ? 'text-cyan-400' : 'text-blue-600'}`}>{match}</span>
+            {after}
+        </>
+    );
+}
+
 // ── Component ────────────────────────────────────────
 export const BimPropertiesPanel: React.FC<BimPropertiesPanelProps> = ({
     isBottomPanel = false
@@ -106,6 +123,8 @@ export const BimPropertiesPanel: React.FC<BimPropertiesPanelProps> = ({
     const [activeTab, setActiveTab] = useState<PropertiesTab>('properties');
     const [searchQuery, setSearchQuery] = useState('');
     const [expandedSets, setExpandedSets] = useState<Record<string, boolean>>({});
+    const [copyToast, setCopyToast] = useState<string | null>(null);
+    const [allExpanded, setAllExpanded] = useState(false);
 
     // Auto-expand first few sets when element changes
     React.useEffect(() => {
@@ -125,7 +144,49 @@ export const BimPropertiesPanel: React.FC<BimPropertiesPanelProps> = ({
     };
 
     const copyValue = (value: string) => {
-        navigator.clipboard.writeText(value).catch(() => { });
+        navigator.clipboard.writeText(value).then(() => {
+            setCopyToast(value.length > 20 ? value.slice(0, 20) + '...' : value);
+            setTimeout(() => setCopyToast(null), 1500);
+        }).catch(() => { });
+    };
+
+    // Total property count
+    const totalPropertyCount = useMemo(() => {
+        if (!selectedElement) return 0;
+        return selectedElement.propertySets.reduce((sum, ps) => sum + ps.properties.length, 0);
+    }, [selectedElement]);
+
+    // Toggle all expand/collapse
+    const toggleAllSets = () => {
+        if (!selectedElement) return;
+        const next = !allExpanded;
+        setAllExpanded(next);
+        const newState: Record<string, boolean> = { identity: next };
+        selectedElement.propertySets.forEach(ps => { newState[ps.name] = next; });
+        if (selectedElement.materials.length > 0) newState['materials'] = next;
+        setExpandedSets(newState);
+    };
+
+    // Export element properties as JSON
+    const exportProperties = () => {
+        if (!selectedElement) return;
+        const data = {
+            id: selectedElement.id,
+            name: selectedElement.name,
+            type: selectedElement.type,
+            globalId: selectedElement.globalId,
+            propertySets: selectedElement.propertySets,
+            materials: selectedElement.materials,
+            relations: selectedElement.relations,
+            classifications: selectedElement.classifications,
+        };
+        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `bim-properties-${selectedElement.type}-${selectedElement.id}.json`;
+        link.click();
+        URL.revokeObjectURL(url);
     };
 
     // Filter properties by search
@@ -136,7 +197,7 @@ export const BimPropertiesPanel: React.FC<BimPropertiesPanelProps> = ({
             .map(ps => ({
                 ...ps,
                 properties: ps.properties.filter(p =>
-                    p.name.toLowerCase().includes(q) || p.value.toLowerCase().includes(q)
+                    (p.name || '').toLowerCase().includes(q) || (p.value || '').toLowerCase().includes(q)
                 )
             }))
             .filter(ps => ps.properties.length > 0 || ps.name.toLowerCase().includes(q));
@@ -171,11 +232,11 @@ export const BimPropertiesPanel: React.FC<BimPropertiesPanelProps> = ({
         <div className={`flex justify-between items-start group py-1 px-0.5 rounded ${isDarkMode ? 'hover:bg-white/5' : 'hover:bg-gray-50'}`}>
             <span className={`text-xs ${isDarkMode ? 'text-slate-500' : 'text-gray-500'} truncate max-w-[45%] flex items-center gap-1.5`} title={name}>
                 {isQuantity && getQuantityIcon(name)}
-                {name}
+                {searchQuery ? highlightMatch(name, searchQuery, isDarkMode) : name}
             </span>
             <div className="flex items-center gap-1">
                 <span className={`text-xs ${isDarkMode ? 'text-slate-300' : 'text-gray-700'} truncate max-w-[140px] text-right font-mono`} title={isQuantity ? formatQuantityValue(name, value) : value}>
-                    {isQuantity ? formatQuantityValue(name, value) : (value || '—')}
+                    {isQuantity ? formatQuantityValue(name, value) : (searchQuery ? highlightMatch(value || '—', searchQuery, isDarkMode) : (value || '—'))}
                 </span>
                 <button
                     onClick={() => copyValue(isQuantity ? formatQuantityValue(name, value) : value)}
@@ -221,11 +282,30 @@ export const BimPropertiesPanel: React.FC<BimPropertiesPanelProps> = ({
                         <p className={`font-bold text-sm truncate ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>{selectedElement.name}</p>
                     </div>
 
-                    {/* Tabs */}
-                    <div className={`flex gap-1 p-2 border-b ${isDarkMode ? 'border-slate-700/30' : 'border-gray-200'}`}>
+                    {/* Tabs + Actions */}
+                    <div className={`flex items-center gap-1 p-2 border-b ${isDarkMode ? 'border-slate-700/30' : 'border-gray-200'}`}>
                         <TabBtn tab="properties" icon={<Layers className="w-3.5 h-3.5" />} label="Props" count={selectedElement.propertySets.length} />
                         <TabBtn tab="relations" icon={<Link2 className="w-3.5 h-3.5" />} label="Rels" count={selectedElement.relations?.length} />
                         <TabBtn tab="classification" icon={<Tag className="w-3.5 h-3.5" />} label="Class" count={selectedElement.classifications?.length} />
+                        <div className="flex-1" />
+                        {activeTab === 'properties' && (
+                            <>
+                                <button
+                                    onClick={toggleAllSets}
+                                    className={`p-1 rounded transition-colors ${isDarkMode ? 'text-slate-500 hover:text-slate-300 hover:bg-white/5' : 'text-gray-400 hover:text-gray-600 hover:bg-gray-100'}`}
+                                    title={allExpanded ? 'Thu gọn tất cả' : 'Mở rộng tất cả'}
+                                >
+                                    <ChevronsUpDown className="w-3.5 h-3.5" />
+                                </button>
+                                <button
+                                    onClick={exportProperties}
+                                    className={`p-1 rounded transition-colors ${isDarkMode ? 'text-slate-500 hover:text-slate-300 hover:bg-white/5' : 'text-gray-400 hover:text-gray-600 hover:bg-gray-100'}`}
+                                    title="Export properties (JSON)"
+                                >
+                                    <Download className="w-3.5 h-3.5" />
+                                </button>
+                            </>
+                        )}
                     </div>
 
                     {/* Search (Properties tab only) */}
@@ -397,6 +477,14 @@ export const BimPropertiesPanel: React.FC<BimPropertiesPanelProps> = ({
                     </div>
                     <p className={`text-sm font-medium mb-1 ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}>No element selected</p>
                     <p className={`text-xs ${isDarkMode ? 'text-slate-600' : 'text-gray-400'}`}>Click on a model element to<br />view its properties</p>
+                </div>
+            )}
+
+            {/* Copy toast */}
+            {copyToast && (
+                <div className={`absolute bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium shadow-lg transition-all animate-[fadeSlideIn_0.2s_ease-out] ${isDarkMode ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' : 'bg-emerald-50 text-emerald-600 border border-emerald-200'}`}>
+                    <Check className="w-3 h-3" />
+                    Copied!
                 </div>
             )}
         </div>

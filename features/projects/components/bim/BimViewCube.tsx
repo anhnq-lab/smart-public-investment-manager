@@ -97,19 +97,19 @@ export const BimViewCube: React.FC = () => {
     });
 
     const baseClasses = isDarkMode
-        ? 'bg-slate-800/70 border-slate-600/30 text-slate-400 backdrop-blur-sm'
-        : 'bg-white/80 border-gray-300/50 text-gray-500 backdrop-blur-sm';
+        ? 'bg-gradient-to-br from-slate-700/60 to-slate-800/70 border-slate-500/25 text-slate-400 backdrop-blur-md'
+        : 'bg-gradient-to-br from-white/85 to-gray-50/80 border-gray-300/40 text-gray-500 backdrop-blur-md';
 
     const hoverClasses = isDarkMode
-        ? 'bg-cyan-500/30 border-cyan-400/60 text-cyan-300 shadow-[0_0_12px_rgba(6,182,212,0.3)]'
-        : 'bg-cyan-100/80 border-cyan-400 text-cyan-700 shadow-[0_0_10px_rgba(6,182,212,0.2)]';
+        ? 'bg-gradient-to-br from-cyan-500/35 to-blue-500/25 border-cyan-400/50 text-cyan-300 shadow-[0_0_16px_rgba(6,182,212,0.35)]'
+        : 'bg-gradient-to-br from-blue-100/90 to-cyan-50/80 border-cyan-400/60 text-cyan-700 shadow-[0_0_12px_rgba(6,182,212,0.2)]';
 
     return (
         <div className="absolute top-14 right-3 z-20 flex flex-col items-center">
             {/* Glow backdrop */}
             <div
-                className={`absolute rounded-full blur-xl opacity-20 ${isDarkMode ? 'bg-cyan-500' : 'bg-blue-400'}`}
-                style={{ width: 100, height: 100, top: 10, left: -8 }}
+                className={`absolute rounded-full blur-2xl transition-opacity duration-500 ${isDarkMode ? 'bg-cyan-500 opacity-15' : 'bg-blue-400 opacity-12'}`}
+                style={{ width: 110, height: 110, top: 8, left: -12 }}
             />
 
             {/* Compass Ring */}
@@ -151,7 +151,8 @@ export const BimViewCube: React.FC = () => {
                             />
                         );
                     })}
-                    {/* N marker (red) */}
+                    {/* N marker (red) with subtle glow */}
+                    <circle cx="55" cy="12" r="7" fill="rgba(239,68,68,0.12)" />
                     <text x="55" y="12" textAnchor="middle" dominantBaseline="middle"
                         fill="#ef4444" fontSize="9" fontWeight="bold" fontFamily="system-ui">
                         N
@@ -193,7 +194,7 @@ export const BimViewCube: React.FC = () => {
                         style={{
                             transformStyle: 'preserve-3d',
                             transform: cubeTransform,
-                            transition: isDragging ? 'none' : 'transform 0.3s cubic-bezier(0.25, 0.1, 0.25, 1)',
+                            transition: isDragging ? 'none' : 'transform 0.35s cubic-bezier(0.16, 1, 0.3, 1)',
                         }}
                     >
                         {FACES.map(face => (
@@ -205,7 +206,7 @@ export const BimViewCube: React.FC = () => {
                                 className={`
                                     absolute w-[80px] h-[80px] flex items-center justify-center
                                     border text-[9px] font-bold uppercase tracking-wider select-none
-                                    transition-all duration-150 rounded-[4px]
+                                    transition-all duration-200 rounded-[6px]
                                     ${hoveredFace === face.id ? hoverClasses : baseClasses}
                                 `}
                                 style={faceStyle(face.id)}

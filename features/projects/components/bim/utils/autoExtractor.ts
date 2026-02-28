@@ -179,7 +179,6 @@ export async function extractFacilityAssetsFromIFC(
     try {
         const existingCount = await getProjectBimAssetCount(projectId);
         if (existingCount > 0) {
-            console.log(`[AutoExtractor] Project đã có ${existingCount} asset từ BIM, bỏ qua extraction.`);
             return 0;
         }
     } catch { /* ignore check errors, proceed with extraction */ }
@@ -189,7 +188,7 @@ export async function extractFacilityAssetsFromIFC(
 
     try {
         const modelID = ifcApi.OpenModel(ifcData, { COORDINATE_TO_ORIGIN: false });
-        console.log('[AutoExtractor] Đã mở model IFC, bắt đầu quét thiết bị...');
+
 
         try {
             const assetsToInsert: FacilityAssetInsert[] = [];
@@ -202,7 +201,7 @@ export async function extractFacilityAssetsFromIFC(
 
                     const typeName = ifcApi.GetNameFromTypeCode(typeCode) || 'Unknown';
                     const category = categorizeByIfcType(typeName);
-                    console.log(`[AutoExtractor] Tìm thấy ${ids.size()} phần tử loại ${typeName}`);
+
 
                     for (let i = 0; i < ids.size(); i++) {
                         const id = ids.get(i);
@@ -249,7 +248,7 @@ export async function extractFacilityAssetsFromIFC(
                     if (ids.size() === 0) continue;
 
                     const typeName = ifcApi.GetNameFromTypeCode(typeCode) || 'GenericElement';
-                    console.log(`[AutoExtractor] Quét ${ids.size()} phần tử loại ${typeName} (lọc bằng tên)...`);
+
 
                     for (let i = 0; i < ids.size(); i++) {
                         const id = ids.get(i);
@@ -295,7 +294,7 @@ export async function extractFacilityAssetsFromIFC(
                 } catch { /* type not in model */ }
             }
 
-            console.log(`[AutoExtractor] Tổng cộng ${assetsToInsert.length} tài sản được trích xuất. Đang lưu...`);
+
 
             // ═══ Batch insert ═══
             const BATCH_SIZE = 50;
@@ -304,7 +303,7 @@ export async function extractFacilityAssetsFromIFC(
                 const results = await Promise.allSettled(batch.map(asset => createAsset(asset)));
                 const success = results.filter(r => r.status === 'fulfilled').length;
                 extractedCount += success;
-                console.log(`[AutoExtractor] Batch ${Math.floor(i / BATCH_SIZE) + 1}: ${success}/${batch.length} thành công`);
+
                 await new Promise(res => setTimeout(res, 50));
             }
 
@@ -315,6 +314,6 @@ export async function extractFacilityAssetsFromIFC(
         console.error('[AutoExtractor] Lỗi khi trích xuất tài sản:', err);
     }
 
-    console.log(`[AutoExtractor] Hoàn tất! Đã lưu ${extractedCount} tài sản.`);
+
     return extractedCount;
 }

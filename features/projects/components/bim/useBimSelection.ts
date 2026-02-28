@@ -24,7 +24,7 @@ async function getStandaloneIfcApi(): Promise<WebIFC.IfcAPI> {
         api.SetWasmPath('/');
         await api.Init();
         _standaloneIfcApi = api;
-        console.log('[web-ifc] ✅ Standalone IfcAPI initialized');
+        // web-ifc initialized silently
         return api;
     })();
     return _initPromise;
@@ -94,6 +94,9 @@ export function useBimSelection(
     const [typeGroups, setTypeGroups] = useState<TypeGroup[]>([]);
     const hiddenFragmentsRef = useRef<Map<string, Set<number>>>(new Map());
     const selectedFragmentRef = useRef<{ modelId: string; expressIds: number[] } | null>(null);
+    // Property cache — avoid re-parsing IFC properties for previously selected elements
+    const propertyCacheRef = useRef<Map<string, SelectedElement>>(new Map());
+    const PROPERTY_CACHE_MAX = 100;
 
     // ── Convert getItemsData result → SelectedElement ──
     const convertToSelectedElement = useCallback((
@@ -368,6 +371,15 @@ export function useBimSelection(
                     // Store for visibility operations
                     selectedFragmentRef.current = { modelId: String(modelId), expressIds: idArray.map(Number) };
 
+                    // ── Cache hit: skip expensive IFC parsing ──
+                    const cacheKey = `${modelId}:${expressID}`;
+                    const cached = propertyCacheRef.current.get(cacheKey);
+                    if (cached) {
+                        setSelectedElement(cached);
+                        onPanelOpen?.();
+                        break;
+                    }
+
                     // Step 1: Try official API — model.getItemsData()
                     const model = fragments.list.get(String(modelId));
                     let element: SelectedElement | null = null;
@@ -408,17 +420,24 @@ export function useBimSelection(
                             if (disposed) return;
                             setSelectedElement(prev => {
                                 if (!prev || prev.id !== String(expressID)) return prev;
-                                // Merge: if extra has propertySets, replace initial Identity-only set
                                 const mergedPsets = extra.propertySets && extra.propertySets.length > 0
                                     ? [...prev.propertySets.filter(ps => ps.name !== 'Identity'), ...extra.propertySets]
                                     : prev.propertySets;
-                                return {
+                                const enriched = {
                                     ...prev,
                                     propertySets: mergedPsets,
                                     materials: [...new Set([...prev.materials, ...(extra.materials || [])])],
                                     relations: extra.relations || prev.relations,
                                     classifications: extra.classifications || prev.classifications,
                                 };
+                                // ── Cache set: store enriched element ──
+                                if (propertyCacheRef.current.size >= PROPERTY_CACHE_MAX) {
+                                    // Evict oldest entry
+                                    const firstKey = propertyCacheRef.current.keys().next().value;
+                                    if (firstKey) propertyCacheRef.current.delete(firstKey);
+                                }
+                                propertyCacheRef.current.set(cacheKey, enriched);
+                                return enriched;
                             });
                         }).catch((err) => { console.warn('[Selection] Enrichment failed:', err); });
                     }

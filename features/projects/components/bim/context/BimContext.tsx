@@ -8,7 +8,7 @@ import { useBimSelection, BimSelectionAPI } from '../useBimSelection';
 import { useBimSection, BimSectionAPI } from '../useBimSection';
 import { useBimMeasure, BimMeasureAPI } from '../useBimMeasure';
 import { useBimOperations, BimOperationsAPI } from '../useBimOperations';
-import { useBimKeyboard } from '../useBimKeyboard';
+import { useBimKeyboard, BimKeyboardResult } from '../useBimKeyboard';
 import { extractFacilityAssetsFromIFC } from '../utils/autoExtractor';
 
 export interface BimContextMenuState {
@@ -32,6 +32,7 @@ export interface BimContextValue {
     section: BimSectionAPI;
     measure: BimMeasureAPI;
     operations: BimOperationsAPI;
+    keyboard: BimKeyboardResult;
 
     opRefreshTrigger: number;
     handleExtractFromBIM: () => Promise<number>;
@@ -121,12 +122,14 @@ export const BimProvider: React.FC<BimProviderProps> = ({
         engine.worldRef
     );
 
-    useBimKeyboard({
+    const keyboard = useBimKeyboard({
         containerRef,
         worldRef: engine.worldRef,
         setView: engine.setView,
         fitAll: engine.fitAll,
         activateTool: tools.activateTool,
+        clearMeasurements: measure.measurementCount > 0 ? measure.clearAllMeasurements : undefined,
+        clearSections: section.clipPlaneCount > 0 ? section.clearAllClipPlanes : undefined,
     });
 
     const handleExtractFromBIM = useCallback(async () => {
@@ -157,6 +160,7 @@ export const BimProvider: React.FC<BimProviderProps> = ({
         section,
         measure,
         operations,
+        keyboard,
         opRefreshTrigger,
         handleExtractFromBIM,
         contextMenu,

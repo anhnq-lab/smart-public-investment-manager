@@ -14,11 +14,21 @@ import * as THREE from 'three';
 import * as OBC from '@thatopen/components';
 import type { ActiveTool } from './useBimTools';
 
+export interface MeasurementRecord {
+    id: string;
+    type: 'length' | 'area';
+    value: number;       // meters or m²
+    timestamp: number;
+}
+
 export interface BimMeasureAPI {
     measurementCount: number;
     activeMeasurement: null;
+    measurementHistory: MeasurementRecord[];
+    totalSum: number;
     handleMeasureClick: (event: MouseEvent) => void;
     clearAllMeasurements: () => void;
+    deleteLastMeasurement: () => void;
 }
 
 export function useBimMeasure(
@@ -28,6 +38,7 @@ export function useBimMeasure(
     componentsRef?: React.MutableRefObject<OBC.Components | null>,
 ): BimMeasureAPI {
     const [measurementCount, setMeasurementCount] = useState(0);
+    const [measurementHistory, setMeasurementHistory] = useState<MeasurementRecord[]>([]);
     const measurerRef = useRef<any>(null);      // OBCF.LengthMeasurement
     const areaMeasurerRef = useRef<any>(null);   // OBCF.AreaMeasurement
     const highlighterRef = useRef<any>(null);    // OBCF.Highlighter
@@ -62,7 +73,7 @@ export function useBimMeasure(
             } catch { }
 
             initDoneRef.current = true;
-            console.log('[Measure] ✅ OBC measurement initialized (lazy)');
+            // Measurement tools initialized
             return true;
         } catch (err) {
             console.error('[Measure] Init failed:', err);
@@ -131,15 +142,43 @@ export function useBimMeasure(
         if (activeTool === 'measure-length' && measurerRef.current) {
             try {
                 await measurerRef.current.create();
-                setMeasurementCount(measurerRef.current.list.size);
-                console.log('[Measure] create(), total:', measurerRef.current.list.size);
+                const count = measurerRef.current.list.size;
+                setMeasurementCount(count);
+                // Extract last measurement value if possible
+                let lastValue = 0;
+                try {
+                    const list = Array.from(measurerRef.current.list.values());
+                    const last = list[list.length - 1] as any;
+                    if (last?.path?.distance !== undefined) lastValue = last.path.distance;
+                    else if (last?.value !== undefined) lastValue = last.value;
+                } catch { /* extraction optional */ }
+                setMeasurementHistory(prev => [...prev, {
+                    id: `len-${Date.now()}`,
+                    type: 'length',
+                    value: lastValue,
+                    timestamp: Date.now(),
+                }]);
             } catch (err) {
                 console.warn('[Measure] Length create error:', err);
             }
         } else if (activeTool === 'measure-area' && areaMeasurerRef.current) {
             try {
                 await areaMeasurerRef.current.create();
-                setMeasurementCount(areaMeasurerRef.current.list?.size ?? 0);
+                const count = areaMeasurerRef.current.list?.size ?? 0;
+                setMeasurementCount(count);
+                let lastValue = 0;
+                try {
+                    const list = Array.from(areaMeasurerRef.current.list.values());
+                    const last = list[list.length - 1] as any;
+                    if (last?.area !== undefined) lastValue = last.area;
+                    else if (last?.value !== undefined) lastValue = last.value;
+                } catch { /* extraction optional */ }
+                setMeasurementHistory(prev => [...prev, {
+                    id: `area-${Date.now()}`,
+                    type: 'area',
+                    value: lastValue,
+                    timestamp: Date.now(),
+                }]);
             } catch (err) {
                 console.warn('[Measure] Area create error:', err);
             }
@@ -155,12 +194,48 @@ export function useBimMeasure(
             try { areaMeasurerRef.current.list.clear(); } catch { }
         }
         setMeasurementCount(0);
+        setMeasurementHistory([]);
     }, []);
+
+    // ── Delete last measurement ──
+    const deleteLastMeasurement = useCallback(() => {
+        // Delete from OBC measurement list
+        if (measurerRef.current?.list?.size > 0) {
+            try {
+                const list = Array.from(measurerRef.current.list.values());
+                const last = list[list.length - 1] as any;
+                if (last && typeof last.dispose === 'function') last.dispose();
+                else measurerRef.current.list.delete(last);
+            } catch { /* skip */ }
+            setMeasurementCount(Math.max(0, measurerRef.current.list.size));
+        } else if (areaMeasurerRef.current?.list?.size > 0) {
+            try {
+                const list = Array.from(areaMeasurerRef.current.list.values());
+                const last = list[list.length - 1] as any;
+                if (last && typeof last.dispose === 'function') last.dispose();
+                else areaMeasurerRef.current.list.delete(last);
+            } catch { /* skip */ }
+            setMeasurementCount(Math.max(0, areaMeasurerRef.current.list?.size ?? 0));
+        }
+        setMeasurementHistory(prev => prev.slice(0, -1));
+    }, []);
+
+    // ── Total sum of same-type measurements ──
+    const totalSum = React.useMemo(() => {
+        if (measurementHistory.length === 0) return 0;
+        const lastType = measurementHistory[measurementHistory.length - 1].type;
+        return measurementHistory
+            .filter(m => m.type === lastType)
+            .reduce((sum, m) => sum + m.value, 0);
+    }, [measurementHistory]);
 
     return {
         measurementCount,
         activeMeasurement: null,
+        measurementHistory,
+        totalSum,
         handleMeasureClick,
         clearAllMeasurements,
+        deleteLastMeasurement,
     };
 }

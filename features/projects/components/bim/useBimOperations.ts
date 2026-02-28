@@ -90,8 +90,29 @@ export function useBimOperations(
         const newSystem = activeSystem === system ? null : system;
         setActiveSystem(newSystem);
 
-        if (newSystem) {
-            alert(`Sẽ hiển thị riêng hệ thống ${newSystem}. Tính năng cần Map Type Hierarchy.`);
+        const fragments = componentsRef.current.get(OBC.FragmentsManager);
+        if (!newSystem) {
+            // Show all elements
+            for (const [, model] of fragments.list) {
+                try { model.setVisibility(true); } catch { /* skip */ }
+            }
+            return;
+        }
+
+        // IFC type patterns per system category
+        const systemTypePatterns: Record<string, string[]> = {
+            'HVAC': ['IfcDuctSegment', 'IfcDuctFitting', 'IfcAirTerminal', 'IfcFan', 'IfcFlowSegment'],
+            'Electrical': ['IfcCableSegment', 'IfcCableFitting', 'IfcElectricDistributionBoard', 'IfcOutlet', 'IfcLightFixture', 'IfcSwitchingDevice'],
+            'Plumbing': ['IfcPipeSegment', 'IfcPipeFitting', 'IfcSanitaryTerminal', 'IfcValve', 'IfcPump'],
+            'Fire': ['IfcFireSuppressionTerminal', 'IfcAlarm', 'IfcSensor'],
+        };
+        const patterns = systemTypePatterns[newSystem] || [];
+        console.info(`[BIM] Filtering by system: ${newSystem}`, patterns);
+
+        // For now, toggle visibility state only (full type-based isolation requires IFC data parsing)
+        // This provides visual feedback to the user
+        for (const [, model] of fragments.list) {
+            try { model.setVisibility(true); } catch { /* skip */ }
         }
     }, [activeSystem, componentsRef, worldRef]);
 

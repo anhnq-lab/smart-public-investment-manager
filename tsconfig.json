@@ -26,5 +26,15 @@
     },
     "allowImportingTsExtensions": true,
     "noEmit": true
-  }
+  },
+  "exclude": [
+    "node_modules",
+    "dist",
+    "scripts",
+    "Doccument",
+    "resources",
+    "templates",
+    "supabase",
+    "ifc-converter-api"
+  ]
 }

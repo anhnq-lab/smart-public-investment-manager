@@ -11,7 +11,7 @@
  * Uses camera-controls library (behind OBC.SimpleCamera)
  * to switch between orbit and first-person modes.
  */
-import { useState, useCallback, useRef, useEffect } from 'react';
+import React, { useState, useCallback, useRef, useEffect } from 'react';
 import * as OBC from '@thatopen/components';
 
 export interface WalkthroughAPI {

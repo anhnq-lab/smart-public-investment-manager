@@ -13,7 +13,7 @@
  * │ Shift + drag   — Pan (handled by camera-controls)   │
  * └────────────────────────────────────────────────────┘
  */
-import { useEffect, useRef, useCallback } from 'react';
+import React, { useEffect, useRef, useCallback, useState } from 'react';
 import * as OBC from '@thatopen/components';
 
 // Orbit speed: degrees per key press (per animation frame)
@@ -28,6 +28,15 @@ interface UseBimKeyboardOptions {
     fitAll: () => void;
     activateTool: (tool: string) => void;
     onEscape?: () => void;
+    clearMeasurements?: () => void;
+    clearSections?: () => void;
+    clearSelection?: () => void;
+}
+
+export interface BimKeyboardResult {
+    lastShortcutLabel: string | null;
+    showShortcutsHelp: boolean;
+    toggleShortcutsHelp: () => void;
 }
 
 export function useBimKeyboard({
@@ -37,9 +46,25 @@ export function useBimKeyboard({
     fitAll,
     activateTool,
     onEscape,
-}: UseBimKeyboardOptions) {
+    clearMeasurements,
+    clearSections,
+    clearSelection,
+}: UseBimKeyboardOptions): BimKeyboardResult {
     const keysPressed = useRef<Set<string>>(new Set());
     const animFrameRef = useRef<number>(0);
+    const [lastShortcutLabel, setLastShortcutLabel] = useState<string | null>(null);
+    const [showShortcutsHelp, setShowShortcutsHelp] = useState(false);
+    const shortcutLabelTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+    const flashShortcut = useCallback((label: string) => {
+        setLastShortcutLabel(label);
+        if (shortcutLabelTimer.current) clearTimeout(shortcutLabelTimer.current);
+        shortcutLabelTimer.current = setTimeout(() => setLastShortcutLabel(null), 1200);
+    }, []);
+
+    const toggleShortcutsHelp = useCallback(() => {
+        setShowShortcutsHelp(prev => !prev);
+    }, []);
 
     // ── Continuous orbit/pan/zoom based on held keys ──
     const animate = useCallback(() => {
@@ -126,42 +151,62 @@ export function useBimKeyboard({
             // ── Single-press shortcuts ──
             switch (code) {
                 case 'Escape':
-                    activateTool('select');
+                    // ESC cascade: measurement → section → selection → tool
+                    if (clearMeasurements) { clearMeasurements(); flashShortcut('ESC — Xóa đo lường'); }
+                    else if (clearSections) { clearSections(); flashShortcut('ESC — Xóa section'); }
+                    else if (clearSelection) { clearSelection(); flashShortcut('ESC — Bỏ chọn'); }
+                    else { activateTool('select'); flashShortcut('ESC — Quay về chọn'); }
                     onEscape?.();
                     return;
                 case 'KeyF':
                 case 'Home':
                     e.preventDefault();
                     fitAll();
+                    flashShortcut('F — Fit All');
                     return;
+                // ? key for shortcuts help
+                case 'Slash':
+                    if (e.shiftKey) {
+                        e.preventDefault();
+                        toggleShortcutsHelp();
+                        return;
+                    }
+                    break;
                 // Numpad/number preset views
                 case 'Digit1': case 'Numpad1':
                     e.preventDefault();
                     setView('front');
+                    flashShortcut('1 — Front View');
                     return;
                 case 'Digit2': case 'Numpad2':
                     e.preventDefault();
                     setView('back');
+                    flashShortcut('2 — Back View');
                     return;
                 case 'Digit3': case 'Numpad3':
                     e.preventDefault();
                     setView('left');
+                    flashShortcut('3 — Left View');
                     return;
                 case 'Digit4': case 'Numpad4':
                     e.preventDefault();
                     setView('right');
+                    flashShortcut('4 — Right View');
                     return;
                 case 'Digit5': case 'Numpad5':
                     e.preventDefault();
                     setView('top');
+                    flashShortcut('5 — Top View');
                     return;
                 case 'Digit6': case 'Numpad6':
                     e.preventDefault();
                     setView('bottom');
+                    flashShortcut('6 — Bottom View');
                     return;
                 case 'Digit7': case 'Numpad7':
                     e.preventDefault();
                     setView('iso');
+                    flashShortcut('7 — Isometric');
                     return;
             }
 
@@ -203,5 +248,11 @@ export function useBimKeyboard({
             cancelAnimationFrame(animFrameRef.current);
             keysPressed.current.clear();
         };
-    }, [containerRef, animate, setView, fitAll, activateTool, onEscape]);
+    }, [containerRef, animate, setView, fitAll, activateTool, onEscape, flashShortcut, toggleShortcutsHelp, clearMeasurements, clearSections, clearSelection]);
+
+    return {
+        lastShortcutLabel,
+        showShortcutsHelp,
+        toggleShortcutsHelp,
+    };
 }

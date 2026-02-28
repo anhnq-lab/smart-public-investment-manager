@@ -7,7 +7,7 @@ import {
     ChevronDown, ChevronRight, Eye, EyeOff, Search, X,
     Building2, Layers, TreePine, MapPin, FolderOpen, Box,
     Hash, Columns3, Square, CircleDot, Upload, Loader2,
-    FileUp, Trash2, MoreVertical
+    FileUp, Trash2, MoreVertical, Crosshair
 } from 'lucide-react';
 import type { BimModel } from '../../../../lib/bimStorage';
 import { useBimContext } from './context/BimContext';
@@ -74,7 +74,7 @@ export const BimModelTree: React.FC = () => {
         tools,
         selection: { spatialTree, typeGroups, handleSelectElementFromTree, toggleTypeVisibility },
         upload: { disciplineModels, toggleDisciplineVisibility, handleFileUpload, handleDeleteModel },
-        engine: { viewerReady }
+        engine: { viewerReady, zoomToExpressId }
     } = useBimContext();
 
     const onClose = () => tools.toggleLeftPanel('none');
@@ -100,17 +100,20 @@ export const BimModelTree: React.FC = () => {
         <button
             onClick={() => setMode(tab)}
             className={`
-                flex-1 flex items-center justify-center gap-1.5 px-2 py-1.5 text-[10px] font-bold uppercase tracking-wide rounded-md transition-all
+                relative flex-1 flex items-center justify-center gap-1.5 px-2 py-1.5 text-[10px] font-bold uppercase tracking-wide rounded-md transition-all duration-200
                 ${mode === tab
                     ? isDarkMode
-                        ? 'bg-blue-500/15 text-blue-400 ring-1 ring-blue-500/30'
-                        : 'bg-blue-50 text-blue-600 ring-1 ring-blue-200'
+                        ? 'bg-cyan-500/10 text-cyan-400'
+                        : 'bg-blue-50 text-blue-600'
                     : isDarkMode ? 'text-slate-500 hover:text-slate-300 hover:bg-white/5' : 'text-gray-400 hover:text-gray-600 hover:bg-gray-100'
                 }
             `}
         >
             {icon}
             <span>{label}</span>
+            {mode === tab && (
+                <span className={`absolute bottom-0 left-2 right-2 h-0.5 rounded-full ${isDarkMode ? 'bg-cyan-400' : 'bg-blue-500'}`} />
+            )}
         </button>
     );
 
@@ -136,6 +139,10 @@ export const BimModelTree: React.FC = () => {
                     onClick={() => {
                         if (hasChildren) toggleNode(`spatial-${node.id}`);
                         else onSelectElement(node.id);
+                    }}
+                    onDoubleClick={() => {
+                        onSelectElement(node.id);
+                        zoomToExpressId(node.id);
                     }}
                 >
                     {hasChildren ? (
@@ -198,10 +205,15 @@ export const BimModelTree: React.FC = () => {
                                         <div
                                             key={el.id}
                                             onClick={() => onSelectElement(el.id)}
+                                            onDoubleClick={() => {
+                                                onSelectElement(el.id);
+                                                zoomToExpressId(el.id);
+                                            }}
                                             className={`
                                                 flex items-center gap-2 py-1 px-2 rounded cursor-pointer text-xs truncate
                                                 ${isDarkMode ? 'text-slate-400 hover:text-slate-200 hover:bg-white/5' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'}
                                             `}
+                                            title="Double-click to zoom"
                                         >
                                             <CircleDot className="w-2.5 h-2.5 shrink-0" />
                                             {el.name || `#${el.id}`}
@@ -231,7 +243,7 @@ export const BimModelTree: React.FC = () => {
                     <p className={`text-xs mb-4 ${isDarkMode ? 'text-slate-600' : 'text-gray-400'}`}>Upload IFC files to begin</p>
                     <label className={`
                         inline-flex items-center gap-2 px-4 py-2 rounded-lg cursor-pointer text-sm font-semibold transition-all
-                        bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-400 hover:to-cyan-400 text-white shadow-lg shadow-blue-500/25
+                        bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-400 hover:to-cyan-400 text-white shadow-lg shadow-blue-500/20
                     `}>
                         <Upload className="w-4 h-4" />
                         Upload IFC
@@ -240,14 +252,18 @@ export const BimModelTree: React.FC = () => {
                 </div>
             ) : (
                 disciplineModels.map((dm, idx) => (
-                    <div key={dm.model.id} className={`group flex items-center gap-2 p-2 rounded-lg transition-all ${isDarkMode ? 'hover:bg-white/5' : 'hover:bg-gray-100'}`}>
-                        <div className={`w-3 h-3 rounded-sm ${getDisciplineColor(dm.model.discipline)} shrink-0`} />
+                    <div key={dm.model.id} className={`group flex items-center gap-2.5 p-2 rounded-lg transition-all duration-200 ${isDarkMode ? 'hover:bg-white/5' : 'hover:bg-gray-100'}`}>
+                        <div className={`w-3 h-3 rounded-full ${getDisciplineColor(dm.model.discipline)} shrink-0 ring-2 ring-offset-1 ${isDarkMode ? 'ring-offset-slate-800 ring-white/10' : 'ring-offset-white ring-black/5'}`} />
                         <div className="flex-1 min-w-0">
                             <p className={`text-xs truncate ${isDarkMode ? 'text-slate-300' : 'text-gray-700'}`}>
                                 {dm.model.discipline || dm.model.file_name.slice(0, 25)}
                             </p>
                             <p className={`text-[9px] ${isDarkMode ? 'text-slate-600' : 'text-gray-400'}`}>
-                                {dm.model.status === 'ready' ? `${(dm.model.element_count || 0).toLocaleString()} elements` : dm.model.status}
+                                {dm.model.status === 'ready'
+                                    ? (dm.model.element_count && dm.model.element_count > 0
+                                        ? `${dm.model.element_count.toLocaleString()} elements`
+                                        : 'Ready')
+                                    : dm.model.status}
                             </p>
                         </div>
                         <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -301,7 +317,7 @@ export const BimModelTree: React.FC = () => {
             {/* Search (spatial + types only) */}
             {(mode === 'spatial' || mode === 'types') && (
                 <div className={`p-2 border-b ${isDarkMode ? 'border-slate-700/30' : 'border-gray-200'}`}>
-                    <div className={`flex items-center gap-2 px-2.5 py-1.5 rounded-lg ${isDarkMode ? 'bg-slate-700/50' : 'bg-gray-100'}`}>
+                    <div className={`flex items-center gap-2 px-2.5 py-1.5 rounded-lg transition-all ${isDarkMode ? 'bg-slate-700/50 focus-within:ring-1 focus-within:ring-cyan-500/30' : 'bg-gray-100 focus-within:ring-1 focus-within:ring-blue-300'}`}>
                         <Search className={`w-3.5 h-3.5 shrink-0 ${isDarkMode ? 'text-slate-500' : 'text-gray-400'}`} />
                         <input
                             value={searchQuery}

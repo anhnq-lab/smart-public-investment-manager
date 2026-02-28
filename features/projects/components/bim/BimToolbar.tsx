@@ -49,15 +49,15 @@ const ToolBtn: React.FC<{
                 onClick={onClick}
                 disabled={disabled}
                 className={`
-                    relative w-9 h-9 flex items-center justify-center rounded-lg transition-all duration-300 ease-out
+                    relative w-10 h-10 flex items-center justify-center rounded-lg transition-all duration-200 ease-out
                     ${active
-                        ? 'bg-blue-600/20 text-blue-500 ring-1 ring-blue-500/50 shadow-[0_0_12px_rgba(59,130,246,0.3)] hover:bg-blue-600/30 dark:bg-cyan-500/20 dark:text-cyan-400 dark:ring-cyan-500/50 dark:shadow-[0_0_15px_rgba(34,211,238,0.3)]'
+                        ? 'bg-gradient-to-br from-blue-500/20 to-cyan-500/15 text-blue-400 ring-1 ring-blue-400/50 shadow-[0_0_14px_rgba(59,130,246,0.25)] hover:shadow-[0_0_20px_rgba(59,130,246,0.35)] dark:from-cyan-500/20 dark:to-blue-500/15 dark:text-cyan-400 dark:ring-cyan-400/50 dark:shadow-[0_0_16px_rgba(34,211,238,0.25)]'
                         : danger
-                            ? isDark ? 'text-red-400 hover:bg-red-500/20 hover:text-red-300' : 'text-red-500 hover:bg-red-50 hover:text-red-600'
-                            : isDark ? 'text-slate-400 hover:bg-slate-700/50 hover:text-slate-200' : 'text-gray-500 hover:bg-gray-100/80 hover:text-gray-800'
+                            ? isDark ? 'text-red-400 hover:bg-red-500/15 hover:text-red-300' : 'text-red-500 hover:bg-red-50 hover:text-red-600'
+                            : isDark ? 'text-slate-400 hover:bg-white/8 hover:text-slate-200' : 'text-gray-500 hover:bg-gray-100/80 hover:text-gray-800'
                     }
                     ${disabled ? 'opacity-30 cursor-not-allowed' : 'cursor-pointer'}
-                    hover:scale-110 active:scale-95
+                    hover:scale-105 active:scale-95
                 `}
             >
                 {children}
@@ -72,13 +72,13 @@ const ToolBtn: React.FC<{
             {showTooltip && !disabled && (
                 <div
                     className={`
-                        absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2.5 py-1.5 rounded-lg
+                        absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-1.5 rounded-lg
                         whitespace-nowrap text-[11px] font-medium pointer-events-none z-50
-                        animate-[tooltipFadeIn_0.15s_ease-out]
-                        shadow-lg border backdrop-blur-xl
+                        animate-[tooltipFadeIn_0.2s_cubic-bezier(0.16,1,0.3,1)]
+                        shadow-xl border backdrop-blur-xl
                         ${isDark
-                            ? 'bg-slate-800/95 text-slate-200 border-slate-700/60'
-                            : 'bg-gray-800/95 text-white border-gray-700/40'
+                            ? 'bg-slate-800/95 text-slate-200 border-slate-600/40'
+                            : 'bg-gray-800/95 text-white border-gray-600/30'
                         }
                     `}
                 >
@@ -145,22 +145,30 @@ const ToolDropdown: React.FC<{
 
     return (
         <div className="relative" ref={ref}>
-            <button
+            <div
+                role="button"
+                tabIndex={0}
                 onClick={() => !disabled && setOpen(!open)}
-                disabled={disabled}
+                onKeyDown={(e) => {
+                    if (!disabled && (e.key === 'Enter' || e.key === ' ')) {
+                        e.preventDefault();
+                        setOpen(!open);
+                    }
+                }}
                 className={`
-                    flex items-center gap-0.5 rounded-lg transition-all
+                    flex items-center gap-0.5 rounded-lg transition-all outline-none
                     ${disabled ? 'opacity-30 cursor-not-allowed' : 'cursor-pointer'}
                 `}
             >
-                {trigger}
+                <div className="pointer-events-none">{trigger}</div>
                 <ChevronDown className={`w-3 h-3 transition-transform ${open ? 'rotate-180' : ''} ${isDark ? 'text-slate-500' : 'text-gray-400'}`} />
-            </button>
+            </div>
             {open && (
                 <div className={`
-                    absolute bottom-full left-1/2 -translate-x-1/2 mb-2 min-w-[200px] rounded-xl border shadow-2xl z-50
-                    py-1 overflow-hidden
-                    ${isDark ? 'bg-slate-800 border-slate-700' : 'bg-white border-gray-200'}
+                    absolute bottom-full left-1/2 -translate-x-1/2 mb-2 min-w-[210px] rounded-xl border shadow-2xl z-50
+                    py-1.5 overflow-hidden backdrop-blur-2xl
+                    animate-[dropdownIn_0.2s_cubic-bezier(0.16,1,0.3,1)]
+                    ${isDark ? 'bg-slate-800/95 border-slate-600/40' : 'bg-white/98 border-gray-200'}
                 `}>
                     {items.map((item, i) => (
                         <React.Fragment key={item.id}>
@@ -170,12 +178,12 @@ const ToolDropdown: React.FC<{
                             <button
                                 onClick={() => { item.onClick(); setOpen(false); }}
                                 className={`
-                                    w-full flex items-center gap-3 px-3 py-2 text-sm transition-all duration-200
+                                    w-full flex items-center gap-3 px-3 py-2 text-sm transition-all duration-150
                                     ${item.active
-                                        ? isDark ? 'bg-cyan-500/10 text-cyan-400 font-medium' : 'bg-blue-50 text-blue-700 font-medium'
+                                        ? isDark ? 'bg-cyan-500/10 text-cyan-400 font-medium border-l-2 border-cyan-400 pl-2.5' : 'bg-blue-50 text-blue-700 font-medium border-l-2 border-blue-500 pl-2.5'
                                         : item.danger
-                                            ? isDark ? 'text-red-400 hover:bg-red-500/15' : 'text-red-500 hover:bg-red-50'
-                                            : isDark ? 'text-slate-300 hover:bg-slate-700/60 hover:pl-4' : 'text-gray-700 hover:bg-gray-50 hover:pl-4'}
+                                            ? isDark ? 'text-red-400 hover:bg-red-500/10' : 'text-red-500 hover:bg-red-50'
+                                            : isDark ? 'text-slate-300 hover:bg-white/5 hover:pl-4' : 'text-gray-700 hover:bg-gray-50 hover:pl-4'}
                                 `}
                             >
                                 <span className="w-5 h-5 flex items-center justify-center shrink-0">{item.icon}</span>
@@ -197,9 +205,17 @@ const ToolDropdown: React.FC<{
     );
 };
 
-// ── Divider ─────────────────────────────────────────
-const Divider: React.FC<{ isDark: boolean }> = ({ isDark }) => (
-    <div className={`w-px h-6 mx-0.5 ${isDark ? 'bg-slate-700/60' : 'bg-gray-200'}`} />
+// ── Divider with optional group label ────────────────
+const Divider: React.FC<{ isDark: boolean; label?: string }> = ({ isDark, label }) => (
+    <div className="flex flex-col items-center mx-1 gap-0.5 shrink-0">
+        {label && (
+            <span className={`text-[8px] font-bold uppercase tracking-wider leading-none select-none
+                ${isDark ? 'text-slate-600' : 'text-gray-300'}`}>
+                {label}
+            </span>
+        )}
+        <div className={`w-px h-5 ${isDark ? 'bg-slate-700/60' : 'bg-gray-200'}`} />
+    </div>
 );
 
 // ── Main Toolbar ────────────────────────────────────
@@ -362,9 +378,10 @@ export const BimToolbar: React.FC<BimToolbarProps> = ({
             ref={toolbarRef}
             className={`
                 ${dragPos ? 'fixed' : 'absolute bottom-12 left-1/2 -translate-x-1/2'}
-                flex items-center gap-0.5 px-2 py-1.5 rounded-2xl z-30
-                backdrop-blur-2xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] border transition-shadow duration-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.16)]
-                ${isDarkMode ? 'bg-slate-800/90 border-slate-700/60 shadow-black/40' : 'bg-white/90 border-gray-200'}
+                flex items-center gap-1 px-2.5 py-2 rounded-2xl z-30
+                backdrop-blur-2xl shadow-[0_8px_32px_rgb(0,0,0,0.12),0_0_0_1px_rgba(255,255,255,0.05)] border transition-all duration-300
+                hover:shadow-[0_12px_40px_rgb(0,0,0,0.18),0_0_0_1px_rgba(255,255,255,0.08)]
+                ${isDarkMode ? 'bg-slate-800/85 border-slate-600/30' : 'bg-white/92 border-gray-200/80'}
             `}
             style={dragPos ? { left: dragPos.x, top: dragPos.y } : undefined}
         >
@@ -386,10 +403,10 @@ export const BimToolbar: React.FC<BimToolbarProps> = ({
 
             {/* ── Navigate ──── */}
             <ToolBtn isDark={isDarkMode} active={activeTool === 'select'} onClick={() => tools.activateTool('select')} title="Select" shortcut="V">
-                <MousePointer2 className="w-4 h-4" />
+                <MousePointer2 className="w-5 h-5" />
             </ToolBtn>
             <ToolBtn isDark={isDarkMode} onClick={onFitAll} title="Fit All" shortcut="F" disabled={disabled}>
-                <Maximize className="w-4 h-4" />
+                <Maximize className="w-5 h-5" />
             </ToolBtn>
 
             <ToolDropdown
@@ -397,21 +414,21 @@ export const BimToolbar: React.FC<BimToolbarProps> = ({
                 disabled={disabled}
                 trigger={
                     <ToolBtn isDark={isDarkMode} title="Camera Views" disabled={disabled}>
-                        <Box className="w-4 h-4" />
+                        <Box className="w-5 h-5" />
                     </ToolBtn>
                 }
                 items={[
-                    { id: 'iso', icon: <Box className="w-4 h-4" />, label: 'Isometric', shortcut: '0', onClick: () => onSetView('iso') },
-                    { id: 'top', icon: <ArrowUp className="w-4 h-4" />, label: 'Top', shortcut: '5', onClick: () => onSetView('top') },
-                    { id: 'front', icon: <SquareIcon className="w-4 h-4" />, label: 'Front', shortcut: '1', onClick: () => onSetView('front') },
-                    { id: 'right', icon: <ArrowRight className="w-4 h-4" />, label: 'Right', shortcut: '4', onClick: () => onSetView('right') },
-                    { id: 'back', icon: <SquareIcon className="w-4 h-4" />, label: 'Back', shortcut: '2', onClick: () => onSetView('back') },
-                    { id: 'left', icon: <ArrowRight className="w-4 h-4 rotate-180" />, label: 'Left', shortcut: '3', onClick: () => onSetView('left') },
-                    { id: 'bottom', icon: <ArrowUp className="w-4 h-4 rotate-180" />, label: 'Bottom', shortcut: '6', onClick: () => onSetView('bottom') },
+                    { id: 'iso', icon: <Box className="w-5 h-5" />, label: 'Isometric', shortcut: '0', onClick: () => onSetView('iso') },
+                    { id: 'top', icon: <ArrowUp className="w-5 h-5" />, label: 'Top', shortcut: '5', onClick: () => onSetView('top') },
+                    { id: 'front', icon: <SquareIcon className="w-5 h-5" />, label: 'Front', shortcut: '1', onClick: () => onSetView('front') },
+                    { id: 'right', icon: <ArrowRight className="w-5 h-5" />, label: 'Right', shortcut: '4', onClick: () => onSetView('right') },
+                    { id: 'back', icon: <SquareIcon className="w-5 h-5" />, label: 'Back', shortcut: '2', onClick: () => onSetView('back') },
+                    { id: 'left', icon: <ArrowRight className="w-5 h-5 rotate-180" />, label: 'Left', shortcut: '3', onClick: () => onSetView('left') },
+                    { id: 'bottom', icon: <ArrowUp className="w-5 h-5 rotate-180" />, label: 'Bottom', shortcut: '6', onClick: () => onSetView('bottom') },
                 ]}
             />
 
-            <Divider isDark={isDarkMode} />
+            <Divider isDark={isDarkMode} label="CUT" />
 
             {/* ── Section ──── */}
             <ToolDropdown
@@ -419,16 +436,16 @@ export const BimToolbar: React.FC<BimToolbarProps> = ({
                 disabled={disabled}
                 trigger={
                     <ToolBtn isDark={isDarkMode} active={activeTool?.startsWith('clip') || activeTool === 'section-box' || activeTool === 'section-plane'} title="Section Tools" disabled={disabled} badge={section.clipPlaneCount}>
-                        <Scissors className="w-4 h-4" />
+                        <Scissors className="w-5 h-5" />
                     </ToolBtn>
                 }
                 items={[
-                    { id: 'section-plane', icon: <Crosshair className="w-4 h-4 text-amber-400" />, label: 'Section Plane (Click Surface)', active: activeTool === 'section-plane', onClick: () => handleSectionAction('section-plane') },
-                    { id: 'clip-x', icon: <ScanLine className="w-4 h-4 text-red-400" />, label: 'Clip X (YZ Plane)', active: activeTool === 'clip-x', onClick: () => handleSectionAction('clip-x') },
-                    { id: 'clip-y', icon: <ScanLine className="w-4 h-4 text-green-400" />, label: 'Clip Y (XZ Plane)', active: activeTool === 'clip-y', onClick: () => handleSectionAction('clip-y') },
-                    { id: 'clip-z', icon: <ScanLine className="w-4 h-4 text-blue-400" />, label: 'Clip Z (XY Plane)', active: activeTool === 'clip-z', onClick: () => handleSectionAction('clip-z') },
-                    { id: 'section-box', icon: <BoxSelect className="w-4 h-4 text-amber-400" />, label: 'Section Box', active: activeTool === 'section-box', onClick: () => handleSectionAction('section-box') },
-                    { id: 'clear-sections', icon: <Trash2 className="w-4 h-4" />, label: 'Clear All Sections', divider: true, danger: true, onClick: () => handleSectionAction('clear') },
+                    { id: 'section-plane', icon: <Crosshair className="w-5 h-5 text-amber-400" />, label: 'Section Plane (Click Surface)', active: activeTool === 'section-plane', onClick: () => handleSectionAction('section-plane') },
+                    { id: 'clip-x', icon: <ScanLine className="w-5 h-5 text-red-400" />, label: 'Clip X (YZ Plane)', active: activeTool === 'clip-x', onClick: () => handleSectionAction('clip-x') },
+                    { id: 'clip-y', icon: <ScanLine className="w-5 h-5 text-green-400" />, label: 'Clip Y (XZ Plane)', active: activeTool === 'clip-y', onClick: () => handleSectionAction('clip-y') },
+                    { id: 'clip-z', icon: <ScanLine className="w-5 h-5 text-blue-400" />, label: 'Clip Z (XY Plane)', active: activeTool === 'clip-z', onClick: () => handleSectionAction('clip-z') },
+                    { id: 'section-box', icon: <BoxSelect className="w-5 h-5 text-amber-400" />, label: 'Section Box', active: activeTool === 'section-box', onClick: () => handleSectionAction('section-box') },
+                    { id: 'clear-sections', icon: <Trash2 className="w-5 h-5" />, label: 'Clear All Sections', divider: true, danger: true, onClick: () => handleSectionAction('clear') },
                 ]}
             />
 
@@ -438,17 +455,17 @@ export const BimToolbar: React.FC<BimToolbarProps> = ({
                 disabled={disabled}
                 trigger={
                     <ToolBtn isDark={isDarkMode} active={activeTool?.startsWith('measure')} title="Measure Tools" disabled={disabled} badge={measure.measurementCount}>
-                        <Ruler className="w-4 h-4" />
+                        <Ruler className="w-5 h-5" />
                     </ToolBtn>
                 }
                 items={[
-                    { id: 'measure-length', icon: <Waypoints className="w-4 h-4 text-cyan-400" />, label: 'Length', active: activeTool === 'measure-length', onClick: () => handleMeasureAction('length') },
-                    { id: 'measure-area', icon: <PenTool className="w-4 h-4 text-emerald-400" />, label: 'Area', active: activeTool === 'measure-area', onClick: () => handleMeasureAction('area') },
-                    { id: 'clear-measures', icon: <Trash2 className="w-4 h-4" />, label: 'Clear Measurements', divider: true, danger: true, onClick: () => handleMeasureAction('clear') },
+                    { id: 'measure-length', icon: <Waypoints className="w-5 h-5 text-cyan-400" />, label: 'Length', active: activeTool === 'measure-length', onClick: () => handleMeasureAction('length') },
+                    { id: 'measure-area', icon: <PenTool className="w-5 h-5 text-emerald-400" />, label: 'Area', active: activeTool === 'measure-area', onClick: () => handleMeasureAction('area') },
+                    { id: 'clear-measures', icon: <Trash2 className="w-5 h-5" />, label: 'Clear Measurements', divider: true, danger: true, onClick: () => handleMeasureAction('clear') },
                 ]}
             />
 
-            <Divider isDark={isDarkMode} />
+            <Divider isDark={isDarkMode} label="VIEW" />
 
             {/* ── Display ──── */}
             <ToolDropdown
@@ -456,16 +473,16 @@ export const BimToolbar: React.FC<BimToolbarProps> = ({
                 disabled={disabled}
                 trigger={
                     <ToolBtn isDark={isDarkMode} title="Display Mode" disabled={disabled}>
-                        <Eye className="w-4 h-4" />
+                        <Eye className="w-5 h-5" />
                     </ToolBtn>
                 }
                 items={[
-                    { id: 'shading', icon: <CircleDot className="w-4 h-4" />, label: 'Shading', active: renderMode === 'shading', onClick: () => tools.setRenderMode('shading') },
-                    { id: 'wireframe', icon: <Grid3X3 className="w-4 h-4" />, label: 'Wireframe', active: renderMode === 'wireframe', onClick: () => tools.setRenderMode('wireframe') },
-                    { id: 'xray', icon: <ScanLine className="w-4 h-4" />, label: 'X-Ray', active: renderMode === 'xray', onClick: () => tools.setRenderMode('xray') },
-                    { id: 'ghosting', icon: <Pipette className="w-4 h-4" />, label: 'Ghosting', active: renderMode === 'ghosting', divider: true, onClick: () => tools.setRenderMode('ghosting') },
-                    { id: 'edge-outline', icon: <Layers className="w-4 h-4" />, label: 'Edge Outline', active: engine.edgeOutlineEnabled, onClick: () => engine.toggleEdgeOutline(!engine.edgeOutlineEnabled) },
-                    { id: 'ssao', icon: <Sun className="w-4 h-4" />, label: 'Ambient Occlusion', active: engine.aoEnabled, onClick: () => engine.toggleAO(!engine.aoEnabled) },
+                    { id: 'shading', icon: <CircleDot className="w-5 h-5" />, label: 'Shading', active: renderMode === 'shading', onClick: () => tools.setRenderMode('shading') },
+                    { id: 'wireframe', icon: <Grid3X3 className="w-5 h-5" />, label: 'Wireframe', active: renderMode === 'wireframe', onClick: () => tools.setRenderMode('wireframe') },
+                    { id: 'xray', icon: <ScanLine className="w-5 h-5" />, label: 'X-Ray', active: renderMode === 'xray', onClick: () => tools.setRenderMode('xray') },
+                    { id: 'ghosting', icon: <Pipette className="w-5 h-5" />, label: 'Ghosting', active: renderMode === 'ghosting', divider: true, onClick: () => tools.setRenderMode('ghosting') },
+                    { id: 'edge-outline', icon: <Layers className="w-5 h-5" />, label: 'Edge Outline', active: engine.edgeOutlineEnabled, onClick: () => engine.toggleEdgeOutline(!engine.edgeOutlineEnabled) },
+                    { id: 'ssao', icon: <Sun className="w-5 h-5" />, label: 'Ambient Occlusion', active: engine.aoEnabled, onClick: () => engine.toggleAO(!engine.aoEnabled) },
                 ]}
             />
 
@@ -475,17 +492,17 @@ export const BimToolbar: React.FC<BimToolbarProps> = ({
                 disabled={disabled}
                 trigger={
                     <ToolBtn isDark={isDarkMode} title="Visibility" disabled={disabled}>
-                        <Focus className="w-4 h-4" />
+                        <Focus className="w-5 h-5" />
                     </ToolBtn>
                 }
                 items={[
-                    { id: 'isolate', icon: <Focus className="w-4 h-4 text-amber-400" />, label: 'Isolate Selected', shortcut: 'I', onClick: onIsolateSelected },
-                    { id: 'hide', icon: <EyeOff className="w-4 h-4" />, label: 'Hide Selected', shortcut: 'H', onClick: onHideSelected },
-                    { id: 'show-all', icon: <Eye className="w-4 h-4 text-emerald-400" />, label: 'Show All', shortcut: 'Shift+H', divider: true, onClick: onShowAll },
+                    { id: 'isolate', icon: <Focus className="w-5 h-5 text-amber-400" />, label: 'Isolate Selected', shortcut: 'I', onClick: onIsolateSelected },
+                    { id: 'hide', icon: <EyeOff className="w-5 h-5" />, label: 'Hide Selected', shortcut: 'H', onClick: onHideSelected },
+                    { id: 'show-all', icon: <Eye className="w-5 h-5 text-emerald-400" />, label: 'Show All', shortcut: 'Shift+H', divider: true, onClick: onShowAll },
                 ]}
             />
 
-            <Divider isDark={isDarkMode} />
+            <Divider isDark={isDarkMode} label="OPS" />
 
             {/* ── Operations (Heatmap & System) ──── */}
             <ToolBtn
@@ -495,7 +512,7 @@ export const BimToolbar: React.FC<BimToolbarProps> = ({
                 title="Asset Heatmap (Status)"
                 disabled={disabled}
             >
-                <Activity className={`w-4 h-4 ${operations.heatmapActive ? 'text-rose-400' : ''}`} />
+                <Activity className={`w-5 h-5 ${operations.heatmapActive ? 'text-rose-400' : ''}`} />
             </ToolBtn>
 
             <ToolDropdown
@@ -503,15 +520,15 @@ export const BimToolbar: React.FC<BimToolbarProps> = ({
                 disabled={disabled}
                 trigger={
                     <ToolBtn isDark={isDarkMode} active={operations.activeSystem !== null} title="MEP Systems" disabled={disabled}>
-                        <Zap className="w-4 h-4" />
+                        <Zap className="w-5 h-5" />
                     </ToolBtn>
                 }
                 items={[
-                    { id: 'sys-hvac', icon: <Box className="w-4 h-4 text-blue-400" />, label: 'HVAC System', active: operations.activeSystem === 'HVAC', onClick: () => operations.toggleSystemMapping('HVAC') },
-                    { id: 'sys-elec', icon: <Zap className="w-4 h-4 text-yellow-400" />, label: 'Electrical System', active: operations.activeSystem === 'Electrical', onClick: () => operations.toggleSystemMapping('Electrical') },
-                    { id: 'sys-plumb', icon: <Activity className="w-4 h-4 text-cyan-400" />, label: 'Plumbing System', active: operations.activeSystem === 'Plumbing', onClick: () => operations.toggleSystemMapping('Plumbing') },
-                    { id: 'sys-fire', icon: <ShieldAlert className="w-4 h-4 text-red-400" />, label: 'Fire Protection', active: operations.activeSystem === 'Fire', onClick: () => operations.toggleSystemMapping('Fire') },
-                    { id: 'sys-clear', icon: <Trash2 className="w-4 h-4" />, label: 'Clear System Filter', divider: true, danger: true, onClick: () => operations.toggleSystemMapping(null) },
+                    { id: 'sys-hvac', icon: <Box className="w-5 h-5 text-blue-400" />, label: 'HVAC System', active: operations.activeSystem === 'HVAC', onClick: () => operations.toggleSystemMapping('HVAC') },
+                    { id: 'sys-elec', icon: <Zap className="w-5 h-5 text-yellow-400" />, label: 'Electrical System', active: operations.activeSystem === 'Electrical', onClick: () => operations.toggleSystemMapping('Electrical') },
+                    { id: 'sys-plumb', icon: <Activity className="w-5 h-5 text-cyan-400" />, label: 'Plumbing System', active: operations.activeSystem === 'Plumbing', onClick: () => operations.toggleSystemMapping('Plumbing') },
+                    { id: 'sys-fire', icon: <ShieldAlert className="w-5 h-5 text-red-400" />, label: 'Fire Protection', active: operations.activeSystem === 'Fire', onClick: () => operations.toggleSystemMapping('Fire') },
+                    { id: 'sys-clear', icon: <Trash2 className="w-5 h-5" />, label: 'Clear System Filter', divider: true, danger: true, onClick: () => operations.toggleSystemMapping(null) },
                 ]}
             />
 
@@ -520,22 +537,22 @@ export const BimToolbar: React.FC<BimToolbarProps> = ({
             {/* ── Extras ──── */}
             <label
                 className={`
-                    relative w-9 h-9 flex items-center justify-center rounded-lg transition-all duration-150 cursor-pointer
+                    relative w-10 h-10 flex items-center justify-center rounded-lg transition-all duration-150 cursor-pointer
                     ${isDarkMode ? 'text-slate-400 hover:bg-white/10 hover:text-white' : 'text-gray-500 hover:bg-gray-200 hover:text-gray-800'}
                 `}
                 title="Upload IFC"
             >
-                <FileUp className="w-4 h-4" />
+                <FileUp className="w-5 h-5" />
                 <input type="file" accept=".ifc" className="hidden" onChange={onUpload} />
             </label>
             <ToolBtn isDark={isDarkMode} onClick={onScreenshot} title="Screenshot" disabled={disabled}>
-                <Camera className="w-4 h-4" />
+                <Camera className="w-5 h-5" />
             </ToolBtn>
 
             {/* ── Collapse ──── */}
             <Divider isDark={isDarkMode} />
             <ToolBtn isDark={isDarkMode} onClick={onToggleCollapse} title="Hide Toolbar (T)">
-                <ChevronDown className="w-4 h-4" />
+                <ChevronDown className="w-5 h-5" />
             </ToolBtn>
         </div>
     );
