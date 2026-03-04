@@ -18,7 +18,11 @@ import { ProjectComplianceTab } from './components/tabs/ProjectComplianceTab';
 import { ProjectOperationsTab } from './components/tabs/ProjectOperationsTab';
 import { CreateProjectModal } from './components/CreateProjectModal';
 import { ConfirmModal } from '@/components/common/ConfirmModal';
-import { Info, CalendarCheck, Briefcase, FolderOpen, Layers, Landmark, Database, Settings2 } from 'lucide-react';
+import { Info, CalendarCheck, Briefcase, FolderOpen, Layers, Landmark, Database, Settings2, Sparkles } from 'lucide-react';
+import { AISummaryWidget } from '@/components/ai/AISummaryWidget';
+import { AICompliancePanel } from '@/components/ai/AICompliancePanel';
+import { AIForecastChart } from '@/components/ai/AIForecastChart';
+import { AIDocumentDrafter } from '@/components/ai/AIDocumentDrafter';
 
 // ─────── Skeleton Loading ───────
 const ProjectDetailSkeleton: React.FC = () => (
@@ -137,6 +141,9 @@ const ProjectDetail: React.FC = () => {
 
     // Edit modal
     const [showEditModal, setShowEditModal] = useState(false);
+
+    // AI Document Drafter modal
+    const [showDrafter, setShowDrafter] = useState(false);
 
     // Lazy-mount flags: once mounted, stay mounted to preserve 3D engine state
     const [bimMounted, setBimMounted] = useState(initialTab === 'bim');
@@ -343,53 +350,51 @@ const ProjectDetail: React.FC = () => {
             {activeTab !== 'bim' && activeTab !== 'operations' && (
                 <div className="flex-1 min-h-0 overflow-y-auto px-4 py-6">
                     {activeTab === 'info' && (
-                        <ProjectInfoTab
-                            project={project}
-                            projectMembers={projectMembers}
-                            projectPackages={packages}
-                            isSyncing={isSyncing}
-                            syncResult={syncResult}
-                            isGeneratingReport={isGeneratingReport}
-                            onGenerateReport={handleGenerateReport}
-                            onViewMember={(employeeId) => {
-                                console.log('View member:', employeeId);
-                            }}
-                            onViewPackage={(packageId) => {
-                                setActiveTab('packages');
-                            }}
-                            onStageChange={async (newStage, entry) => {
-                                // Map Stage enum to Status enum
-                                const stageToStatus: Record<string, number> = {
-                                    'Preparation': 1,
-                                    'Execution': 2,
-                                    'Completion': 3,
-                                };
-                                const newStatus = stageToStatus[newStage] || 1;
-
-                                // Update local state
-                                setProject(prev => prev ? {
-                                    ...prev,
-                                    Stage: newStage,
-                                    Status: newStatus as any,
-                                    StageHistory: [...(prev.StageHistory || []), entry]
-                                } : null);
-
-                                // Persist to DB
-                                try {
-                                    await ProjectService.update(project.ProjectID, {
+                        <div className="space-y-4">
+                            <AISummaryWidget projectId={project.ProjectID} />
+                            <ProjectInfoTab
+                                project={project}
+                                projectMembers={projectMembers}
+                                projectPackages={packages}
+                                isSyncing={isSyncing}
+                                syncResult={syncResult}
+                                isGeneratingReport={isGeneratingReport}
+                                onGenerateReport={handleGenerateReport}
+                                onViewMember={(employeeId) => {
+                                    console.log('View member:', employeeId);
+                                }}
+                                onViewPackage={(packageId) => {
+                                    setActiveTab('packages');
+                                }}
+                                onStageChange={async (newStage, entry) => {
+                                    const stageToStatus: Record<string, number> = {
+                                        'Preparation': 1,
+                                        'Execution': 2,
+                                        'Completion': 3,
+                                    };
+                                    const newStatus = stageToStatus[newStage] || 1;
+                                    setProject(prev => prev ? {
+                                        ...prev,
                                         Stage: newStage,
                                         Status: newStatus as any,
-                                    } as any);
-                                } catch (err) {
-                                    console.error('Failed to persist stage change:', err);
-                                }
-                            }}
-                            onHistoryUpdate={(history) => {
-                                setProject(prev => prev ? { ...prev, StageHistory: history } : null);
-                            }}
-                            canEditLifecycle={true}
-                            onEditProject={() => setShowEditModal(true)}
-                        />
+                                        StageHistory: [...(prev.StageHistory || []), entry]
+                                    } : null);
+                                    try {
+                                        await ProjectService.update(project.ProjectID, {
+                                            Stage: newStage,
+                                            Status: newStatus as any,
+                                        } as any);
+                                    } catch (err) {
+                                        console.error('Failed to persist stage change:', err);
+                                    }
+                                }}
+                                onHistoryUpdate={(history) => {
+                                    setProject(prev => prev ? { ...prev, StageHistory: history } : null);
+                                }}
+                                canEditLifecycle={true}
+                                onEditProject={() => setShowEditModal(true)}
+                            />
+                        </div>
                     )}
                     {activeTab === 'plan' && (
                         <ProjectPlanTab
@@ -405,23 +410,42 @@ const ProjectDetail: React.FC = () => {
                         <ProjectPackagesTab projectID={project.ProjectID} project={project} />
                     )}
                     {activeTab === 'capital' && (
-                        <ProjectCapitalTab projectID={project.ProjectID} />
+                        <div className="space-y-4">
+                            <AIForecastChart
+                                projectId={project.ProjectID}
+                                currentDisbursementRate={project.PaymentProgress || project.FinancialProgress || 0}
+                            />
+                            <ProjectCapitalTab projectID={project.ProjectID} />
+                        </div>
                     )}
                     {activeTab === 'documents' && (
-                        <ProjectDocumentsTab
-                            projectID={project.ProjectID}
-                            projectStage={project.Stage || ProjectStage.Execution}
-                            investmentPolicy={(project as any).InvestmentPolicy}
-                            feasibilityStudy={(project as any).FeasibilityStudy}
-                        />
+                        <div className="space-y-4">
+                            <div className="flex justify-end">
+                                <button
+                                    onClick={() => setShowDrafter(true)}
+                                    className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-sm font-bold rounded-xl hover:from-blue-700 hover:to-indigo-700 shadow-lg shadow-blue-200 dark:shadow-blue-900/30 transition-all"
+                                >
+                                    <Sparkles className="w-4 h-4" /> Soạn văn bản AI
+                                </button>
+                            </div>
+                            <ProjectDocumentsTab
+                                projectID={project.ProjectID}
+                                projectStage={project.Stage || ProjectStage.Execution}
+                                investmentPolicy={(project as any).InvestmentPolicy}
+                                feasibilityStudy={(project as any).FeasibilityStudy}
+                            />
+                        </div>
                     )}
                     {activeTab === 'tt24' && (
-                        <ProjectComplianceTab
-                            project={project}
-                            onUpdate={(updated) => {
-                                setProject(prev => prev ? { ...prev, ...updated } : null);
-                            }}
-                        />
+                        <div className="space-y-4">
+                            <AICompliancePanel projectId={project.ProjectID} />
+                            <ProjectComplianceTab
+                                project={project}
+                                onUpdate={(updated) => {
+                                    setProject(prev => prev ? { ...prev, ...updated } : null);
+                                }}
+                            />
+                        </div>
                     )}
                 </div>
             )}
@@ -472,6 +496,14 @@ const ProjectDetail: React.FC = () => {
                     setShowEditModal(false);
                 }}
                 editProject={project}
+            />
+
+            {/* ─── AI Document Drafter Modal ─── */}
+            <AIDocumentDrafter
+                projectId={project.ProjectID}
+                projectName={project.ProjectName}
+                isOpen={showDrafter}
+                onClose={() => setShowDrafter(false)}
             />
         </div>
     );

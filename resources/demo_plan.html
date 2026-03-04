@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kế hoạch Demo — Phần mềm QLDA ĐTC Thông minh | CIC</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --navy: #1A1F3D;
+            --teal: #0D3B4F;
+            --cyan: #00D4FF;
+            --gold: #FFB800;
+            --bg: #0f1117;
+            --card: #1a1d2e;
+            --card-border: #2a2d3e;
+            --text: #e4e4e7;
+            --text-muted: #9ca3af;
+            --green: #10b981;
+            --red: #ef4444;
+            --amber: #f59e0b;
+            --blue: #3b82f6;
+            --violet: #8b5cf6;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.7;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ─── Hero ─── */
+        .hero {
+            background: linear-gradient(135deg, var(--navy) 0%, var(--teal) 50%, #0a2a38 100%);
+            padding: 60px 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at 30% 50%, rgba(0,212,255,0.08) 0%, transparent 50%),
+                        radial-gradient(circle at 70% 50%, rgba(255,184,0,0.06) 0%, transparent 50%);
+        }
+        .hero h1 {
+            font-size: 2.2rem;
+            font-weight: 900;
+            letter-spacing: -0.02em;
+            background: linear-gradient(135deg, #fff 0%, var(--cyan) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 12px;
+            position: relative;
+        }
+        .hero .subtitle {
+            font-size: 1rem;
+            color: rgba(255,255,255,0.6);
+            font-weight: 500;
+            position: relative;
+        }
+        .hero .meta {
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            margin-top: 24px;
+            flex-wrap: wrap;
+            position: relative;
+        }
+        .hero .meta span {
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.12);
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: rgba(255,255,255,0.8);
+        }
+        .hero .meta span strong { color: var(--cyan); }
+
+        /* ─── Container ─── */
+        .container { max-width: 1100px; margin: 0 auto; padding: 40px 24px; }
+
+        /* ─── Timeline Table ─── */
+        .timeline-grid {
+            display: grid;
+            grid-template-columns: 100px 1fr 200px;
+            gap: 0;
+            margin: 32px 0;
+        }
+        .tg-header {
+            background: var(--card);
+            padding: 10px 16px;
+            font-weight: 800;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--text-muted);
+            border-bottom: 2px solid var(--cyan);
+        }
+        .tg-row {
+            display: contents;
+        }
+        .tg-row > div {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--card-border);
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+        }
+        .tg-row:hover > div { background: rgba(0,212,255,0.03); }
+        .tg-time { font-family: 'JetBrains Mono', monospace; font-weight: 700; color: var(--cyan); font-size: 0.8rem; }
+        .tg-note { color: var(--text-muted); font-size: 0.78rem; }
+        .star { color: var(--gold); }
+
+        /* ─── Section ─── */
+        .section {
+            margin: 48px 0;
+            background: var(--card);
+            border-radius: 16px;
+            border: 1px solid var(--card-border);
+            overflow: hidden;
+        }
+        .section-header {
+            padding: 20px 28px;
+            background: linear-gradient(135deg, rgba(0,212,255,0.08) 0%, rgba(139,92,246,0.06) 100%);
+            border-bottom: 1px solid var(--card-border);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .section-header .number {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, var(--cyan), var(--blue));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+            font-size: 0.85rem;
+            color: #fff;
+            flex-shrink: 0;
+        }
+        .section-header h2 {
+            font-size: 1.15rem;
+            font-weight: 800;
+        }
+        .section-header .time-badge {
+            margin-left: auto;
+            background: rgba(255,184,0,0.15);
+            color: var(--gold);
+            padding: 4px 12px;
+            border-radius: 6px;
+            font-size: 0.72rem;
+            font-weight: 800;
+        }
+        .section-body { padding: 28px; }
+
+        /* ─── Cards Grid ─── */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
+            margin: 20px 0;
+        }
+        .kpi-card {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 16px;
+        }
+        .kpi-card .label { font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; letter-spacing: 0.05em; }
+        .kpi-card .value { font-size: 1.4rem; font-weight: 900; margin-top: 4px; }
+        .kpi-card .value.cyan { color: var(--cyan); }
+        .kpi-card .value.gold { color: var(--gold); }
+        .kpi-card .value.green { color: var(--green); }
+        .kpi-card .value.violet { color: var(--violet); }
+
+        /* ─── Comparison Table ─── */
+        .compare-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 16px 0;
+            font-size: 0.82rem;
+        }
+        .compare-table th {
+            padding: 10px 14px;
+            font-weight: 800;
+            text-transform: uppercase;
+            font-size: 0.68rem;
+            letter-spacing: 0.08em;
+            text-align: left;
+        }
+        .compare-table th:first-child { color: var(--red); background: rgba(239,68,68,0.08); border-radius: 8px 0 0 0; }
+        .compare-table th:last-child { color: var(--green); background: rgba(16,185,129,0.08); border-radius: 0 8px 0 0; }
+        .compare-table td {
+            padding: 10px 14px;
+            border-bottom: 1px solid var(--card-border);
+            vertical-align: top;
+        }
+        .compare-table td:first-child { color: rgba(239,68,68,0.8); }
+        .compare-table td:last-child { color: rgba(16,185,129,0.9); }
+
+        /* ─── AI Table ─── */
+        .ai-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 16px 0;
+            font-size: 0.8rem;
+        }
+        .ai-table th {
+            padding: 10px 12px;
+            background: rgba(139,92,246,0.1);
+            font-weight: 800;
+            font-size: 0.68rem;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            text-align: left;
+            color: var(--violet);
+        }
+        .ai-table td {
+            padding: 10px 12px;
+            border-bottom: 1px solid var(--card-border);
+            vertical-align: top;
+        }
+        .ai-table td:first-child { font-weight: 700; }
+        .ai-table tr:hover td { background: rgba(139,92,246,0.04); }
+
+        /* ─── Quote ─── */
+        .dialog {
+            background: linear-gradient(135deg, rgba(0,212,255,0.06), rgba(139,92,246,0.04));
+            border-left: 3px solid var(--cyan);
+            padding: 16px 20px;
+            border-radius: 0 10px 10px 0;
+            margin: 16px 0;
+            font-style: italic;
+            color: rgba(255,255,255,0.85);
+            font-size: 0.88rem;
+            line-height: 1.8;
+        }
+
+        /* ─── Tags ─── */
+        .tag {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            margin: 2px;
+        }
+        .tag-cyan { background: rgba(0,212,255,0.15); color: var(--cyan); }
+        .tag-gold { background: rgba(255,184,0,0.15); color: var(--gold); }
+        .tag-green { background: rgba(16,185,129,0.15); color: var(--green); }
+        .tag-red { background: rgba(239,68,68,0.15); color: var(--red); }
+        .tag-violet { background: rgba(139,92,246,0.15); color: var(--violet); }
+
+        /* ─── Key Message ─── */
+        .key-message {
+            background: linear-gradient(135deg, rgba(255,184,0,0.1), rgba(0,212,255,0.08));
+            border: 1px solid rgba(255,184,0,0.2);
+            border-radius: 12px;
+            padding: 20px 24px;
+            margin: 24px 0;
+            text-align: center;
+        }
+        .key-message p {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--gold);
+        }
+
+        /* ─── Checklist ─── */
+        .checklist { list-style: none; padding: 0; }
+        .checklist li {
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            font-size: 0.85rem;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+        .checklist li::before {
+            content: '☐';
+            color: var(--text-muted);
+            font-size: 1rem;
+            flex-shrink: 0;
+        }
+
+        /* ─── Legal Framework ─── */
+        .legal-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+            margin: 16px 0;
+        }
+        .legal-card {
+            background: rgba(255,184,0,0.06);
+            border: 1px solid rgba(255,184,0,0.15);
+            border-radius: 10px;
+            padding: 14px;
+        }
+        .legal-card .doc-name { font-weight: 800; font-size: 0.82rem; color: var(--gold); }
+        .legal-card .doc-desc { font-size: 0.75rem; color: var(--text-muted); margin-top: 4px; }
+
+        /* ─── Tech Pillars ─── */
+        .tech-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin: 20px 0;
+        }
+        .tech-card {
+            background: linear-gradient(135deg, rgba(0,212,255,0.08), rgba(139,92,246,0.04));
+            border: 1px solid rgba(0,212,255,0.15);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+        }
+        .tech-card .icon { font-size: 2rem; margin-bottom: 8px; }
+        .tech-card .name { font-weight: 800; font-size: 0.9rem; }
+        .tech-card .desc { font-size: 0.75rem; color: var(--text-muted); margin-top: 4px; }
+
+        /* ─── Formula ─── */
+        .formula {
+            background: var(--navy);
+            border: 2px solid var(--cyan);
+            border-radius: 12px;
+            padding: 24px;
+            text-align: center;
+            margin: 24px 0;
+            font-size: 1.3rem;
+            font-weight: 900;
+            letter-spacing: 0.03em;
+        }
+
+        /* ─── Tabs Visual ─── */
+        .tabs-visual {
+            display: flex;
+            gap: 4px;
+            flex-wrap: wrap;
+            margin: 16px 0;
+        }
+        .tab-item {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid var(--card-border);
+            padding: 6px 14px;
+            border-radius: 8px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            cursor: default;
+            transition: all 0.2s;
+        }
+        .tab-item.active {
+            background: rgba(0,212,255,0.15);
+            border-color: var(--cyan);
+            color: var(--cyan);
+        }
+
+        /* ─── Flow ─── */
+        .flow {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin: 20px 0;
+            justify-content: center;
+        }
+        .flow-item {
+            background: var(--card);
+            border: 1px solid var(--card-border);
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 0.78rem;
+            font-weight: 700;
+        }
+        .flow-item.highlight { border-color: var(--gold); background: rgba(255,184,0,0.08); color: var(--gold); }
+        .flow-arrow { color: var(--cyan); font-weight: 900; }
+
+        h3 { font-size: 0.95rem; font-weight: 800; margin: 24px 0 12px; color: var(--cyan); }
+        h4 { font-size: 0.85rem; font-weight: 700; margin: 16px 0 8px; }
+        p { margin: 8px 0; font-size: 0.85rem; color: var(--text); }
+        ul { padding-left: 20px; margin: 8px 0; }
+        li { font-size: 0.83rem; margin: 4px 0; }
+
+        /* ─── Print ─── */
+        @media print {
+            body { background: #fff; color: #222; }
+            .hero { background: #1a3a4f !important; }
+            .section { break-inside: avoid; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ═══ HERO ═══ -->
+<div class="hero">
+    <h1>🎯 KẾ HOẠCH DEMO PHẦN MỀM QLDA ĐẦU TƯ CÔNG</h1>
+    <p class="subtitle">Tích hợp Trí tuệ Nhân tạo (AI) và Mô hình BIM 3D | Công ty CIC</p>
+    <div class="meta">
+        <span>📅 <strong>05/03/2026</strong></span>
+        <span>⏱️ <strong>60 phút</strong></span>
+        <span>👥 <strong>Ban QLDA Chuyên ngành</strong></span>
+        <span>💻 <strong>Live Demo</strong></span>
+    </div>
+</div>
+
+<div class="container">
+
+<!-- ═══ TIMELINE ═══ -->
+<div class="section">
+    <div class="section-header">
+        <div class="number">⏱</div>
+        <h2>Phân bổ thời gian</h2>
+        <span class="time-badge">60 PHÚT</span>
+    </div>
+    <div class="section-body" style="padding: 0;">
+        <div class="timeline-grid">
+            <div class="tg-header">Thời gian</div>
+            <div class="tg-header">Nội dung</div>
+            <div class="tg-header">Ghi chú</div>
+
+            <div class="tg-row"><div class="tg-time">0:00 – 0:05</div><div><strong>Mở đầu — Bối cảnh & Đặt vấn đề</strong></div><div class="tg-note">Chuyển đổi số, 7 pain points</div></div>
+            <div class="tg-row"><div class="tg-time">0:05 – 0:12</div><div><strong>Dashboard Tổng quan</strong></div><div class="tg-note">Ấn tượng đầu tiên, KPI</div></div>
+            <div class="tg-row"><div class="tg-time">0:12 – 0:30</div><div><strong>Module Dự án <span class="star">★★</span></strong> (trọng tâm)</div><div class="tg-note">8 tabs, lifecycle, gói thầu</div></div>
+            <div class="tg-row"><div class="tg-time">0:30 – 0:37</div><div><strong>Hợp đồng & Thanh toán</strong></div><div class="tg-note">Nghiệp vụ tài chính</div></div>
+            <div class="tg-row"><div class="tg-time">0:37 – 0:43</div><div><strong>BIM 3D <span class="star">★★★</span></strong></div><div class="tg-note">WOW factor</div></div>
+            <div class="tg-row"><div class="tg-time">0:43 – 0:48</div><div><strong>Tra cứu Pháp luật & CDE</strong></div><div class="tg-note">Tuân thủ quy định</div></div>
+            <div class="tg-row"><div class="tg-time">0:48 – 0:52</div><div><strong>Dữ liệu → AI <span class="star">★★</span></strong></div><div class="tg-note">Sức mạnh thực sự</div></div>
+            <div class="tg-row"><div class="tg-time">0:52 – 0:55</div><div><strong>Bảo mật & Hạ tầng</strong></div><div class="tg-note">An toàn dữ liệu</div></div>
+            <div class="tg-row"><div class="tg-time">0:55 – 1:00</div><div><strong>Q&A</strong></div><div class="tg-note">Giải đáp thắc mắc</div></div>
+        </div>
+    </div>
+</div>
+
+<!-- ═══ PHẦN 1: MỞ ĐẦU ═══ -->
+<div class="section">
+    <div class="section-header">
+        <div class="number">1</div>
+        <h2>Mở đầu — Bối cảnh & Đặt vấn đề</h2>
+        <span class="time-badge">5 PHÚT</span>
+    </div>
+    <div class="section-body">
+        <h3>Bối cảnh chuyển đổi số 2024-2026</h3>
+        <div class="legal-grid">
+            <div class="legal-card"><div class="doc-name">NĐ 175/2024/NĐ-CP</div><div class="doc-desc">BIM bắt buộc nhóm A, B từ 2025</div></div>
+            <div class="legal-card"><div class="doc-name">TT 24/2024/TT-BXD</div><div class="doc-desc">Đồng bộ 40+ trường dữ liệu lên Cổng QG</div></div>
+            <div class="legal-card"><div class="doc-name">NĐ 111/2024/NĐ-CP</div><div class="doc-desc">Cổng CSDL Quốc gia về ĐTC</div></div>
+            <div class="legal-card"><div class="doc-name">Luật 148/2024</div><div class="doc-desc">KHLCNT điện tử, đấu thầu qua mạng</div></div>
+            <div class="legal-card"><div class="doc-name">Luật AI 2026</div><div class="doc-desc">Khuyến khích AI trong quản lý nhà nước</div></div>
+        </div>
+
+        <h3>7 Vấn đề cần giải quyết</h3>
+        <table class="compare-table">
+            <tr><th style="border-radius:8px 0 0 0">❌ Vấn đề hiện tại</th><th style="border-radius:0 8px 0 0">Hậu quả</th></tr>
+            <tr><td>📊 Excel phân tán — mỗi phòng 1 file</td><td>Tổng hợp báo cáo mất 2-3 ngày</td></tr>
+            <tr><td>💰 Không theo dõi giải ngân realtime</td><td>Cấp trên hỏi → mất nửa ngày tổng hợp</td></tr>
+            <tr><td>📁 Hồ sơ rời rạc (USB, Drive, cá nhân)</td><td>Cán bộ nghỉ → mất file</td></tr>
+            <tr><td>🏗️ Chưa tuân thủ BIM (NĐ 175)</td><td>Rủi ro kiểm tra DA nhóm A/B</td></tr>
+            <tr><td>📜 Tra cứu pháp luật mất thời gian</td><td>Nhầm điều khoản khi áp dụng</td></tr>
+            <tr><td>🔄 Chưa đồng bộ Cổng CSDLQG</td><td>Rủi ro khi thanh tra</td></tr>
+            <tr><td>🤖 Chưa ứng dụng AI</td><td>Nhập liệu thủ công, tra cứu chậm</td></tr>
+        </table>
+
+        <h3>3 Công nghệ cốt lõi</h3>
+        <div class="tech-grid">
+            <div class="tech-card"><div class="icon">🤖</div><div class="name">Trí tuệ Nhân tạo</div><div class="desc">Google Gemini 2.0 — Trợ lý AI tra cứu PL, trích xuất VB</div></div>
+            <div class="tech-card"><div class="icon">📐</div><div class="name">Mô hình BIM 3D</div><div class="desc">web-ifc + Three.js — Xem trên trình duyệt</div></div>
+            <div class="tech-card"><div class="icon">☁️</div><div class="name">Cloud Realtime</div><div class="desc">Supabase — Đồng bộ tức thì, backup tự động</div></div>
+        </div>
+    </div>
+</div>
+
+<!-- ═══ PHẦN 3: DỰ ÁN ĐẦU TƯ ═══ -->
+<div class="section">
+    <div class="section-header">
+        <div class="number">3</div>
+        <h2>Quản lý Dự án Đầu tư — Trọng tâm</h2>
+        <span class="time-badge">18 PHÚT ★★</span>
+    </div>
+    <div class="section-body">
+        <h3>Danh sách dự án — 4 KPI Cards</h3>
+        <div class="kpi-grid">
+            <div class="kpi-card"><div class="label">Tổng số dự án</div><div class="value cyan">3</div></div>
+            <div class="kpi-card"><div class="label">Tổng vốn đầu tư</div><div class="value gold">1,302.8 Tỷ</div></div>
+            <div class="kpi-card"><div class="label">Giải ngân TB</div><div class="value violet">0.0%</div></div>
+            <div class="kpi-card"><div class="label">Chuẩn bị dự án</div><div class="value" style="color:var(--amber)">1 dự án</div></div>
+        </div>
+
+        <h3>8 Tabs chi tiết dự án</h3>
+        <div class="tabs-visual">
+            <div class="tab-item active">ⓘ TỔNG QUAN</div>
+            <div class="tab-item">📅 KẾ HOẠCH</div>
+            <div class="tab-item">💼 GÓI THẦU</div>
+            <div class="tab-item">🏛️ VỐN</div>
+            <div class="tab-item">🗄️ DỮ LIỆU TT24</div>
+            <div class="tab-item">📁 HỒ SƠ</div>
+            <div class="tab-item">📐 BIM</div>
+            <div class="tab-item">⚙️ VẬN HÀNH</div>
+        </div>
+
+        <h4>Tab Tổng quan — Dashboard mini của dự án</h4>
+        <p>Lifecycle Stepper (3 giai đoạn NĐ 175) · Risk Indicators · 3 KPI (Tổng mức ĐT, Giải ngân, Tiến độ) · Cổng CSDLQG · Budget Variance · Thông tin chung (8 fields) · Ban QLDA · DualProgress · Key Dates · Quick Actions</p>
+
+        <h4>Tab Gói thầu ⭐ — Quan trọng nhất</h4>
+        <p>Nhóm theo KHLCNT · Lifecycle 6 bước (Lập → Phê duyệt → Mời thầu → Đánh giá → Trúng thầu → Ký HĐ) · Import/Export Excel · Drag & Drop · Copy mã TBMT</p>
+
+        <table class="compare-table">
+            <tr><th>❌ Không có phần mềm</th><th>✅ Với phần mềm</th></tr>
+            <tr><td>Lập KHLCNT bằng Excel, dễ sai format</td><td>Form + validate tự động theo Luật 148</td></tr>
+            <tr><td>Gói nào bước nào? Ghi sổ tay</td><td>Lifecycle 6 bước, badge màu trực quan</td></tr>
+            <tr><td>Xuất KHLCNT → format lại nửa ngày</td><td>1 click Export Excel đúng mẫu</td></tr>
+            <tr><td>10 file Excel, 5 folder, 3 cuốn sổ</td><td>1 dự án = 8 tab = toàn bộ đời sống DA</td></tr>
+        </table>
+
+        <div class="key-message">
+            <p>💡 "1 dự án = 8 tab = toàn bộ đời sống dự án. Không còn 10 file Excel, 5 folder, 3 cuốn sổ."</p>
+        </div>
+    </div>
+</div>
+
+<!-- ═══ PHẦN 7: AI ═══ -->
+<div class="section">
+    <div class="section-header">
+        <div class="number" style="background: linear-gradient(135deg, var(--violet), #ec4899);">7</div>
+        <h2>Dữ liệu → AI — Sức mạnh thực sự</h2>
+        <span class="time-badge">4 PHÚT ★★</span>
+    </div>
+    <div class="section-body">
+        <div class="dialog">
+            "Tất cả những gì tôi vừa demo đều hướng đến <strong>một mục đích duy nhất: Đưa dữ liệu vào hệ thống.</strong><br>
+            Vì khi có dữ liệu — AI mới phát huy sức mạnh."
+        </div>
+
+        <h3>① AI đã tích hợp (demo ngay)</h3>
+        <table class="ai-table">
+            <tr><th>Tính năng</th><th>Cách hoạt động</th></tr>
+            <tr><td>🤖 Trợ lý AI Chatbot</td><td>Hỏi tiếng Việt → AI trả lời dựa trên pháp luật ĐTC</td></tr>
+            <tr><td>📄 Trích xuất VB (Gemini)</td><td>Upload PDF QĐ → AI trích: Số VB, ngày, CQ ban hành</td></tr>
+            <tr><td>🏗️ BIM Auto-Extract</td><td>Tải IFC → AI phân tích cấu kiện, vật liệu, khối lượng</td></tr>
+            <tr><td>📁 Phân loại tài liệu AI</td><td>Upload file → AI nhận dạng keywords → tự phân loại</td></tr>
+            <tr><td>⚠️ Cảnh báo rủi ro</td><td>AI phân tích tiến độ + giải ngân → cảnh báo tự động</td></tr>
+        </table>
+
+        <h3>② 10 ứng dụng AI khi đã có dữ liệu 1-2 năm</h3>
+        <table class="ai-table">
+            <tr><th>#</th><th>Ứng dụng AI</th><th>Ví dụ cụ thể</th></tr>
+            <tr><td>1</td><td>🔮 Dự báo giải ngân</td><td>"Cuối năm chỉ đạt 65% KH. Cần tăng 15% trong Q3."</td></tr>
+            <tr><td>2</td><td>⏰ Dự báo chậm tiến độ</td><td>"Gói XL trễ 2 tháng do đánh giá HSDT kéo dài"</td></tr>
+            <tr><td>3</td><td>💰 Phát hiện bất thường</td><td>"3 đợt TT KLHT giá trị gần giống — cần kiểm tra"</td></tr>
+            <tr><td>4</td><td>📊 Báo cáo tự động</td><td>"AI soạn BC giám sát tháng — chỉ cần ký"</td></tr>
+            <tr><td>5</td><td>📋 So sánh benchmark</td><td>"DA X giải ngân chậm hơn 20% so với trung bình nhóm B"</td></tr>
+            <tr><td>6</td><td>🏆 Đánh giá nhà thầu</td><td>"Nhà thầu ABC: hoàn thành đúng hạn 85%, CL 4.2/5"</td></tr>
+            <tr><td>7</td><td>📜 Kiểm tra tuân thủ PL</td><td>"Còn thiếu 5 VB theo TT24, 2 VB quá hạn"</td></tr>
+            <tr><td>8</td><td>🗓️ Lập KH thông minh</td><td>"Đề xuất timeline 42 tháng dựa trên 10 DA tương tự"</td></tr>
+            <tr><td>9</td><td>🔍 Hỏi đáp dữ liệu</td><td>"Tổng gói XL chờ duyệt? → 234.5 tỷ, 3 gói"</td></tr>
+            <tr><td>10</td><td>📧 Tóm tắt điều hành</td><td>"Tuần này: 2 gói cần duyệt, 1 HĐ sắp hết hạn"</td></tr>
+        </table>
+
+        <div class="formula">
+            📊 DỮ LIỆU &nbsp;×&nbsp; 🤖 AI (Gemini 2.0) &nbsp;=&nbsp; 💡 THÔNG TIN HÀNH ĐỘNG
+        </div>
+
+        <div class="dialog">
+            "Càng dùng lâu, dữ liệu càng nhiều, AI càng thông minh."
+        </div>
+    </div>
+</div>
+
+<!-- ═══ CHECKLIST ═══ -->
+<div class="section">
+    <div class="section-header">
+        <div class="number" style="background: linear-gradient(135deg, var(--red), var(--amber));">!</div>
+        <h2>Checklist chuẩn bị trước buổi demo</h2>
+    </div>
+    <div class="section-body">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px;">
+            <div>
+                <h4>🔧 Kỹ thuật</h4>
+                <ul class="checklist">
+                    <li>Internet ổn định tại địa điểm demo</li>
+                    <li>App đã mở, đã đăng nhập sẵn</li>
+                    <li>Upload sẵn file IFC cho BIM 3D</li>
+                    <li>Test tất cả tabs (không lỗi 400/500)</li>
+                    <li>Test AI chatbot, dark mode, Ctrl+K</li>
+                    <li>Data: 3 dự án, 5 HĐ, nhân sự có đủ</li>
+                </ul>
+            </div>
+            <div>
+                <h4>💻 Thiết bị</h4>
+                <ul class="checklist">
+                    <li>Laptop sạc đầy + adapter</li>
+                    <li>HDMI/USB-C cho máy chiếu</li>
+                    <li>Chuột rời (BIM cần zoom/rotate)</li>
+                    <li>Resolution ≥ 1920×1080</li>
+                </ul>
+                <h4 style="margin-top:16px">📄 Tài liệu</h4>
+                <ul class="checklist">
+                    <li>In tài liệu giới thiệu DOCX</li>
+                    <li>Name card / thông tin liên hệ</li>
+                    <li>File IFC mẫu dự phòng</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ═══ FLOW ═══ -->
+<div class="section">
+    <div class="section-header">
+        <div class="number" style="background: linear-gradient(135deg, var(--gold), #f97316);">→</div>
+        <h2>Flow Demo Tóm tắt</h2>
+    </div>
+    <div class="section-body">
+        <div class="flow">
+            <div class="flow-item">Mở đầu</div>
+            <span class="flow-arrow">→</span>
+            <div class="flow-item highlight">Dashboard ★</div>
+            <span class="flow-arrow">→</span>
+            <div class="flow-item highlight">Dự án 8 Tabs ★★</div>
+            <span class="flow-arrow">→</span>
+            <div class="flow-item">Hợp đồng</div>
+            <span class="flow-arrow">→</span>
+            <div class="flow-item highlight">BIM 3D ★★★</div>
+            <span class="flow-arrow">→</span>
+            <div class="flow-item">Pháp luật</div>
+            <span class="flow-arrow">→</span>
+            <div class="flow-item highlight">AI ★★</div>
+            <span class="flow-arrow">→</span>
+            <div class="flow-item">Q&A</div>
+        </div>
+        <div class="key-message">
+            <p>🎯 Quy tắc vàng: Dành nhiều thời gian nhất cho Dự án + Gói thầu + BIM — đây là 3 thứ Ban QLDA quan tâm nhất.</p>
+        </div>
+    </div>
+</div>
+
+</div><!-- /container -->
+
+<div style="text-align:center; padding: 40px; color: var(--text-muted); font-size: 0.75rem;">
+    © 2026 CIC — Phần mềm Quản lý Dự án Đầu tư Công Thông minh<br>
+    Tài liệu nội bộ — Chuẩn bị buổi demo 05/03/2026
+</div>
+
+</body>
+</html>

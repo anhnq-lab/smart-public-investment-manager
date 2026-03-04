@@ -9,6 +9,11 @@ import { DashboardService } from '../../services/DashboardService';
 import { ProjectService } from '../../services/ProjectService';
 import { useTheme } from '../../context/ThemeContext';
 import { ProjectStatus } from '../../types';
+import { AISummaryWidget } from '../../components/ai/AISummaryWidget';
+import { AIRiskDashboard } from '../../components/ai/AIRiskDashboard';
+import { AIContractorScoring } from '../../components/ai/AIContractorScoring';
+import { AIResourceOptimizer } from '../../components/ai/AIResourceOptimizer';
+import { AIAnomalyDetector } from '../../components/ai/AIAnomalyDetector';
 
 // --- CUSTOM TOOLTIP FOR DARK MODE ---
 const ChartTooltip = ({ active, payload, label }: any) => {
@@ -332,6 +337,9 @@ const Dashboard: React.FC = () => {
                 />
             </div>
 
+            {/* AI SUMMARY */}
+            <AISummaryWidget />
+
             {/* 2. MAP & ALERTS ROW */}
             <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 h-[500px]">
                 {/* Map Section (2/3 width) */}
@@ -608,6 +616,18 @@ const Dashboard: React.FC = () => {
                             )}
                         </div>
                     </div>
+
+                    {/* AI RISK INTELLIGENCE */}
+                    <AIRiskDashboard />
+
+                    {/* AI ANOMALY DETECTOR */}
+                    <AIAnomalyDetector />
+
+                    {/* AI CONTRACTOR SCORING */}
+                    <AIContractorScoring />
+
+                    {/* AI RESOURCE OPTIMIZER */}
+                    <AIResourceOptimizer />
 
                     {/* ACTIVE CONTRACTORS SUMMARY */}
                     <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700">
