@@ -1,5 +1,6 @@
 import React from 'react';
 import { TrendingUp, Wallet, Package } from 'lucide-react';
+import { formatShortCurrency } from '@/utils/format';
 
 interface KeyMetricsHeaderProps {
     totalInvestment: number;
@@ -12,15 +13,7 @@ export const KeyMetricsHeader: React.FC<KeyMetricsHeaderProps> = ({
     disbursedAmount,
     physicalProgress
 }) => {
-    const formatCurrency = (value: number) => {
-        if (value >= 1_000_000_000_000) {
-            return `${(value / 1_000_000_000_000).toFixed(2)} nghìn tỷ`;
-        }
-        if (value >= 1_000_000_000) {
-            return `${(value / 1_000_000_000).toFixed(1)} tỷ`;
-        }
-        return new Intl.NumberFormat('vi-VN').format(value) + ' đ';
-    };
+    const formatCurrency = formatShortCurrency;
 
     const disbursementPercent = totalInvestment > 0
         ? ((disbursedAmount / totalInvestment) * 100).toFixed(1)
@@ -66,7 +59,7 @@ export const KeyMetricsHeader: React.FC<KeyMetricsHeaderProps> = ({
                             <p className="text-xs font-semibold text-gray-500 dark:text-slate-400 uppercase tracking-wide mb-1">
                                 {metric.label}
                             </p>
-                            <p className={`text-2xl font-bold bg-gradient-to-r ${metric.gradient} bg-clip-text text-transparent tabular-nums`}>
+                            <p className={`text-2xl font-bold bg-gradient-to-r ${metric.gradient} bg-clip-text text-transparent dark:text-slate-100 dark:bg-none tabular-nums`}>
                                 {metric.value}
                             </p>
                             {metric.subValue && (

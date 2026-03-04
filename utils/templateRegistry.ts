@@ -69,7 +69,17 @@ const autoProject = {
     group: (ctx: ExportDataContext) => ctx.project?.GroupCode || '',
     totalInvestment: (ctx: ExportDataContext) =>
         ctx.project?.TotalInvestment ? ctx.project.TotalInvestment.toLocaleString('vi-VN') : '',
-    capitalSource: (ctx: ExportDataContext) => ctx.project?.CapitalSource || 'Ngân sách Nhà nước',
+    capitalSource: (ctx: ExportDataContext) => {
+        const raw = (ctx.project?.CapitalSource || '').trim();
+        // Normalize: match against common options
+        if (!raw) return 'Ngân sách Nhà nước';
+        if (raw.includes('Trung ương')) return 'Ngân sách Trung ương';
+        if (raw.includes('địa phương')) return 'Ngân sách địa phương';
+        if (raw.includes('ODA')) return 'Vốn ODA';
+        if (raw.includes('vay') || raw.includes('ưu đãi')) return 'Vốn vay ưu đãi';
+        if (raw.includes('hỗn hợp')) return 'Vốn hỗn hợp';
+        return 'Ngân sách Nhà nước';
+    },
     investorName: (ctx: ExportDataContext) => ctx.project?.InvestorName || '',
     decisionNumber: (ctx: ExportDataContext) => ctx.project?.DecisionNumber || '',
     decisionDate: (ctx: ExportDataContext) => ctx.project?.DecisionDate || '',
@@ -95,7 +105,7 @@ const autoSigner = {
 const projectInfoFields: TemplateField[] = [
     { key: 'projectName', label: 'Tên dự án', type: 'text', required: true, autoFillFrom: autoProject.name },
     { key: 'projectGroup', label: 'Nhóm dự án', type: 'select', options: ['A', 'B', 'C', 'QN'], autoFillFrom: autoProject.group },
-    { key: 'totalInvestment', label: 'Tổng mức đầu tư (VNĐ)', type: 'number', autoFillFrom: autoProject.totalInvestment },
+    { key: 'totalInvestment', label: 'Tổng mức đầu tư (VNĐ)', type: 'text', autoFillFrom: autoProject.totalInvestment },
     { key: 'capitalSource', label: 'Nguồn vốn', type: 'select', autoFillFrom: autoProject.capitalSource, options: ['Ngân sách Nhà nước', 'Ngân sách Trung ương', 'Ngân sách địa phương', 'Vốn ODA', 'Vốn vay ưu đãi', 'Vốn hỗn hợp'] },
     { key: 'investorName', label: 'Chủ đầu tư', type: 'text', autoFillFrom: autoProject.investorName },
     { key: 'location', label: 'Địa điểm xây dựng', type: 'text', autoFillFrom: autoProject.location },
@@ -171,7 +181,7 @@ export const TEMPLATE_REGISTRY: Record<string, TemplateConfig> = {
             { key: 'capQuyetDinh', label: 'Cấp QĐ đầu tư', type: 'text', autoFillFrom: autoProject.decisionAuthority, placeholder: 'Giám đốc Học viện CTQG HCM' },
             { key: 'investorName', label: 'Chủ đầu tư', type: 'text', autoFillFrom: autoProject.investorName },
             { key: 'location', label: 'Địa điểm thực hiện', type: 'text', autoFillFrom: autoProject.location },
-            { key: 'totalInvestment', label: 'Tổng mức đầu tư (VNĐ)', type: 'number', autoFillFrom: autoProject.totalInvestment },
+            { key: 'totalInvestment', label: 'Tổng mức đầu tư (VNĐ)', type: 'text', autoFillFrom: autoProject.totalInvestment },
             { key: 'capitalSource', label: 'Nguồn vốn', type: 'select', autoFillFrom: autoProject.capitalSource, options: ['Ngân sách Nhà nước', 'Ngân sách Trung ương', 'Ngân sách địa phương', 'Vốn ODA', 'Vốn hỗn hợp'] },
             { key: 'duration', label: 'Thời gian thực hiện', type: 'text', autoFillFrom: autoProject.duration },
             // === Phần II: Nội dung chủ yếu (Điều 35) ===

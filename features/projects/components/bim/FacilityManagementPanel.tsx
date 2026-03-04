@@ -59,7 +59,8 @@ export const FacilityManagementPanel: React.FC = () => {
         handleExtractFromBIM: onExtractFromBIM,
         tools,
         selection,
-        engine
+        engine,
+        upload
     } = useBimContext();
 
     const onLocationClick = useCallback(async (asset: FacilityAsset) => {
@@ -69,8 +70,10 @@ export const FacilityManagementPanel: React.FC = () => {
 
         tools.toggleRightPanel('properties');
         await selection.handleSelectElementFromTree(expressId);
+        // Isolate the model containing this equipment (hide others)
+        upload.isolateModelByExpressId(expressId);
         await engine.zoomToExpressId(expressId);
-    }, [selection, engine, tools]);
+    }, [selection, engine, tools, upload]);
     const [assets, setAssets] = useState<FacilityAsset[]>([]);
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);

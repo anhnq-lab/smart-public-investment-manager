@@ -1,4 +1,4 @@
-import React, { useState, useEffect, Suspense } from 'react';
+import React, { useState, useEffect, Suspense, useCallback } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import { ProjectService } from '@/services/ProjectService';
@@ -16,18 +16,72 @@ import { ProjectCapitalTab } from './components/tabs/ProjectCapitalTab';
 import { ProjectDocumentsTab } from './components/tabs/ProjectDocumentsTab';
 import { ProjectComplianceTab } from './components/tabs/ProjectComplianceTab';
 import { ProjectOperationsTab } from './components/tabs/ProjectOperationsTab';
+import { CreateProjectModal } from './components/CreateProjectModal';
+import { ConfirmModal } from '@/components/common/ConfirmModal';
 import { Info, CalendarCheck, Briefcase, FolderOpen, Layers, Landmark, Database, Settings2 } from 'lucide-react';
 
-// Error Boundary for BIM tab - catches runtime crashes from 3D libraries
-class BimErrorBoundary extends React.Component<
-    { children: React.ReactNode },
-    { hasError: boolean; error: Error | null }
-> {
-    constructor(props: { children: React.ReactNode }) {
+// ─────── Skeleton Loading ───────
+const ProjectDetailSkeleton: React.FC = () => (
+    <div className="flex flex-col h-[calc(100vh-120px)] bg-[#F8FAFC] dark:bg-slate-900 animate-pulse">
+        <div className="shrink-0 px-4 pt-4 space-y-4">
+            {/* Header skeleton */}
+            <div className="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-gray-100 dark:border-slate-700">
+                <div className="flex items-start gap-4">
+                    <div className="w-10 h-10 bg-gray-200 dark:bg-slate-700 rounded-xl" />
+                    <div className="flex-1 space-y-3">
+                        <div className="flex items-center gap-3">
+                            <div className="h-7 bg-gray-200 dark:bg-slate-700 rounded-lg w-2/3" />
+                            <div className="h-6 bg-amber-100 dark:bg-amber-900/20 rounded-md w-28" />
+                        </div>
+                        <div className="flex gap-4">
+                            <div className="h-4 bg-gray-100 dark:bg-slate-700 rounded w-24" />
+                            <div className="h-4 bg-gray-100 dark:bg-slate-700 rounded w-32" />
+                            <div className="h-4 bg-gray-100 dark:bg-slate-700 rounded w-20" />
+                            <div className="h-4 bg-gray-100 dark:bg-slate-700 rounded w-16" />
+                        </div>
+                    </div>
+                    <div className="flex gap-2">
+                        <div className="h-9 w-24 bg-blue-100 dark:bg-blue-900/20 rounded-xl" />
+                        <div className="h-9 w-9 bg-gray-100 dark:bg-slate-700 rounded-xl" />
+                    </div>
+                </div>
+            </div>
+            {/* Tab skeleton */}
+            <div className="flex gap-8 border-b border-gray-200 dark:border-slate-700 pb-2">
+                {[1, 2, 3, 4, 5, 6, 7, 8].map(i => (
+                    <div key={i} className="h-4 bg-gray-100 dark:bg-slate-700 rounded w-20" />
+                ))}
+            </div>
+        </div>
+        {/* Content skeleton */}
+        <div className="flex-1 px-4 py-6 space-y-4">
+            <div className="grid grid-cols-3 gap-4">
+                {[1, 2, 3].map(i => (
+                    <div key={i} className="bg-white dark:bg-slate-800 rounded-xl p-6 h-28 border border-gray-100 dark:border-slate-700" />
+                ))}
+            </div>
+            <div className="grid grid-cols-3 gap-4">
+                <div className="col-span-2 bg-white dark:bg-slate-800 rounded-xl p-6 h-64 border border-gray-100 dark:border-slate-700" />
+                <div className="bg-white dark:bg-slate-800 rounded-xl p-6 h-64 border border-gray-100 dark:border-slate-700" />
+            </div>
+        </div>
+    </div>
+);
+
+// ─────── BIM Error Boundary ───────
+interface BimErrorBoundaryProps {
+    children: React.ReactNode;
+}
+interface BimErrorBoundaryState {
+    hasError: boolean;
+    error: Error | null;
+}
+class BimErrorBoundary extends React.Component<BimErrorBoundaryProps, BimErrorBoundaryState> {
+    constructor(props: BimErrorBoundaryProps) {
         super(props);
         this.state = { hasError: false, error: null };
     }
-    static getDerivedStateFromError(error: Error) {
+    static getDerivedStateFromError(error: Error): BimErrorBoundaryState {
         return { hasError: true, error };
     }
     componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
@@ -57,6 +111,7 @@ class BimErrorBoundary extends React.Component<
     }
 }
 
+// ─────── Main Component ───────
 const ProjectDetail: React.FC = () => {
     const { id } = useParams<{ id: string }>();
     const location = useLocation();
@@ -76,6 +131,13 @@ const ProjectDetail: React.FC = () => {
     const [syncResult, setSyncResult] = useState<SyncResult | null>(null);
     const [isGeneratingReport, setIsGeneratingReport] = useState(false);
 
+    // Delete confirmation modal
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [isDeleting, setIsDeleting] = useState(false);
+
+    // Edit modal
+    const [showEditModal, setShowEditModal] = useState(false);
+
     // Lazy-mount flags: once mounted, stay mounted to preserve 3D engine state
     const [bimMounted, setBimMounted] = useState(initialTab === 'bim');
     const [opsMounted, setOpsMounted] = useState(initialTab === 'operations');
@@ -93,7 +155,8 @@ const ProjectDetail: React.FC = () => {
                 if (data) setProject(data);
             }).catch(() => { });
         }
-    }, [activeTab]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [activeTab, id]);
 
     // Initial Data Fetch
     useEffect(() => {
@@ -125,7 +188,6 @@ const ProjectDetail: React.FC = () => {
         if (!project?.ProjectID) return;
         const loadMembers = async () => {
             try {
-                // Load from project_members table joined with employees
                 const { data: memberRows, error } = await supabase
                     .from('project_members')
                     .select('employee_id, role')
@@ -134,7 +196,6 @@ const ProjectDetail: React.FC = () => {
                     setProjectMembers([]);
                     return;
                 }
-                // Fetch employee details
                 const empIds = memberRows.map((m: any) => m.employee_id);
                 const { data: empData } = await supabase
                     .from('employees')
@@ -166,8 +227,8 @@ const ProjectDetail: React.FC = () => {
         loadMembers();
     }, [project?.ProjectID]);
 
-    // Sync Handler
-    const handleSync = async () => {
+    // ─── Handlers ───
+    const handleSync = useCallback(async () => {
         if (!project) return;
         setIsSyncing(true);
         try {
@@ -181,23 +242,19 @@ const ProjectDetail: React.FC = () => {
         } finally {
             setIsSyncing(false);
         }
-    };
+    }, [project]);
 
-    // Report Handler
-    const handleGenerateReport = async (type: 'Monitoring' | 'Settlement') => {
+    const handleGenerateReport = useCallback(async (type: 'Monitoring' | 'Settlement') => {
         if (!project) return;
         setIsGeneratingReport(true);
         try {
             const report = type === 'Monitoring'
                 ? await NationalGatewayService.generateMonitoringReport(project.ProjectID)
                 : await NationalGatewayService.generateSettlementReport(project.ProjectID);
-
-            // Mock Download
             const link = document.createElement('a');
             link.href = report.url;
             link.download = `${type}_Report_${project.ProjectID}.pdf`;
             document.body.appendChild(link);
-            // link.click(); // Prevent actual download in demo
             document.body.removeChild(link);
             alert(`Đã trích xuất báo cáo: ${report.id} thành công!`);
         } catch (error) {
@@ -205,17 +262,13 @@ const ProjectDetail: React.FC = () => {
         } finally {
             setIsGeneratingReport(false);
         }
-    };
+    }, [project]);
 
-    if (loading) return <div className="flex h-screen items-center justify-center text-blue-600 dark:text-blue-400">Loading Project...</div>;
-    if (!project) return <div className="flex h-screen items-center justify-center font-bold text-gray-500 dark:text-slate-400">Dự án không tồn tại.</div>;
-
-    const handleDeleteProject = async () => {
-        const confirmed = window.confirm(`Bạn có chắc muốn xoá dự án "${project.ProjectName}"?\n\nHành động này không thể hoàn tác. Tất cả dữ liệu liên quan (công việc, tài liệu, gói thầu, hợp đồng, vốn, giải ngân...) sẽ bị xoá.`);
-        if (!confirmed) return;
+    const handleDeleteProject = useCallback(async () => {
+        if (!project) return;
+        setIsDeleting(true);
         try {
             await ProjectService.delete(project.ProjectID);
-            // Invalidate all project-related caches so lists update immediately
             await queryClient.invalidateQueries({ queryKey: ['projects'] });
             queryClient.removeQueries({ queryKey: ['project-capital', project.ProjectID] });
             queryClient.removeQueries({ queryKey: ['capital-plans', project.ProjectID] });
@@ -224,8 +277,30 @@ const ProjectDetail: React.FC = () => {
         } catch (err) {
             console.error('Delete project failed:', err);
             alert('Xoá dự án thất bại. Vui lòng thử lại.');
+        } finally {
+            setIsDeleting(false);
+            setShowDeleteModal(false);
         }
-    };
+    }, [project, queryClient, navigate]);
+
+    const handleEditSave = useCallback(async (data: Partial<Project>) => {
+        if (!project) return;
+        try {
+            await ProjectService.update(project.ProjectID, data);
+            // Refresh project data
+            const updated = await ProjectService.getById(project.ProjectID);
+            if (updated) setProject(updated);
+            // Invalidate caches
+            await queryClient.invalidateQueries({ queryKey: ['projects'] });
+        } catch (err) {
+            console.error('Update project failed:', err);
+            throw err;
+        }
+    }, [project, queryClient]);
+
+    // ─── Render ───
+    if (loading) return <ProjectDetailSkeleton />;
+    if (!project) return <div className="flex h-screen items-center justify-center font-bold text-gray-500 dark:text-slate-400">Dự án không tồn tại.</div>;
 
     return (
         <div className="flex flex-col relative h-[calc(100vh-120px)] bg-[#F8FAFC] dark:bg-slate-900">
@@ -237,14 +312,15 @@ const ProjectDetail: React.FC = () => {
                     onSync={handleSync}
                     isSyncing={isSyncing}
                     syncResult={syncResult}
-                    onDelete={handleDeleteProject}
+                    onDelete={() => setShowDeleteModal(true)}
+                    onEdit={() => setShowEditModal(true)}
                 />
 
                 {/* 2. Tab Navigation */}
                 <div className="border-b border-gray-200 dark:border-slate-700 flex gap-8 mt-4 overflow-x-auto">
                     {[
                         { id: 'info', label: 'TỔNG QUAN', icon: Info },
-                        { id: 'plan', label: 'KẾ HOẠCH', icon: CalendarCheck },
+                        { id: 'plan', label: 'KẾ HOẠCH/TIẾN ĐỘ', icon: CalendarCheck },
                         { id: 'packages', label: 'GÓI THẦU', icon: Briefcase },
                         { id: 'capital', label: 'VỐN & GIẢI NGÂN', icon: Landmark },
                         { id: 'tt24', label: 'DỮ LIỆU TT24', icon: Database },
@@ -264,7 +340,6 @@ const ProjectDetail: React.FC = () => {
             </div>
 
             {/* 3. Tab Content — BIM & Operations stay mounted to avoid re-init */}
-            {/* Regular tabs: unmount when inactive */}
             {activeTab !== 'bim' && activeTab !== 'operations' && (
                 <div className="flex-1 min-h-0 overflow-y-auto px-4 py-6">
                     {activeTab === 'info' && (
@@ -282,18 +357,38 @@ const ProjectDetail: React.FC = () => {
                             onViewPackage={(packageId) => {
                                 setActiveTab('packages');
                             }}
-                            onStageChange={(newStage, entry) => {
+                            onStageChange={async (newStage, entry) => {
+                                // Map Stage enum to Status enum
+                                const stageToStatus: Record<string, number> = {
+                                    'Preparation': 1,
+                                    'Execution': 2,
+                                    'Completion': 3,
+                                };
+                                const newStatus = stageToStatus[newStage] || 1;
+
+                                // Update local state
                                 setProject(prev => prev ? {
                                     ...prev,
                                     Stage: newStage,
+                                    Status: newStatus as any,
                                     StageHistory: [...(prev.StageHistory || []), entry]
                                 } : null);
-                                console.log('Stage changed to:', newStage, entry);
+
+                                // Persist to DB
+                                try {
+                                    await ProjectService.update(project.ProjectID, {
+                                        Stage: newStage,
+                                        Status: newStatus as any,
+                                    } as any);
+                                } catch (err) {
+                                    console.error('Failed to persist stage change:', err);
+                                }
                             }}
                             onHistoryUpdate={(history) => {
                                 setProject(prev => prev ? { ...prev, StageHistory: history } : null);
                             }}
                             canEditLifecycle={true}
+                            onEditProject={() => setShowEditModal(true)}
                         />
                     )}
                     {activeTab === 'plan' && (
@@ -331,7 +426,7 @@ const ProjectDetail: React.FC = () => {
                 </div>
             )}
 
-            {/* BIM tab: always mounted after first visit, hidden via visibility (not display:none — preserves WebGL context) */}
+            {/* BIM tab: always mounted after first visit, hidden via visibility */}
             {bimMounted && (
                 <div
                     className={`flex-1 min-h-0 ${activeTab === 'bim' ? 'relative' : 'absolute inset-0 pointer-events-none'}`}
@@ -354,6 +449,30 @@ const ProjectDetail: React.FC = () => {
                     <ProjectOperationsTab projectID={project.ProjectID} />
                 </div>
             )}
+
+            {/* ─── Delete Confirmation Modal ─── */}
+            <ConfirmModal
+                isOpen={showDeleteModal}
+                onClose={() => setShowDeleteModal(false)}
+                onConfirm={handleDeleteProject}
+                title="Xoá dự án"
+                message={`Bạn có chắc muốn xoá dự án "${project.ProjectName}"?\n\nHành động này không thể hoàn tác. Tất cả dữ liệu liên quan (công việc, tài liệu, gói thầu, hợp đồng, vốn, giải ngân...) sẽ bị xoá.`}
+                confirmText="Xoá dự án"
+                cancelText="Hủy"
+                variant="danger"
+                isLoading={isDeleting}
+            />
+
+            {/* ─── Edit Project Modal (reuse CreateProjectModal in edit mode) ─── */}
+            <CreateProjectModal
+                isOpen={showEditModal}
+                onClose={() => setShowEditModal(false)}
+                onSave={async (data, members) => {
+                    await handleEditSave(data as Partial<Project>);
+                    setShowEditModal(false);
+                }}
+                editProject={project}
+            />
         </div>
     );
 };

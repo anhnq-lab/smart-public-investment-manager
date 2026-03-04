@@ -13,6 +13,7 @@ interface CreateProjectModalProps {
     isOpen: boolean;
     onClose: () => void;
     onSave: (data: Partial<Project> & { StartDate: Date }, members: SelectedMember[]) => Promise<void>;
+    editProject?: Project | null;
 }
 
 const CONSTRUCTION_TYPES = [
@@ -70,7 +71,8 @@ const PROVINCES = [
     { code: '96', name: 'Cà Mau' },
 ];
 
-export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ isOpen, onClose, onSave }) => {
+export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ isOpen, onClose, onSave, editProject }) => {
+    const isEditMode = !!editProject;
     const [isLoading, setIsLoading] = useState(false);
     const [employees, setEmployees] = useState<Employee[]>([]);
     const [selectedMembers, setSelectedMembers] = useState<SelectedMember[]>([]);
@@ -90,8 +92,8 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ isOpen, 
         LocationCode: '',
         ConstructionType: '',
         ConstructionGrade: '',
-        CompetentAuthority: '',
-        InvestorName: '',
+        CompetentAuthority: 'Giám đốc Học viện Chính trị quốc gia Hồ Chí Minh',
+        InvestorName: 'Ban QLDA ĐTXD CN',
         Duration: '',
         // Section 3 - Nhà thầu & Tiêu chuẩn
         ApplicableStandards: '',
@@ -99,6 +101,32 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ isOpen, 
         SurveyContractor: '',
         ReviewContractor: '',
     });
+
+    // Populate form data in edit mode
+    useEffect(() => {
+        if (isOpen && editProject) {
+            setFormData({
+                ProjectID: editProject.ProjectID || '',
+                ProjectName: editProject.ProjectName || '',
+                GroupCode: editProject.GroupCode || ProjectGroup.C,
+                InvestmentType: editProject.InvestmentType || InvestmentType.Public,
+                StartDate: editProject.StartDate ? new Date(editProject.StartDate).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
+                TotalInvestment: editProject.TotalInvestment || 0,
+                CapitalSource: editProject.CapitalSource || 'Ngân sách Tỉnh',
+                ProvinceCode: editProject.ProvinceCode || '42',
+                LocationCode: editProject.LocationCode || '',
+                ConstructionType: editProject.ConstructionType || '',
+                ConstructionGrade: editProject.ConstructionGrade || '',
+                CompetentAuthority: editProject.CompetentAuthority || 'Giám đốc Học viện Chính trị quốc gia Hồ Chí Minh',
+                InvestorName: editProject.InvestorName || 'Ban QLDA ĐTXD CN',
+                Duration: editProject.Duration || '',
+                ApplicableStandards: editProject.ApplicableStandards || '',
+                FeasibilityContractor: editProject.FeasibilityContractor || '',
+                SurveyContractor: editProject.SurveyContractor || '',
+                ReviewContractor: editProject.ReviewContractor || '',
+            });
+        }
+    }, [isOpen, editProject]);
 
     // Fetch employees when modal opens
     useEffect(() => {
@@ -110,9 +138,9 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ isOpen, 
         }
     }, [isOpen]);
 
-    // Auto-generate Project Code theo TT 24/2025/TT-BXD
+    // Auto-generate Project Code theo TT 24/2025/TT-BXD (only in create mode)
     useEffect(() => {
-        if (isOpen) {
+        if (isOpen && !isEditMode) {
             const year = new Date(formData.StartDate).getFullYear();
             // Map ConstructionType string to enum, default to Civil
             const ctMap: Record<string, ConstructionType> = {
@@ -135,7 +163,7 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ isOpen, 
             );
             setFormData(prev => ({ ...prev, ProjectID: code }));
         }
-    }, [isOpen, formData.GroupCode, formData.InvestmentType, formData.StartDate, formData.ProvinceCode, formData.ConstructionType]);
+    }, [isOpen, isEditMode, formData.GroupCode, formData.InvestmentType, formData.StartDate, formData.ProvinceCode, formData.ConstructionType]);
 
     if (!isOpen) return null;
 
@@ -185,35 +213,43 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ isOpen, 
     };
 
     const SectionHeader = ({ icon: Icon, title, subtitle }: { icon: React.ElementType; title: string; subtitle: string }) => (
-        <div className="flex items-center gap-3 mb-4 pb-3 border-b border-gray-100">
-            <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center">
-                <Icon className="w-4 h-4 text-blue-600" />
+        <div className="flex items-center gap-3 mb-4 pb-3 border-b border-gray-100 dark:border-slate-700">
+            <div className="w-8 h-8 rounded-lg bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center">
+                <Icon className="w-4 h-4 text-blue-600 dark:text-blue-400" />
             </div>
             <div>
-                <h3 className="text-sm font-bold text-gray-800">{title}</h3>
-                <p className="text-[11px] text-gray-400">{subtitle}</p>
+                <h3 className="text-sm font-bold text-gray-800 dark:text-slate-100">{title}</h3>
+                <p className="text-[11px] text-gray-400 dark:text-slate-500">{subtitle}</p>
             </div>
         </div>
     );
 
+    // Reusable class strings for dark mode
+    const inputClass = "w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-slate-600 dark:bg-slate-700/50 dark:text-slate-100 dark:placeholder:text-slate-500 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 dark:focus:border-blue-400 outline-none transition-all";
+    const inputWithIconClass = "w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 dark:border-slate-600 dark:bg-slate-700/50 dark:text-slate-100 dark:placeholder:text-slate-500 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 dark:focus:border-blue-400 outline-none transition-all";
+    const selectClass = "w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-slate-600 dark:bg-slate-700/50 dark:text-slate-100 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 dark:focus:border-blue-400 outline-none appearance-none bg-white dark:bg-slate-700/50 transition-all";
+    const selectWithIconClass = "w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 dark:border-slate-600 dark:bg-slate-700/50 dark:text-slate-100 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 dark:focus:border-blue-400 outline-none appearance-none bg-white dark:bg-slate-700/50 transition-all";
+    const labelClass = "block text-sm font-semibold text-gray-700 dark:text-slate-200 mb-2";
+    const iconClass = "absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-slate-500";
+
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
-            <div className="bg-white rounded-2xl shadow-xl w-full max-w-3xl overflow-hidden border border-gray-100 flex flex-col max-h-[90vh]">
+            <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl w-full max-w-3xl overflow-hidden border border-gray-100 dark:border-slate-700 flex flex-col max-h-[90vh]">
 
                 {/* Header */}
-                <div className="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gradient-to-r from-blue-50 to-indigo-50">
+                <div className="px-6 py-4 border-b border-gray-100 dark:border-slate-700 flex justify-between items-center bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-slate-800 dark:to-slate-800">
                     <div>
-                        <h2 className="text-lg font-bold text-gray-800 flex items-center gap-2">
-                            <Building2 className="w-5 h-5 text-blue-600" />
-                            Thêm mới dự án
+                        <h2 className="text-lg font-bold text-gray-800 dark:text-slate-100 flex items-center gap-2">
+                            <Building2 className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                            {isEditMode ? 'Chỉnh sửa dự án' : 'Thêm mới dự án'}
                         </h2>
-                        <p className="text-xs text-gray-500 mt-1">
-                            Theo mẫu Phụ lục I (NĐ 175/2024) • Hệ thống tự động tạo mã dự án
+                        <p className="text-xs text-gray-500 dark:text-slate-400 mt-1">
+                            {isEditMode ? 'Cập nhật thông tin dự án' : 'Theo mẫu Phụ lục I (NĐ 175/2024) • Hệ thống tự động tạo mã dự án'}
                         </p>
                     </div>
                     <button
                         onClick={onClose}
-                        className="p-2 hover:bg-white/80 rounded-full text-gray-400 transition-colors"
+                        className="p-2 hover:bg-white/80 dark:hover:bg-slate-700 rounded-full text-gray-400 dark:text-slate-500 transition-colors"
                     >
                         <X className="w-5 h-5" />
                     </button>
@@ -228,25 +264,25 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ isOpen, 
 
                         {/* Project Code (Auto) */}
                         <div className="mb-4">
-                            <label className="block text-sm font-semibold text-gray-700 mb-2">
-                                Mã dự án <span className="text-blue-500 text-xs font-normal">(Tự động theo TT24/2025)</span>
+                            <label className={labelClass}>
+                                Mã dự án <span className="text-blue-500 dark:text-blue-400 text-xs font-normal">(Tự động theo TT24/2025)</span>
                             </label>
                             <input
                                 type="text"
                                 readOnly
-                                className="w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-gray-50 text-gray-500 font-mono outline-none cursor-not-allowed"
+                                className="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-slate-600 bg-gray-50 dark:bg-slate-700/30 text-gray-500 dark:text-slate-400 font-mono outline-none cursor-not-allowed"
                                 value={formData.ProjectID}
                             />
                         </div>
 
                         {/* Project Name */}
                         <div className="mb-4">
-                            <label className="block text-sm font-semibold text-gray-700 mb-2">Tên dự án <span className="text-red-500">*</span></label>
+                            <label className={labelClass}>Tên dự án <span className="text-red-500">*</span></label>
                             <input
                                 type="text"
                                 required
                                 placeholder="VD: Xây dựng Đường Cao tốc Bắc Nam..."
-                                className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all"
+                                className={inputClass}
                                 value={formData.ProjectName}
                                 onChange={e => updateField('ProjectName', e.target.value)}
                             />
@@ -255,10 +291,10 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ isOpen, 
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                             {/* Group Selection */}
                             <div>
-                                <label className="block text-sm font-semibold text-gray-700 mb-2">Nhóm dự án <span className="text-red-500">*</span></label>
+                                <label className={labelClass}>Nhóm dự án <span className="text-red-500">*</span></label>
                                 <div className="relative">
                                     <select
-                                        className="w-full pl-4 pr-10 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none appearance-none bg-white"
+                                        className={`w-full pl-4 pr-10 py-2.5 rounded-xl border border-gray-200 dark:border-slate-600 dark:bg-slate-700/50 dark:text-slate-100 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 dark:focus:border-blue-400 outline-none appearance-none bg-white dark:bg-slate-700/50`}
                                         value={formData.GroupCode}
                                         onChange={e => updateField('GroupCode', e.target.value)}
                                     >
@@ -268,16 +304,16 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ isOpen, 
                                         <option value={ProjectGroup.QN}>Quan trọng Quốc gia</option>
                                     </select>
                                     <div className="absolute inset-y-0 right-3 flex items-center pointer-events-none">
-                                        <Building2 className="w-4 h-4 text-gray-400" />
+                                        <Building2 className="w-4 h-4 text-gray-400 dark:text-slate-500" />
                                     </div>
                                 </div>
                             </div>
 
                             {/* Construction Type */}
                             <div>
-                                <label className="block text-sm font-semibold text-gray-700 mb-2">Loại công trình</label>
+                                <label className={labelClass}>Loại công trình</label>
                                 <select
-                                    className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none appearance-none bg-white"
+                                    className={selectClass}
                                     value={formData.ConstructionType}
                                     onChange={e => updateField('ConstructionType', e.target.value)}
                                 >
@@ -290,9 +326,9 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ isOpen, 
 
                             {/* Construction Grade */}
                             <div>
-                                <label className="block text-sm font-semibold text-gray-700 mb-2">Cấp công trình</label>
+                                <label className={labelClass}>Cấp công trình</label>
                                 <select
-                                    className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none appearance-none bg-white"
+                                    className={selectClass}
                                     value={formData.ConstructionGrade}
                                     onChange={e => updateField('ConstructionGrade', e.target.value)}
                                 >
@@ -304,8 +340,8 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ isOpen, 
                             </div>
                         </div>
 
-                        <p className="text-[11px] text-blue-600 mt-2 flex items-center gap-1">
-                            <span className="inline-block w-1.5 h-1.5 bg-blue-500 rounded-full"></span>
+                        <p className="text-[11px] text-blue-600 dark:text-blue-400 mt-2 flex items-center gap-1">
+                            <span className="inline-block w-1.5 h-1.5 bg-blue-500 dark:bg-blue-400 rounded-full"></span>
                             Nhóm dự án tự động áp dụng thời gian chuẩn theo Luật ĐTC
                         </p>
                     </div>
@@ -317,41 +353,41 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ isOpen, 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             {/* Total Investment */}
                             <div>
-                                <label className="block text-sm font-semibold text-gray-700 mb-2">Tổng mức đầu tư (VNĐ)</label>
+                                <label className={labelClass}>Tổng mức đầu tư (VNĐ)</label>
                                 <div className="relative">
                                     <input
                                         type="number"
                                         min="0"
                                         placeholder="0"
-                                        className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none"
+                                        className={inputWithIconClass}
                                         value={formData.TotalInvestment}
                                         onChange={e => updateField('TotalInvestment', Number(e.target.value))}
                                     />
-                                    <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                                    <DollarSign className={iconClass} />
                                 </div>
                             </div>
 
                             {/* Start Date */}
                             <div>
-                                <label className="block text-sm font-semibold text-gray-700 mb-2">Ngày bắt đầu dự kiến</label>
+                                <label className={labelClass}>Ngày bắt đầu dự kiến</label>
                                 <div className="relative">
                                     <input
                                         type="date"
-                                        className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none"
+                                        className={inputWithIconClass}
                                         value={formData.StartDate}
                                         onChange={e => updateField('StartDate', e.target.value)}
                                     />
-                                    <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                                    <Calendar className={iconClass} />
                                 </div>
                             </div>
 
                             {/* Capital Source */}
                             <div>
-                                <label className="block text-sm font-semibold text-gray-700 mb-2">Nguồn vốn đầu tư</label>
+                                <label className={labelClass}>Nguồn vốn đầu tư</label>
                                 <input
                                     type="text"
                                     placeholder="Ngân sách Tỉnh, NSTW..."
-                                    className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none"
+                                    className={inputClass}
                                     value={formData.CapitalSource}
                                     onChange={e => updateField('CapitalSource', e.target.value)}
                                 />
@@ -359,10 +395,10 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ isOpen, 
 
                             {/* Province */}
                             <div>
-                                <label className="block text-sm font-semibold text-gray-700 mb-2">Tỉnh/Thành phố <span className="text-red-500">*</span></label>
+                                <label className={labelClass}>Tỉnh/Thành phố <span className="text-red-500">*</span></label>
                                 <div className="relative">
                                     <select
-                                        className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none appearance-none bg-white"
+                                        className={selectWithIconClass}
                                         value={formData.ProvinceCode}
                                         onChange={e => updateField('ProvinceCode', e.target.value)}
                                     >
@@ -370,72 +406,72 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ isOpen, 
                                             <option key={p.code} value={p.code}>{p.name} ({p.code})</option>
                                         ))}
                                     </select>
-                                    <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                                    <MapPin className={iconClass} />
                                 </div>
-                                <p className="text-[11px] text-blue-600 mt-1 flex items-center gap-1">
-                                    <span className="inline-block w-1.5 h-1.5 bg-blue-500 rounded-full"></span>
+                                <p className="text-[11px] text-blue-600 dark:text-blue-400 mt-1 flex items-center gap-1">
+                                    <span className="inline-block w-1.5 h-1.5 bg-blue-500 dark:bg-blue-400 rounded-full"></span>
                                     Mã tỉnh dùng cho mã dự án tự động
                                 </p>
                             </div>
 
                             {/* Location (free text) */}
                             <div>
-                                <label className="block text-sm font-semibold text-gray-700 mb-2">Địa điểm xây dựng</label>
+                                <label className={labelClass}>Địa điểm xây dựng</label>
                                 <div className="relative">
                                     <input
                                         type="text"
                                         placeholder="VD: Xã Thạch Hạ, TP. Hà Tĩnh"
-                                        className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none"
+                                        className={inputWithIconClass}
                                         value={formData.LocationCode}
                                         onChange={e => updateField('LocationCode', e.target.value)}
                                     />
-                                    <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                                    <MapPin className={iconClass} />
                                 </div>
                             </div>
 
                             {/* Duration */}
                             <div>
-                                <label className="block text-sm font-semibold text-gray-700 mb-2">Thời gian thực hiện</label>
+                                <label className={labelClass}>Thời gian thực hiện</label>
                                 <div className="relative">
                                     <input
                                         type="text"
                                         placeholder="VD: 36 tháng (2025-2028)"
-                                        className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none"
+                                        className={inputWithIconClass}
                                         value={formData.Duration}
                                         onChange={e => updateField('Duration', e.target.value)}
                                     />
-                                    <Clock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                                    <Clock className={iconClass} />
                                 </div>
                             </div>
 
                             {/* Competent Authority */}
                             <div>
-                                <label className="block text-sm font-semibold text-gray-700 mb-2">Người quyết định đầu tư</label>
+                                <label className={labelClass}>Người quyết định đầu tư</label>
                                 <div className="relative">
                                     <input
                                         type="text"
                                         placeholder="VD: Giám đốc Học viện CTQG HCM"
-                                        className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none"
+                                        className={inputWithIconClass}
                                         value={formData.CompetentAuthority}
                                         onChange={e => updateField('CompetentAuthority', e.target.value)}
                                     />
-                                    <Shield className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                                    <Shield className={iconClass} />
                                 </div>
                             </div>
                         </div>
 
                         {/* Investor Name - full width */}
                         <div className="mt-4">
-                            <label className="block text-sm font-semibold text-gray-700 mb-2">Tên chủ đầu tư</label>
+                            <label className={labelClass}>Tên chủ đầu tư</label>
                             <div className="relative">
                                 <input
                                     type="text"
                                     placeholder="VD: Ban QLDA Đầu tư xây dựng khu vực..."
-                                    className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none"
+                                    className={inputWithIconClass}
                                     value={formData.InvestorName}
                                     onChange={e => updateField('InvestorName', e.target.value)}
                                 />
-                                <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                                <User className={iconClass} />
                             </div>
                         </div>
                     </div>
@@ -446,64 +482,64 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ isOpen, 
 
                         {/* Applicable Standards - full width */}
                         <div className="mb-4">
-                            <label className="block text-sm font-semibold text-gray-700 mb-2">
+                            <label className={labelClass}>
                                 Tiêu chuẩn, quy chuẩn áp dụng
                             </label>
                             <div className="relative">
                                 <input
                                     type="text"
                                     placeholder="VD: TCVN 5574:2018, QCVN 03:2022/BXD..."
-                                    className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none"
+                                    className={inputWithIconClass}
                                     value={formData.ApplicableStandards}
                                     onChange={e => updateField('ApplicableStandards', e.target.value)}
                                 />
-                                <FileText className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                                <FileText className={iconClass} />
                             </div>
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                             {/* Feasibility Contractor */}
                             <div>
-                                <label className="block text-sm font-semibold text-gray-700 mb-2">NT lập BCNCKT</label>
+                                <label className={labelClass}>NT lập BCNCKT</label>
                                 <div className="relative">
                                     <input
                                         type="text"
                                         placeholder="Tên nhà thầu..."
-                                        className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none"
+                                        className={inputWithIconClass}
                                         value={formData.FeasibilityContractor}
                                         onChange={e => updateField('FeasibilityContractor', e.target.value)}
                                     />
-                                    <HardHat className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                                    <HardHat className={iconClass} />
                                 </div>
                             </div>
 
                             {/* Survey Contractor */}
                             <div>
-                                <label className="block text-sm font-semibold text-gray-700 mb-2">NT khảo sát XD</label>
+                                <label className={labelClass}>NT khảo sát XD</label>
                                 <div className="relative">
                                     <input
                                         type="text"
                                         placeholder="Tên nhà thầu..."
-                                        className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none"
+                                        className={inputWithIconClass}
                                         value={formData.SurveyContractor}
                                         onChange={e => updateField('SurveyContractor', e.target.value)}
                                     />
-                                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                                    <Search className={iconClass} />
                                 </div>
                             </div>
 
                             {/* Review Contractor */}
                             <div>
-                                <label className="block text-sm font-semibold text-gray-700 mb-2">NT thẩm tra</label>
+                                <label className={labelClass}>NT thẩm tra</label>
                                 <div className="relative">
                                     <input
                                         type="text"
                                         placeholder="Tên nhà thầu..."
-                                        className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none"
+                                        className={inputWithIconClass}
                                         value={formData.ReviewContractor}
                                         onChange={e => updateField('ReviewContractor', e.target.value)}
                                     />
-                                    <Shield className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                                    <Shield className={iconClass} />
                                 </div>
                             </div>
                         </div>
@@ -520,17 +556,17 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ isOpen, 
                                     const emp = employees.find(e => e.EmployeeID === sm.employeeId);
                                     if (!emp) return null;
                                     return (
-                                        <div key={sm.employeeId} className="flex items-center gap-2 bg-blue-50 border border-blue-200 rounded-xl px-3 py-1.5 group">
+                                        <div key={sm.employeeId} className="flex items-center gap-2 bg-blue-50 dark:bg-blue-500/10 border border-blue-200 dark:border-blue-500/30 rounded-xl px-3 py-1.5 group">
                                             <img
                                                 src={emp.AvatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(emp.FullName)}&background=random&color=fff&size=24`}
                                                 alt={emp.FullName}
                                                 className="w-5 h-5 rounded-full object-cover"
                                             />
-                                            <span className="text-sm font-medium text-blue-800">{emp.FullName}</span>
+                                            <span className="text-sm font-medium text-blue-800 dark:text-blue-300">{emp.FullName}</span>
                                             <select
                                                 value={sm.role}
                                                 onChange={e => updateMemberRole(sm.employeeId, e.target.value)}
-                                                className="text-[10px] bg-blue-100 text-blue-600 rounded-md px-1 py-0.5 border-none outline-none cursor-pointer font-semibold"
+                                                className="text-[10px] bg-blue-100 dark:bg-blue-500/20 text-blue-600 dark:text-blue-300 rounded-md px-1 py-0.5 border-none outline-none cursor-pointer font-semibold"
                                             >
                                                 <option value="Giám đốc dự án">Giám đốc DA</option>
                                                 <option value="Phó Giám đốc dự án">Phó GĐ DA</option>
@@ -543,7 +579,7 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ isOpen, 
                                             <button
                                                 type="button"
                                                 onClick={() => toggleMember(sm.employeeId)}
-                                                className="w-4 h-4 rounded-full flex items-center justify-center text-blue-400 hover:text-red-500 hover:bg-red-50 transition-colors"
+                                                className="w-4 h-4 rounded-full flex items-center justify-center text-blue-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors"
                                             >
                                                 <X className="w-3 h-3" />
                                             </button>
@@ -556,29 +592,29 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ isOpen, 
                         {/* Search & Dropdown */}
                         <div className="relative">
                             <div
-                                className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 flex items-center gap-2 cursor-pointer hover:border-blue-300 transition-colors"
+                                className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 dark:border-slate-600 dark:bg-slate-700/50 flex items-center gap-2 cursor-pointer hover:border-blue-300 dark:hover:border-blue-500/50 transition-colors"
                                 onClick={() => setShowMemberDropdown(!showMemberDropdown)}
                             >
-                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-slate-500" />
                                 <input
                                     type="text"
                                     placeholder={`Tìm nhân sự... (${selectedMembers.length} đã chọn)`}
-                                    className="flex-1 bg-transparent border-none outline-none text-sm text-gray-700 placeholder:text-gray-400"
+                                    className="flex-1 bg-transparent border-none outline-none text-sm text-gray-700 dark:text-slate-200 placeholder:text-gray-400 dark:placeholder:text-slate-500"
                                     value={memberSearch}
                                     onChange={e => { setMemberSearch(e.target.value); setShowMemberDropdown(true); }}
                                     onFocus={() => setShowMemberDropdown(true)}
                                 />
-                                <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform ${showMemberDropdown ? 'rotate-180' : ''}`} />
+                                <ChevronDown className={`w-4 h-4 text-gray-400 dark:text-slate-500 transition-transform ${showMemberDropdown ? 'rotate-180' : ''}`} />
                             </div>
 
                             {showMemberDropdown && (
-                                <div className="absolute z-20 mt-1 w-full bg-white border border-gray-200 rounded-xl shadow-xl max-h-56 overflow-y-auto">
+                                <div className="absolute z-20 mt-1 w-full bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-600 rounded-xl shadow-xl max-h-56 overflow-y-auto">
                                     {Object.keys(groupedEmployees).length === 0 ? (
-                                        <div className="p-4 text-center text-sm text-gray-400">Không tìm thấy nhân sự</div>
+                                        <div className="p-4 text-center text-sm text-gray-400 dark:text-slate-500">Không tìm thấy nhân sự</div>
                                     ) : (
-                                        Object.entries(groupedEmployees).map(([dept, emps]) => (
+                                        Object.entries(groupedEmployees).map(([dept, emps]: [string, Employee[]]) => (
                                             <div key={dept}>
-                                                <div className="px-3 py-1.5 bg-gray-50 text-[10px] font-bold text-gray-500 uppercase tracking-wider sticky top-0">
+                                                <div className="px-3 py-1.5 bg-gray-50 dark:bg-slate-700/60 text-[10px] font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider sticky top-0">
                                                     {dept}
                                                 </div>
                                                 {emps.map(emp => {
@@ -588,16 +624,16 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ isOpen, 
                                                             key={emp.EmployeeID}
                                                             type="button"
                                                             onClick={() => toggleMember(emp.EmployeeID)}
-                                                            className={`w-full flex items-center gap-3 px-3 py-2 text-left hover:bg-blue-50 transition-colors ${isSelected ? 'bg-blue-50/50' : ''}`}
+                                                            className={`w-full flex items-center gap-3 px-3 py-2 text-left hover:bg-blue-50 dark:hover:bg-blue-500/10 transition-colors ${isSelected ? 'bg-blue-50/50 dark:bg-blue-500/15' : ''}`}
                                                         >
                                                             <img
                                                                 src={emp.AvatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(emp.FullName)}&background=random&color=fff&size=28`}
                                                                 alt={emp.FullName}
-                                                                className="w-7 h-7 rounded-full object-cover ring-2 ring-white shadow-sm"
+                                                                className="w-7 h-7 rounded-full object-cover ring-2 ring-white dark:ring-slate-700 shadow-sm"
                                                             />
                                                             <div className="flex-1 min-w-0">
-                                                                <p className="text-sm font-medium text-gray-800 truncate">{emp.FullName}</p>
-                                                                <p className="text-[10px] text-gray-400 truncate">{emp.Position}</p>
+                                                                <p className="text-sm font-medium text-gray-800 dark:text-slate-100 truncate">{emp.FullName}</p>
+                                                                <p className="text-[10px] text-gray-400 dark:text-slate-500 truncate">{emp.Position}</p>
                                                             </div>
                                                             {isSelected && (
                                                                 <div className="w-5 h-5 rounded-full bg-blue-500 flex items-center justify-center shrink-0">
@@ -615,8 +651,8 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ isOpen, 
                         </div>
 
                         {selectedMembers.length === 0 && (
-                            <p className="text-[11px] text-amber-600 mt-2 flex items-center gap-1">
-                                <span className="inline-block w-1.5 h-1.5 bg-amber-500 rounded-full"></span>
+                            <p className="text-[11px] text-amber-600 dark:text-amber-400 mt-2 flex items-center gap-1">
+                                <span className="inline-block w-1.5 h-1.5 bg-amber-500 dark:bg-amber-400 rounded-full"></span>
                                 Có thể bổ sung thành viên sau khi tạo dự án
                             </p>
                         )}
@@ -625,15 +661,15 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ isOpen, 
                 </form>
 
                 {/* Footer */}
-                <div className="px-6 py-4 border-t border-gray-100 bg-gray-50 flex justify-between items-center">
-                    <p className="text-[11px] text-gray-400">
+                <div className="px-6 py-4 border-t border-gray-100 dark:border-slate-700 bg-gray-50 dark:bg-slate-800/80 flex justify-between items-center">
+                    <p className="text-[11px] text-gray-400 dark:text-slate-500">
                         Các trường không bắt buộc có thể bổ sung sau
                     </p>
                     <div className="flex gap-3">
                         <button
                             type="button"
                             onClick={onClose}
-                            className="px-4 py-2 rounded-lg text-gray-600 font-medium hover:bg-gray-200 transition-colors"
+                            className="px-4 py-2 rounded-lg text-gray-600 dark:text-slate-300 font-medium hover:bg-gray-200 dark:hover:bg-slate-700 transition-colors"
                             disabled={isLoading}
                         >
                             Hủy bỏ
@@ -641,7 +677,7 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ isOpen, 
                         <button
                             onClick={handleSubmit}
                             disabled={isLoading}
-                            className="px-6 py-2 rounded-lg bg-blue-600 text-white font-bold shadow-lg shadow-blue-200 hover:bg-blue-700 hover:-translate-y-0.5 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                            className="px-6 py-2 rounded-lg bg-blue-600 text-white font-bold shadow-lg shadow-blue-200 dark:shadow-blue-900/30 hover:bg-blue-700 hover:-translate-y-0.5 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
                         >
                             {isLoading ? (
                                 <>
@@ -649,7 +685,7 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ isOpen, 
                                     Đang xử lý...
                                 </>
                             ) : (
-                                'Tạo dự án'
+                                isEditMode ? 'Lưu thay đổi' : 'Tạo dự án'
                             )}
                         </button>
                     </div>

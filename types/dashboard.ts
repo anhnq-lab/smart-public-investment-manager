@@ -55,3 +55,10 @@ export interface DashboardGPMB {
     bottlenecks: number;
     handedOverPercent: number;
 }
+
+export interface DashboardContractStatus {
+    total: number;
+    executing: number;
+    paused: number;
+    liquidated: number;
+}

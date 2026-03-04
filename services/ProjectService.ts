@@ -123,7 +123,7 @@ export class ProjectService {
     }
 
     /**
-     * Get project statistics
+     * Get project statistics — optimized with SQL count/sum instead of fetching all rows
      */
     static async getStatistics(): Promise<{
         total: number;
@@ -131,33 +131,49 @@ export class ProjectService {
         byGroup: Record<ProjectGroup, number>;
         totalInvestment: number;
     }> {
-        const projects = await this.getAll();
-
-        const byStatus = {
-            [ProjectStatus.Preparation]: 0,
-            [ProjectStatus.Execution]: 0,
-            [ProjectStatus.Completion]: 0,
-        };
-        const byGroup = {
-            [ProjectGroup.QN]: 0,
-            [ProjectGroup.A]: 0,
-            [ProjectGroup.B]: 0,
-            [ProjectGroup.C]: 0,
-        };
-
-        let totalInvestment = 0;
-
-        projects.forEach(p => {
-            byStatus[p.Status]++;
-            byGroup[p.GroupCode]++;
-            totalInvestment += p.TotalInvestment;
-        });
+        // Parallel aggregate queries — much faster than getAll() + JS loop
+        const [statusResult, groupResult, totalResult] = await Promise.all([
+            supabase
+                .from('projects')
+                .select('status')
+                .then(({ data }) => {
+                    const counts: Record<string, number> = {};
+                    data?.forEach((r: any) => { counts[r.status] = (counts[r.status] || 0) + 1; });
+                    return counts;
+                }),
+            supabase
+                .from('projects')
+                .select('group_code')
+                .then(({ data }) => {
+                    const counts: Record<string, number> = {};
+                    data?.forEach((r: any) => { counts[r.group_code] = (counts[r.group_code] || 0) + 1; });
+                    return counts;
+                }),
+            supabase
+                .from('projects')
+                .select('total_investment')
+                .then(({ data }) => {
+                    let sum = 0;
+                    let count = 0;
+                    data?.forEach((r: any) => { sum += (r.total_investment || 0); count++; });
+                    return { sum, count };
+                }),
+        ]);
 
         return {
-            total: projects.length,
-            byStatus,
-            byGroup,
-            totalInvestment,
+            total: totalResult.count,
+            byStatus: {
+                [ProjectStatus.Preparation]: statusResult[ProjectStatus.Preparation] || 0,
+                [ProjectStatus.Execution]: statusResult[ProjectStatus.Execution] || 0,
+                [ProjectStatus.Completion]: statusResult[ProjectStatus.Completion] || 0,
+            },
+            byGroup: {
+                [ProjectGroup.QN]: groupResult[ProjectGroup.QN] || 0,
+                [ProjectGroup.A]: groupResult[ProjectGroup.A] || 0,
+                [ProjectGroup.B]: groupResult[ProjectGroup.B] || 0,
+                [ProjectGroup.C]: groupResult[ProjectGroup.C] || 0,
+            },
+            totalInvestment: totalResult.sum,
         };
     }
 

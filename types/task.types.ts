@@ -45,12 +45,22 @@ export interface Task {
     IsCritical?: boolean;
     Slack?: number;
     BoardColumn?: string;
+    Attachments?: TaskAttachment[];
     SyncStatus?: {
         IsSynced: boolean;
         LastSyncDate?: string;
         NationalProjectCode?: string;
         SyncError?: string;
     };
+}
+
+export interface TaskAttachment {
+    id: string;
+    name: string;
+    url: string;
+    size: string;
+    uploadDate: string;
+    type: 'template' | 'uploaded';
 }
 
 // Task Dependency Types

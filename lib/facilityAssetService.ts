@@ -36,10 +36,8 @@ export const ASSET_CATEGORIES = [
     'HVAC',
     'Thang máy',
     'Cấp thoát nước',
-    'Điện chiếu sáng',
-    'Hệ thống IT/Mạng',
-    'Camera/An ninh',
     'Máy phát điện',
+    'Năng lượng',
     'Khác',
 ] as const;
 

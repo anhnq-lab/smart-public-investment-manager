@@ -29,3 +29,6 @@ dist-ssr
 # Large binary files
 *.pdf
 Doccument/
+
+# IFC/BIM model files (too large for GitHub)
+model/

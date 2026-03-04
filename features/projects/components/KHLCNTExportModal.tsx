@@ -1,8 +1,9 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { X, FileText, Download, ChevronRight, Building2, FileOutput, Send } from 'lucide-react';
+import { X, FileText, Download, ChevronRight, Building2, FileOutput, Send, ClipboardList } from 'lucide-react';
 import { BiddingPackage, Project } from '../../../types';
 import { formatCurrency } from '../../../utils/format';
 import { exportKHLCNT, exportToTrinh, KHLCNTExportData } from '../../../utils/khlcntExport';
+import { LegalReferenceLink } from '../../../components/common/LegalReferenceLink';
 
 // ========================================
 // KHLCNT EXPORT MODAL
@@ -335,7 +336,7 @@ export const KHLCNTExportModal: React.FC<KHLCNTExportModalProps> = ({
                             </h4>
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="p-3 bg-white rounded-lg border">
-                                    <p className="text-xs font-semibold text-amber-700 mb-2">📋 Tờ trình (Mẫu 07)</p>
+                                    <p className="text-xs font-semibold text-amber-700 mb-2"><ClipboardList className="w-3.5 h-3.5 inline" /> Tờ trình (Mẫu 07)</p>
                                     <div className="space-y-3">
                                         <div>
                                             <label className="block text-xs font-medium text-gray-500 mb-1">Số tờ trình</label>
@@ -390,8 +391,8 @@ export const KHLCNTExportModal: React.FC<KHLCNTExportModalProps> = ({
                     {/* Legal basis note */}
                     <div className="mt-4 p-3 bg-amber-50 rounded-lg border border-amber-200">
                         <p className="text-xs text-amber-800">
-                            <strong>📜 Căn cứ pháp lý tự động:</strong> Luật Đấu thầu 22/2023/QH15,
-                            NĐ 24/2024/NĐ-CP, NĐ 214/2025/NĐ-CP, Luật ĐTC 58/2024/QH15
+                            <strong>📜 Căn cứ pháp lý tự động:</strong>{' '}
+                            <LegalReferenceLink text="Luật Đấu thầu 22/2023/QH15, NĐ 24/2024/NĐ-CP, NĐ 214/2025/NĐ-CP, Luật ĐTC 58/2024/QH15" />
                         </p>
                     </div>
                 </div>

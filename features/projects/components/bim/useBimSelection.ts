@@ -42,6 +42,7 @@ export interface BimSelectionAPI {
     toggleTypeVisibility: (type: string) => void;
     buildSpatialTree: (ifcData: Uint8Array) => void;
     clearSelection: () => void;
+    cleanupModelCache: () => void;
 }
 
 // IFC type codes for spatial tree building
@@ -97,6 +98,9 @@ export function useBimSelection(
     // Property cache — avoid re-parsing IFC properties for previously selected elements
     const propertyCacheRef = useRef<Map<string, SelectedElement>>(new Map());
     const PROPERTY_CACHE_MAX = 100;
+    // ── IFC Model cache — avoid OpenModel/CloseModel on every click ──
+    const openModelCacheRef = useRef<Map<string, { modelID: number; ifcApi: WebIFC.IfcAPI }>>(new Map());
+    const MODEL_CACHE_MAX = 5;
 
     // ── Convert getItemsData result → SelectedElement ──
     const convertToSelectedElement = useCallback((
@@ -160,180 +164,195 @@ export function useBimSelection(
             return {};
         }
 
-        // Try all available IFC data
-        for (const [, ifcData] of ifcDataMapRef.current) {
+        // Try all available IFC data — use cached model if available
+        for (const [key, ifcData] of ifcDataMapRef.current) {
             try {
-                const modelID = ifcApi.OpenModel(ifcData, { COORDINATE_TO_ORIGIN: false });
-                try {
-                    const line = ifcApi.GetLine(modelID, expressID, false);
-                    if (!line) continue;
-
-                    const propertySets: PropertySetGroup[] = [];
-                    const materials: string[] = [];
-                    const relations: RelationItem[] = [];
-                    const classifications: ClassificationItem[] = [];
-
-                    // --- PropertySets & QuantitySets ---
-                    try {
-                        const relIds = ifcApi.GetLineIDsWithType(modelID, IFC_TYPES.IFCRELDEFINESBYPROPERTIES);
-                        for (let i = 0; i < relIds.size(); i++) {
-                            const relId = relIds.get(i);
-                            const rel = ifcApi.GetLine(modelID, relId, false);
-                            if (!rel?.RelatedObjects) continue;
-                            const related = Array.isArray(rel.RelatedObjects) ? rel.RelatedObjects : [rel.RelatedObjects];
-                            if (!related.some((r: any) => (r?.value ?? r) === expressID)) continue;
-
-                            const psetId = rel.RelatingPropertyDefinition?.value;
-                            if (!psetId) continue;
-                            const pset = ifcApi.GetLine(modelID, psetId, false);
-                            if (!pset) continue;
-
-                            const psetName = pset.Name?.value || 'PropertySet';
-                            const items: PropertyItem[] = [];
-
-                            if (pset.HasProperties) {
-                                const props = Array.isArray(pset.HasProperties) ? pset.HasProperties : [pset.HasProperties];
-                                for (const propRef of props) {
-                                    const propId = propRef?.value ?? propRef;
-                                    if (!propId) continue;
-                                    try {
-                                        const prop = ifcApi.GetLine(modelID, propId, false);
-                                        if (!prop) continue;
-                                        const propName = prop.Name?.value || '';
-                                        let propValue = '';
-                                        if (prop.NominalValue !== undefined && prop.NominalValue !== null) {
-                                            propValue = String(prop.NominalValue?.value ?? prop.NominalValue ?? '');
-                                        }
-                                        if (propName) items.push({ name: propName, value: propValue });
-                                    } catch { /* skip */ }
-                                }
-                            }
-
-                            if (pset.Quantities) {
-                                const quantities = Array.isArray(pset.Quantities) ? pset.Quantities : [pset.Quantities];
-                                for (const qRef of quantities) {
-                                    const qId = qRef?.value ?? qRef;
-                                    if (!qId) continue;
-                                    try {
-                                        const q = ifcApi.GetLine(modelID, qId, false);
-                                        if (!q) continue;
-                                        const qName = q.Name?.value || '';
-                                        const qVal = q.LengthValue?.value ?? q.AreaValue?.value ?? q.VolumeValue?.value ?? q.WeightValue?.value ?? q.CountValue?.value ?? '';
-                                        if (qName) items.push({ name: qName, value: String(qVal) });
-                                    } catch { /* skip */ }
-                                }
-                            }
-
-                            if (items.length > 0) propertySets.push({ name: psetName, properties: items });
+                // ── Cache hit: reuse opened model ──
+                let modelID: number;
+                const cached = openModelCacheRef.current.get(key);
+                if (cached && cached.ifcApi === ifcApi) {
+                    modelID = cached.modelID;
+                } else {
+                    // ── Cache miss: open and cache ──
+                    modelID = ifcApi.OpenModel(ifcData, { COORDINATE_TO_ORIGIN: false });
+                    // Evict oldest if cache full
+                    if (openModelCacheRef.current.size >= MODEL_CACHE_MAX) {
+                        const firstKey = openModelCacheRef.current.keys().next().value;
+                        if (firstKey) {
+                            const old = openModelCacheRef.current.get(firstKey);
+                            if (old) { try { old.ifcApi.CloseModel(old.modelID); } catch { /* */ } }
+                            openModelCacheRef.current.delete(firstKey);
                         }
-                    } catch { /* skip psets */ }
+                    }
+                    openModelCacheRef.current.set(key, { modelID, ifcApi });
+                }
 
-                    // --- Materials ---
-                    try {
-                        const matRelIds = ifcApi.GetLineIDsWithType(modelID, IFC_TYPES.IFCRELASSOCIATESMATERIAL);
-                        for (let i = 0; i < matRelIds.size(); i++) {
-                            const relId = matRelIds.get(i);
-                            const rel = ifcApi.GetLine(modelID, relId, false);
-                            if (!rel?.RelatedObjects) continue;
-                            const related = Array.isArray(rel.RelatedObjects) ? rel.RelatedObjects : [rel.RelatedObjects];
-                            if (!related.some((r: any) => (r?.value ?? r) === expressID)) continue;
-                            const matId = rel.RelatingMaterial?.value;
-                            if (!matId) continue;
-                            try {
-                                const mat = ifcApi.GetLine(modelID, matId, false);
-                                if (mat?.Name?.value) materials.push(mat.Name.value);
-                                if (mat?.ForLayerSet?.value) {
-                                    const layerSet = ifcApi.GetLine(modelID, mat.ForLayerSet.value, false);
-                                    if (layerSet?.MaterialLayers) {
-                                        const layers = Array.isArray(layerSet.MaterialLayers) ? layerSet.MaterialLayers : [layerSet.MaterialLayers];
-                                        for (const layerRef of layers) {
-                                            const layer = ifcApi.GetLine(modelID, layerRef?.value ?? layerRef, false);
-                                            if (layer?.Material?.value) {
-                                                const material = ifcApi.GetLine(modelID, layer.Material.value, false);
-                                                if (material?.Name?.value) materials.push(material.Name.value);
-                                            }
+                const line = ifcApi.GetLine(modelID, expressID, false);
+                if (!line) continue;
+
+                const propertySets: PropertySetGroup[] = [];
+                const materials: string[] = [];
+                const relations: RelationItem[] = [];
+                const classifications: ClassificationItem[] = [];
+
+                // --- PropertySets & QuantitySets ---
+                try {
+                    const relIds = ifcApi.GetLineIDsWithType(modelID, IFC_TYPES.IFCRELDEFINESBYPROPERTIES);
+                    for (let i = 0; i < relIds.size(); i++) {
+                        const relId = relIds.get(i);
+                        const rel = ifcApi.GetLine(modelID, relId, false);
+                        if (!rel?.RelatedObjects) continue;
+                        const related = Array.isArray(rel.RelatedObjects) ? rel.RelatedObjects : [rel.RelatedObjects];
+                        if (!related.some((r: any) => (r?.value ?? r) === expressID)) continue;
+
+                        const psetId = rel.RelatingPropertyDefinition?.value;
+                        if (!psetId) continue;
+                        const pset = ifcApi.GetLine(modelID, psetId, false);
+                        if (!pset) continue;
+
+                        const psetName = pset.Name?.value || 'PropertySet';
+                        const items: PropertyItem[] = [];
+
+                        if (pset.HasProperties) {
+                            const props = Array.isArray(pset.HasProperties) ? pset.HasProperties : [pset.HasProperties];
+                            for (const propRef of props) {
+                                const propId = propRef?.value ?? propRef;
+                                if (!propId) continue;
+                                try {
+                                    const prop = ifcApi.GetLine(modelID, propId, false);
+                                    if (!prop) continue;
+                                    const propName = prop.Name?.value || '';
+                                    let propValue = '';
+                                    if (prop.NominalValue !== undefined && prop.NominalValue !== null) {
+                                        propValue = String(prop.NominalValue?.value ?? prop.NominalValue ?? '');
+                                    }
+                                    if (propName) items.push({ name: propName, value: propValue });
+                                } catch { /* skip */ }
+                            }
+                        }
+
+                        if (pset.Quantities) {
+                            const quantities = Array.isArray(pset.Quantities) ? pset.Quantities : [pset.Quantities];
+                            for (const qRef of quantities) {
+                                const qId = qRef?.value ?? qRef;
+                                if (!qId) continue;
+                                try {
+                                    const q = ifcApi.GetLine(modelID, qId, false);
+                                    if (!q) continue;
+                                    const qName = q.Name?.value || '';
+                                    const qVal = q.LengthValue?.value ?? q.AreaValue?.value ?? q.VolumeValue?.value ?? q.WeightValue?.value ?? q.CountValue?.value ?? '';
+                                    if (qName) items.push({ name: qName, value: String(qVal) });
+                                } catch { /* skip */ }
+                            }
+                        }
+
+                        if (items.length > 0) propertySets.push({ name: psetName, properties: items });
+                    }
+                } catch { /* skip psets */ }
+
+                // --- Materials ---
+                try {
+                    const matRelIds = ifcApi.GetLineIDsWithType(modelID, IFC_TYPES.IFCRELASSOCIATESMATERIAL);
+                    for (let i = 0; i < matRelIds.size(); i++) {
+                        const relId = matRelIds.get(i);
+                        const rel = ifcApi.GetLine(modelID, relId, false);
+                        if (!rel?.RelatedObjects) continue;
+                        const related = Array.isArray(rel.RelatedObjects) ? rel.RelatedObjects : [rel.RelatedObjects];
+                        if (!related.some((r: any) => (r?.value ?? r) === expressID)) continue;
+                        const matId = rel.RelatingMaterial?.value;
+                        if (!matId) continue;
+                        try {
+                            const mat = ifcApi.GetLine(modelID, matId, false);
+                            if (mat?.Name?.value) materials.push(mat.Name.value);
+                            if (mat?.ForLayerSet?.value) {
+                                const layerSet = ifcApi.GetLine(modelID, mat.ForLayerSet.value, false);
+                                if (layerSet?.MaterialLayers) {
+                                    const layers = Array.isArray(layerSet.MaterialLayers) ? layerSet.MaterialLayers : [layerSet.MaterialLayers];
+                                    for (const layerRef of layers) {
+                                        const layer = ifcApi.GetLine(modelID, layerRef?.value ?? layerRef, false);
+                                        if (layer?.Material?.value) {
+                                            const material = ifcApi.GetLine(modelID, layer.Material.value, false);
+                                            if (material?.Name?.value) materials.push(material.Name.value);
                                         }
                                     }
                                 }
-                            } catch { /* skip */ }
-                        }
-                    } catch { /* skip */ }
+                            }
+                        } catch { /* skip */ }
+                    }
+                } catch { /* skip */ }
 
-                    // --- Relations (voids, fills) ---
-                    try {
-                        const voidRelIds = ifcApi.GetLineIDsWithType(modelID, IFC_TYPES.IFCRELVOIDSELEMENT);
-                        for (let i = 0; i < voidRelIds.size(); i++) {
-                            const relId = voidRelIds.get(i);
-                            try {
-                                const rel = ifcApi.GetLine(modelID, relId, false);
-                                if (rel?.RelatingBuildingElement?.value === expressID && rel?.RelatedOpeningElement?.value) {
-                                    const target = ifcApi.GetLine(modelID, rel.RelatedOpeningElement.value, false);
-                                    relations.push({
-                                        type: 'VoidsElement',
-                                        targetName: target?.Name?.value || `#${rel.RelatedOpeningElement.value}`,
-                                        targetType: getIfcTypeName(target?.type),
-                                        targetId: String(rel.RelatedOpeningElement.value),
-                                    });
-                                }
-                            } catch { /* skip */ }
-                        }
-                        const fillRelIds = ifcApi.GetLineIDsWithType(modelID, IFC_TYPES.IFCRELFILLSELEMENT);
-                        for (let i = 0; i < fillRelIds.size(); i++) {
-                            const relId = fillRelIds.get(i);
-                            try {
-                                const rel = ifcApi.GetLine(modelID, relId, false);
-                                if (rel?.RelatingOpeningElement?.value === expressID && rel?.RelatedBuildingElement?.value) {
-                                    const target = ifcApi.GetLine(modelID, rel.RelatedBuildingElement.value, false);
-                                    relations.push({
-                                        type: 'FillsElement',
-                                        targetName: target?.Name?.value || `#${rel.RelatedBuildingElement.value}`,
-                                        targetType: getIfcTypeName(target?.type),
-                                        targetId: String(rel.RelatedBuildingElement.value),
-                                    });
-                                }
-                            } catch { /* skip */ }
-                        }
-                    } catch { /* skip */ }
-
-                    // --- Classifications ---
-                    try {
-                        const classRelIds = ifcApi.GetLineIDsWithType(modelID, IFC_TYPES.IFCRELASSOCIATESCLASSIFICATION);
-                        for (let i = 0; i < classRelIds.size(); i++) {
-                            const relId = classRelIds.get(i);
-                            try {
-                                const rel = ifcApi.GetLine(modelID, relId, false);
-                                if (!rel?.RelatedObjects) continue;
-                                const related = Array.isArray(rel.RelatedObjects) ? rel.RelatedObjects : [rel.RelatedObjects];
-                                if (!related.some((r: any) => (r?.value ?? r) === expressID)) continue;
-                                const classRefId = rel.RelatingClassification?.value;
-                                if (!classRefId) continue;
-                                const classRef = ifcApi.GetLine(modelID, classRefId, false);
-                                if (!classRef) continue;
-                                let systemName = '';
-                                if (classRef.ReferencedSource?.value) {
-                                    try {
-                                        const source = ifcApi.GetLine(modelID, classRef.ReferencedSource.value, false);
-                                        systemName = source?.Name?.value || '';
-                                    } catch { /* skip */ }
-                                }
-                                classifications.push({
-                                    system: systemName || 'Classification',
-                                    code: classRef.Identification?.value || classRef.ItemReference?.value || '',
-                                    name: classRef.Name?.value || '',
+                // --- Relations (voids, fills) ---
+                try {
+                    const voidRelIds = ifcApi.GetLineIDsWithType(modelID, IFC_TYPES.IFCRELVOIDSELEMENT);
+                    for (let i = 0; i < voidRelIds.size(); i++) {
+                        const relId = voidRelIds.get(i);
+                        try {
+                            const rel = ifcApi.GetLine(modelID, relId, false);
+                            if (rel?.RelatingBuildingElement?.value === expressID && rel?.RelatedOpeningElement?.value) {
+                                const target = ifcApi.GetLine(modelID, rel.RelatedOpeningElement.value, false);
+                                relations.push({
+                                    type: 'VoidsElement',
+                                    targetName: target?.Name?.value || `#${rel.RelatedOpeningElement.value}`,
+                                    targetType: getIfcTypeName(target?.type),
+                                    targetId: String(rel.RelatedOpeningElement.value),
                                 });
-                            } catch { /* skip */ }
-                        }
-                    } catch { /* skip */ }
+                            }
+                        } catch { /* skip */ }
+                    }
+                    const fillRelIds = ifcApi.GetLineIDsWithType(modelID, IFC_TYPES.IFCRELFILLSELEMENT);
+                    for (let i = 0; i < fillRelIds.size(); i++) {
+                        const relId = fillRelIds.get(i);
+                        try {
+                            const rel = ifcApi.GetLine(modelID, relId, false);
+                            if (rel?.RelatingOpeningElement?.value === expressID && rel?.RelatedBuildingElement?.value) {
+                                const target = ifcApi.GetLine(modelID, rel.RelatedBuildingElement.value, false);
+                                relations.push({
+                                    type: 'FillsElement',
+                                    targetName: target?.Name?.value || `#${rel.RelatedBuildingElement.value}`,
+                                    targetType: getIfcTypeName(target?.type),
+                                    targetId: String(rel.RelatedBuildingElement.value),
+                                });
+                            }
+                        } catch { /* skip */ }
+                    }
+                } catch { /* skip */ }
 
-                    return {
-                        propertySets: propertySets.length > 0 ? propertySets : undefined,
-                        materials: [...new Set(materials)],
-                        relations: relations.length > 0 ? relations : undefined,
-                        classifications: classifications.length > 0 ? classifications : undefined,
-                    };
-                } finally {
-                    ifcApi.CloseModel(modelID);
-                }
+                // --- Classifications ---
+                try {
+                    const classRelIds = ifcApi.GetLineIDsWithType(modelID, IFC_TYPES.IFCRELASSOCIATESCLASSIFICATION);
+                    for (let i = 0; i < classRelIds.size(); i++) {
+                        const relId = classRelIds.get(i);
+                        try {
+                            const rel = ifcApi.GetLine(modelID, relId, false);
+                            if (!rel?.RelatedObjects) continue;
+                            const related = Array.isArray(rel.RelatedObjects) ? rel.RelatedObjects : [rel.RelatedObjects];
+                            if (!related.some((r: any) => (r?.value ?? r) === expressID)) continue;
+                            const classRefId = rel.RelatingClassification?.value;
+                            if (!classRefId) continue;
+                            const classRef = ifcApi.GetLine(modelID, classRefId, false);
+                            if (!classRef) continue;
+                            let systemName = '';
+                            if (classRef.ReferencedSource?.value) {
+                                try {
+                                    const source = ifcApi.GetLine(modelID, classRef.ReferencedSource.value, false);
+                                    systemName = source?.Name?.value || '';
+                                } catch { /* skip */ }
+                            }
+                            classifications.push({
+                                system: systemName || 'Classification',
+                                code: classRef.Identification?.value || classRef.ItemReference?.value || '',
+                                name: classRef.Name?.value || '',
+                            });
+                        } catch { /* skip */ }
+                    }
+                } catch { /* skip */ }
+
+                return {
+                    propertySets: propertySets.length > 0 ? propertySets : undefined,
+                    materials: [...new Set(materials)],
+                    relations: relations.length > 0 ? relations : undefined,
+                    classifications: classifications.length > 0 ? classifications : undefined,
+                };
             } catch (err) {
                 console.warn('[Selection] Error extracting properties from IFCApi:', err);
                 // Element not in this model, try next
@@ -636,7 +655,26 @@ export function useBimSelection(
         try {
             const ifcApi = await getStandaloneIfcApi();
 
-            const modelID = ifcApi.OpenModel(ifcData, { COORDINATE_TO_ORIGIN: false });
+            // ── Reuse cached model if available ──
+            const cacheKey = `spatial_${ifcDataMapRef.current.size}`;
+            let modelID: number;
+            let shouldClose = false;
+            const cached = openModelCacheRef.current.get(cacheKey);
+            if (cached && cached.ifcApi === ifcApi) {
+                modelID = cached.modelID;
+            } else {
+                modelID = ifcApi.OpenModel(ifcData, { COORDINATE_TO_ORIGIN: false });
+                // Cache it for property extraction too
+                if (openModelCacheRef.current.size >= MODEL_CACHE_MAX) {
+                    const firstKey = openModelCacheRef.current.keys().next().value;
+                    if (firstKey) {
+                        const old = openModelCacheRef.current.get(firstKey);
+                        if (old) { try { old.ifcApi.CloseModel(old.modelID); } catch { /* */ } }
+                        openModelCacheRef.current.delete(firstKey);
+                    }
+                }
+                openModelCacheRef.current.set(cacheKey, { modelID, ifcApi });
+            }
             try {
                 const buildNode = (expressID: number): SpatialNode => {
                     const line = ifcApi.GetLine(modelID, expressID, false);
@@ -728,7 +766,7 @@ export function useBimSelection(
                     return Array.from(merged.values()).sort((a, b) => b.count - a.count);
                 });
             } finally {
-                ifcApi.CloseModel(modelID);
+                // Don't close — model stays cached for property extraction
             }
         } catch (err) {
             console.warn('Spatial tree build error:', err);
@@ -748,6 +786,15 @@ export function useBimSelection(
         } catch { /* ignore */ }
     }, [componentsRef]);
 
+    // ── Cleanup cached IFC models on unmount ──
+    const cleanupModelCache = useCallback(() => {
+        for (const [, cached] of openModelCacheRef.current) {
+            try { cached.ifcApi.CloseModel(cached.modelID); } catch { /* */ }
+        }
+        openModelCacheRef.current.clear();
+        propertyCacheRef.current.clear();
+    }, []);
+
     return {
         selectedElement,
         spatialTree,
@@ -760,5 +807,6 @@ export function useBimSelection(
         toggleTypeVisibility,
         buildSpatialTree,
         clearSelection,
+        cleanupModelCache,
     };
 }

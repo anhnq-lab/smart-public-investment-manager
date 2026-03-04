@@ -32,12 +32,23 @@ interface MilestoneTimelineProps {
 
 export const MilestoneTimeline: React.FC<MilestoneTimelineProps> = ({
     currentStage,
-    milestoneData = {}
+    milestoneData = {} as MilestoneTimelineProps['milestoneData']
 }) => {
-    // Define standard milestones based on NĐ 175/2024
+    // Determine which milestone is "current" (first one without a completion date)
+    const milestoneOrder = ['policy_approval', 'project_approval', 'groundbreaking', 'completion', 'handover'];
+    const dateByMilestone: Record<string, string | undefined> = {
+        policy_approval: milestoneData.policyApprovalDate,
+        project_approval: milestoneData.projectApprovalDate,
+        groundbreaking: milestoneData.groundbreakingDate,
+        completion: milestoneData.completionDate,
+        handover: milestoneData.handoverDate,
+    };
+
     const getStatus = (milestoneId: string, date?: string): 'pending' | 'current' | 'completed' => {
         if (date) return 'completed';
-        // Simplified logic - can be enhanced based on currentStage
+        // The first milestone without a date is "current"
+        const firstIncomplete = milestoneOrder.find(id => !dateByMilestone[id]);
+        if (firstIncomplete === milestoneId) return 'current';
         return 'pending';
     };
 
@@ -96,16 +107,16 @@ export const MilestoneTimeline: React.FC<MilestoneTimelineProps> = ({
                     iconBg: 'bg-emerald-500',
                     iconColor: 'text-white',
                     lineColor: 'bg-emerald-500',
-                    textColor: 'text-emerald-700',
+                    textColor: 'text-emerald-700 dark:text-emerald-300',
                     dotColor: 'bg-emerald-500'
                 };
             case 'current':
                 return {
-                    iconBg: 'bg-blue-500',
+                    iconBg: 'bg-amber-500',
                     iconColor: 'text-white',
-                    lineColor: 'bg-blue-200',
-                    textColor: 'text-blue-700',
-                    dotColor: 'bg-blue-500 animate-pulse'
+                    lineColor: 'bg-amber-200 dark:bg-amber-800',
+                    textColor: 'text-amber-700 dark:text-amber-300',
+                    dotColor: 'bg-amber-500 animate-pulse'
                 };
             default:
                 return {
@@ -152,7 +163,7 @@ export const MilestoneTimeline: React.FC<MilestoneTimelineProps> = ({
                                             {milestone.title}
                                         </h5>
                                         {milestone.date && (
-                                            <span className="text-xs bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded font-medium">
+                                            <span className="text-xs bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300 px-2 py-0.5 rounded font-medium">
                                                 {new Date(milestone.date).toLocaleDateString('vi-VN')}
                                             </span>
                                         )}

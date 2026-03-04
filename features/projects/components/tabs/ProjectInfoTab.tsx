@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
 import { Project, ProjectStage, Employee, BiddingPackage } from '@/types';
 import {
-    Landmark, FileBarChart, FileCheck, RefreshCw, Settings,
+    Landmark, FileBarChart, FileCheck, RefreshCw, Pencil,
     Clock, CheckCircle2, AlertCircle, ExternalLink, ChevronDown, ChevronUp
 } from 'lucide-react';
 import { SyncResult } from '@/services/NationalGatewayService';
@@ -16,6 +16,7 @@ import { RiskIndicators } from '../RiskIndicators';
 import { BudgetVarianceCard } from '../BudgetVarianceCard';
 import { KeyDatesWidget, KeyDate } from '../KeyDatesWidget';
 import { QuickActionsPanel } from '../QuickActionsPanel';
+import { LegalReferenceLink } from '../../../../components/common/LegalReferenceLink';
 
 interface ProjectInfoTabProps {
     project: Project & {
@@ -40,6 +41,7 @@ interface ProjectInfoTabProps {
     onHistoryUpdate?: (history: StageHistoryEntry[]) => void;
     onSync?: () => void;
     canEditLifecycle?: boolean;
+    onEditProject?: () => void;
 }
 
 export const ProjectInfoTab: React.FC<ProjectInfoTabProps> = ({
@@ -55,7 +57,8 @@ export const ProjectInfoTab: React.FC<ProjectInfoTabProps> = ({
     onStageChange,
     onHistoryUpdate,
     onSync,
-    canEditLifecycle = true
+    canEditLifecycle = true,
+    onEditProject
 }) => {
     const [showSyncDetails, setShowSyncDetails] = useState(false);
 
@@ -174,8 +177,8 @@ export const ProjectInfoTab: React.FC<ProjectInfoTabProps> = ({
 
             {/* National Gateway Section - Enhanced */}
             <div className={`rounded-xl shadow-sm border overflow-hidden transition-all ${isSynced
-                ? 'bg-gradient-to-r from-emerald-50 to-teal-50 border-emerald-200'
-                : 'bg-gradient-to-r from-amber-50 to-orange-50 border-amber-200'
+                ? 'bg-gradient-to-r from-emerald-50 to-teal-50 border-emerald-200 dark:from-emerald-900/30 dark:to-teal-900/20 dark:border-emerald-800'
+                : 'bg-gradient-to-r from-amber-50 to-orange-50 border-amber-200 dark:from-amber-900/30 dark:to-orange-900/20 dark:border-amber-800'
                 }`}>
                 <div className="px-5 py-4">
                     <div className="flex justify-between items-start">
@@ -200,7 +203,7 @@ export const ProjectInfoTab: React.FC<ProjectInfoTabProps> = ({
                                     </h3>
                                 </div>
                                 <p className="text-xs text-gray-500 dark:text-slate-400 mt-0.5">
-                                    Theo Nghị định 111/2024/NĐ-CP • TT 24/2023/TT-BKHĐT
+                                    <LegalReferenceLink text="Theo Nghị định 111/2024/NĐ-CP • TT 24/2024/TT-BXD" />
                                 </p>
 
                                 {/* Status Row */}
@@ -212,7 +215,7 @@ export const ProjectInfoTab: React.FC<ProjectInfoTabProps> = ({
                                         </span>
                                     ) : isSynced ? (
                                         <>
-                                            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-emerald-100 text-emerald-700 text-xs font-bold rounded-full">
+                                            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300 text-xs font-bold rounded-full">
                                                 <CheckCircle2 className="w-3.5 h-3.5" />
                                                 Đã đồng bộ
                                             </span>
@@ -221,7 +224,7 @@ export const ProjectInfoTab: React.FC<ProjectInfoTabProps> = ({
                                             </span>
                                         </>
                                     ) : (
-                                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-amber-100 text-amber-700 text-xs font-bold rounded-full">
+                                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300 text-xs font-bold rounded-full">
                                             <AlertCircle className="w-3.5 h-3.5" />
                                             Chưa đồng bộ
                                         </span>
@@ -322,8 +325,11 @@ export const ProjectInfoTab: React.FC<ProjectInfoTabProps> = ({
                     <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 overflow-hidden">
                         <div className="px-5 py-3 bg-gray-50 dark:bg-slate-700 border-b border-gray-200 dark:border-slate-600 flex items-center justify-between">
                             <h3 className="font-bold text-gray-800 dark:text-slate-200 text-xs uppercase">Thông tin chung</h3>
-                            <button className="flex items-center gap-1 text-[10px] text-blue-600 hover:underline">
-                                <Settings className="w-3 h-3" />
+                            <button
+                                onClick={onEditProject}
+                                className="flex items-center gap-1 text-[10px] text-blue-600 hover:underline font-bold"
+                            >
+                                <Pencil className="w-3 h-3" />
                                 Chỉnh sửa
                             </button>
                         </div>

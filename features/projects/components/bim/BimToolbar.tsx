@@ -238,7 +238,7 @@ export const BimToolbar: React.FC<BimToolbarProps> = ({
     const hasModels = upload.disciplineModels.length > 0;
     const disabled = !engine.viewerReady || !hasModels;
 
-    const onFitAll = () => engine.fitAll();
+    const onFitAll = () => { engine.resetIsolation(); engine.fitAll(); };
     const onSetView = (view: string) => engine.setView(view);
     const onScreenshot = () => engine.takeScreenshot();
     const onIsolateSelected = () => selection.handleIsolateSelected();

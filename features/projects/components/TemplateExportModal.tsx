@@ -17,6 +17,7 @@ import {
     Copy, Check, Scale, Building2, Calendar, User,
     Printer
 } from 'lucide-react';
+import { LegalReferenceLink } from '@/components/common/LegalReferenceLink';
 import { Project } from '@/types';
 import {
     TemplateConfig, ExportDataContext, autoFillFields, getTemplateConfig,
@@ -202,7 +203,7 @@ export const TemplateExportModal: React.FC<TemplateExportModalProps> = ({
                                 </span>
                                 {config.legalBasis && (
                                     <span className="text-xs text-[#94a3b8] flex items-center gap-1">
-                                        <Scale size={10} /> {config.legalBasis}
+                                        <Scale size={10} /> <LegalReferenceLink text={config.legalBasis!} />
                                     </span>
                                 )}
                             </div>
@@ -220,8 +221,8 @@ export const TemplateExportModal: React.FC<TemplateExportModalProps> = ({
                         <button
                             onClick={() => setActiveTab('edit')}
                             className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${activeTab === 'edit'
-                                    ? 'bg-blue-500/10 text-blue-400 shadow-sm'
-                                    : 'text-[#94a3b8] hover:text-[#cbd5e1] hover:bg-[#334155]'
+                                ? 'bg-blue-500/10 text-blue-400 shadow-sm'
+                                : 'text-[#94a3b8] hover:text-[#cbd5e1] hover:bg-[#334155]'
                                 }`}
                         >
                             <Edit3 size={14} />
@@ -235,8 +236,8 @@ export const TemplateExportModal: React.FC<TemplateExportModalProps> = ({
                         <button
                             onClick={() => setActiveTab('preview')}
                             className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${activeTab === 'preview'
-                                    ? 'bg-blue-500/10 text-blue-400 shadow-sm'
-                                    : 'text-[#94a3b8] hover:text-[#cbd5e1] hover:bg-[#334155]'
+                                ? 'bg-blue-500/10 text-blue-400 shadow-sm'
+                                : 'text-[#94a3b8] hover:text-[#cbd5e1] hover:bg-[#334155]'
                                 }`}
                         >
                             <Eye size={14} />
@@ -262,7 +263,7 @@ export const TemplateExportModal: React.FC<TemplateExportModalProps> = ({
                 </div>
 
                 {/* ═══════════ CONTENT ═══════════ */}
-                <div className="flex-1 overflow-hidden">
+                <div className="flex-1 overflow-y-auto">
                     {activeTab === 'edit' ? (
                         <div className="h-full overflow-y-auto p-6">
                             {/* Auto-fill indicator */}
@@ -332,8 +333,8 @@ export const TemplateExportModal: React.FC<TemplateExportModalProps> = ({
                                                                 value={value}
                                                                 onChange={e => handleChange(field.key, e.target.value)}
                                                                 className={`w-full px-3 py-2 rounded-lg bg-[#0f172a] border text-sm text-[#f8fafc] focus:ring-2 focus:ring-blue-500/40 focus:border-blue-500/40 transition-colors ${isAutoFilled
-                                                                        ? 'border-emerald-500/30'
-                                                                        : 'border-[#334155]'
+                                                                    ? 'border-emerald-500/30'
+                                                                    : 'border-[#334155]'
                                                                     }`}
                                                                 placeholder={field.placeholder || ''}
                                                             />

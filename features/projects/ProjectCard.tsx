@@ -21,8 +21,8 @@ const getStatusLabel = (status: ProjectStatus) => {
 
 const getStatusColor = (status: ProjectStatus) => {
     switch (status) {
-        case ProjectStatus.Preparation: return 'bg-gradient-to-r from-amber-400 to-orange-500';
-        case ProjectStatus.Execution: return 'bg-gradient-to-r from-blue-500 to-blue-600';
+        case ProjectStatus.Preparation: return 'bg-gradient-to-r from-blue-400 to-blue-600';
+        case ProjectStatus.Execution: return 'bg-gradient-to-r from-amber-400 to-orange-500';
         case ProjectStatus.Completion: return 'bg-gradient-to-r from-emerald-500 to-emerald-600';
         default: return 'bg-gray-400';
     }
@@ -37,7 +37,7 @@ const ProgressBar: React.FC<{ value: number; colorClass: string }> = ({ value, c
     </div>
 );
 
-export const ProjectCard: React.FC<ProjectCardProps> = ({ project, onClick, layout = 'grid' }) => {
+export const ProjectCard: React.FC<ProjectCardProps> = React.memo(({ project, onClick, layout = 'grid' }) => {
     const badgeColor = getStatusColor(project.Status);
 
     if (layout === 'list') {
@@ -176,10 +176,10 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({ project, onClick, layo
                 <div className="mt-auto pt-3 border-t border-gray-100 dark:border-slate-700">
                     <div className="flex items-center justify-between">
                         <span className="text-[10px] text-gray-400 dark:text-slate-500 uppercase font-semibold tracking-wide">Tổng mức ĐT</span>
-                        <span className="text-lg font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent tabular-nums">{formatCurrency(project.TotalInvestment)}</span>
+                        <span className="text-lg font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent dark:text-slate-100 dark:bg-none tabular-nums">{formatCurrency(project.TotalInvestment)}</span>
                     </div>
                 </div>
             </div>
         </div>
     );
-};
+});

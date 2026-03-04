@@ -21,6 +21,7 @@ import { TaskService } from '@/services/TaskService';
 import { supabase } from '@/lib/supabase';
 import { findByStepCode, buildTT24Key } from '@/utils/docStepMapping';
 import { LegalReferenceLink } from '@/components/common/LegalReferenceLink';
+import { getProjectPhases, getGroupLabel } from '@/utils/projectPhases';
 
 
 interface ProjectPlanTabProps {
@@ -34,127 +35,7 @@ interface ProjectPlanTabProps {
     project?: Project | null;
 }
 
-/**
- * Sinh kế hoạch thực hiện dự án theo nhóm
- * Căn cứ: NĐ 175/2024, Luật ĐTC 58/2024, Luật XD 135/2025
- * - Nhóm A/QN: BC NCTKT → BC NCKT → TK triển khai (CĐT tự thẩm định)
- * - Nhóm B: Đề xuất chủ trương ĐT → BC NCKT → TK triển khai (CĐT tự thẩm định)
- * - Nhóm C: Đề xuất chủ trương ĐT → BC KT-KT (≤20 tỷ, NĐ 175 K3Đ5) → 1 bước TK
- */
-const getProjectPhases = (groupCode: ProjectGroup = ProjectGroup.C, isODA: boolean = false) => {
-    // --- PHASE 1: Chuẩn bị dự án ---
-    const phase1Items: { id: string; title: string; code: string }[] = [];
-    let stepNum = 1;
-
-    // 1.1 ODA - chỉ khi dự án sử dụng vốn ODA
-    if (isODA) {
-        phase1Items.push({ id: `1.${stepNum}`, title: 'Lập đề xuất chương trình, dự án (ODA)', code: 'PREP_ODA' });
-        stepNum++;
-    }
-
-    // 1.2 Chủ trương đầu tư
-    if (groupCode === ProjectGroup.A || groupCode === ProjectGroup.QN) {
-        // Nhóm A/QN: Lập Báo cáo nghiên cứu tiền khả thi
-        phase1Items.push({ id: `1.${stepNum}`, title: 'Lập, thẩm định Báo cáo nghiên cứu tiền khả thi (NCTKT)', code: 'PREP_PREFEASIBILITY' });
-        stepNum++;
-        phase1Items.push({ id: `1.${stepNum}`, title: 'Quyết định chủ trương đầu tư', code: 'PREP_POLICY' });
-    } else {
-        // Nhóm B/C: Báo cáo đề xuất chủ trương đầu tư
-        phase1Items.push({ id: `1.${stepNum}`, title: 'Lập Báo cáo đề xuất chủ trương đầu tư', code: 'PREP_POLICY' });
-    }
-    stepNum++;
-
-    // Khảo sát XD
-    phase1Items.push({ id: `1.${stepNum}`, title: 'Khảo sát xây dựng phục vụ lập dự án', code: 'PREP_SURVEY' });
-    stepNum++;
-
-    // Quy hoạch XD
-    phase1Items.push({ id: `1.${stepNum}`, title: 'Lập, thẩm định, phê duyệt Quy hoạch xây dựng', code: 'PREP_PLANNING' });
-    stepNum++;
-
-    // BC NCKT hoặc BC KT-KT
-    if (groupCode === ProjectGroup.C) {
-        phase1Items.push({ id: `1.${stepNum}`, title: 'Lập, thẩm định Báo cáo kinh tế - kỹ thuật (BCKTKT)', code: 'PREP_FEASIBILITY' });
-    } else {
-        phase1Items.push({ id: `1.${stepNum}`, title: 'Lập, thẩm định Báo cáo nghiên cứu khả thi (BCNCKT)', code: 'PREP_FEASIBILITY' });
-    }
-    stepNum++;
-
-    // QĐ đầu tư
-    phase1Items.push({ id: `1.${stepNum}`, title: 'Quyết định phê duyệt dự án đầu tư xây dựng', code: 'PREP_DECISION' });
-
-    // --- PHASE 2: Thực hiện dự án ---
-    const phase2Items: { id: string; title: string; code: string }[] = [
-        { id: '2.1', title: 'Chuẩn bị mặt bằng xây dựng, rà phá bom mìn', code: 'IMPL_SITE' },
-        { id: '2.2', title: 'Khảo sát xây dựng phục vụ thiết kế', code: 'IMPL_SURVEY' },
-    ];
-
-    // Thiết kế theo nhóm
-    if (groupCode === ProjectGroup.C) {
-        // Nhóm C: thiết kế bản vẽ thi công (1 bước, nằm trong BCKTKT)
-        phase2Items.push({ id: '2.3', title: 'Thiết kế bản vẽ thi công & Dự toán', code: 'IMPL_DESIGN' });
-    } else {
-        // Nhóm A/B: thiết kế triển khai sau TKCS
-        phase2Items.push({ id: '2.3', title: 'Lập, thẩm định, phê duyệt Thiết kế xây dựng & Dự toán', code: 'IMPL_DESIGN' });
-    }
-
-    phase2Items.push(
-        { id: '2.4', title: 'Cấp Giấy phép xây dựng', code: 'IMPL_PERMIT' },
-        { id: '2.5', title: 'Lựa chọn nhà thầu và ký kết hợp đồng', code: 'IMPL_BIDDING' },
-        { id: '2.6', title: 'Thi công xây dựng công trình', code: 'IMPL_CONSTRUCTION' },
-        { id: '2.7', title: 'Giám sát thi công xây dựng', code: 'IMPL_SUPERVISION' },
-        { id: '2.8', title: 'Tạm ứng, thanh toán khối lượng hoàn thành', code: 'IMPL_PAYMENT' },
-        { id: '2.9', title: 'Vận hành, chạy thử', code: 'IMPL_TRIAL_RUN' },
-        { id: '2.10', title: 'Nghiệm thu hoàn thành công trình', code: 'IMPL_ACCEPTANCE' },
-        { id: '2.11', title: 'Giám sát, đánh giá dự án đầu tư', code: 'IMPL_MONITORING' }
-    );
-
-    // --- PHASE 3: Kết thúc xây dựng (giống nhau cho mọi nhóm) ---
-    const phase3Items = [
-        { id: '3.1', title: 'Quyết toán hợp đồng xây dựng', code: 'CLOSE_CONTRACT_SETTLEMENT' },
-        { id: '3.2', title: 'Quyết toán vốn đầu tư dự án hoàn thành', code: 'CLOSE_CAPITAL_SETTLEMENT' },
-        { id: '3.3', title: 'Bàn giao công trình đưa vào sử dụng', code: 'CLOSE_HANDOVER' },
-        { id: '3.4', title: 'Bảo hành công trình xây dựng', code: 'CLOSE_WARRANTY' },
-        { id: '3.5', title: 'Bàn giao hồ sơ lưu trữ', code: 'CLOSE_ARCHIVE' },
-        { id: '3.6', title: 'Giám sát, đánh giá sau hoàn thành', code: 'CLOSE_MONITORING' }
-    ];
-
-    return [
-        {
-            id: 'PHASE_1',
-            title: 'I. GIAI ĐOẠN CHUẨN BỊ DỰ ÁN',
-            description: groupCode === ProjectGroup.C
-                ? 'Lập đề xuất chủ trương, thẩm định BC KT-KT'
-                : groupCode === ProjectGroup.A || groupCode === ProjectGroup.QN
-                    ? 'Lập BC NCTKT, thẩm định, phê duyệt chủ trương và BC NCKT'
-                    : 'Lập đề xuất chủ trương, thẩm định BC NCKT',
-            items: phase1Items
-        },
-        {
-            id: 'PHASE_2',
-            title: 'II. GIAI ĐOẠN THỰC HIỆN DỰ ÁN',
-            description: 'Triển khai chi tiết, thi công và giám sát',
-            items: phase2Items
-        },
-        {
-            id: 'PHASE_3',
-            title: 'III. GIAI ĐOẠN KẾT THÚC XÂY DỰNG',
-            description: 'Bàn giao, quyết toán và bảo hành',
-            items: phase3Items
-        }
-    ];
-};
-
-/** Label nhóm dự án */
-const getGroupLabel = (g?: ProjectGroup) => {
-    switch (g) {
-        case ProjectGroup.QN: return 'Quan trọng QG';
-        case ProjectGroup.A: return 'Nhóm A';
-        case ProjectGroup.B: return 'Nhóm B';
-        case ProjectGroup.C: return 'Nhóm C';
-        default: return 'Nhóm C';
-    }
-};
+// getProjectPhases and getGroupLabel imported from @/utils/projectPhases
 
 export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({
     tasks: initialTasks,
@@ -190,8 +71,23 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({
     const [currentView, setCurrentView] = useState<TaskViewMode>('wbs');
     const [currentFilter, setCurrentFilter] = useState<TaskFilter>('all');
     const [searchQuery, setSearchQuery] = useState('');
-    const [expandedPhases, setExpandedPhases] = useState<Record<string, boolean>>({
-        'PHASE_1': false, 'PHASE_2': false, 'PHASE_3': false
+
+    // Auto-expand phases that have active tasks
+    const [expandedPhases, setExpandedPhases] = useState<Record<string, boolean>>(() => {
+        const initial: Record<string, boolean> = {};
+        const phases = getProjectPhases(groupCode, isODA);
+        phases.forEach(phase => {
+            const hasActiveTasks = initialTasks.some(t =>
+                phase.items.some(item => item.code === t.TimelineStep) &&
+                (t.Status === TaskStatus.InProgress || t.Status === TaskStatus.Review)
+            );
+            initial[phase.id] = hasActiveTasks;
+        });
+        // If no active phase, expand the first one
+        if (!Object.values(initial).some(v => v) && phases.length > 0) {
+            initial[phases[0].id] = true;
+        }
+        return initial;
     });
     const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
     const [selectedStep, setSelectedStep] = useState<{ name: string; code: string } | null>(null);
@@ -428,9 +324,12 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({
     // 6. Compute Milestone Dates for Timeline
     const milestoneData = useMemo(() => {
         const getCompletionDate = (code: string): string | undefined => {
-            const completedTasks = tasks.filter(t => t.TimelineStep === code && t.Status === TaskStatus.Done);
-            if (completedTasks.length === 0) return undefined;
-            const dates = completedTasks.map(t => new Date(t.DueDate).getTime()).filter(d => !isNaN(d));
+            const allStepTasks = tasks.filter(t => t.TimelineStep === code || t.StepCode === code);
+            if (allStepTasks.length === 0) return undefined;
+            // ALL tasks in this step must be Done for the milestone to be considered complete
+            const allDone = allStepTasks.every(t => t.Status === TaskStatus.Done);
+            if (!allDone) return undefined;
+            const dates = allStepTasks.map(t => new Date(t.DueDate).getTime()).filter(d => !isNaN(d));
             if (dates.length === 0) return undefined;
             return new Date(Math.max(...dates)).toISOString().split('T')[0];
         };
@@ -690,6 +589,27 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({
         }
     };
 
+    // ── Bulk create tasks for a specific PHASE ──
+    const [bulkCreatingPhase, setBulkCreatingPhase] = useState<string | null>(null);
+    const handleBulkCreatePhase = async (phaseId: string) => {
+        if (!projectID) return;
+        const phase = DECREE_175_PHASES.find(p => p.id === phaseId);
+        if (!phase) return;
+        setBulkCreatingPhase(phaseId);
+        try {
+            for (const item of phase.items) {
+                const subTasks = getSubTasksForStep(item.code, groupCode);
+                if (subTasks.length > 0) {
+                    await handleBulkCreateFromSubTasks(item.code, item.title);
+                }
+            }
+        } catch (error) {
+            console.error('Failed to bulk create phase tasks:', error);
+        } finally {
+            setBulkCreatingPhase(null);
+        }
+    };
+
     // Priority color helper
     const getPriorityColor = (priority?: string) => {
         switch (priority) {
@@ -731,8 +651,8 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({
                         onClick={handleBulkCreateAll}
                         disabled={bulkCreatingAll}
                         className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg border transition-all shadow-sm ${bulkCreatingAll
-                            ? 'text-amber-600 bg-amber-50 border-amber-200 cursor-wait'
-                            : 'text-emerald-600 bg-emerald-50 hover:bg-emerald-100 border-emerald-200 hover:shadow'
+                            ? 'text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/30 border-amber-200 dark:border-amber-700 cursor-wait'
+                            : 'text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/30 hover:bg-emerald-100 dark:hover:bg-emerald-900/50 border-emerald-200 dark:border-emerald-700 hover:shadow'
                             }`}
                     >
                         {bulkCreatingAll ? (
@@ -755,10 +675,10 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({
                         Xem tất cả công việc
                     </button>
                     <span className={`px-3 py-1 text-xs font-bold rounded-full ${groupCode === ProjectGroup.A || groupCode === ProjectGroup.QN
-                        ? 'bg-red-100 text-red-700 border border-red-200'
+                        ? 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-700'
                         : groupCode === ProjectGroup.B
-                            ? 'bg-amber-100 text-amber-700 border border-amber-200'
-                            : 'bg-green-100 text-green-700 border border-green-200'
+                            ? 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-700'
+                            : 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 border border-green-200 dark:border-green-700'
                         }`}>
                         {getGroupLabel(groupCode)}
                     </span>
@@ -775,6 +695,9 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({
                             tasks={filteredTasks}
                             isExpanded={expandedPhases[phase.id]}
                             onToggle={() => togglePhase(phase.id)}
+                            onBulkCreatePhase={() => handleBulkCreatePhase(phase.id)}
+                            isBulkCreatingPhase={bulkCreatingPhase === phase.id}
+                            phaseTotalSubTasks={phase.items.reduce((sum, item) => sum + getSubTasksForStep(item.code, groupCode).length, 0)}
                         />
 
                         {/* Expanded Items */}
@@ -855,8 +778,8 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({
                                                     <button
                                                         onClick={() => setExpandedSubTasks(prev => ({ ...prev, [item.code]: !prev[item.code] }))}
                                                         className={`px-2 py-1 text-xs font-medium rounded border flex items-center gap-1 shrink-0 transition-colors ${expandedSubTasks[item.code]
-                                                            ? 'text-amber-700 bg-amber-50 border-amber-200'
-                                                            : 'text-purple-600 bg-purple-50 hover:bg-purple-100 border-purple-200'
+                                                            ? 'text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-900/30 border-amber-200 dark:border-amber-700'
+                                                            : 'text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-900/30 hover:bg-purple-100 dark:hover:bg-purple-900/50 border-purple-200 dark:border-purple-700'
                                                             }`}
                                                         title="Xem quy trình chi tiết (NĐ 175, Luật 135, NĐ 140, NĐ 144)"
                                                     >
@@ -944,9 +867,9 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({
                                                                     </td>
 
                                                                     {/* Due Date + Completion Date */}
-                                                                    <td className={`px-2 py-2 hidden sm:table-cell ${isOverdue(t) ? 'text-red-600 font-semibold' : 'text-gray-400'}`}>
+                                                                    <td className={`px-2 py-2 hidden sm:table-cell ${isOverdue(t) ? 'text-red-600 dark:text-red-400 font-semibold' : 'text-gray-400 dark:text-slate-500'}`}>
                                                                         {t.Status === TaskStatus.Done && t.ActualEndDate ? (
-                                                                            <span className="flex items-center gap-1 text-emerald-600 font-medium" title={`Hoàn thành: ${new Date(t.ActualEndDate).toLocaleDateString('vi-VN')}`}>
+                                                                            <span className="flex items-center gap-1 text-emerald-600 dark:text-emerald-400 font-medium" title={`Hoàn thành: ${new Date(t.ActualEndDate).toLocaleDateString('vi-VN')}`}>
                                                                                 <CheckCircle2 className="w-3 h-3" />
                                                                                 {new Date(t.ActualEndDate).toLocaleDateString('vi-VN')}
                                                                             </span>
@@ -1210,6 +1133,42 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({
                 taskCounts={taskCounts}
                 currentUserId={currentUserId}
             />
+
+            {/* 2.5 Overall Progress Bar */}
+            {(() => {
+                const total = tasks.length;
+                const done = tasks.filter(t => t.Status === TaskStatus.Done).length;
+                const inProgress = tasks.filter(t => t.Status === TaskStatus.InProgress || t.Status === TaskStatus.Review).length;
+                const pct = total > 0 ? Math.round((done / total) * 100) : 0;
+                return (
+                    <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-100 dark:border-slate-700 p-4 shadow-sm">
+                        <div className="flex items-center justify-between mb-2">
+                            <span className="text-xs font-bold text-gray-600 dark:text-slate-300 uppercase tracking-wide">Tiến độ tổng thể</span>
+                            <span className="text-sm font-black text-gray-800 dark:text-white">{pct}%</span>
+                        </div>
+                        <div className="h-3 bg-gray-100 dark:bg-slate-700 rounded-full overflow-hidden">
+                            <div
+                                className="h-full rounded-full transition-all duration-700 ease-out bg-gradient-to-r from-blue-500 via-indigo-500 to-emerald-500"
+                                style={{ width: `${pct}%` }}
+                            />
+                        </div>
+                        <div className="flex items-center gap-4 mt-2 text-[10px] font-medium">
+                            <span className="flex items-center gap-1 text-emerald-600 dark:text-emerald-400">
+                                <span className="w-2 h-2 rounded-full bg-emerald-500" />
+                                Hoàn thành: {done}
+                            </span>
+                            <span className="flex items-center gap-1 text-blue-600 dark:text-blue-400">
+                                <span className="w-2 h-2 rounded-full bg-blue-500" />
+                                Đang thực hiện: {inProgress}
+                            </span>
+                            <span className="flex items-center gap-1 text-gray-400 dark:text-slate-500">
+                                <span className="w-2 h-2 rounded-full bg-gray-300 dark:bg-slate-600" />
+                                Chưa bắt đầu: {total - done - inProgress}
+                            </span>
+                        </div>
+                    </div>
+                );
+            })()}
 
             {/* 3. Main Layout: Content + Sidebar */}
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">

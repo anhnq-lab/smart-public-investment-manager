@@ -28,13 +28,13 @@ export const KeyDatesWidget: React.FC<KeyDatesWidgetProps> = ({
     const getStatusStyle = (status: KeyDate['status']) => {
         switch (status) {
             case 'overdue':
-                return { bg: 'bg-red-50', border: 'border-red-200', text: 'text-red-700', icon: AlertCircle, iconColor: 'text-red-500' };
+                return { bg: 'bg-red-50 dark:bg-red-900/30', border: 'border-red-200 dark:border-red-800', text: 'text-red-700 dark:text-red-300', icon: AlertCircle, iconColor: 'text-red-500 dark:text-red-400' };
             case 'due-soon':
-                return { bg: 'bg-amber-50', border: 'border-amber-200', text: 'text-amber-700', icon: Clock, iconColor: 'text-amber-500' };
+                return { bg: 'bg-amber-50 dark:bg-amber-900/30', border: 'border-amber-200 dark:border-amber-800', text: 'text-amber-700 dark:text-amber-300', icon: Clock, iconColor: 'text-amber-500 dark:text-amber-400' };
             case 'completed':
-                return { bg: 'bg-emerald-50', border: 'border-emerald-200', text: 'text-emerald-700', icon: CheckCircle2, iconColor: 'text-emerald-500' };
+                return { bg: 'bg-emerald-50 dark:bg-emerald-900/30', border: 'border-emerald-200 dark:border-emerald-800', text: 'text-emerald-700 dark:text-emerald-300', icon: CheckCircle2, iconColor: 'text-emerald-500 dark:text-emerald-400' };
             default:
-                return { bg: 'bg-blue-50', border: 'border-blue-200', text: 'text-blue-700', icon: Calendar, iconColor: 'text-blue-500' };
+                return { bg: 'bg-blue-50 dark:bg-blue-900/30', border: 'border-blue-200 dark:border-blue-800', text: 'text-blue-700 dark:text-blue-300', icon: Calendar, iconColor: 'text-blue-500 dark:text-blue-400' };
         }
     };
 
@@ -79,12 +79,12 @@ export const KeyDatesWidget: React.FC<KeyDatesWidgetProps> = ({
                 </div>
                 <div className="flex items-center gap-2">
                     {overdueCount > 0 && (
-                        <span className="px-2 py-0.5 bg-red-100 text-red-700 text-[10px] font-bold rounded-full">
+                        <span className="px-2 py-0.5 bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300 text-[10px] font-bold rounded-full">
                             {overdueCount} quá hạn
                         </span>
                     )}
                     {dueSoonCount > 0 && (
-                        <span className="px-2 py-0.5 bg-amber-100 text-amber-700 text-[10px] font-bold rounded-full">
+                        <span className="px-2 py-0.5 bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300 text-[10px] font-bold rounded-full">
                             {dueSoonCount} sắp đến hạn
                         </span>
                     )}

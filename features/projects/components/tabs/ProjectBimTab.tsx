@@ -1,7 +1,7 @@
 import React, { useRef, useEffect, useState, useCallback, useMemo } from 'react';
 import * as THREE from 'three';
 import * as OBC from '@thatopen/components';
-import { Upload, Loader2, Building2, AlertCircle, CheckCircle, Maximize2, Minimize2, Info, LocateFixed, EyeOff, Focus, FileUp, Box, Keyboard, X as XIcon } from 'lucide-react';
+import { Upload, Loader2, Building2, AlertCircle, CheckCircle, Maximize2, Minimize2, Info, LocateFixed, EyeOff, Focus, FileUp, Box, Keyboard, X as XIcon, ArrowLeft } from 'lucide-react';
 import { useTheme } from '../../../../context/ThemeContext';
 
 // BIM hooks and context
@@ -656,6 +656,24 @@ const ProjectBimTabContent: React.FC = () => {
                 {/* ViewCube */}
                 {engine.viewerReady && !isMobile && (
                     <BimViewCube />
+                )}
+
+                {/* Back to Overview button — shown when model is isolated */}
+                {upload.isIsolated && (
+                    <button
+                        onClick={() => upload.restoreAllModels()}
+                        className="absolute top-3 left-3 z-30 flex items-center gap-2 px-4 py-2 rounded-lg shadow-lg transition-all hover:scale-105 active:scale-95"
+                        style={{
+                            background: isDark ? 'rgba(6,182,212,0.9)' : 'rgba(59,130,246,0.9)',
+                            backdropFilter: 'blur(8px)',
+                            color: 'white',
+                            border: '1px solid rgba(255,255,255,0.2)',
+                        }}
+                        title="Quay lại tổng quan"
+                    >
+                        <ArrowLeft className="w-4 h-4" />
+                        <span className="text-sm font-medium">Quay lại</span>
+                    </button>
                 )}
 
                 {/* Fullscreen toggle */}

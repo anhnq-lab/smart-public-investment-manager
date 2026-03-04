@@ -5,6 +5,7 @@ import { BiddingPackage, PackageStatus, BIDDING_THRESHOLDS } from '../../../type
 import { formatCurrency } from '../../../utils/format';
 import ApiClient from '../../../services/api';
 import { detectApplicableMethod, getMethodGuidance, formatThreshold } from '../../../utils/biddingCompliance';
+import { LegalReferenceLink } from '../../../components/common/LegalReferenceLink';
 
 // ========================================
 // BIDDING PACKAGE MODAL - NĐ 214/2025 Compliance
@@ -347,7 +348,7 @@ export const BiddingPackageModal: React.FC<BiddingPackageModalProps> = ({
                             {isEditMode ? 'Chỉnh sửa gói thầu' : 'Thêm gói thầu mới'}
                         </h2>
                         <p className="text-sm text-gray-500 mt-0.5">
-                            Theo quy định NĐ 175/2024 và Luật Đấu thầu
+                            <LegalReferenceLink text="Theo quy định NĐ 175/2024 và Luật Đấu thầu" />
                         </p>
                     </div>
                     <button
@@ -528,7 +529,7 @@ export const BiddingPackageModal: React.FC<BiddingPackageModalProps> = ({
                                                     {' '}có thể áp dụng: <strong>{methodGuidance.label}</strong>
                                                 </p>
                                                 <p className="text-xs text-blue-600 mt-1">
-                                                    {methodGuidance.description} • <em>{methodGuidance.legalBasis}</em>
+                                                    {methodGuidance.description} • <em><LegalReferenceLink text={methodGuidance.legalBasis} /></em>
                                                 </p>
                                             </div>
                                         </div>

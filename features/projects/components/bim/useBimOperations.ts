@@ -94,7 +94,7 @@ export function useBimOperations(
         if (!newSystem) {
             // Show all elements
             for (const [, model] of fragments.list) {
-                try { model.setVisibility(true); } catch { /* skip */ }
+                try { model.resetVisible(); } catch { /* skip */ }
             }
             return;
         }

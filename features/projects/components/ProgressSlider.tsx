@@ -98,8 +98,8 @@ export const ProgressSlider: React.FC<ProgressSliderProps> = ({
                         onClick={() => !disabled && onChange(qv)}
                         disabled={disabled}
                         className={`flex-1 px-2 py-1 text-[10px] font-bold rounded transition-all ${value === qv
-                                ? `${currentColor.bg} text-white`
-                                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                            ? `${currentColor.bg} text-white`
+                            : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                             } ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
                     >
                         {qv}%
@@ -117,11 +117,11 @@ export const ProgressBadge: React.FC<{
     size?: 'sm' | 'md';
 }> = ({ value, onClick, size = 'sm' }) => {
     const getColor = (v: number) => {
-        if (v === 100) return 'bg-emerald-100 text-emerald-700 border-emerald-200';
-        if (v >= 75) return 'bg-blue-100 text-blue-700 border-blue-200';
-        if (v >= 50) return 'bg-orange-100 text-orange-700 border-orange-200';
-        if (v > 0) return 'bg-amber-100 text-amber-700 border-amber-200';
-        return 'bg-gray-100 text-gray-600 border-gray-200';
+        if (v === 100) return 'bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-700';
+        if (v >= 75) return 'bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-700';
+        if (v >= 50) return 'bg-orange-100 dark:bg-orange-900/40 text-orange-700 dark:text-orange-300 border-orange-200 dark:border-orange-700';
+        if (v > 0) return 'bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-700';
+        return 'bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-slate-300 border-gray-200 dark:border-slate-600';
     };
 
     return (
@@ -130,12 +130,12 @@ export const ProgressBadge: React.FC<{
             className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full border font-bold transition-all hover:scale-105 ${getColor(value)} ${size === 'sm' ? 'text-[10px]' : 'text-xs'
                 }`}
         >
-            <div className="w-8 h-1.5 bg-gray-200 rounded-full overflow-hidden">
+            <div className="w-8 h-1.5 bg-gray-200 dark:bg-slate-600 rounded-full overflow-hidden">
                 <div
                     className={`h-full transition-all ${value === 100 ? 'bg-emerald-500' :
-                            value >= 75 ? 'bg-blue-500' :
-                                value >= 50 ? 'bg-orange-500' :
-                                    'bg-amber-500'
+                        value >= 75 ? 'bg-blue-500' :
+                            value >= 50 ? 'bg-orange-500' :
+                                'bg-amber-500'
                         }`}
                     style={{ width: `${value}%` }}
                 />

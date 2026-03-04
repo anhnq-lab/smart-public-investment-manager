@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { CapitalPlan } from '../../../types';
 import { X, Landmark, Save } from 'lucide-react';
+import { LegalReferenceLink } from '../../../components/common/LegalReferenceLink';
 
 interface CapitalPlanModalProps {
     isOpen: boolean;
@@ -78,7 +79,7 @@ export const CapitalPlanModal: React.FC<CapitalPlanModalProps> = ({
                             <h2 className="text-lg font-bold text-gray-800 dark:text-slate-100">
                                 {isEdit ? 'Sửa kế hoạch vốn' : 'Bổ sung kế hoạch vốn'}
                             </h2>
-                            <p className="text-xs text-gray-400 dark:text-slate-500">Luật ĐTC 2024 - 58/2024/QH15</p>
+                            <p className="text-xs text-gray-400 dark:text-slate-500"><LegalReferenceLink text="Luật ĐTC 58/2024/QH15" /></p>
                         </div>
                     </div>
                     <button onClick={onClose} className="p-1.5 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-lg transition-colors">

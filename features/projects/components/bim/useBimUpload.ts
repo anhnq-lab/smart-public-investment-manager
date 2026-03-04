@@ -37,6 +37,10 @@ export interface BimUploadAPI {
     clearStatus: () => void;
     cancelUpload: () => void;
     validationError: string | null;
+    // Model isolation
+    isolateModelByExpressId: (expressId: number) => void;
+    restoreAllModels: () => void;
+    isIsolated: boolean;
 }
 
 export function useBimUpload(
@@ -249,18 +253,36 @@ export function useBimUpload(
     }, [projectID, componentsRef, worldRef, ifcLoaderRef, onModelLoaded]);
 
     // ── Toggle visibility ───────────────────────────
+    // Follows EXACT same pattern as handleDeleteModel (which works):
+    // 1) Access disciplineModels + worldRef directly (not inside updater)
+    // 2) Manipulate scene
+    // 3) Then update React state
     const toggleDisciplineVisibility = useCallback((index: number) => {
+        const dm = disciplineModels[index];
+        if (!dm?.fragModel || !worldRef.current) return;
+
+        const newVisible = !dm.visible;
+        const obj = (dm.fragModel as any).object || dm.fragModel;
+
+        if (newVisible) {
+            // Show: add back to scene (same as how models are initially loaded)
+            worldRef.current.scene.three.add(obj);
+            // Force fragment renderer update
+            try {
+                const fragments = componentsRef.current?.get(OBC.FragmentsManager);
+                if (fragments?.core) fragments.core.update(true);
+            } catch { /* */ }
+        } else {
+            // Hide: remove from scene (same pattern as delete)
+            worldRef.current.scene.three.remove(obj);
+        }
+
         setDisciplineModels(prev => {
             const updated = [...prev];
-            const dm = updated[index];
-            if (dm.fragModel) {
-                dm.visible = !dm.visible;
-                const obj = (dm.fragModel as any).object || dm.fragModel;
-                if (obj) obj.visible = dm.visible;
-            }
+            updated[index] = { ...updated[index], visible: newVisible };
             return updated;
         });
-    }, []);
+    }, [disciplineModels, worldRef, componentsRef]);
 
     // ── Delete model ────────────────────────────────
     const handleDeleteModel = useCallback(async (index: number) => {
@@ -342,6 +364,154 @@ export function useBimUpload(
         }
     }, [componentsRef, worldRef, validateFile, handleFileUpload]);
 
+    // ── Model-level isolation ─────────────────────────
+    // FADE other models (low opacity via material cloning),
+    // keep target model fully visible.
+    const [isIsolated, setIsIsolated] = useState(false);
+    const fadedMaterialsRef = useRef<Map<string, { mesh: any; original: any }>>(new Map());
+    const savedCameraRef = useRef<{ position: THREE.Vector3; target: THREE.Vector3 } | null>(null);
+
+    const isolateModelByExpressId = useCallback((expressId: number) => {
+        if (!worldRef.current) return;
+
+        // Save current camera state for Back button
+        const cam = worldRef.current.camera;
+        if (cam && (cam as any).controls) {
+            const controls = (cam as any).controls;
+            savedCameraRef.current = {
+                position: new THREE.Vector3().copy(controls.camera.position),
+                target: new THREE.Vector3().copy(controls.target || new THREE.Vector3()),
+            };
+        }
+
+        // Restore previous isolation if any
+        if (fadedMaterialsRef.current.size > 0) {
+            for (const [, { mesh, original }] of fadedMaterialsRef.current) {
+                mesh.material = original;
+            }
+            fadedMaterialsRef.current.clear();
+        }
+
+        // Find target model by checking FragmentsManager
+        const fragments = componentsRef.current?.get(OBC.FragmentsManager);
+        let targetFragModelId: string | null = null;
+
+        if (fragments) {
+            for (const [modelId, model] of fragments.list) {
+                // Scan this model's meshes for the expressId
+                const modelObj = (model as any).object || model;
+                let found = false;
+                if (modelObj && typeof modelObj.traverse === 'function') {
+                    modelObj.traverse((child: any) => {
+                        if (found) return;
+                        // Check multiple possible ID storage locations
+                        const ids = child.itemIDs || child.fragment?.ids || child.userData?.itemIDs;
+                        if (ids instanceof Set && ids.has(expressId)) {
+                            found = true;
+                        }
+                        // Also check InstancedMesh fragment data
+                        if (!found && child.isInstancedMesh && child.fragment) {
+                            const fragIds = child.fragment.ids;
+                            if (fragIds instanceof Set && fragIds.has(expressId)) {
+                                found = true;
+                            }
+                        }
+                    });
+                }
+                if (found) {
+                    targetFragModelId = modelId;
+                    break;
+                }
+            }
+        }
+
+        // Map FragmentsManager modelId → disciplineModel index
+        let targetDmIndex = -1;
+        if (targetFragModelId) {
+            for (let i = 0; i < disciplineModels.length; i++) {
+                const dm = disciplineModels[i];
+                if (!dm.fragModel) continue;
+                const dmModelId = (dm.fragModel as any).modelId;
+                if (dmModelId === targetFragModelId) {
+                    targetDmIndex = i;
+                    break;
+                }
+            }
+        }
+
+        // FADE other models via material cloning
+        disciplineModels.forEach((dm, i) => {
+            if (i === targetDmIndex || !dm.fragModel || !dm.visible) return;
+            const obj = (dm.fragModel as any).object || dm.fragModel;
+            if (!obj || typeof obj.traverse !== 'function') return;
+
+            obj.traverse((child: any) => {
+                if (!child.isMesh || !child.material) return;
+                const key = child.uuid;
+                if (fadedMaterialsRef.current.has(key)) return;
+
+                // Save original material
+                const original = child.material;
+                fadedMaterialsRef.current.set(key, { mesh: child, original });
+
+                // Clone and fade
+                if (Array.isArray(original)) {
+                    child.material = original.map((mat: THREE.Material) => {
+                        const c = mat.clone();
+                        (c as any).transparent = true;
+                        (c as any).opacity = 0.1;
+                        (c as any).depthWrite = false;
+                        c.needsUpdate = true;
+                        return c;
+                    });
+                } else {
+                    const c = original.clone();
+                    (c as any).transparent = true;
+                    (c as any).opacity = 0.1;
+                    (c as any).depthWrite = false;
+                    c.needsUpdate = true;
+                    child.material = c;
+                }
+            });
+        });
+
+        setIsIsolated(true);
+    }, [disciplineModels, worldRef, componentsRef]);
+
+    const restoreAllModels = useCallback(() => {
+        // Restore original materials
+        for (const [, { mesh, original }] of fadedMaterialsRef.current) {
+            // Dispose cloned materials
+            if (Array.isArray(mesh.material)) {
+                mesh.material.forEach((m: THREE.Material) => m.dispose());
+            } else if (mesh.material) {
+                mesh.material.dispose();
+            }
+            mesh.material = original;
+        }
+        fadedMaterialsRef.current.clear();
+
+        // Restore camera position
+        if (savedCameraRef.current && worldRef.current) {
+            const cam = worldRef.current.camera;
+            if (cam && (cam as any).controls) {
+                const controls = (cam as any).controls;
+                controls.setLookAt(
+                    savedCameraRef.current.position.x,
+                    savedCameraRef.current.position.y,
+                    savedCameraRef.current.position.z,
+                    savedCameraRef.current.target.x,
+                    savedCameraRef.current.target.y,
+                    savedCameraRef.current.target.z,
+                    true // animate
+                );
+            }
+            savedCameraRef.current = null;
+        }
+
+        setIsIsolated(false);
+    }, [worldRef]);
+
     return {
         status,
         statusMessage,
@@ -358,5 +528,8 @@ export function useBimUpload(
         clearStatus,
         cancelUpload,
         validationError,
+        isolateModelByExpressId,
+        restoreAllModels,
+        isIsolated,
     };
 }

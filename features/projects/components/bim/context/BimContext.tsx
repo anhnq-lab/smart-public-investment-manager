@@ -188,6 +188,13 @@ export const BimProvider: React.FC<BimProviderProps> = ({
         };
     }, [contextMenu.visible]);
 
+    // Cleanup IFC model cache on unmount
+    React.useEffect(() => {
+        return () => {
+            selection.cleanupModelCache();
+        };
+    }, []);
+
     return (
         <BimContext.Provider value={value}>
             {children}

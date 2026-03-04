@@ -19,28 +19,26 @@ async function getIfcApi(): Promise<WEBIFC.IfcAPI> {
 }
 
 // ── Danh sách IFC type codes của thiết bị MEP cụ thể ──
+// Chỉ giữ thiết bị LỚN cần quản lý vận hành (bỏ sensor, valve, outlet, cable, light...)
 const MEP_IFC_TYPES: number[] = [
     WEBIFC.IFCCHILLER, WEBIFC.IFCPUMP, WEBIFC.IFCFAN, WEBIFC.IFCAIRTERMINAL, WEBIFC.IFCBOILER,
     WEBIFC.IFCCOMPRESSOR, WEBIFC.IFCCONDENSER, WEBIFC.IFCCOOLINGTOWER, WEBIFC.IFCDAMPER,
     WEBIFC.IFCELECTRICDISTRIBUTIONBOARD, WEBIFC.IFCELECTRICGENERATOR, WEBIFC.IFCELECTRICMOTOR,
-    WEBIFC.IFCENGINE, WEBIFC.IFCFLOWCONTROLLER, WEBIFC.IFCFLOWMETER, WEBIFC.IFCFLOWMOVINGDEVICE,
-    WEBIFC.IFCFLOWSTORAGEDEVICE, WEBIFC.IFCFLOWTERMINAL, WEBIFC.IFCFLOWTREATMENTDEVICE,
-    WEBIFC.IFCHEATEXCHANGER, WEBIFC.IFCSANITARYTERMINAL, WEBIFC.IFCSENSOR, WEBIFC.IFCSOLARDEVICE,
-    WEBIFC.IFCTANK, WEBIFC.IFCTRANSFORMER, WEBIFC.IFCTRANSPORTELEMENT, WEBIFC.IFCUNITARYCONTROLELEMENT,
-    WEBIFC.IFCUNITARYEQUIPMENT, WEBIFC.IFCVALVE, WEBIFC.IFCFIRESUPPRESSIONTERMINAL,
-    WEBIFC.IFCAUDIOVISUALAPPLIANCE, WEBIFC.IFCCOMMUNICATIONSAPPLIANCE, WEBIFC.IFCMEDICALDEVICE
+    WEBIFC.IFCENGINE, WEBIFC.IFCFLOWSTORAGEDEVICE,
+    WEBIFC.IFCHEATEXCHANGER, WEBIFC.IFCSOLARDEVICE,
+    WEBIFC.IFCTANK, WEBIFC.IFCTRANSFORMER, WEBIFC.IFCTRANSPORTELEMENT,
+    WEBIFC.IFCUNITARYEQUIPMENT, WEBIFC.IFCFIRESUPPRESSIONTERMINAL,
+    WEBIFC.IFCMEDICALDEVICE
 ].filter(Boolean);
 
 // ── Danh sách IFC type codes CHUNG (proxy, distribution, v.v.) ──
 // Nhiều file IFC thực tế dùng các loại generic này cho thiết bị
+// Chỉ giữ proxy và energy conversion (bỏ flow fitting, flow segment, control elements nhỏ)
 const GENERIC_IFC_TYPES: number[] = [
     WEBIFC.IFCBUILDINGELEMENTPROXY,     // 979105199 — catch-all
     WEBIFC.IFCDISTRIBUTIONELEMENT,      // Generic distribution element
     WEBIFC.IFCDISTRIBUTIONFLOWELEMENT,   // Generic flow
     WEBIFC.IFCENERGYCONVERSIONDEVICE,   // Energy devices
-    WEBIFC.IFCFLOWFITTING,              // Fittings
-    WEBIFC.IFCFLOWSEGMENT,             // Segments (cable trays, ducts, pipes)
-    WEBIFC.IFCDISTRIBUTIONCONTROLELEMENT, // Control elements
 ].filter(Boolean);
 
 // ── Từ khóa nhận diện thiết bị qua Name / ObjectType ──
@@ -50,9 +48,10 @@ interface KeywordRule {
     category: string;
 }
 
+// Chỉ giữ keywords thiết bị LỚN — bỏ đèn, ổ cắm, cáp, cảm biến, van
 const KEYWORD_RULES: KeywordRule[] = [
     // Máy phát điện
-    { keywords: ['mayphatdien', 'máy phát điện', 'generator', 'genset', 'diesel gen', 'máy phát'], category: 'Cơ điện' },
+    { keywords: ['mayphatdien', 'máy phát điện', 'generator', 'genset', 'diesel gen', 'máy phát'], category: 'Máy phát điện' },
     // Biến áp / Transformer
     { keywords: ['bienap', 'biến áp', 'transformer', 'máy biến áp', 'trạm biến áp'], category: 'Cơ điện' },
     // Tủ điện
@@ -61,26 +60,18 @@ const KEYWORD_RULES: KeywordRule[] = [
     { keywords: ['ups', 'lưu điện', 'uninterruptible'], category: 'Cơ điện' },
     // Thang máy / Elevator
     { keywords: ['thangmay', 'thang máy', 'elevator', 'lift', 'escalator', 'thang cuốn'], category: 'Thang máy' },
-    // Chiller / Điều hòa 
+    // Chiller / Điều hòa
     { keywords: ['chiller', 'điều hòa', 'dieu hoa', 'air conditioning', 'ahu', 'fcu', 'air handling', 'fan coil', 'cooling'], category: 'HVAC' },
-    // Quạt / Fan
-    { keywords: ['quat', 'quạt', 'fan', 'exhaust fan', 'supply fan'], category: 'HVAC' },
+    // Quạt lớn (hệ thống)
+    { keywords: ['quạt hút', 'quạt cấp', 'quạt thông gió', 'exhaust fan', 'supply fan', 'ventilation fan'], category: 'HVAC' },
     // Bơm / Pump
     { keywords: ['bom', 'bơm', 'pump', 'máy bơm'], category: 'Cấp thoát nước' },
     // PCCC
-    { keywords: ['pccc', 'phòng cháy', 'fire', 'sprinkler', 'chữa cháy', 'bình chữa cháy', 'smoke detector', 'báo cháy', 'fire alarm'], category: 'PCCC' },
-    // Đèn chiếu sáng
-    { keywords: ['đèn', 'den', 'light', 'lamp', 'luminaire', 'chiếu sáng', 'lighting'], category: 'Cơ điện' },
-    // Ổ cắm / Socket
-    { keywords: ['ổ cắm', 'ocam', 'socket', 'outlet', 'receptacle'], category: 'Cơ điện' },
-    // Cáp / Cable
-    { keywords: ['cable tray', 'máng cáp', 'cap', 'cáp', 'busway', 'bus duct'], category: 'Cơ điện' },
-    // Cảm biến / Sensor
-    { keywords: ['sensor', 'cảm biến', 'detector', 'đầu dò'], category: 'Cơ điện' },
+    { keywords: ['pccc', 'phòng cháy', 'fire', 'sprinkler', 'chữa cháy', 'fire alarm', 'fire pump'], category: 'PCCC' },
     // Bể nước / Tank
     { keywords: ['bể', 'tank', 'bồn', 'bể nước', 'water tank', 'bể chứa'], category: 'Cấp thoát nước' },
-    // Van / Valve
-    { keywords: ['van', 'valve', 'khóa nước'], category: 'Cấp thoát nước' },
+    // Năng lượng mặt trời
+    { keywords: ['solar', 'năng lượng mặt trời', 'pin mặt trời', 'solar panel'], category: 'Năng lượng' },
 ];
 
 /**

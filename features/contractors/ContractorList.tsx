@@ -1,55 +1,60 @@
 import React, { useState } from 'react';
 import { useContractors } from '../../hooks/useContractors';
+import { ContractorService } from '../../services/ContractorService';
 import { Contractor } from '../../types';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '../../components/ui/Toast';
-import { Pencil, Trash2, Plus, X, Search, Users, Building2, Globe, MapPin } from 'lucide-react';
+import { useQueryClient } from '@tanstack/react-query';
+import { Pencil, Trash2, Plus, X, Search, Users, Building2, Globe, MapPin, Phone, User, Calendar, Loader2, Hash } from 'lucide-react';
 
 const ContractorList: React.FC = () => {
     const navigate = useNavigate();
     const { showToast } = useToast();
-    const { contractors: supabaseContractors } = useContractors();
-    const [contractors, setContractors] = useState<Contractor[]>([]);
+    const queryClient = useQueryClient();
+    const { contractors, isLoading } = useContractors();
     const [searchTerm, setSearchTerm] = useState('');
-
-    // Sync Supabase data to local state
-    React.useEffect(() => {
-        if (supabaseContractors.length > 0) {
-            setContractors(supabaseContractors);
-        }
-    }, [supabaseContractors]);
+    const [saving, setSaving] = useState(false);
 
     // Modal State
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
     const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
-    const [currentContractor, setCurrentContractor] = useState<Partial<Contractor> | null>(null);
+    const [isEditing, setIsEditing] = useState(false);
+    const [currentContractor, setCurrentContractor] = useState<Partial<Contractor>>({});
 
     // Stats
     const totalContractors = contractors.length;
     const foreignContractors = contractors.filter(c => c.IsForeign).length;
     const domesticContractors = totalContractors - foreignContractors;
 
-    // Filter
-    const filteredContractors = contractors.filter(c =>
-        c.FullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        c.ContractorID.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    // Filter — search by name, tax code, address
+    const filteredContractors = contractors.filter(c => {
+        const term = searchTerm.toLowerCase();
+        return c.FullName.toLowerCase().includes(term) ||
+            (c.TaxCode || '').toLowerCase().includes(term) ||
+            (c.Address || '').toLowerCase().includes(term) ||
+            (c.Representative || '').toLowerCase().includes(term);
+    });
 
     const handleAdd = () => {
+        setIsEditing(false);
         setCurrentContractor({
             ContractorID: '',
             FullName: '',
+            TaxCode: '',
             CapCertCode: '',
             IsForeign: false,
             Address: '',
-            ContactInfo: ''
+            ContactInfo: '',
+            Representative: '',
+            EstablishedYear: undefined,
         });
         setIsModalOpen(true);
     };
 
     const handleEdit = (e: React.MouseEvent, contractor: Contractor) => {
         e.stopPropagation();
+        setIsEditing(true);
         setCurrentContractor({ ...contractor });
         setIsModalOpen(true);
     };
@@ -60,41 +65,53 @@ const ContractorList: React.FC = () => {
         setIsDeleteConfirmOpen(true);
     };
 
-    const confirmDelete = () => {
-        if (deleteTarget) {
-            setContractors(prev => prev.filter(c => c.ContractorID !== deleteTarget));
+    const confirmDelete = async () => {
+        if (!deleteTarget) return;
+        try {
+            setSaving(true);
+            await ContractorService.delete(deleteTarget);
+            await queryClient.invalidateQueries({ queryKey: ['contractors'] });
             showToast('Đã xóa nhà thầu thành công', 'success');
+        } catch (err: any) {
+            showToast(`Lỗi xóa: ${err.message}`, 'error');
+        } finally {
+            setSaving(false);
+            setIsDeleteConfirmOpen(false);
+            setDeleteTarget(null);
         }
-        setIsDeleteConfirmOpen(false);
-        setDeleteTarget(null);
     };
 
-    const handleSave = (e: React.FormEvent) => {
+    const handleSave = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!currentContractor?.ContractorID || !currentContractor.FullName) {
-            showToast('Vui lòng nhập đầy đủ Mã số thuế và Tên nhà thầu', 'error');
+        if (!currentContractor?.FullName) {
+            showToast('Vui lòng nhập tên nhà thầu', 'error');
             return;
         }
 
-        const newContractor = currentContractor as Contractor;
-
-        setContractors(prev => {
-            const index = prev.findIndex(c => c.ContractorID === newContractor.ContractorID);
-            if (index >= 0) {
-                const updated = [...prev];
-                updated[index] = newContractor;
-                return updated;
+        try {
+            setSaving(true);
+            if (isEditing && currentContractor.ContractorID) {
+                // Update existing
+                await ContractorService.update(currentContractor.ContractorID, currentContractor);
+                showToast('Đã cập nhật thông tin nhà thầu', 'success');
             } else {
-                return [...prev, newContractor];
+                // Create new — auto-generate ID from tax code or timestamp
+                const id = currentContractor.TaxCode
+                    ? `NT-${currentContractor.TaxCode}`
+                    : `NT-${Date.now()}`;
+                await ContractorService.create({
+                    ...currentContractor,
+                    ContractorID: id,
+                });
+                showToast('Đã thêm nhà thầu mới thành công', 'success');
             }
-        });
-        setIsModalOpen(false);
-        showToast(
-            contractors.some(c => c.ContractorID === newContractor.ContractorID)
-                ? 'Đã cập nhật thông tin nhà thầu'
-                : 'Đã thêm nhà thầu mới thành công',
-            'success'
-        );
+            await queryClient.invalidateQueries({ queryKey: ['contractors'] });
+            setIsModalOpen(false);
+        } catch (err: any) {
+            showToast(`Lỗi lưu: ${err.message}`, 'error');
+        } finally {
+            setSaving(false);
+        }
     };
 
     const stats = [
@@ -134,14 +151,14 @@ const ContractorList: React.FC = () => {
                 ))}
             </div>
 
-            {/* Search Bar */}
+            {/* Search Bar + Table */}
             <div className="bg-white dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-700 shadow-sm overflow-hidden">
                 <div className="p-4 border-b border-gray-100 dark:border-slate-700">
                     <div className="relative max-w-sm">
                         <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-slate-500" />
                         <input
                             type="text"
-                            placeholder="Tìm kiếm theo tên hoặc mã số thuế..."
+                            placeholder="Tìm theo tên, mã số thuế, địa chỉ..."
                             className="w-full pl-9 pr-4 py-2.5 bg-gray-50 dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-xl text-sm text-gray-900 dark:text-slate-100 placeholder:text-gray-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
@@ -154,24 +171,46 @@ const ContractorList: React.FC = () => {
                     <table className="w-full text-left text-sm">
                         <thead>
                             <tr className="border-b border-gray-100 dark:border-slate-700">
-                                <th className="px-6 py-3.5 text-[10px] font-bold uppercase tracking-wider text-gray-500 dark:text-slate-400">Mã số DN</th>
+                                <th className="px-6 py-3.5 text-[10px] font-bold uppercase tracking-wider text-gray-500 dark:text-slate-400">Mã số thuế</th>
                                 <th className="px-6 py-3.5 text-[10px] font-bold uppercase tracking-wider text-gray-500 dark:text-slate-400">Tên nhà thầu</th>
-                                <th className="px-6 py-3.5 text-[10px] font-bold uppercase tracking-wider text-gray-500 dark:text-slate-400">Chứng chỉ năng lực</th>
+                                <th className="px-6 py-3.5 text-[10px] font-bold uppercase tracking-wider text-gray-500 dark:text-slate-400">Người đại diện</th>
                                 <th className="px-6 py-3.5 text-[10px] font-bold uppercase tracking-wider text-gray-500 dark:text-slate-400 text-center">Loại hình</th>
                                 <th className="px-6 py-3.5 text-[10px] font-bold uppercase tracking-wider text-gray-500 dark:text-slate-400">Địa chỉ / Liên hệ</th>
                                 <th className="px-6 py-3.5 text-[10px] font-bold uppercase tracking-wider text-gray-500 dark:text-slate-400 text-right">Thao tác</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-100 dark:divide-slate-700">
-                            {filteredContractors.length > 0 ? (
+                            {isLoading ? (
+                                // Loading skeleton
+                                Array.from({ length: 5 }).map((_, i) => (
+                                    <tr key={i}>
+                                        {Array.from({ length: 6 }).map((_, j) => (
+                                            <td key={j} className="px-6 py-4">
+                                                <div className="h-4 bg-gray-200 dark:bg-slate-700 rounded animate-pulse" style={{ width: `${60 + Math.random() * 40}%` }} />
+                                            </td>
+                                        ))}
+                                    </tr>
+                                ))
+                            ) : filteredContractors.length > 0 ? (
                                 filteredContractors.map((contractor) => (
                                     <tr key={contractor.ContractorID} onClick={() => navigate(`/contractors/${contractor.ContractorID}`)} className="hover:bg-blue-50/30 dark:hover:bg-blue-900/10 transition-colors cursor-pointer group">
-                                        <td className="px-6 py-4 font-mono font-bold text-gray-600 dark:text-slate-300">{contractor.ContractorID}</td>
-                                        <td className="px-6 py-4 font-bold text-gray-800 dark:text-slate-100">{contractor.FullName}</td>
                                         <td className="px-6 py-4">
-                                            <span className="bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-slate-300 px-2 py-1 rounded-lg text-xs font-mono border border-gray-200 dark:border-slate-600">
-                                                {contractor.CapCertCode}
+                                            <span className="font-mono text-xs font-bold text-gray-600 dark:text-slate-300 bg-gray-100 dark:bg-slate-700 px-2 py-1 rounded-lg border border-gray-200 dark:border-slate-600">
+                                                {contractor.TaxCode || contractor.ContractorID}
                                             </span>
+                                        </td>
+                                        <td className="px-6 py-4 font-bold text-gray-800 dark:text-slate-100 max-w-xs">
+                                            <div className="truncate" title={contractor.FullName}>{contractor.FullName}</div>
+                                        </td>
+                                        <td className="px-6 py-4 text-sm text-gray-700 dark:text-slate-300">
+                                            {contractor.Representative ? (
+                                                <div className="flex items-center gap-1.5">
+                                                    <User className="w-3.5 h-3.5 text-gray-400 dark:text-slate-500 shrink-0" />
+                                                    {contractor.Representative}
+                                                </div>
+                                            ) : (
+                                                <span className="text-gray-300 dark:text-slate-600">—</span>
+                                            )}
                                         </td>
                                         <td className="px-6 py-4 text-center">
                                             {contractor.IsForeign ? (
@@ -187,9 +226,14 @@ const ContractorList: React.FC = () => {
                                         <td className="px-6 py-4 text-xs">
                                             <div className="flex items-center gap-1.5 truncate max-w-xs font-medium text-gray-900 dark:text-slate-200" title={contractor.Address}>
                                                 <MapPin className="w-3 h-3 text-gray-400 dark:text-slate-500 shrink-0" />
-                                                {contractor.Address}
+                                                {contractor.Address || '—'}
                                             </div>
-                                            <div className="text-gray-400 dark:text-slate-500 mt-0.5 pl-[18px]">{contractor.ContactInfo}</div>
+                                            {contractor.ContactInfo && (
+                                                <div className="flex items-center gap-1.5 text-gray-400 dark:text-slate-500 mt-0.5">
+                                                    <Phone className="w-3 h-3 shrink-0" />
+                                                    {contractor.ContactInfo}
+                                                </div>
+                                            )}
                                         </td>
                                         <td className="px-6 py-4 text-right">
                                             <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -229,27 +273,100 @@ const ContractorList: React.FC = () => {
             </div>
 
             {/* Add/Edit Modal */}
-            {isModalOpen && currentContractor && (
+            {isModalOpen && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-in fade-in duration-200">
                     <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl w-full max-w-lg border border-gray-100 dark:border-slate-700 animate-in zoom-in-95 duration-200">
                         <div className="p-6 border-b border-gray-100 dark:border-slate-700 flex justify-between items-center">
                             <h3 className="text-lg font-bold text-gray-800 dark:text-slate-100">
-                                {contractors.some(c => c.ContractorID === currentContractor.ContractorID) ? 'Cập nhật thông tin' : 'Thêm nhà thầu mới'}
+                                {isEditing ? 'Cập nhật thông tin' : 'Thêm nhà thầu mới'}
                             </h3>
                             <button onClick={() => setIsModalOpen(false)} className="text-gray-400 hover:text-gray-600 dark:hover:text-slate-300 transition-colors">
                                 <X className="w-5 h-5" />
                             </button>
                         </div>
                         <form onSubmit={handleSave} className="p-6 space-y-4">
+                            {/* Row: Tên nhà thầu */}
+                            <div>
+                                <label className="block text-[10px] font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">Tên nhà thầu <span className="text-red-500">*</span></label>
+                                <input
+                                    type="text"
+                                    required
+                                    className="w-full px-4 py-2.5 bg-gray-50 dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-xl text-sm text-gray-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                                    value={currentContractor.FullName || ''}
+                                    onChange={e => setCurrentContractor(prev => ({ ...prev, FullName: e.target.value }))}
+                                    placeholder="VD: Công Ty CP Tư Vấn XD..."
+                                />
+                            </div>
+
+                            {/* Row: MST + Năm thành lập */}
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
-                                    <label className="block text-[10px] font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">Mã số thuế / DN <span className="text-red-500">*</span></label>
+                                    <label className="block text-[10px] font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">
+                                        <Hash className="w-3 h-3 inline mr-1" />Mã số thuế
+                                    </label>
                                     <input
                                         type="text"
-                                        required
+                                        className="w-full px-4 py-2.5 bg-gray-50 dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-xl text-sm text-gray-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-mono"
+                                        value={currentContractor.TaxCode || ''}
+                                        onChange={e => setCurrentContractor(prev => ({ ...prev, TaxCode: e.target.value }))}
+                                        placeholder="0100106112"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-[10px] font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">
+                                        <Calendar className="w-3 h-3 inline mr-1" />Năm thành lập
+                                    </label>
+                                    <input
+                                        type="number"
+                                        min="1900"
+                                        max="2030"
                                         className="w-full px-4 py-2.5 bg-gray-50 dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-xl text-sm text-gray-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
-                                        value={currentContractor.ContractorID}
-                                        onChange={e => setCurrentContractor(prev => ({ ...prev, ContractorID: e.target.value }))}
+                                        value={currentContractor.EstablishedYear || ''}
+                                        onChange={e => setCurrentContractor(prev => ({ ...prev, EstablishedYear: e.target.value ? parseInt(e.target.value) : undefined }))}
+                                        placeholder="1998"
+                                    />
+                                </div>
+                            </div>
+
+                            {/* Row: Người đại diện */}
+                            <div>
+                                <label className="block text-[10px] font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">
+                                    <User className="w-3 h-3 inline mr-1" />Người đại diện
+                                </label>
+                                <input
+                                    type="text"
+                                    className="w-full px-4 py-2.5 bg-gray-50 dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-xl text-sm text-gray-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                                    value={currentContractor.Representative || ''}
+                                    onChange={e => setCurrentContractor(prev => ({ ...prev, Representative: e.target.value }))}
+                                    placeholder="Nguyễn Văn A"
+                                />
+                            </div>
+
+                            {/* Row: Địa chỉ */}
+                            <div>
+                                <label className="block text-[10px] font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">
+                                    <MapPin className="w-3 h-3 inline mr-1" />Địa chỉ
+                                </label>
+                                <input
+                                    type="text"
+                                    className="w-full px-4 py-2.5 bg-gray-50 dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-xl text-sm text-gray-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                                    value={currentContractor.Address || ''}
+                                    onChange={e => setCurrentContractor(prev => ({ ...prev, Address: e.target.value }))}
+                                />
+                            </div>
+
+                            {/* Row: Liên hệ + Chứng chỉ */}
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-[10px] font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">
+                                        <Phone className="w-3 h-3 inline mr-1" />Điện thoại
+                                    </label>
+                                    <input
+                                        type="text"
+                                        className="w-full px-4 py-2.5 bg-gray-50 dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-xl text-sm text-gray-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                                        value={currentContractor.ContactInfo || ''}
+                                        onChange={e => setCurrentContractor(prev => ({ ...prev, ContactInfo: e.target.value }))}
+                                        placeholder="024 xxxx xxxx"
                                     />
                                 </div>
                                 <div>
@@ -257,68 +374,41 @@ const ContractorList: React.FC = () => {
                                     <input
                                         type="text"
                                         className="w-full px-4 py-2.5 bg-gray-50 dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-xl text-sm text-gray-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
-                                        value={currentContractor.CapCertCode}
+                                        value={currentContractor.CapCertCode || ''}
                                         onChange={e => setCurrentContractor(prev => ({ ...prev, CapCertCode: e.target.value }))}
                                     />
                                 </div>
                             </div>
 
-                            <div>
-                                <label className="block text-[10px] font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">Tên nhà thầu <span className="text-red-500">*</span></label>
-                                <input
-                                    type="text"
-                                    required
-                                    className="w-full px-4 py-2.5 bg-gray-50 dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-xl text-sm text-gray-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
-                                    value={currentContractor.FullName}
-                                    onChange={e => setCurrentContractor(prev => ({ ...prev, FullName: e.target.value }))}
-                                />
-                            </div>
-
-                            <div>
-                                <label className="block text-[10px] font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">Địa chỉ</label>
-                                <input
-                                    type="text"
-                                    className="w-full px-4 py-2.5 bg-gray-50 dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-xl text-sm text-gray-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
-                                    value={currentContractor.Address}
-                                    onChange={e => setCurrentContractor(prev => ({ ...prev, Address: e.target.value }))}
-                                />
-                            </div>
-
-                            <div>
-                                <label className="block text-[10px] font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">Thông tin liên hệ</label>
-                                <input
-                                    type="text"
-                                    className="w-full px-4 py-2.5 bg-gray-50 dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-xl text-sm text-gray-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
-                                    value={currentContractor.ContactInfo}
-                                    onChange={e => setCurrentContractor(prev => ({ ...prev, ContactInfo: e.target.value }))}
-                                    placeholder="Email, SĐT, Website..."
-                                />
-                            </div>
-
+                            {/* Checkbox */}
                             <div className="flex items-center gap-2 pt-2">
                                 <input
                                     type="checkbox"
                                     id="isForeign"
-                                    checked={currentContractor.IsForeign}
+                                    checked={currentContractor.IsForeign || false}
                                     onChange={e => setCurrentContractor(prev => ({ ...prev, IsForeign: e.target.checked }))}
                                     className="w-4 h-4 text-blue-600 rounded border-gray-300 dark:border-slate-600 focus:ring-blue-500"
                                 />
                                 <label htmlFor="isForeign" className="text-sm text-gray-700 dark:text-slate-300 font-medium">Là nhà thầu nước ngoài?</label>
                             </div>
 
+                            {/* Actions */}
                             <div className="pt-4 flex justify-end gap-3 border-t border-gray-100 dark:border-slate-700 mt-4">
                                 <button
                                     type="button"
                                     onClick={() => setIsModalOpen(false)}
                                     className="px-4 py-2.5 bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-slate-300 text-sm font-bold rounded-xl hover:bg-gray-200 dark:hover:bg-slate-600 transition-colors"
+                                    disabled={saving}
                                 >
                                     Hủy bỏ
                                 </button>
                                 <button
                                     type="submit"
-                                    className="px-4 py-2.5 bg-blue-600 text-white text-sm font-bold rounded-xl hover:bg-blue-700 transition-colors shadow-lg shadow-blue-200 dark:shadow-blue-900/30"
+                                    disabled={saving}
+                                    className="px-4 py-2.5 bg-blue-600 text-white text-sm font-bold rounded-xl hover:bg-blue-700 transition-colors shadow-lg shadow-blue-200 dark:shadow-blue-900/30 flex items-center gap-2 disabled:opacity-50"
                                 >
-                                    Lưu thông tin
+                                    {saving && <Loader2 className="w-4 h-4 animate-spin" />}
+                                    {saving ? 'Đang lưu...' : 'Lưu thông tin'}
                                 </button>
                             </div>
                         </form>
@@ -341,13 +431,16 @@ const ContractorList: React.FC = () => {
                             <button
                                 onClick={() => { setIsDeleteConfirmOpen(false); setDeleteTarget(null); }}
                                 className="flex-1 px-4 py-2.5 bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-slate-300 text-sm font-bold rounded-xl hover:bg-gray-200 dark:hover:bg-slate-600 transition-colors"
+                                disabled={saving}
                             >
                                 Hủy bỏ
                             </button>
                             <button
                                 onClick={confirmDelete}
-                                className="flex-1 px-4 py-2.5 bg-red-600 text-white text-sm font-bold rounded-xl hover:bg-red-700 transition-colors"
+                                disabled={saving}
+                                className="flex-1 px-4 py-2.5 bg-red-600 text-white text-sm font-bold rounded-xl hover:bg-red-700 transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
                             >
+                                {saving && <Loader2 className="w-4 h-4 animate-spin" />}
                                 Xóa
                             </button>
                         </div>

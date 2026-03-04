@@ -22,7 +22,7 @@ export const ProjectTeamSection: React.FC<ProjectTeamSectionProps> = ({
     return (
         <div className="space-y-3">
             <div className="flex items-center justify-between">
-                <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wide flex items-center gap-2">
+                <h3 className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wide flex items-center gap-2">
                     <Users className="w-4 h-4" />
                     Thành viên dự án ({members.length})
                 </h3>
@@ -32,22 +32,22 @@ export const ProjectTeamSection: React.FC<ProjectTeamSectionProps> = ({
                 {members.map((member, idx) => (
                     <div
                         key={member.EmployeeID}
-                        className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border border-gray-100 hover:bg-gray-100 transition-colors cursor-pointer group"
+                        className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-slate-800/60 rounded-lg border border-gray-100 dark:border-slate-700/50 hover:bg-gray-100 dark:hover:bg-slate-700/60 transition-colors cursor-pointer group"
                         onClick={() => onViewMember?.(member.EmployeeID)}
                     >
                         {/* Avatar */}
                         <img
                             src={member.AvatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(member.FullName)}&background=random`}
                             alt={member.FullName}
-                            className="w-10 h-10 rounded-full object-cover border-2 border-white shadow-sm"
+                            className="w-10 h-10 rounded-full object-cover border-2 border-white dark:border-slate-600 shadow-sm"
                         />
 
                         {/* Info */}
                         <div className="flex-1 min-w-0">
-                            <p className="text-sm font-semibold text-gray-900 truncate">
+                            <p className="text-sm font-semibold text-gray-900 dark:text-gray-100 truncate">
                                 {member.FullName}
                             </p>
-                            <p className="text-xs text-gray-500 truncate">
+                            <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
                                 {member.Position} • {member.Department}
                             </p>
                         </div>
@@ -58,7 +58,7 @@ export const ProjectTeamSection: React.FC<ProjectTeamSectionProps> = ({
                                 <a
                                     href={`mailto:${member.Email}`}
                                     onClick={(e) => e.stopPropagation()}
-                                    className="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-md transition-colors"
+                                    className="p-1.5 text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-500/10 rounded-md transition-colors"
                                     title={member.Email}
                                 >
                                     <Mail className="w-4 h-4" />
@@ -68,13 +68,13 @@ export const ProjectTeamSection: React.FC<ProjectTeamSectionProps> = ({
                                 <a
                                     href={`tel:${member.Phone}`}
                                     onClick={(e) => e.stopPropagation()}
-                                    className="p-1.5 text-gray-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-md transition-colors"
+                                    className="p-1.5 text-gray-400 hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-500/10 rounded-md transition-colors"
                                     title={member.Phone}
                                 >
                                     <Phone className="w-4 h-4" />
                                 </a>
                             )}
-                            <ExternalLink className="w-4 h-4 text-gray-300 group-hover:text-gray-400" />
+                            <ExternalLink className="w-4 h-4 text-gray-300 dark:text-slate-600 group-hover:text-gray-400 dark:group-hover:text-slate-400" />
                         </div>
                     </div>
                 ))}

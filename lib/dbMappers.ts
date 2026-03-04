@@ -180,8 +180,12 @@ export const projectToDb = (p: Partial<Project>) => {
     if (p.MainContractorName !== undefined) result.main_contractor_name = p.MainContractorName;
     if (p.ConstructionType !== undefined) result.construction_type = p.ConstructionType;
     if (p.ConstructionGrade !== undefined) result.construction_grade = p.ConstructionGrade;
-    if (p.ProjectNumber !== undefined) result.project_number = p.ProjectNumber;
+    if (p.LocationCode !== undefined) result.location_code = p.LocationCode;
+    if (p.CompetentAuthority !== undefined) result.competent_authority = p.CompetentAuthority;
+    if (p.ManagementForm !== undefined) result.management_form = p.ManagementForm;
+    if (p.Version !== undefined) result.version = p.Version;
     if (p.Objective !== undefined) result.objective = p.Objective;
+    if (p.ProjectNumber !== undefined) result.project_number = p.ProjectNumber;
     if (p.Duration !== undefined) result.duration = p.Duration;
     if (p.Stage !== undefined) result.stage = p.Stage;
     if (p.Sector !== undefined) result.sector = p.Sector;
@@ -210,8 +214,22 @@ export const projectToDb = (p: Partial<Project>) => {
     if (p.DesignApprovalNumber !== undefined) result.design_approval_number = p.DesignApprovalNumber;
     if (p.DesignApprovalDate !== undefined) result.design_approval_date = p.DesignApprovalDate;
     if (p.DesignApprovalAuthority !== undefined) result.design_approval_authority = p.DesignApprovalAuthority;
+    if (p.FeasibilityContractor !== undefined) result.feasibility_contractor = p.FeasibilityContractor;
+    if (p.SurveyContractor !== undefined) result.survey_contractor = p.SurveyContractor;
+    if (p.ReviewContractor !== undefined) result.review_contractor = p.ReviewContractor;
+    if (p.ApplicableStandards !== undefined) result.applicable_standards = p.ApplicableStandards;
     if (p.DesignContractor !== undefined) result.design_contractor = p.DesignContractor;
     if (p.SupervisionContractor !== undefined) result.supervision_contractor = p.SupervisionContractor;
+    if (p.ApprovalDate !== undefined) result.approval_date = p.ApprovalDate;
+    if (p.IsODA !== undefined) result.is_oda = p.IsODA;
+    if (p.BIMStatus !== undefined) result.bim_status = p.BIMStatus;
+    if (p.CDEProjectCode !== undefined) result.cde_project_code = p.CDEProjectCode;
+    if (p.IsSynced !== undefined) result.is_synced = p.IsSynced;
+    if (p.LastSyncDate !== undefined) result.last_sync_date = p.LastSyncDate;
+    if (p.NationalProjectCode !== undefined) result.national_project_code = p.NationalProjectCode;
+    if (p.SyncError !== undefined) result.sync_error = p.SyncError;
+    if (p.ActualEndDate !== undefined) result.actual_end_date = p.ActualEndDate;
+    if (p.Coordinates !== undefined) result.coordinates = p.Coordinates;
     if (p.ConstructionPermitNumber !== undefined) result.construction_permit_number = p.ConstructionPermitNumber;
     if (p.ConstructionPermitDate !== undefined) result.construction_permit_date = p.ConstructionPermitDate;
     if (p.ConstructionPermitAgency !== undefined) result.construction_permit_agency = p.ConstructionPermitAgency;
@@ -331,6 +349,10 @@ export const dbToTask = (row: any): Task => ({
     ActualEndDate: row.actual_end_date || '',
     Progress: row.progress || 0,
     ProgressPercent: row.progress || 0,
+    SubTasks: row.sub_tasks || [],
+    Attachments: row.attachments || [],
+    Dependencies: row.dependencies || [],
+    IsCritical: row.is_critical || false,
 });
 
 export const taskToDb = (t: Partial<Task>) => ({
@@ -356,6 +378,10 @@ export const taskToDb = (t: Partial<Task>) => ({
     ...(t.ActualEndDate !== undefined && { actual_end_date: t.ActualEndDate }),
     ...(t.Progress !== undefined && { progress: t.Progress }),
     ...(t.ProgressPercent !== undefined && { progress: t.ProgressPercent }),
+    ...(t.SubTasks !== undefined && { sub_tasks: t.SubTasks }),
+    ...(t.Attachments !== undefined && { attachments: t.Attachments }),
+    ...(t.Dependencies !== undefined && { dependencies: t.Dependencies }),
+    ...(t.IsCritical !== undefined && { is_critical: t.IsCritical }),
 });
 
 // ============================================================

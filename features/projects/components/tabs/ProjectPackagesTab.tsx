@@ -6,14 +6,16 @@ import { BiddingPackage, PackageStatus, Project } from '../../../../types';
 import { formatCurrency, formatDate } from '../../../../utils/format';
 import { BiddingPackageModal } from '../BiddingPackageModal';
 import { BiddingPackageDetail } from '../BiddingPackageDetail';
+import { BiddingImportModal } from '../BiddingImportModal';
 import { KHLCNTExportModal } from '../KHLCNTExportModal';
 import { getMSCSummary, countPendingRequirements, getMSCPlanLink, getMSCPackageLink } from '../../../../utils/mscCompliance';
+import { exportBiddingPackagesToExcel } from '../../../../utils/biddingExcelIO';
 import { supabase } from '../../../../lib/supabase';
 import { biddingPackageToDb } from '../../../../lib/dbMappers';
 import {
     Briefcase, CheckCircle2, FileText, Search, Plus,
     MoreVertical, Eye, Edit, Trash2, ExternalLink,
-    Copy, X, AlertTriangle, Loader2, Clock, Circle, Download,
+    Copy, X, AlertTriangle, Loader2, Clock, Circle, Download, Upload,
     GripVertical, ChevronDown, ChevronRight, Globe, Bell, Link2
 } from 'lucide-react';
 
@@ -56,6 +58,7 @@ export const ProjectPackagesTab: React.FC<ProjectPackagesTabProps> = ({ projectI
     // Dropdown state
     const [openDropdownId, setOpenDropdownId] = useState<string | null>(null);
     const [isExportModalOpen, setIsExportModalOpen] = useState(false);
+    const [isImportModalOpen, setIsImportModalOpen] = useState(false);
 
     // Checkbox selection for KHLCNT export
     const [selectedPackageIds, setSelectedPackageIds] = useState<Set<string>>(new Set());
@@ -409,6 +412,21 @@ export const ProjectPackagesTab: React.FC<ProjectPackagesTabProps> = ({ projectI
                     >
                         <Download size={16} />
                         <span>Xuất VB KHLCNT {selectedPackageIds.size > 0 && `(${selectedPackageIds.size})`}</span>
+                    </button>
+                    <button
+                        onClick={() => packages && packages.length > 0 && exportBiddingPackagesToExcel(packages, project?.ProjectName || 'DuAn')}
+                        disabled={!packages || packages.length === 0}
+                        className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-slate-700 border border-emerald-300 dark:border-emerald-600 text-emerald-700 dark:text-emerald-400 rounded-lg hover:bg-emerald-50 dark:hover:bg-slate-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm font-medium"
+                    >
+                        <Download size={16} />
+                        <span>Export Excel</span>
+                    </button>
+                    <button
+                        onClick={() => setIsImportModalOpen(true)}
+                        className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-slate-700 border border-amber-300 dark:border-amber-600 text-amber-700 dark:text-amber-400 rounded-lg hover:bg-amber-50 dark:hover:bg-slate-600 transition-colors text-sm font-medium"
+                    >
+                        <Upload size={16} />
+                        <span>Import Excel</span>
                     </button>
                     <button
                         onClick={() => setIsCreateModalOpen(true)}
@@ -830,6 +848,13 @@ export const ProjectPackagesTab: React.FC<ProjectPackagesTabProps> = ({ projectI
                 onClose={() => setIsExportModalOpen(false)}
                 packages={(packages || []).filter(p => selectedPackageIds.has(p.PackageID))}
                 project={project}
+            />
+
+            {/* Import Modal */}
+            <BiddingImportModal
+                isOpen={isImportModalOpen}
+                onClose={() => setIsImportModalOpen(false)}
+                projectId={projectID}
             />
         </div>
     );

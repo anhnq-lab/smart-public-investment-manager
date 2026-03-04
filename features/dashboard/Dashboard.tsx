@@ -1,15 +1,33 @@
-import React from 'react';
+import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell, Legend } from 'recharts';
-import { Wallet, Activity, TrendingUp, AlertCircle, CheckCircle2, FileBox, Users, HardHat, Clock, ArrowRight, AlertTriangle, Calendar, Building2, Briefcase, Map as MapIcon } from 'lucide-react';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
+import { Wallet, Activity, TrendingUp, AlertCircle, CheckCircle2, FileBox, Users, HardHat, Clock, ArrowRight, AlertTriangle, Calendar, Building2, Briefcase, Map as MapIcon, Inbox, Filter, ChevronDown } from 'lucide-react';
 import { formatShortCurrency as formatCurrency } from '../../utils/format';
 import InteractiveMap from '../../components/common/InteractiveMap';
 import { DashboardService } from '../../services/DashboardService';
 import { ProjectService } from '../../services/ProjectService';
+import { useTheme } from '../../context/ThemeContext';
+import { ProjectStatus } from '../../types';
 
-// --- COMPONENTS ---
+// --- CUSTOM TOOLTIP FOR DARK MODE ---
+const ChartTooltip = ({ active, payload, label }: any) => {
+    if (!active || !payload) return null;
+    return (
+        <div className="bg-white dark:bg-slate-800 px-4 py-3 rounded-xl shadow-xl border border-gray-100 dark:border-slate-600">
+            <p className="text-xs font-bold text-gray-500 dark:text-slate-400 mb-1">{label}</p>
+            {payload.map((entry: any, idx: number) => (
+                <p key={idx} className="text-sm font-bold text-gray-800 dark:text-slate-100">
+                    <span className="inline-block w-2 h-2 rounded-full mr-2" style={{ backgroundColor: entry.fill || entry.color }} />
+                    {entry.name === 'disbursement' ? 'Thực hiện' : entry.name === 'plan' ? 'Kế hoạch' : entry.name}
+                    : {formatCurrency(entry.value * 1_000_000_000)}
+                </p>
+            ))}
+        </div>
+    );
+};
 
+// --- STAT CARD (Inline - premium style matching Dashboard design) ---
 const StatCard: React.FC<{
     title: string;
     value: string;
@@ -20,8 +38,15 @@ const StatCard: React.FC<{
     textIcon: string;
     description?: string;
     loading?: boolean;
-}> = ({ title, value, icon: Icon, trend, trendUp, bgIcon, textIcon, description, loading }) => (
-    <div className="bg-white dark:bg-slate-800 p-5 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 flex flex-col justify-between h-36 relative overflow-hidden group hover:shadow-md transition-all duration-300">
+    onClick?: () => void;
+}> = ({ title, value, icon: Icon, trend, trendUp, bgIcon, textIcon, description, loading, onClick }) => (
+    <div
+        className={`bg-white dark:bg-slate-800 p-5 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 flex flex-col justify-between h-36 relative overflow-hidden group hover:shadow-md transition-all duration-300 ${onClick ? 'cursor-pointer' : ''}`}
+        onClick={onClick}
+        role={onClick ? 'button' : undefined}
+        tabIndex={onClick ? 0 : undefined}
+        onKeyDown={onClick ? (e) => { if (e.key === 'Enter' || e.key === ' ') onClick(); } : undefined}
+    >
         <div className={`absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity transform group-hover:scale-110 ${textIcon}`}>
             <Icon className="w-24 h-24" />
         </div>
@@ -47,8 +72,24 @@ const StatCard: React.FC<{
     </div>
 );
 
+// --- EMPTY STATE ---
+const EmptyState: React.FC<{ icon: React.ElementType; message: string }> = ({ icon: Icon, message }) => (
+    <div className="flex flex-col items-center justify-center py-8 text-center">
+        <div className="p-3 bg-gray-50 dark:bg-slate-700/50 rounded-full mb-3">
+            <Icon className="w-6 h-6 text-gray-300 dark:text-slate-500" />
+        </div>
+        <p className="text-xs font-medium text-gray-400 dark:text-slate-500">{message}</p>
+    </div>
+);
+
 const Dashboard: React.FC = () => {
     const navigate = useNavigate();
+    const { theme } = useTheme();
+
+    // --- FILTER STATE ---
+    const [selectedProjectId, setSelectedProjectId] = useState<string>('all');
+    const [selectedYear, setSelectedYear] = useState<number>(new Date().getFullYear());
+
     // --- DATA FETCHING ---
     const { data: metrics, isLoading: loadingMetrics } = useQuery({
         queryKey: ['dashboard', 'metrics'],
@@ -95,35 +136,157 @@ const Dashboard: React.FC = () => {
         queryFn: () => ProjectService.getAll()
     });
 
+    const { data: contractStatus, isLoading: loadingContracts } = useQuery({
+        queryKey: ['dashboard', 'contractStatus'],
+        queryFn: DashboardService.getContractStatusCounts
+    });
+
+    // Unique avatar colors for contractors
+    const avatarColors = ['bg-blue-500', 'bg-emerald-500', 'bg-purple-500', 'bg-amber-500', 'bg-rose-500'];
+
+    // --- AVAILABLE YEARS (from 2020 to current+1) ---
+    const availableYears = useMemo(() => {
+        const current = new Date().getFullYear();
+        const years: number[] = [];
+        for (let y = current + 1; y >= 2020; y--) years.push(y);
+        return years;
+    }, []);
+
+    // --- FILTERED PROJECTS ---
+    const filteredProjects = useMemo(() => {
+        if (!projects) return [];
+        let filtered = [...projects];
+
+        // Filter by project
+        if (selectedProjectId !== 'all') {
+            filtered = filtered.filter(p => p.ProjectID === selectedProjectId);
+        }
+
+        // Filter by year: include projects active in the selected year
+        filtered = filtered.filter(p => {
+            const startYear = p.StartDate ? new Date(p.StartDate).getFullYear() : null;
+            const endYear = p.ExpectedEndDate ? new Date(p.ExpectedEndDate).getFullYear() : null;
+            const approvalYear = p.ApprovalDate ? new Date(p.ApprovalDate).getFullYear() : null;
+            // Show if project spans across the selected year
+            if (startYear && endYear) return startYear <= selectedYear && endYear >= selectedYear;
+            if (startYear) return startYear <= selectedYear;
+            if (approvalYear) return approvalYear <= selectedYear;
+            return true; // no date info, always show
+        });
+
+        return filtered;
+    }, [projects, selectedProjectId, selectedYear]);
+
+    // --- FILTERED STATS ---
+    const filteredStatusData = useMemo(() => {
+        const statusMap = [
+            { name: 'Chuẩn bị dự án', value: 0, color: '#F59E0B' },
+            { name: 'Thực hiện dự án', value: 0, color: '#3B82F6' },
+            { name: 'Kết thúc xây dựng', value: 0, color: '#10B981' },
+        ];
+        filteredProjects.forEach(p => {
+            if (p.Status === ProjectStatus.Preparation) statusMap[0].value++;
+            else if (p.Status === ProjectStatus.Execution) statusMap[1].value++;
+            else if (p.Status === ProjectStatus.Completion) statusMap[2].value++;
+        });
+        return statusMap.filter(s => s.value > 0);
+    }, [filteredProjects]);
+
+    const filteredGroupData = useMemo(() => {
+        const groupMap: Record<string, { name: string; value: number; color: string }> = {
+            'QN': { name: 'Quốc gia', value: 0, color: '#EF4444' },
+            'A': { name: 'Nhóm A', value: 0, color: '#F59E0B' },
+            'B': { name: 'Nhóm B', value: 0, color: '#3B82F6' },
+            'C': { name: 'Nhóm C', value: 0, color: '#10B981' },
+        };
+        filteredProjects.forEach(p => {
+            if (groupMap[p.GroupCode]) groupMap[p.GroupCode].value++;
+        });
+        return Object.values(groupMap).filter(g => g.value > 0);
+    }, [filteredProjects]);
+
+    const filteredTotalInvestment = useMemo(() => {
+        return filteredProjects.reduce((sum, p) => sum + (p.TotalInvestment || 0), 0);
+    }, [filteredProjects]);
+
     return (
         <div className="space-y-8 pb-20 font-sans">
             {/* HEADER SECTION */}
-            <div className="flex justify-between items-end">
+            <div className="flex flex-col lg:flex-row justify-between items-start lg:items-end gap-4">
                 <div>
                     <h2 className="text-2xl font-black text-gray-800 dark:text-slate-100 tracking-tight uppercase">Trung tâm điều hành — Ban QLDA ĐTXD CN</h2>
                     <p className="text-sm font-medium text-gray-500 dark:text-slate-400 mt-1 flex items-center gap-2">
                         <Clock className="w-4 h-4" /> Cập nhật dữ liệu: {new Date().toLocaleDateString('vi-VN')}
                     </p>
                 </div>
-                <div className="flex gap-2">
-                    <button className="px-4 py-2 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-600 text-gray-600 dark:text-slate-300 text-sm font-bold rounded-xl hover:bg-gray-50 dark:hover:bg-slate-700 shadow-sm transition-all flex items-center gap-2">
-                        <Calendar className="w-4 h-4" /> Tháng {new Date().getMonth() + 1}/{new Date().getFullYear()}
-                    </button>
+                <div className="flex flex-wrap gap-2 items-center">
+                    {/* FILTER: Project */}
+                    <div className="relative">
+                        <Filter className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-slate-500 pointer-events-none" />
+                        <select
+                            value={selectedProjectId}
+                            onChange={e => setSelectedProjectId(e.target.value)}
+                            className="pl-9 pr-8 py-2 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-600 text-gray-700 dark:text-slate-200 text-sm font-bold rounded-xl hover:border-blue-400 dark:hover:border-blue-500 shadow-sm transition-all appearance-none cursor-pointer min-w-[180px] max-w-[280px] truncate focus:outline-none focus:ring-2 focus:ring-blue-500/30"
+                        >
+                            <option value="all">Tất cả dự án</option>
+                            {projects?.map(p => (
+                                <option key={p.ProjectID} value={p.ProjectID}>
+                                    {p.ProjectName}
+                                </option>
+                            ))}
+                        </select>
+                        <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-slate-500 pointer-events-none" />
+                    </div>
+
+                    {/* FILTER: Year */}
+                    <div className="relative">
+                        <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-slate-500 pointer-events-none" />
+                        <select
+                            value={selectedYear}
+                            onChange={e => setSelectedYear(parseInt(e.target.value))}
+                            className="pl-9 pr-8 py-2 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-600 text-gray-700 dark:text-slate-200 text-sm font-bold rounded-xl hover:border-blue-400 dark:hover:border-blue-500 shadow-sm transition-all appearance-none cursor-pointer min-w-[120px] focus:outline-none focus:ring-2 focus:ring-blue-500/30"
+                        >
+                            {availableYears.map(y => (
+                                <option key={y} value={y}>Năm {y}</option>
+                            ))}
+                        </select>
+                        <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-slate-500 pointer-events-none" />
+                    </div>
+
+                    {/* Export button */}
                     <button onClick={() => navigate('/reports')} className="px-4 py-2 bg-blue-600 text-white text-sm font-bold rounded-xl hover:bg-blue-700 shadow-lg shadow-blue-200 dark:shadow-blue-900/30 transition-all flex items-center gap-2">
                         <FileBox className="w-4 h-4" /> Xuất báo cáo
                     </button>
                 </div>
             </div>
 
-            {/* 1. KEY METRICS ROW */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {/* Active filter indicator */}
+            {(selectedProjectId !== 'all' || selectedYear !== new Date().getFullYear()) && (
+                <div className="flex items-center gap-2 -mt-4">
+                    <span className="text-xs font-bold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 px-3 py-1 rounded-full border border-blue-200 dark:border-blue-800 flex items-center gap-1.5">
+                        <Filter className="w-3 h-3" />
+                        Đang lọc: {filteredProjects.length} dự án
+                        {selectedProjectId !== 'all' && ' (1 dự án)'}
+                        {selectedYear !== new Date().getFullYear() && ` • Năm ${selectedYear}`}
+                    </span>
+                    <button
+                        onClick={() => { setSelectedProjectId('all'); setSelectedYear(new Date().getFullYear()); }}
+                        className="text-xs font-bold text-gray-500 dark:text-slate-400 hover:text-red-500 dark:hover:text-red-400 transition-colors"
+                    >
+                        ✕ Xóa bộ lọc
+                    </button>
+                </div>
+            )}
+
+            {/* 1. KEY METRICS ROW — 5 Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-5">
                 <StatCard
                     title="Tổng vốn đầu tư"
-                    value={metrics ? formatCurrency(metrics.totalInvestment) : '0'}
+                    value={formatCurrency(filteredTotalInvestment)}
                     icon={Wallet}
                     bgIcon="bg-blue-50 dark:bg-blue-900/30"
                     textIcon="text-blue-600 dark:text-blue-400"
-                    description={`${projects?.length || 0} dự án đang quản lý`}
+                    description={`${filteredProjects.length} dự án đang quản lý`}
                     loading={loadingMetrics}
                 />
                 <StatCard
@@ -145,6 +308,16 @@ const Dashboard: React.FC = () => {
                     textIcon="text-purple-600 dark:text-purple-400"
                     description="Đã được phê duyệt"
                     loading={loadingMetrics}
+                />
+                <StatCard
+                    title="Hợp đồng"
+                    value={contractStatus ? contractStatus.total.toString() : '0'}
+                    icon={Briefcase}
+                    bgIcon="bg-amber-50 dark:bg-amber-900/30"
+                    textIcon="text-amber-600 dark:text-amber-400"
+                    description={contractStatus ? `${contractStatus.executing} đang thực hiện` : ''}
+                    loading={loadingContracts}
+                    onClick={() => navigate('/contracts')}
                 />
                 <StatCard
                     title="Cảnh báo rủi ro"
@@ -176,16 +349,16 @@ const Dashboard: React.FC = () => {
                                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
                             </div>
                         ) : (
-                            <InteractiveMap projects={projects || []} />
+                            <InteractiveMap projects={filteredProjects} />
                         )}
 
                         {/* Legend Overlay */}
                         <div className="absolute top-4 right-4 bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm p-3 rounded-xl border border-gray-200 dark:border-slate-600 shadow-lg z-[1000]">
                             <h4 className="text-[10px] font-black text-gray-500 dark:text-slate-400 uppercase tracking-wider mb-2">Chú thích</h4>
                             <div className="space-y-2">
-                                {projectStatusData?.map((item, idx) => (
+                                {filteredStatusData.map((item, idx) => (
                                     <div key={idx} className="flex items-center gap-2">
-                                        <span className="w-2.5 h-2.5 rounded-full ring-2 ring-white shadow-sm" style={{ backgroundColor: item.color }}></span>
+                                        <span className="w-2.5 h-2.5 rounded-full ring-2 ring-white dark:ring-slate-700 shadow-sm" style={{ backgroundColor: item.color }}></span>
                                         <span className="text-[10px] font-bold text-gray-600 dark:text-slate-300">{item.name}</span>
                                     </div>
                                 ))}
@@ -197,28 +370,30 @@ const Dashboard: React.FC = () => {
                 {/* ALERTS SECTION */}
                 <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-red-100 dark:border-red-900/50 relative overflow-hidden h-full flex flex-col">
                     <div className="absolute top-0 right-0 p-3 opacity-5 pointer-events-none"><AlertTriangle className="w-32 h-32 text-red-500" /></div>
-                    <h3 className="text-sm font-black text-red-600 uppercase tracking-widest mb-4 flex items-center gap-2 relative z-10 shrink-0">
+                    <h3 className="text-sm font-black text-red-600 dark:text-red-400 uppercase tracking-widest mb-4 flex items-center gap-2 relative z-10 shrink-0">
                         <AlertTriangle className="w-4 h-4" /> Cảnh báo quan trọng
                     </h3>
                     <div className="space-y-3 relative z-10 flex-1 overflow-y-auto pr-2 custom-scrollbar">
                         {loadingRisks ? (
                             <div className="space-y-2">
-                                <div className="h-16 bg-red-50/50 rounded-xl animate-pulse"></div>
-                                <div className="h-16 bg-red-50/50 rounded-xl animate-pulse"></div>
-                                <div className="h-16 bg-red-50/50 rounded-xl animate-pulse"></div>
+                                <div className="h-16 bg-red-50/50 dark:bg-red-900/10 rounded-xl animate-pulse"></div>
+                                <div className="h-16 bg-red-50/50 dark:bg-red-900/10 rounded-xl animate-pulse"></div>
+                                <div className="h-16 bg-red-50/50 dark:bg-red-900/10 rounded-xl animate-pulse"></div>
                             </div>
-                        ) : (
-                            risks?.map(r => (
+                        ) : risks && risks.length > 0 ? (
+                            risks.map(r => (
                                 <div key={r.id} className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-800/50 rounded-xl flex items-start gap-3 transition-transform hover:scale-[1.02] cursor-pointer">
                                     <div className="p-1.5 bg-white dark:bg-slate-700 rounded-lg text-red-500 shadow-sm shrink-0">
                                         <AlertCircle className="w-4 h-4" />
                                     </div>
                                     <div>
-                                        <p className="text-[11px] font-bold text-red-800 leading-snug">{r.msg}</p>
-                                        <p className="text-[10px] text-red-500 mt-1 font-medium">{r.date}</p>
+                                        <p className="text-[11px] font-bold text-red-800 dark:text-red-300 leading-snug">{r.msg}</p>
+                                        <p className="text-[10px] text-red-500 dark:text-red-400/70 mt-1 font-medium">{r.date}</p>
                                     </div>
                                 </div>
                             ))
+                        ) : (
+                            <EmptyState icon={CheckCircle2} message="Không có cảnh báo nào" />
                         )}
                     </div>
                     <button className="w-full mt-4 py-2 bg-white dark:bg-slate-700 border border-red-200 dark:border-red-800/50 text-red-600 dark:text-red-400 rounded-xl text-xs font-bold hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors shrink-0">
@@ -245,19 +420,19 @@ const Dashboard: React.FC = () => {
                                     <div className="relative w-32 h-32 shrink-0">
                                         <ResponsiveContainer width="100%" height="100%">
                                             <PieChart>
-                                                <Pie data={projectStatusData} cx="50%" cy="50%" innerRadius={40} outerRadius={55} paddingAngle={5} dataKey="value">
-                                                    {projectStatusData?.map((entry, index) => <Cell key={`cell-${index}`} fill={entry.color} stroke="none" />)}
+                                                <Pie data={filteredStatusData} cx="50%" cy="50%" innerRadius={40} outerRadius={55} paddingAngle={5} dataKey="value">
+                                                    {filteredStatusData.map((entry, index) => <Cell key={`cell-${index}`} fill={entry.color} stroke="none" />)}
                                                 </Pie>
                                                 <RechartsTooltip />
                                             </PieChart>
                                         </ResponsiveContainer>
                                         <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                                            <span className="text-xl font-black text-gray-800 dark:text-slate-100">{projects?.length || 0}</span>
+                                            <span className="text-xl font-black text-gray-800 dark:text-slate-100">{filteredProjects.length}</span>
                                             <span className="text-[9px] text-gray-400 dark:text-slate-500 font-bold uppercase">Dự án</span>
                                         </div>
                                     </div>
                                     <div className="flex-1 grid grid-cols-1 gap-2 overflow-y-auto pr-1 custom-scrollbar max-h-32">
-                                        {projectStatusData?.map((item, idx) => (
+                                        {filteredStatusData.map((item, idx) => (
                                             <div key={idx} className="flex items-center justify-between group">
                                                 <div className="flex items-center gap-2 overflow-hidden">
                                                     <div className="w-2 h-2 rounded-full shrink-0 group-hover:scale-125 transition-transform" style={{ backgroundColor: item.color }}></div>
@@ -277,14 +452,14 @@ const Dashboard: React.FC = () => {
                                 <Building2 className="w-4 h-4 text-purple-500" /> Phân loại nhóm dự án
                             </h3>
                             {loadingGroups ? (
-                                <div className="h-full w-full bg-gray-50 rounded-xl animate-pulse"></div>
+                                <div className="h-full w-full bg-gray-50 dark:bg-slate-700 rounded-xl animate-pulse"></div>
                             ) : (
                                 <div className="flex-1 flex items-center gap-4">
                                     <div className="relative w-32 h-32 shrink-0">
                                         <ResponsiveContainer width="100%" height="100%">
                                             <PieChart>
-                                                <Pie data={groupData} cx="50%" cy="50%" innerRadius={40} outerRadius={55} paddingAngle={5} dataKey="value">
-                                                    {groupData?.map((entry, index) => <Cell key={`cell-${index}`} fill={entry.color} stroke="none" />)}
+                                                <Pie data={filteredGroupData} cx="50%" cy="50%" innerRadius={40} outerRadius={55} paddingAngle={5} dataKey="value">
+                                                    {filteredGroupData.map((entry, index) => <Cell key={`cell-${index}`} fill={entry.color} stroke="none" />)}
                                                 </Pie>
                                                 <RechartsTooltip />
                                             </PieChart>
@@ -295,11 +470,11 @@ const Dashboard: React.FC = () => {
                                         </div>
                                     </div>
                                     <div className="flex-1 grid grid-cols-1 gap-2 overflow-y-auto pr-1 custom-scrollbar max-h-32">
-                                        {groupData?.map((item, idx) => (
+                                        {filteredGroupData.map((item, idx) => (
                                             <div key={idx} className="flex items-center justify-between group">
                                                 <div className="flex items-center gap-2 overflow-hidden">
                                                     <div className="w-2 h-2 rounded-full shrink-0 group-hover:scale-125 transition-transform" style={{ backgroundColor: item.color }}></div>
-                                                    <span className="text-[11px] font-bold text-gray-500 truncate group-hover:text-gray-700 transition-colors" title={item.name}>{item.name}</span>
+                                                    <span className="text-[11px] font-bold text-gray-500 dark:text-slate-400 truncate group-hover:text-gray-700 dark:group-hover:text-slate-200 transition-colors" title={item.name}>{item.name}</span>
                                                 </div>
                                                 <span className="text-[11px] font-black text-gray-800 dark:text-slate-100">{item.value}</span>
                                             </div>
@@ -317,28 +492,22 @@ const Dashboard: React.FC = () => {
                                 <div className="p-2 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 rounded-lg"><TrendingUp className="w-5 h-5" /></div>
                                 <h3 className="text-sm font-black text-gray-800 dark:text-slate-100 uppercase tracking-widest">Biểu đồ giải ngân & Kế hoạch vốn</h3>
                             </div>
-                            <div className="flex gap-2">
-                                <span className="flex items-center gap-1 text-[10px] font-bold text-gray-500 dark:text-slate-400"><div className="w-2 h-2 rounded bg-[#0ea5e9]"></div> Giải ngân</span>
-                                <span className="flex items-center gap-1 text-[10px] font-bold text-gray-500 dark:text-slate-400"><div className="w-2 h-2 rounded bg-gray-300 dark:bg-slate-500"></div> Kế hoạch</span>
+                            <div className="flex gap-3">
+                                <span className="flex items-center gap-1.5 text-[10px] font-bold text-gray-500 dark:text-slate-400"><div className="w-2.5 h-2.5 rounded bg-[#0ea5e9]"></div> Giải ngân</span>
+                                <span className="flex items-center gap-1.5 text-[10px] font-bold text-gray-500 dark:text-slate-400"><div className="w-2.5 h-2.5 rounded bg-gray-300 dark:bg-slate-500"></div> Kế hoạch</span>
                             </div>
                         </div>
                         <div className="h-80 w-full">
                             {loadingDisbursement ? (
-                                <div className="h-full w-full bg-gray-50 rounded-xl animate-pulse"></div>
+                                <div className="h-full w-full bg-gray-50 dark:bg-slate-700 rounded-xl animate-pulse"></div>
                             ) : (
                                 <ResponsiveContainer width="100%" height="100%">
                                     <BarChart data={disbursementData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }} barGap={0}>
-                                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
-                                        <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: '#6B7280', fontSize: 11, fontWeight: 600 }} dy={10} />
-                                        <YAxis axisLine={false} tickLine={false} tick={{ fill: '#6B7280', fontSize: 11, fontWeight: 600 }} tickFormatter={(val) => `${val / 1000} Tỷ`} />
-                                        <RechartsTooltip
-                                            cursor={{ fill: '#F3F4F6' }}
-                                            contentStyle={{ backgroundColor: '#fff', borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
-                                            itemStyle={{ fontSize: '12px', fontWeight: 'bold' }}
-                                            labelStyle={{ display: 'none' }}
-                                            formatter={(value: any, name: string) => [formatCurrency(value * 1000000000), name === 'disbursement' ? 'Thực hiện' : 'Kế hoạch']}
-                                        />
-                                        <Bar dataKey="plan" fill="#D1D5DB" radius={[4, 4, 0, 0]} maxBarSize={40} />
+                                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={theme === 'dark' ? '#334155' : '#E5E7EB'} />
+                                        <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: theme === 'dark' ? '#94A3B8' : '#6B7280', fontSize: 11, fontWeight: 600 }} dy={10} />
+                                        <YAxis axisLine={false} tickLine={false} tick={{ fill: theme === 'dark' ? '#94A3B8' : '#6B7280', fontSize: 11, fontWeight: 600 }} tickFormatter={(val) => `${val / 1000} Tỷ`} />
+                                        <RechartsTooltip content={<ChartTooltip />} cursor={{ fill: theme === 'dark' ? '#1E293B' : '#F3F4F6' }} />
+                                        <Bar dataKey="plan" fill={theme === 'dark' ? '#475569' : '#D1D5DB'} radius={[4, 4, 0, 0]} maxBarSize={40} />
                                         <Bar dataKey="disbursement" fill="#0ea5e9" radius={[4, 4, 0, 0]} maxBarSize={40} />
                                     </BarChart>
                                 </ResponsiveContainer>
@@ -346,58 +515,58 @@ const Dashboard: React.FC = () => {
                         </div>
                     </div>
 
-                    {/* NEW WIDGET FOR DIRECTOR: LEGAL & SITE CLEARANCE MONITOR */}
+                    {/* LEGAL & SITE CLEARANCE MONITOR */}
                     <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-orange-100 dark:border-orange-900/50 flex flex-col">
                         <div className="flex justify-between items-center mb-4">
                             <h3 className="text-sm font-black text-gray-800 dark:text-slate-100 uppercase tracking-widest flex items-center gap-2">
                                 <FileBox className="w-4 h-4 text-orange-500" /> Theo dõi Vướng mắc (GPMB & Pháp lý)
                             </h3>
-                            <button className="text-[10px] font-bold text-blue-600 hover:underline">Chi tiết</button>
+                            <button className="text-[10px] font-bold text-blue-600 dark:text-blue-400 hover:underline">Chi tiết</button>
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             {/* Legal Issues */}
-                            <div className="p-4 bg-orange-50/50 dark:bg-orange-900/20 rounded-2xl border border-orange-100 dark:border-orange-800/50">
-                                <h4 className="text-[11px] font-bold text-orange-800 uppercase mb-3 flex items-center gap-2">
+                            <div className="p-4 bg-orange-50/50 dark:bg-orange-900/10 rounded-2xl border border-orange-100 dark:border-orange-800/30">
+                                <h4 className="text-[11px] font-bold text-orange-800 dark:text-orange-300 uppercase mb-3 flex items-center gap-2">
                                     <Briefcase className="w-3 h-3" /> Hồ sơ pháp lý
                                 </h4>
                                 <div className="space-y-3">
                                     <div className="flex justify-between items-center">
-                                        <span className="text-xs text-gray-600 font-medium">Chờ phê duyệt chủ trương</span>
-                                        <span className="text-xs font-black text-gray-800 bg-white px-2 py-0.5 rounded border border-gray-100 shadow-sm">3 dự án</span>
+                                        <span className="text-xs text-gray-600 dark:text-slate-300 font-medium">Chờ phê duyệt chủ trương</span>
+                                        <span className="text-xs font-black text-gray-800 dark:text-slate-100 bg-white dark:bg-slate-700 px-2 py-0.5 rounded border border-gray-100 dark:border-slate-600 shadow-sm">3 dự án</span>
                                     </div>
                                     <div className="flex justify-between items-center">
-                                        <span className="text-xs text-gray-600 font-medium">Đang điều chỉnh TMĐT</span>
-                                        <span className="text-xs font-black text-orange-600 bg-white px-2 py-0.5 rounded border border-orange-100 shadow-sm">1 dự án</span>
+                                        <span className="text-xs text-gray-600 dark:text-slate-300 font-medium">Đang điều chỉnh TMĐT</span>
+                                        <span className="text-xs font-black text-orange-600 dark:text-orange-400 bg-white dark:bg-slate-700 px-2 py-0.5 rounded border border-orange-100 dark:border-orange-800/50 shadow-sm">1 dự án</span>
                                     </div>
-                                    <div className="w-full bg-gray-200 h-1.5 rounded-full mt-2 overflow-hidden">
-                                        <div className="bg-orange-400 h-full rounded-full" style={{ width: '65%' }}></div>
+                                    <div className="w-full bg-gray-200 dark:bg-slate-600 h-1.5 rounded-full mt-2 overflow-hidden">
+                                        <div className="bg-orange-400 h-full rounded-full transition-all duration-500" style={{ width: '65%' }}></div>
                                     </div>
-                                    <p className="text-[9px] text-gray-400 text-right mt-1">Hoàn thành 65% hồ sơ năm</p>
+                                    <p className="text-[9px] text-gray-400 dark:text-slate-500 text-right mt-1">Hoàn thành 65% hồ sơ năm</p>
                                 </div>
                             </div>
 
                             {/* Site Clearance (GPMB) */}
-                            <div className="p-4 bg-blue-50/50 dark:bg-blue-900/20 rounded-2xl border border-blue-100 dark:border-blue-800/50">
-                                <h4 className="text-[11px] font-bold text-blue-800 uppercase mb-3 flex items-center gap-2">
+                            <div className="p-4 bg-blue-50/50 dark:bg-blue-900/10 rounded-2xl border border-blue-100 dark:border-blue-800/30">
+                                <h4 className="text-[11px] font-bold text-blue-800 dark:text-blue-300 uppercase mb-3 flex items-center gap-2">
                                     <MapIcon className="w-3 h-3" /> Giải phóng mặt bằng
                                 </h4>
                                 {loadingGPMB ? (
-                                    <div className="h-24 bg-blue-100/50 rounded-xl animate-pulse"></div>
+                                    <div className="h-24 bg-blue-100/50 dark:bg-blue-900/20 rounded-xl animate-pulse"></div>
                                 ) : (
                                     <div className="space-y-3">
                                         <div className="flex justify-between items-center">
-                                            <span className="text-xs text-gray-600 font-medium">Vướng mắc mặt bằng</span>
-                                            <span className="text-xs font-black text-red-600 bg-white px-2 py-0.5 rounded border border-red-100 shadow-sm animate-pulse">{gpmbData?.bottlenecks || 0} điểm nghẽn</span>
+                                            <span className="text-xs text-gray-600 dark:text-slate-300 font-medium">Vướng mắc mặt bằng</span>
+                                            <span className="text-xs font-black text-red-600 dark:text-red-400 bg-white dark:bg-slate-700 px-2 py-0.5 rounded border border-red-100 dark:border-red-800/50 shadow-sm animate-pulse">{gpmbData?.bottlenecks || 0} điểm nghẽn</span>
                                         </div>
                                         <div className="flex justify-between items-center">
-                                            <span className="text-xs text-gray-600 font-medium">Đã bàn giao mặt bằng</span>
-                                            <span className="text-xs font-black text-emerald-600 bg-white px-2 py-0.5 rounded border border-emerald-100 shadow-sm">{gpmbData?.handedOverPercent || 0}%</span>
+                                            <span className="text-xs text-gray-600 dark:text-slate-300 font-medium">Đã bàn giao mặt bằng</span>
+                                            <span className="text-xs font-black text-emerald-600 dark:text-emerald-400 bg-white dark:bg-slate-700 px-2 py-0.5 rounded border border-emerald-100 dark:border-emerald-800/50 shadow-sm">{gpmbData?.handedOverPercent || 0}%</span>
                                         </div>
-                                        <div className="w-full bg-gray-200 h-1.5 rounded-full mt-2 overflow-hidden">
-                                            <div className="bg-blue-500 h-full rounded-full" style={{ width: `${gpmbData?.handedOverPercent || 0}%` }}></div>
+                                        <div className="w-full bg-gray-200 dark:bg-slate-600 h-1.5 rounded-full mt-2 overflow-hidden">
+                                            <div className="bg-blue-500 h-full rounded-full transition-all duration-500" style={{ width: `${gpmbData?.handedOverPercent || 0}%` }}></div>
                                         </div>
-                                        <p className="text-[9px] text-gray-400 text-right mt-1">Tăng 5% so với tháng trước</p>
+                                        <p className="text-[9px] text-gray-400 dark:text-slate-500 text-right mt-1">Tăng 5% so với tháng trước</p>
                                     </div>
                                 )}
                             </div>
@@ -407,7 +576,7 @@ const Dashboard: React.FC = () => {
 
                 {/* Sidebar Column (1/3) */}
                 <div className="space-y-6">
-                    {/* UPCOMING DEADLINES - Mocked from Tasks */}
+                    {/* UPCOMING DEADLINES */}
                     <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700">
                         <div className="flex justify-between items-center mb-4">
                             <h3 className="text-sm font-black text-gray-800 dark:text-slate-100 uppercase tracking-widest flex items-center gap-2">
@@ -418,12 +587,12 @@ const Dashboard: React.FC = () => {
                         <div className="space-y-4">
                             {loadingDeadlines ? (
                                 <div className="space-y-3">
-                                    <div className="h-12 bg-gray-50 rounded-lg animate-pulse"></div>
-                                    <div className="h-12 bg-gray-50 rounded-lg animate-pulse"></div>
+                                    <div className="h-12 bg-gray-50 dark:bg-slate-700 rounded-lg animate-pulse"></div>
+                                    <div className="h-12 bg-gray-50 dark:bg-slate-700 rounded-lg animate-pulse"></div>
                                 </div>
-                            ) : (
-                                deadlines?.map((item, idx) => (
-                                    <div key={idx} className="flex items-start gap-3 pb-3 border-b border-gray-50 last:border-0 last:pb-0">
+                            ) : deadlines && deadlines.length > 0 ? (
+                                deadlines.map((item, idx) => (
+                                    <div key={idx} className="flex items-start gap-3 pb-3 border-b border-gray-50 dark:border-slate-700/50 last:border-0 last:pb-0">
                                         <div className={`mt-1 w-2 h-2 rounded-full shrink-0 ${item.urgent ? 'bg-red-500 animate-pulse' : 'bg-orange-400'}`}></div>
                                         <div className="flex-1">
                                             <p className="text-xs font-bold text-gray-800 dark:text-slate-100 line-clamp-1">{item.title}</p>
@@ -434,6 +603,8 @@ const Dashboard: React.FC = () => {
                                         </div>
                                     </div>
                                 ))
+                            ) : (
+                                <EmptyState icon={Calendar} message="Không có deadline trong 7 ngày tới" />
                             )}
                         </div>
                     </div>
@@ -442,35 +613,37 @@ const Dashboard: React.FC = () => {
                     <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700">
                         <div className="flex justify-between items-center mb-4">
                             <h3 className="text-sm font-black text-gray-800 dark:text-slate-100 uppercase tracking-widest flex items-center gap-2">
-                                <HardHat className="w-4 h-4 text-gray-600" /> Nhà thầu chính
+                                <HardHat className="w-4 h-4 text-gray-600 dark:text-slate-400" /> Nhà thầu chính
                             </h3>
                         </div>
                         <div className="space-y-4">
                             {loadingContractors ? (
                                 <div className="space-y-3">
-                                    <div className="h-10 bg-gray-50 rounded-full animate-pulse"></div>
-                                    <div className="h-10 bg-gray-50 rounded-full animate-pulse"></div>
+                                    <div className="h-10 bg-gray-50 dark:bg-slate-700 rounded-full animate-pulse"></div>
+                                    <div className="h-10 bg-gray-50 dark:bg-slate-700 rounded-full animate-pulse"></div>
                                 </div>
-                            ) : (
-                                contractors?.map((c, idx) => (
+                            ) : contractors && contractors.length > 0 ? (
+                                contractors.map((c, idx) => (
                                     <div key={idx} className="flex items-center gap-3">
-                                        <div className="w-8 h-8 rounded-full bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold text-xs border border-blue-100 dark:border-blue-800">
-                                            {c.ContractorID.substring(0, 2)}
+                                        <div className={`w-8 h-8 rounded-full ${avatarColors[idx % avatarColors.length]} text-white flex items-center justify-center font-bold text-xs shadow-sm`}>
+                                            {c.FullName?.charAt(c.FullName.lastIndexOf(' ') + 1) || c.ContractorID.substring(0, 2)}
                                         </div>
                                         <div className="flex-1 overflow-hidden">
                                             <p className="text-xs font-bold text-gray-800 dark:text-slate-100 truncate" title={c.FullName}>{c.FullName}</p>
                                             <div className="flex items-center gap-2 mt-0.5">
                                                 <div className="flex items-center gap-0.5">
                                                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                                                    <span className="text-[9px] text-gray-500 font-medium">Đang thi công</span>
+                                                    <span className="text-[9px] text-gray-500 dark:text-slate-400 font-medium">Đang thi công</span>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
                                 ))
+                            ) : (
+                                <EmptyState icon={Users} message="Chưa có nhà thầu nào" />
                             )}
                         </div>
-                        <button className="w-full mt-4 flex items-center justify-center gap-1 text-[11px] font-bold text-blue-600 hover:text-blue-700 transition-colors">
+                        <button onClick={() => navigate('/contractors')} className="w-full mt-4 flex items-center justify-center gap-1 text-[11px] font-bold text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors">
                             Xem tất cả nhà thầu <ArrowRight className="w-3 h-3" />
                         </button>
                     </div>

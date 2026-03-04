@@ -64,7 +64,7 @@ export const LegalHeader: React.FC<LegalHeaderProps> = ({
                         <div className="absolute top-14 left-0 right-0 z-50 bg-white dark:bg-slate-800 rounded-2xl shadow-2xl border border-gray-200 dark:border-slate-700 max-h-96 overflow-y-auto p-3 space-y-2 animate-in slide-in-from-top-2 duration-200">
                             <div className="flex items-center justify-between px-2 pb-2 border-b border-gray-100 dark:border-slate-700">
                                 <span className="text-[10px] font-black text-indigo-600 dark:text-indigo-400 uppercase tracking-widest">
-                                    🔍 Tìm thấy {deepSearchResults.length} điều khoản
+                                    <Search className="w-3.5 h-3.5 inline" /> Tìm thấy {deepSearchResults.length} điều khoản
                                 </span>
                                 <button onClick={() => setShowDeepSearch(false)} className="text-gray-400 hover:text-gray-600"><X className="w-3.5 h-3.5" /></button>
                             </div>

@@ -1,8 +1,8 @@
 import React, { useState, useMemo, useRef, useCallback, useEffect } from 'react';
 import {
     FolderOpen, FileText, ChevronRight, Upload, Search, Eye, Download,
-    CheckCircle2, Clock, AlertCircle, X, History, PenTool, MoreVertical,
-    FileSpreadsheet, FileImage, File as FileIcon, Archive, Share2,
+    CheckCircle2, Clock, AlertCircle, X, History, PenTool,
+    Archive, Share2,
     ChevronDown, Shield, Box, Loader2, ArrowRight, RefreshCw,
     FolderTree, BarChart3, Users, Building2
 } from 'lucide-react';
@@ -10,6 +10,7 @@ import { CDEService, CDEFolder, CDEDocument, CDEWorkflowStep, CDE_WORKFLOW_STEPS
 import { useCDEFolders, useCDEDocuments, useCDEStats, useCDEWorkflowHistory, useUploadCDE, useProcessWorkflowStep } from '../../hooks/useCDE';
 import { useProjects } from '../../hooks/useProjects';
 import FilePreviewModal from '../projects/components/FilePreviewModal';
+import { getFileIcon } from '@/utils/fileIcons';
 
 // ═══════════════════════════════════════════════════════════════
 // CDEPage — Môi trường dữ liệu chung (ISO 19650)
@@ -30,14 +31,7 @@ const containerColors: Record<string, { bg: string; text: string; border: string
     ARCHIVED: { bg: 'bg-purple-500', text: 'text-purple-700 dark:text-purple-400', border: 'border-purple-200 dark:border-purple-700', dot: 'bg-purple-500', lightBg: 'bg-purple-50 dark:bg-purple-900/20', badge: 'bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300' },
 };
 
-const getFileIcon = (fileName: string) => {
-    const ext = fileName.split('.').pop()?.toLowerCase() || '';
-    if (ext === 'pdf') return { icon: FileText, color: 'text-red-500', bg: 'bg-red-50 dark:bg-red-900/30' };
-    if (['doc', 'docx'].includes(ext)) return { icon: FileText, color: 'text-blue-600 dark:text-blue-400', bg: 'bg-blue-50 dark:bg-blue-900/30' };
-    if (['xls', 'xlsx', 'csv'].includes(ext)) return { icon: FileSpreadsheet, color: 'text-emerald-600 dark:text-emerald-400', bg: 'bg-emerald-50 dark:bg-emerald-900/30' };
-    if (['png', 'jpg', 'jpeg', 'gif'].includes(ext)) return { icon: FileImage, color: 'text-violet-500 dark:text-violet-400', bg: 'bg-violet-50 dark:bg-violet-900/30' };
-    return { icon: FileIcon, color: 'text-gray-500 dark:text-gray-400', bg: 'bg-gray-50 dark:bg-slate-700' };
-};
+// getFileIcon imported from @/utils/fileIcons
 
 const CDEPage: React.FC = () => {
     const { projects } = useProjects();

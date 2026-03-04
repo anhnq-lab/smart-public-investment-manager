@@ -193,12 +193,12 @@
   }
 
   .card-hover {
-    @apply hover:shadow-md hover:-translate-y-0.5;
+    @apply hover:shadow-md hover:-translate-y-0.5 cursor-pointer;
   }
 
   .card-glass {
     @apply bg-white/80 backdrop-blur-xl border-white/50;
-    @apply dark:bg-slate-800/80 dark:border-slate-600/50;
+    @apply dark:bg-slate-800/80 dark:border-slate-500/50;
   }
 
   /* Button Base */
@@ -309,6 +309,122 @@
     @apply bg-gray-100 text-gray-700 dark:bg-slate-700 dark:text-slate-300;
   }
 
+  /* ── Stat Card ── */
+  .stat-card {
+    @apply relative flex items-center gap-4 px-5 py-4 rounded-2xl border transition-all duration-200;
+    @apply bg-white border-gray-100 shadow-sm;
+    @apply dark:bg-slate-800 dark:border-slate-600/60 dark:shadow-slate-900/30;
+  }
+
+  .stat-card:hover {
+    @apply shadow-md;
+  }
+
+  .stat-card-icon {
+    @apply flex items-center justify-center w-12 h-12 rounded-xl;
+  }
+
+  .stat-card-blue .stat-card-icon {
+    @apply bg-blue-50 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400;
+  }
+
+  .stat-card-emerald .stat-card-icon {
+    @apply bg-emerald-50 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400;
+  }
+
+  .stat-card-amber .stat-card-icon {
+    @apply bg-amber-50 text-amber-600 dark:bg-amber-900/30 dark:text-amber-400;
+  }
+
+  .stat-card-rose .stat-card-icon {
+    @apply bg-rose-50 text-rose-600 dark:bg-rose-900/30 dark:text-rose-400;
+  }
+
+  .stat-card-violet .stat-card-icon {
+    @apply bg-violet-50 text-violet-600 dark:bg-violet-900/30 dark:text-violet-400;
+  }
+
+  .stat-card-value {
+    @apply text-2xl font-bold text-gray-900 dark:text-white leading-none;
+  }
+
+  .stat-card-label {
+    @apply text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-slate-400;
+  }
+
+  .stat-card-trend {
+    @apply text-[11px] font-semibold;
+  }
+
+  .stat-card-trend.up {
+    @apply text-emerald-600 dark:text-emerald-400;
+  }
+
+  .stat-card-trend.down {
+    @apply text-rose-600 dark:text-rose-400;
+  }
+
+  /* ── Progress Bar ── */
+  .progress-bar {
+    @apply w-full h-2 bg-gray-100 dark:bg-slate-700 rounded-full overflow-hidden;
+  }
+
+  .progress-bar-fill {
+    @apply h-full rounded-full transition-all duration-500 ease-out;
+  }
+
+  .progress-bar-fill.blue {
+    @apply bg-blue-500 dark:bg-blue-400;
+  }
+
+  .progress-bar-fill.emerald {
+    @apply bg-emerald-500 dark:bg-emerald-400;
+  }
+
+  .progress-bar-fill.amber {
+    @apply bg-amber-500 dark:bg-amber-400;
+  }
+
+  .progress-bar-fill.rose {
+    @apply bg-rose-500 dark:bg-rose-400;
+  }
+
+  /* ── Filter Item ── */
+  .filter-item {
+    @apply flex items-center gap-2 px-3 py-2 rounded-lg text-sm cursor-pointer;
+    @apply text-gray-600 dark:text-slate-400;
+    @apply transition-colors duration-150;
+  }
+
+  .filter-item:hover {
+    @apply bg-gray-50 text-gray-900;
+    @apply dark:bg-slate-700/50 dark:text-slate-200;
+  }
+
+  .filter-item.active {
+    @apply bg-blue-50 text-blue-700 font-medium;
+    @apply dark:bg-blue-900/30 dark:text-blue-300;
+  }
+
+  /* ── Search Input ── */
+  .search-input-wrapper {
+    @apply relative flex items-center;
+  }
+
+  .search-input-wrapper .search-icon {
+    @apply absolute left-3 w-4 h-4 text-gray-400 dark:text-slate-500 pointer-events-none;
+  }
+
+  .search-input-wrapper input {
+    @apply w-full pl-10 pr-4 py-2 bg-white border border-gray-200 rounded-xl;
+    @apply text-sm text-gray-900 placeholder:text-gray-400;
+    @apply transition-all duration-200;
+    @apply focus:border-blue-500 focus:ring-2 focus:ring-blue-100 focus:outline-none;
+    @apply dark:bg-slate-800 dark:border-slate-600 dark:text-slate-100;
+    @apply dark:placeholder:text-slate-500;
+    @apply dark:focus:border-blue-500 dark:focus:ring-blue-900/50;
+  }
+
   /* ── Legal Document Tables ── */
   .legal-table-wrapper {
     @apply text-sm;
@@ -389,6 +505,272 @@
   .dark select option {
     @apply bg-slate-800 text-slate-200;
   }
+}
+
+/* ========================================
+   GLOBAL DARK MODE CATCH-ALL
+   Fixes uncovered light-only elements
+   ======================================== */
+
+/* ── Background catch-alls ── */
+.dark .bg-white {
+  background-color: rgb(30 41 59);
+}
+
+.dark .bg-gray-50 {
+  background-color: rgb(15 23 42);
+}
+
+.dark .bg-gray-100 {
+  background-color: rgb(30 41 59);
+}
+
+/* ── Slate backgrounds ── */
+.dark .bg-slate-50 {
+  background-color: rgb(15 23 42);
+}
+
+.dark .bg-slate-100 {
+  background-color: rgb(30 41 59);
+}
+
+/* ── Semantic light backgrounds → dark equivalents ── */
+.dark .bg-blue-50,
+.dark .bg-blue-50\/50 {
+  background-color: rgb(30 58 138 / 0.15);
+}
+
+.dark .bg-emerald-50,
+.dark .bg-emerald-50\/50 {
+  background-color: rgb(6 78 59 / 0.15);
+}
+
+.dark .bg-amber-50 {
+  background-color: rgb(120 53 15 / 0.15);
+}
+
+.dark .bg-red-50 {
+  background-color: rgb(127 29 29 / 0.15);
+}
+
+.dark .bg-violet-50 {
+  background-color: rgb(76 29 149 / 0.15);
+}
+
+.dark .bg-indigo-50 {
+  background-color: rgb(49 46 129 / 0.15);
+}
+
+.dark .bg-green-50 {
+  background-color: rgb(6 78 59 / 0.15);
+}
+
+.dark .bg-sky-50 {
+  background-color: rgb(12 74 110 / 0.15);
+}
+
+.dark .bg-purple-50 {
+  background-color: rgb(88 28 135 / 0.15);
+}
+
+.dark .bg-orange-50 {
+  background-color: rgb(124 45 18 / 0.15);
+}
+
+.dark .bg-teal-50 {
+  background-color: rgb(19 78 74 / 0.15);
+}
+
+/* ── Gradient light backgrounds ── */
+.dark [class*="from-blue-50"] {
+  --tw-gradient-from: rgb(30 58 138 / 0.15);
+}
+
+.dark [class*="to-blue-50"] {
+  --tw-gradient-to: rgb(30 58 138 / 0.15);
+}
+
+.dark [class*="from-emerald-50"] {
+  --tw-gradient-from: rgb(6 78 59 / 0.15);
+}
+
+.dark [class*="to-emerald-50"] {
+  --tw-gradient-to: rgb(6 78 59 / 0.15);
+}
+
+.dark [class*="from-indigo-50"] {
+  --tw-gradient-from: rgb(49 46 129 / 0.15);
+}
+
+.dark [class*="to-indigo-50"] {
+  --tw-gradient-to: rgb(49 46 129 / 0.15);
+}
+
+/* ── Border catch-alls ── */
+.dark .border-gray-100 {
+  border-color: rgb(51 65 85);
+}
+
+.dark .border-gray-200 {
+  border-color: rgb(71 85 105);
+}
+
+.dark .border-blue-100 {
+  border-color: rgb(30 58 138 / 0.4);
+}
+
+.dark .border-blue-200 {
+  border-color: rgb(30 58 138 / 0.4);
+}
+
+.dark .border-emerald-100 {
+  border-color: rgb(6 78 59 / 0.4);
+}
+
+.dark .border-emerald-200 {
+  border-color: rgb(6 78 59 / 0.4);
+}
+
+.dark .border-amber-100 {
+  border-color: rgb(120 53 15 / 0.4);
+}
+
+.dark .border-amber-200 {
+  border-color: rgb(120 53 15 / 0.4);
+}
+
+.dark .border-red-100,
+.dark .border-red-200 {
+  border-color: rgb(127 29 29 / 0.4);
+}
+
+.dark .border-violet-100,
+.dark .border-violet-200,
+.dark .border-purple-100,
+.dark .border-purple-200 {
+  border-color: rgb(76 29 149 / 0.4);
+}
+
+.dark .border-green-200 {
+  border-color: rgb(6 78 59 / 0.4);
+}
+
+.dark .border-orange-200 {
+  border-color: rgb(124 45 18 / 0.4);
+}
+
+.dark .border-teal-200 {
+  border-color: rgb(19 78 74 / 0.4);
+}
+
+/* ── Text catch-alls ── */
+/* CRITICAL: text-slate-400/500/600 used 500+ times — brighten for dark backgrounds */
+.dark .text-slate-400 {
+  color: rgb(203 213 225);
+}
+
+.dark .text-slate-500 {
+  color: rgb(148 163 184);
+}
+
+.dark .text-slate-600 {
+  color: rgb(203 213 225);
+}
+
+/* Gray → brighter for readability */
+.dark .text-gray-800 {
+  color: rgb(241 245 249);
+}
+
+.dark .text-gray-700 {
+  color: rgb(226 232 240);
+}
+
+.dark .text-gray-600 {
+  color: rgb(203 213 225);
+}
+
+.dark .text-gray-500 {
+  color: rgb(203 213 225);
+}
+
+.dark .text-gray-400 {
+  color: rgb(148 163 184);
+}
+
+/* Semantic text */
+.dark .text-blue-800 {
+  color: rgb(147 197 253);
+}
+
+.dark .text-blue-700 {
+  color: rgb(96 165 250);
+}
+
+.dark .text-emerald-700,
+.dark .text-emerald-800 {
+  color: rgb(52 211 153);
+}
+
+.dark .text-amber-700,
+.dark .text-amber-800 {
+  color: rgb(251 191 36);
+}
+
+.dark .text-red-700,
+.dark .text-red-800 {
+  color: rgb(248 113 113);
+}
+
+.dark .text-violet-700 {
+  color: rgb(167 139 250);
+}
+
+.dark .text-indigo-700 {
+  color: rgb(129 140 248);
+}
+
+.dark .text-green-700,
+.dark .text-green-800 {
+  color: rgb(74 222 128);
+}
+
+.dark .text-purple-700 {
+  color: rgb(192 132 252);
+}
+
+.dark .text-orange-700 {
+  color: rgb(251 146 60);
+}
+
+/* ── Form Controls ── */
+.dark input:not([type="checkbox"]):not([type="radio"]),
+.dark select,
+.dark textarea {
+  background-color: rgb(30 41 59);
+  color: rgb(226 232 240);
+  border-color: rgb(71 85 105);
+}
+
+.dark input::placeholder,
+.dark textarea::placeholder {
+  color: rgb(100 116 139);
+}
+
+.dark input:focus,
+.dark select:focus,
+.dark textarea:focus {
+  border-color: rgb(59 130 246);
+  box-shadow: 0 0 0 2px rgb(30 58 138 / 0.3);
+}
+
+/* ── Ring overrides ── */
+.dark .ring-slate-100 {
+  --tw-ring-color: rgb(51 65 85);
+}
+
+.dark .ring-black\/5 {
+  --tw-ring-color: rgb(148 163 184 / 0.1);
 }
 
 /* ========================================
@@ -807,11 +1189,15 @@
 }
 
 @keyframes shimmer {
-  100% { transform: translateX(100%); }
+  100% {
+    transform: translateX(100%);
+  }
 }
+
 .animate-\[shimmer_2s_infinite\] {
   animation: shimmer 2s infinite;
 }
+
 .animate-\[shimmer_1\.5s_infinite\] {
   animation: shimmer 1.5s infinite;
 }
@@ -824,6 +1210,7 @@
     opacity: 0;
     transform: translateY(6px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -835,6 +1222,7 @@
     opacity: 0;
     transform: translateX(-50%) scale(0.95) translateY(4px);
   }
+
   to {
     opacity: 1;
     transform: translateX(-50%) scale(1) translateY(0);
@@ -842,9 +1230,12 @@
 }
 
 @keyframes float {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: translateY(0);
   }
+
   50% {
     transform: translateY(-6px);
   }

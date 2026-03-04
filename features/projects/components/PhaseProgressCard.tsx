@@ -1,6 +1,6 @@
 import React from 'react';
 import { Task, TaskStatus } from '@/types';
-import { CheckCircle2, Circle, Clock, ChevronRight, Calendar, AlertTriangle } from 'lucide-react';
+import { CheckCircle2, Circle, Clock, ChevronRight, Calendar, AlertTriangle, ListPlus } from 'lucide-react';
 
 interface PhaseData {
     id: string;
@@ -14,13 +14,19 @@ interface PhaseProgressCardProps {
     tasks: Task[];
     isExpanded: boolean;
     onToggle: () => void;
+    onBulkCreatePhase?: () => void;
+    isBulkCreatingPhase?: boolean;
+    phaseTotalSubTasks?: number;
 }
 
 export const PhaseProgressCard: React.FC<PhaseProgressCardProps> = ({
     phase,
     tasks,
     isExpanded,
-    onToggle
+    onToggle,
+    onBulkCreatePhase,
+    isBulkCreatingPhase,
+    phaseTotalSubTasks = 0
 }) => {
     // Calculate phase progress
     const phaseTasks = tasks.filter(t =>
@@ -144,7 +150,43 @@ export const PhaseProgressCard: React.FC<PhaseProgressCardProps> = ({
                     </div>
 
                     {/* Progress Stats */}
-                    <div className="hidden sm:flex items-center gap-4 mr-4">
+                    <div className="hidden sm:flex items-center gap-3 mr-4">
+                        {/* Bulk Create Phase Button */}
+                        {onBulkCreatePhase && phaseTotalSubTasks > 0 && (() => {
+                            const phaseTaskCount = phaseTasks.length;
+                            const allCreated = phaseTaskCount >= phaseTotalSubTasks;
+                            return (
+                                <button
+                                    onClick={(e) => { e.stopPropagation(); onBulkCreatePhase(); }}
+                                    disabled={isBulkCreatingPhase || allCreated}
+                                    className={`px-2.5 py-1.5 text-[10px] font-semibold rounded-lg flex items-center gap-1 transition-all shrink-0 ${allCreated
+                                        ? 'bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-700 cursor-default'
+                                        : isBulkCreatingPhase
+                                            ? 'bg-amber-50 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 border border-amber-200 dark:border-amber-700 cursor-wait'
+                                            : 'bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-700 hover:bg-blue-100 dark:hover:bg-blue-900/50 hover:shadow-sm'
+                                        }`}
+                                    title={allCreated ? 'Đã tạo tất cả công việc cho giai đoạn' : `Tạo ${phaseTotalSubTasks} công việc cho giai đoạn này`}
+                                >
+                                    {isBulkCreatingPhase ? (
+                                        <>
+                                            <div className="w-3 h-3 border-2 border-amber-300 border-t-amber-600 rounded-full animate-spin" />
+                                            Đang tạo...
+                                        </>
+                                    ) : allCreated ? (
+                                        <>
+                                            <CheckCircle2 className="w-3 h-3" />
+                                            Đã tạo {phaseTaskCount} việc
+                                        </>
+                                    ) : (
+                                        <>
+                                            <ListPlus className="w-3 h-3" />
+                                            Tạo {phaseTotalSubTasks - phaseTaskCount}/{phaseTotalSubTasks} việc
+                                        </>
+                                    )}
+                                </button>
+                            );
+                        })()}
+
                         {/* Mini Progress */}
                         <div className="flex flex-col items-end">
                             <span className="text-xs text-gray-500 dark:text-slate-400">Tiến độ</span>

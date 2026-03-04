@@ -8,46 +8,34 @@ import {
     DashboardProjectStatus,
     DashboardGroupDistribution,
     DashboardDeadline,
-    DashboardGPMB
+    DashboardGPMB,
+    DashboardContractStatus
 } from '../types/dashboard';
 import { dbToContractor } from '../lib/dbMappers';
 
 export const DashboardService = {
     getMetrics: async (): Promise<DashboardMetrics> => {
-        // Fetch projects total investment
-        const { data: projects } = await supabase
-            .from('projects')
-            .select('total_investment');
+        const today = new Date().toISOString();
 
-        const totalInvestment = (projects || []).reduce((acc, p) => acc + Number(p.total_investment), 0);
+        // Parallel fetch all data sources
+        const [projectsRes, paymentsRes, overdueRes, issueRes] = await Promise.all([
+            supabase.from('projects').select('total_investment'),
+            supabase.from('payments').select('amount, status, type'),
+            supabase.from('tasks').select('*', { count: 'exact', head: true }).neq('status', 'Done').lt('due_date', today),
+            supabase.from('package_issues').select('*', { count: 'exact', head: true }).eq('status', 'Open'),
+        ]);
 
-        // Fetch payments
-        const { data: payments } = await supabase
-            .from('payments')
-            .select('amount, status, type');
+        const totalInvestment = (projectsRes.data || []).reduce((acc, p) => acc + Number(p.total_investment), 0);
 
-        const totalDisbursed = (payments || [])
+        const totalDisbursed = (paymentsRes.data || [])
             .filter(p => p.status === 'Transferred')
             .reduce((acc, p) => acc + Number(p.amount), 0);
         const disbursementRate = totalInvestment > 0 ? (totalDisbursed / totalInvestment) * 100 : 0;
-        const totalVolumeValue = (payments || [])
+        const totalVolumeValue = (paymentsRes.data || [])
             .filter(p => p.type === PaymentType.Volume)
             .reduce((acc, p) => acc + Number(p.amount), 0);
 
-        // Count real risks: overdue tasks + open package issues
-        const today = new Date().toISOString();
-        const { count: overdueCount } = await supabase
-            .from('tasks')
-            .select('*', { count: 'exact', head: true })
-            .neq('status', 'Done')
-            .lt('due_date', today);
-
-        const { count: issueCount } = await supabase
-            .from('package_issues')
-            .select('*', { count: 'exact', head: true })
-            .eq('status', 'Open');
-
-        const riskCount = (overdueCount || 0) + (issueCount || 0);
+        const riskCount = (overdueRes.count || 0) + (issueRes.count || 0);
 
         return {
             totalInvestment,
@@ -254,5 +242,19 @@ export const DashboardService = {
             .limit(5);
 
         return (data || []).map(dbToContractor);
+    },
+
+    getContractStatusCounts: async (): Promise<DashboardContractStatus> => {
+        const { data } = await supabase
+            .from('contracts')
+            .select('status');
+
+        const contracts = data || [];
+        return {
+            total: contracts.length,
+            executing: contracts.filter(c => c.status === 1).length,
+            paused: contracts.filter(c => c.status === 2).length,
+            liquidated: contracts.filter(c => c.status === 3).length,
+        };
     }
 };

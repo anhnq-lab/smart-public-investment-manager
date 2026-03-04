@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { ChevronDown, ChevronUp, FileText, Download, Calendar, Building2, MapPin, Target, Coins } from 'lucide-react';
 import { InvestmentPolicyDecision, FeasibilityStudy } from '@/types';
+import { formatCurrency } from '@/utils/format';
 
 interface LegalDocumentsSectionProps {
     investmentPolicy?: InvestmentPolicyDecision;
@@ -23,12 +24,7 @@ export const LegalDocumentsSection: React.FC<LegalDocumentsSectionProps> = ({
         setExpandedCard(expandedCard === cardId ? null : cardId);
     };
 
-    const formatCurrency = (value: number) => {
-        if (value >= 1_000_000_000) {
-            return `${(value / 1_000_000_000).toFixed(1)} tỷ VND`;
-        }
-        return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(value);
-    };
+    // formatCurrency imported from @/utils/format
 
     const handleDownload = (path?: string) => {
         if (path) {

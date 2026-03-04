@@ -4,11 +4,9 @@ import { useProjects } from '../../hooks/useProjects';
 import { ProjectStatus, ProjectGroup } from '../../types';
 import { ProjectCard } from './ProjectCard';
 import { ProjectStats } from './ProjectStats';
-import { Search, Plus, LayoutGrid, List as ListIcon, Filter, Layers } from 'lucide-react';
+import { Search, Plus, LayoutGrid, List as ListIcon, Filter, Layers, ArrowUpDown } from 'lucide-react';
 import { Skeleton } from '../../components/ui/Skeleton';
 import { CreateProjectModal, SelectedMember } from './components/CreateProjectModal';
-import { generateProjectTasks } from '../../utils/projectTemplateGenerator';
-import { TaskService } from '../../services/TaskService';
 import ProjectService from '../../services/ProjectService';
 import { Project } from '../../types';
 import { supabase } from '../../lib/supabase';
@@ -26,6 +24,7 @@ const ProjectList: React.FC = () => {
     const [selectedStatus, setSelectedStatus] = useState<string>('all');
     const [selectedGroup, setSelectedGroup] = useState<string>('all');
     const [selectedType, setSelectedType] = useState<string>('all');
+    const [sortBy, setSortBy] = useState<'name' | 'budget' | 'progress' | 'created'>('name');
 
     // Filter Logic
     const filteredProjects = useMemo(() => {
@@ -40,6 +39,18 @@ const ProjectList: React.FC = () => {
         });
     }, [projects, searchQuery, selectedStatus, selectedGroup, selectedType]);
 
+    // Sort Logic
+    const sortedProjects = useMemo(() => {
+        return [...filteredProjects].sort((a, b) => {
+            switch (sortBy) {
+                case 'budget': return (b.TotalInvestment || 0) - (a.TotalInvestment || 0);
+                case 'progress': return (b.Progress || 0) - (a.Progress || 0);
+                case 'created': return new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime();
+                case 'name': default: return a.ProjectName.localeCompare(b.ProjectName, 'vi');
+            }
+        });
+    }, [filteredProjects, sortBy]);
+
     // Create Modal State
     const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -52,14 +63,7 @@ const ProjectList: React.FC = () => {
             // 1. Create Project
             const newProject = await ProjectService.create(data);
 
-            // 2. Generate Schedule based on Decree 175
-            const group = data.GroupCode || ProjectGroup.C;
-            const tasks = generateProjectTasks(newProject.ProjectID, group, data.StartDate);
-
-            // 3. Save Tasks
-            await TaskService.saveTasks(tasks);
-
-            // 4. Save Project Members
+            // 2. Save Project Members
             if (members.length > 0) {
                 const memberRows = members.map(m => ({
                     project_id: newProject.ProjectID,
@@ -108,8 +112,8 @@ const ProjectList: React.FC = () => {
                                 <div className="space-y-1">
                                     {[
                                         { val: 'all', label: 'Tất cả', color: 'bg-gray-400' },
-                                        { val: ProjectStatus.Preparation.toString(), label: 'Chuẩn bị dự án', color: 'bg-gradient-to-r from-amber-400 to-orange-500' },
-                                        { val: ProjectStatus.Execution.toString(), label: 'Thực hiện dự án', color: 'bg-gradient-to-r from-blue-500 to-blue-600' },
+                                        { val: ProjectStatus.Preparation.toString(), label: 'Chuẩn bị dự án', color: 'bg-gradient-to-r from-blue-400 to-blue-600' },
+                                        { val: ProjectStatus.Execution.toString(), label: 'Thực hiện dự án', color: 'bg-gradient-to-r from-amber-400 to-orange-500' },
                                         { val: ProjectStatus.Completion.toString(), label: 'Kết thúc xây dựng', color: 'bg-gradient-to-r from-emerald-500 to-emerald-600' },
                                     ].map(opt => (
                                         <label
@@ -189,6 +193,21 @@ const ProjectList: React.FC = () => {
                                 </button>
                             </div>
 
+                            {/* Sort Dropdown */}
+                            <div className="flex items-center gap-1.5">
+                                <ArrowUpDown className="w-3.5 h-3.5 text-gray-400" />
+                                <select
+                                    value={sortBy}
+                                    onChange={e => setSortBy(e.target.value as any)}
+                                    className="text-xs font-semibold bg-transparent border-none outline-none text-gray-600 dark:text-slate-300 cursor-pointer pr-4"
+                                >
+                                    <option value="name">Tên A→Z</option>
+                                    <option value="budget">Ngân sách ↓</option>
+                                    <option value="progress">Tiến độ ↓</option>
+                                    <option value="created">Mới nhất</option>
+                                </select>
+                            </div>
+
                             <button
                                 onClick={handleCreateProject}
                                 className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2.5 rounded-xl text-sm font-bold shadow-lg shadow-blue-200 dark:shadow-blue-900/30 transition-all hover:-translate-y-0.5"
@@ -211,7 +230,7 @@ const ProjectList: React.FC = () => {
                                     </div>
                                 ))}
                             </div>
-                        ) : filteredProjects.length === 0 ? (
+                        ) : sortedProjects.length === 0 ? (
                             <div className="flex flex-col items-center justify-center py-20 bg-white dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-700 border-dashed">
                                 <div className="bg-gray-50 dark:bg-slate-700 p-6 rounded-full mb-4">
                                     <Layers className="w-10 h-10 text-gray-300 dark:text-slate-500" />
@@ -227,7 +246,7 @@ const ProjectList: React.FC = () => {
                             </div>
                         ) : (
                             <div className={viewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6' : 'flex flex-col gap-4'}>
-                                {filteredProjects.map(project => (
+                                {sortedProjects.map(project => (
                                     <ProjectCard
                                         key={project.ProjectID}
                                         project={project}

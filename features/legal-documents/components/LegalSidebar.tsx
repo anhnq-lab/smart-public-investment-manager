@@ -1,5 +1,5 @@
 import React from 'react';
-import { Bookmark, Search, Clock } from 'lucide-react';
+import { Bookmark, Search, Clock, FileText } from 'lucide-react';
 import { LegalDocument, legalDocuments, getDocArticleCount, LegalArticle } from '../legalData';
 import { DocSidebarItem } from './LegalUI';
 import { BookmarkItem, RecentlyViewedItem } from '../useLegalStorage';
@@ -31,7 +31,7 @@ export const LegalSidebar: React.FC<LegalSidebarProps> = ({
                 <div className="flex items-center gap-2">
                     <button onClick={() => setShowBookmarks(false)}
                         className={`text-[10px] font-black uppercase tracking-[0.15em] px-3 py-1.5 rounded-lg transition-all ${!showBookmarks ? 'bg-indigo-600 text-white' : 'text-gray-400 dark:text-slate-500 hover:bg-gray-100 dark:hover:bg-slate-700'}`}>
-                        📄 Văn bản ({filteredDocs.length})
+                        <FileText className="w-4 h-4 inline" /> Văn bản ({filteredDocs.length})
                     </button>
                     <button onClick={() => setShowBookmarks(true)}
                         className={`text-[10px] font-black uppercase tracking-[0.15em] px-3 py-1.5 rounded-lg transition-all ${showBookmarks ? 'bg-amber-500 text-white' : 'text-gray-400 dark:text-slate-500 hover:bg-gray-100 dark:hover:bg-slate-700'}`}>

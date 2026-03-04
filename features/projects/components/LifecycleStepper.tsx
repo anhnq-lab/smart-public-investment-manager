@@ -24,28 +24,49 @@ interface LifecycleStepperProps {
     onHistoryUpdate?: (history: StageHistoryEntry[]) => void;
 }
 
-// 3 giai đoạn theo NĐ 175/2024
+// 3 giai đoạn theo NĐ 175/2024 — mỗi giai đoạn có màu cố định
 const STAGES = [
     {
         key: ProjectStage.Preparation,
         label: 'Chuẩn bị DA',
         icon: Settings,
         description: 'Lập chủ trương, BCNCKT, phê duyệt dự án',
-        requiredDocs: ['QĐ phê duyệt chủ trương', 'Báo cáo NCKT', 'QĐ phê duyệt dự án']
+        requiredDocs: ['QĐ phê duyệt chủ trương', 'Báo cáo NCKT', 'QĐ phê duyệt dự án'],
+        color: {
+            bg: 'bg-gradient-to-br from-blue-400 to-blue-600',
+            ring: 'ring-blue-200 dark:ring-blue-800',
+            text: 'text-blue-600 dark:text-blue-400',
+            dot: 'bg-blue-500',
+            line: 'bg-blue-500',
+        }
     },
     {
         key: ProjectStage.Execution,
         label: 'Thực hiện DA',
         icon: PlayCircle,
         description: 'Thiết kế, đấu thầu, thi công, giám sát',
-        requiredDocs: ['QĐ phê duyệt TKKT', 'Hợp đồng thi công']
+        requiredDocs: ['QĐ phê duyệt TKKT', 'Hợp đồng thi công'],
+        color: {
+            bg: 'bg-gradient-to-br from-amber-400 to-orange-500',
+            ring: 'ring-amber-200 dark:ring-amber-800',
+            text: 'text-amber-600 dark:text-amber-400',
+            dot: 'bg-amber-500',
+            line: 'bg-amber-500',
+        }
     },
     {
         key: ProjectStage.Completion,
         label: 'Kết thúc XD',
         icon: Flag,
         description: 'Nghiệm thu, quyết toán, bàn giao, đưa vào khai thác',
-        requiredDocs: ['BB nghiệm thu', 'QĐ quyết toán', 'Biên bản bàn giao']
+        requiredDocs: ['BB nghiệm thu', 'QĐ quyết toán', 'Biên bản bàn giao'],
+        color: {
+            bg: 'bg-gradient-to-br from-emerald-400 to-emerald-600',
+            ring: 'ring-emerald-200 dark:ring-emerald-800',
+            text: 'text-emerald-600 dark:text-emerald-400',
+            dot: 'bg-emerald-500',
+            line: 'bg-emerald-500',
+        }
     }
 ];
 
@@ -124,14 +145,11 @@ export const LifecycleStepper: React.FC<LifecycleStepperProps> = ({
                     return (
                         <React.Fragment key={stage.key}>
                             <div
-                                className={`w-2 h-2 rounded-full transition-all ${status === 'completed' ? 'bg-emerald-500' :
-                                    status === 'current' ? 'bg-blue-500 ring-2 ring-blue-200' :
-                                        'bg-gray-300'
-                                    }`}
+                                className={`w-2 h-2 rounded-full transition-all ${stage.color.dot} ${status === 'current' ? `ring-2 ${stage.color.ring}` : ''} ${status === 'upcoming' ? 'opacity-40' : ''}`}
                                 title={stage.label}
                             />
                             {index < STAGES.length - 1 && (
-                                <div className={`w-2 h-0.5 ${status === 'completed' ? 'bg-emerald-500' : 'bg-gray-200'}`} />
+                                <div className={`w-2 h-0.5 ${index < currentIndex ? stage.color.line : 'bg-gray-200 dark:bg-slate-600'}`} />
                             )}
                         </React.Fragment>
                     );
@@ -178,7 +196,7 @@ export const LifecycleStepper: React.FC<LifecycleStepperProps> = ({
                     {/* Progress line */}
                     <div className="absolute top-6 left-0 right-0 h-1 bg-gray-200 dark:bg-slate-600 rounded-full" style={{ margin: '0 40px' }}>
                         <div
-                            className="h-full bg-gradient-to-r from-emerald-500 to-blue-500 rounded-full transition-all duration-500"
+                            className="h-full bg-gradient-to-r from-blue-500 via-amber-500 to-emerald-500 rounded-full transition-all duration-500"
                             style={{ width: `${Math.max(0, (currentIndex / (STAGES.length - 1)) * 100)}%` }}
                         />
                     </div>
@@ -193,15 +211,13 @@ export const LifecycleStepper: React.FC<LifecycleStepperProps> = ({
                                 key={stage.key}
                                 className="flex flex-col items-center relative z-10 flex-1 group"
                             >
-                                {/* Circle/Icon */}
+                                {/* Circle/Icon — mỗi giai đoạn giữ màu riêng */}
                                 <div
-                                    className={`w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 shadow-sm cursor-pointer
-                                        ${status === 'completed'
-                                            ? 'bg-gradient-to-br from-emerald-400 to-emerald-600 text-white'
-                                            : status === 'current'
-                                                ? 'bg-gradient-to-br from-blue-500 to-indigo-600 text-white ring-4 ring-blue-100'
-                                                : 'bg-white dark:bg-slate-700 border-2 border-gray-300 dark:border-slate-500 text-gray-400 dark:text-slate-400 hover:border-gray-400 dark:hover:border-slate-400'
-                                        }`}
+                                    className={`w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 shadow-sm cursor-pointer text-white
+                                        ${stage.color.bg}
+                                        ${status === 'current' ? `ring-4 ${stage.color.ring} scale-110` : ''}
+                                        ${status === 'upcoming' ? 'opacity-40' : ''}
+                                    `}
                                     title={stage.description}
                                 >
                                     {status === 'completed' ? (
@@ -213,10 +229,7 @@ export const LifecycleStepper: React.FC<LifecycleStepperProps> = ({
 
                                 {/* Label */}
                                 <div className="mt-3 text-center">
-                                    <span className={`text-xs font-bold ${status === 'current' ? 'text-blue-700' :
-                                        status === 'completed' ? 'text-emerald-700 dark:text-emerald-400' :
-                                            'text-gray-500 dark:text-slate-400'
-                                        }`}>
+                                    <span className={`text-xs font-bold ${stage.color.text} ${status === 'upcoming' ? 'opacity-40' : ''}`}>
                                         {stage.label}
                                     </span>
                                 </div>

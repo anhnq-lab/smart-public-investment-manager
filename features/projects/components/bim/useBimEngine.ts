@@ -58,6 +58,8 @@ export interface BimEngineAPI {
     takeScreenshot: () => void;
     zoomToObject: (object: THREE.Object3D) => void;
     zoomToExpressId: (expressId: number) => Promise<void>;
+    isolateByExpressId: (expressId: number) => Promise<void>;
+    resetIsolation: () => Promise<void>;
     orbit: (deltaAzimuth: number, deltaPolar: number) => void;
     // Postproduction
     edgeOutlineEnabled: boolean;
@@ -274,12 +276,16 @@ export function useBimEngine(
                 const hoverer = components.get(OBCF.Hoverer);
                 hoverer.enabled = false;
 
-                // Track camera quaternion for ViewCube
+                // Track camera quaternion for ViewCube — throttled to 100ms
                 let lastQStr = '';
+                let lastQUpdate = 0;
                 world.camera.controls.addEventListener('update', () => {
                     if (disposed) return;
+                    const now = performance.now();
+                    if (now - lastQUpdate < 100) return; // throttle: max 10 updates/sec
+                    lastQUpdate = now;
                     const q = world.camera.three.quaternion;
-                    const qStr = `${q.x.toFixed(4)},${q.y.toFixed(4)},${q.z.toFixed(4)},${q.w.toFixed(4)}`;
+                    const qStr = `${q.x.toFixed(3)},${q.y.toFixed(3)},${q.z.toFixed(3)},${q.w.toFixed(3)}`;
                     if (qStr !== lastQStr) {
                         lastQStr = qStr;
                         setCameraQuaternion(q.clone());
@@ -476,6 +482,7 @@ export function useBimEngine(
             const box3 = new THREE.Box3();
             let found = false;
 
+            // Strategy 1: Try ThatOpen API methods
             for (const [, model] of fragments.list) {
                 try {
                     if (typeof (model as any).getMergedBox === 'function') {
@@ -483,20 +490,42 @@ export function useBimEngine(
                         if (box && !box.isEmpty()) {
                             box3.union(box);
                             found = true;
+                            break;
                         }
                     } else if (typeof (model as any).getBoundingBox === 'function') {
                         const box = await (model as any).getBoundingBox([expressId]);
                         if (box && !box.isEmpty()) {
                             box3.union(box);
                             found = true;
+                            break;
                         }
                     }
-                } catch { /* skip if error or element not in this model */ }
+                } catch { /* skip */ }
             }
+
+            // Strategy 2: Fallback — scan fragment meshes for matching expressId
+            if (!found) {
+                const scene = worldRef.current.scene.three;
+                scene.traverse((obj: any) => {
+                    if (found) return; // already found, stop
+                    if (!obj.isMesh) return;
+                    // ThatOpen fragment meshes store expressIDs in itemIDs or fragment.ids
+                    const itemIDs = obj.itemIDs || obj.fragment?.ids;
+                    if (itemIDs instanceof Set && itemIDs.has(expressId)) {
+                        const meshBox = new THREE.Box3().setFromObject(obj);
+                        if (!meshBox.isEmpty()) {
+                            box3.union(meshBox);
+                            found = true;
+                        }
+                    }
+                });
+            }
+
             if (found && !box3.isEmpty()) {
                 const sphere = new THREE.Sphere();
                 box3.getBoundingSphere(sphere);
-                sphere.radius = Math.max(sphere.radius * 1.5, 2); // padding + minimum radius to avoid being too close
+                // Closer zoom for equipment visibility — smaller radius, tighter fit
+                sphere.radius = Math.max(sphere.radius * 1.2, 0.5);
                 const camera = worldRef.current.camera as OBC.SimpleCamera;
                 camera.controls.fitToSphere(sphere, true);
             }
@@ -504,6 +533,83 @@ export function useBimEngine(
             console.warn('[BimEngine] Zoom to expressId error:', err);
         }
     }, [componentsRef, worldRef]);
+
+    // ── Isolate element — Three.js material cloning approach ───
+    // Clone materials per-mesh to avoid shared material conflicts,
+    // store originals for perfect reset.
+    const originalMaterialsMap = useRef<Map<string, THREE.Material | THREE.Material[]>>(new Map());
+    const isolationActiveRef = useRef(false);
+
+    const isolateByExpressId = useCallback(async (expressId: number) => {
+        const scene = worldRef.current?.scene?.three;
+        if (!scene) return;
+
+        // Reset previous isolation first
+        if (isolationActiveRef.current) {
+            await resetIsolation();
+        }
+
+        scene.traverse((obj: any) => {
+            if (!obj.isMesh || !obj.material) return;
+
+            // Store original material (before cloning)
+            if (!originalMaterialsMap.current.has(obj.uuid)) {
+                originalMaterialsMap.current.set(obj.uuid, obj.material);
+            }
+
+            // Check if this mesh contains the target expressId
+            const itemIDs = obj.itemIDs || obj.fragment?.ids;
+            const isTargetMesh = itemIDs instanceof Set && itemIDs.has(expressId);
+
+            if (!isTargetMesh) {
+                // Non-target mesh: clone material and make transparent
+                if (Array.isArray(obj.material)) {
+                    obj.material = obj.material.map((mat: THREE.Material) => {
+                        const clone = mat.clone();
+                        (clone as any).transparent = true;
+                        (clone as any).opacity = 0.06;
+                        (clone as any).depthWrite = false;
+                        clone.needsUpdate = true;
+                        return clone;
+                    });
+                } else {
+                    const clone = obj.material.clone();
+                    (clone as any).transparent = true;
+                    (clone as any).opacity = 0.06;
+                    (clone as any).depthWrite = false;
+                    clone.needsUpdate = true;
+                    obj.material = clone;
+                }
+            }
+            // Target mesh: keep original material (fully opaque)
+        });
+
+        isolationActiveRef.current = true;
+    }, [worldRef]);
+
+    const resetIsolation = useCallback(async () => {
+        if (!isolationActiveRef.current) return;
+        const scene = worldRef.current?.scene?.three;
+        if (!scene) return;
+
+        scene.traverse((obj: any) => {
+            if (!obj.isMesh) return;
+            const savedMat = originalMaterialsMap.current.get(obj.uuid);
+            if (savedMat) {
+                // Dispose cloned materials to free memory
+                if (Array.isArray(obj.material)) {
+                    obj.material.forEach((m: THREE.Material) => m.dispose());
+                } else if (obj.material) {
+                    obj.material.dispose();
+                }
+                // Restore original
+                obj.material = savedMat;
+            }
+        });
+
+        originalMaterialsMap.current.clear();
+        isolationActiveRef.current = false;
+    }, [worldRef]);
 
     // ── Postproduction toggles ────────────────────────
     const toggleEdgeOutline = useCallback((enabled: boolean) => {
@@ -534,6 +640,8 @@ export function useBimEngine(
         takeScreenshot,
         zoomToObject,
         zoomToExpressId,
+        isolateByExpressId,
+        resetIsolation,
         orbit,
         edgeOutlineEnabled,
         aoEnabled,

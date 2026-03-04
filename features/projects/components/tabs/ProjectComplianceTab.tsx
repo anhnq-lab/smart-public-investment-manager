@@ -8,6 +8,7 @@ import {
 } from 'lucide-react';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { supabase } from '@/lib/supabase';
+import { formatCurrency, formatDate } from '@/utils/format';
 
 // ══════════════════════════════════════════════════════════════
 //  Types
@@ -327,18 +328,7 @@ const getGroupLabel = (g: string) => {
     }
 };
 
-const formatCurrency = (n?: number) => {
-    if (!n) return '—';
-    if (n >= 1_000_000_000) return `${(n / 1_000_000_000).toFixed(2)} tỷ đồng`;
-    if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(0)} triệu đồng`;
-    return n.toLocaleString('vi-VN') + ' đồng';
-};
-
-const formatDate = (d?: string) => {
-    if (!d) return '';
-    try { return new Date(d).toLocaleDateString('vi-VN'); }
-    catch { return d; }
-};
+// formatCurrency and formatDate imported from @/utils/format
 
 /** Trích xuất dữ liệu từ file bằng Gemini */
 const extractWithGemini = async (file: File, prompt: string, subFields: { key: string; label: string }[]): Promise<Record<string, string>> => {
@@ -482,7 +472,7 @@ export const ProjectComplianceTab: React.FC<ProjectComplianceTabProps> = ({ proj
                         existing[row.tt24_field] = {
                             file: null as any,
                             fileName: source === 'task'
-                                ? `📋 ${row.doc_name}` // Show task origin
+                                ? `▸ ${row.doc_name}` // Show task origin
                                 : row.doc_name?.replace('[TT24] ', '').split(' - ').pop() || row.doc_name,
                             status: 'done',
                             extractedData: Object.keys(extractedData).length > 0 ? extractedData : undefined,

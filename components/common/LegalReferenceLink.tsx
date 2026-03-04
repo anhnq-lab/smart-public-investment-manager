@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { Scale } from 'lucide-react';
 
 /**
@@ -164,6 +164,7 @@ interface LegalReferenceLinkProps {
  * ```
  */
 export const LegalReferenceLink: React.FC<LegalReferenceLinkProps> = ({ text, className, showIcon }) => {
+    const location = useLocation();
     const refs = parseLegalRefs(text);
 
     if (refs.length === 0) {
@@ -186,11 +187,12 @@ export const LegalReferenceLink: React.FC<LegalReferenceLinkProps> = ({ text, cl
             segments.push(<span key={`plain-${idx}`}>{text.substring(lastEnd, ref.start)}</span>);
         }
 
-        // Build the URL
+        // Build the URL with from param for back navigation
         const params = new URLSearchParams({ docId: ref.docId });
         if (ref.articleId) {
             params.set('articleId', ref.articleId);
         }
+        params.set('from', location.pathname);
         const url = `/legal-documents?${params.toString()}`;
 
         segments.push(

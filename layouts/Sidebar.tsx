@@ -75,7 +75,7 @@ const Sidebar: React.FC<SidebarProps> = ({
           </div>
           {!isCollapsed && (
             <div className="animate-fade-in">
-              <h1 className="text-lg font-bold text-gray-800 dark:text-slate-100 leading-tight">Ban QLDA ĐTXD CN</h1>
+              <h1 className="text-sm font-bold text-gray-800 dark:text-slate-100 leading-tight">Ban QLDA ĐTXD CN</h1>
               <p className="text-xs text-gray-500 dark:text-slate-400 font-medium">Học viện CTQG HCM</p>
             </div>
           )}

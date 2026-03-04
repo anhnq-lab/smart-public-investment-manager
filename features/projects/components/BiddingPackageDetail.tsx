@@ -11,6 +11,9 @@ import { useContracts } from '../../../hooks/useContracts';
 import { usePayments } from '../../../hooks/usePayments';
 import { useContractors } from '../../../hooks/useContractors';
 import { getMSCRequirements, getMSCPlanLink, getMSCPackageLink } from '../../../utils/mscCompliance';
+import { LegalReferenceLink } from '../../../components/common/LegalReferenceLink';
+import { WinningContractorSelector } from './WinningContractorSelector';
+import { BidderListSection, EvaluationSection } from './BidderEvaluationSection';
 
 // ========================================
 // BIDDING PACKAGE DETAIL - Full Lifecycle Management
@@ -374,7 +377,7 @@ export const BiddingPackageDetail: React.FC<BiddingPackageDetailProps> = ({
                                                                     'text-amber-800 dark:text-amber-300'
                                                                 }`}>{req.documentType}</p>
                                                             <p className="text-gray-500 dark:text-slate-400 text-[10px] mt-0.5">
-                                                                {req.legalBasis}
+                                                                <LegalReferenceLink text={req.legalBasis} />
                                                                 {req.deadline && ` • Hạn: ${req.deadline}`}
                                                             </p>
                                                         </div>
@@ -408,46 +411,28 @@ export const BiddingPackageDetail: React.FC<BiddingPackageDetailProps> = ({
                     {/* Tab 2: Lựa chọn nhà thầu */}
                     {activeTab === 'selection' && (
                         <div className="grid grid-cols-2 gap-6">
-                            {/* Left: Bidders */}
+                            {/* Left: Bidders + Result */}
                             <div className="space-y-4">
                                 <SectionCard title="Nhà thầu tham gia" icon={Users} color="blue">
-                                    <EmptyState icon={Users} message="Chưa có dữ liệu nhà thầu" hint="Xem chi tiết trên Hệ thống mạng đấu thầu quốc gia" />
-                                </SectionCard>
-                            </div>
-
-                            {/* Right: Evaluation & Result */}
-                            <div className="space-y-4">
-                                <SectionCard title="Đánh giá HSDT" icon={BarChart3} color="yellow">
-                                    {actualStage >= 4 ? (
-                                        <div className="space-y-2">
-                                            <InfoRow label="Ngày mở thầu" value={pkg.BidOpeningDate ? formatDate(pkg.BidOpeningDate) : '-'} />
-                                            <InfoRow label="Biên bản mở thầu" value={pkg.BidOpeningDate ? 'Đã lập' : '-'} />
-                                            <InfoRow label="Báo cáo đánh giá" value={pkg.ApprovalDate_Result ? 'Đã hoàn thành' : 'Đang thực hiện'} />
-                                        </div>
-                                    ) : (
-                                        <EmptyState icon={BarChart3} message="Chưa đánh giá HSDT" hint="Chờ hết thời gian nộp HSDT" />
-                                    )}
+                                    <BidderListSection packageId={pkg.PackageID} />
                                 </SectionCard>
 
                                 <SectionCard title="Kết quả lựa chọn nhà thầu" icon={Award} color="green">
-                                    {pkg.WinningContractorID && winningContractor ? (
-                                        <div className="space-y-3">
-                                            <div className="flex items-center gap-3 p-3 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800">
-                                                <div className="w-12 h-12 bg-green-100 dark:bg-green-900/40 rounded-xl flex items-center justify-center">
-                                                    <Award className="w-6 h-6 text-green-600 dark:text-green-400" />
-                                                </div>
-                                                <div>
-                                                    <p className="font-semibold text-gray-800 dark:text-slate-100">{winningContractor.FullName}</p>
-                                                    <p className="text-xs text-gray-500 dark:text-slate-400">MST: {winningContractor.ContractorID}</p>
-                                                </div>
-                                            </div>
-                                            <InfoRow label="Giá trúng thầu" value={<span className="font-bold text-green-600 dark:text-green-400">{formatCurrency(pkg.WinningPrice || 0)}</span>} />
+                                    <WinningContractorSelector packageId={pkg.PackageID} />
+                                    {pkg.WinningPrice ? (
+                                        <div className="mt-3 pt-3 border-t border-gray-100 dark:border-slate-700">
+                                            <InfoRow label="Giá trúng thầu" value={<span className="font-bold text-green-600 dark:text-green-400">{formatCurrency(pkg.WinningPrice)}</span>} />
                                             <InfoRow label="Tiết kiệm" value={savings > 0 ? <span className="text-blue-600 dark:text-blue-400">{formatCurrency(savings)} ({savingsPercent}%)</span> : '-'} />
                                             <InfoRow label="Ngày phê duyệt KQLCNT" value={pkg.ApprovalDate_Result ? formatDate(pkg.ApprovalDate_Result) : '-'} />
                                         </div>
-                                    ) : (
-                                        <EmptyState icon={Award} message="Chưa có kết quả LCNT" hint="Đang trong quá trình đánh giá" />
-                                    )}
+                                    ) : null}
+                                </SectionCard>
+                            </div>
+
+                            {/* Right: Evaluation */}
+                            <div className="space-y-4">
+                                <SectionCard title="Đánh giá HSDT" icon={BarChart3} color="yellow">
+                                    <EvaluationSection packageId={pkg.PackageID} />
                                 </SectionCard>
                             </div>
                         </div>

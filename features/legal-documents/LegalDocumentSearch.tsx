@@ -5,12 +5,17 @@ import { LegalHeader } from './components/LegalHeader';
 import { LegalSidebar } from './components/LegalSidebar';
 import { LegalDetail } from './components/LegalDetail';
 import { LegalTOC } from './components/LegalTOC';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 
 const LegalDocumentSearch: React.FC = () => {
     const [searchParams, setSearchParams] = useSearchParams();
     const urlDocId = searchParams.get('docId');
     const urlArticleId = searchParams.get('articleId');
+    const urlFrom = searchParams.get('from');
+    const navigate = useNavigate();
+
+    // Store fromPath in state so it survives setSearchParams calls
+    const [fromPath] = useState<string | null>(urlFrom);
 
     // 1. Shared State
     const [searchQuery, setSearchQuery] = useState('');
@@ -78,7 +83,10 @@ const LegalDocumentSearch: React.FC = () => {
     // Set default expanded content on doc change and handle initial deep link
     useEffect(() => {
         if (selectedDoc) {
-            setSearchParams({ docId: selectedDoc.id }); // update URL docId implicitly
+            // Preserve from param when updating URL
+            const newParams: Record<string, string> = { docId: selectedDoc.id };
+            if (fromPath) newParams.from = fromPath;
+            setSearchParams(newParams);
 
             // if we haven't loaded anything yet or we switch docs
             if (expandedChapters.size === 0) {
@@ -173,8 +181,32 @@ const LegalDocumentSearch: React.FC = () => {
         window.print();
     };
 
+    // Helper: map paths to friendly labels for back button 
+    const fromLabel = fromPath ? (
+        fromPath.includes('/projects') ? 'Dự án đầu tư' :
+            fromPath.includes('/dashboard') ? 'Tổng quan' :
+                fromPath.includes('/contracts') ? 'Hợp đồng' :
+                    fromPath.includes('/bidding') ? 'Đấu thầu' :
+                        'Trang trước'
+    ) : null;
+
     return (
         <div className={`flex flex-col ${readingMode ? 'fixed inset-0 z-50 bg-white dark:bg-slate-900 p-6' : 'h-[calc(100vh-140px)]'} animate-in fade-in duration-300`}>
+            {/* Back Navigation Banner */}
+            {fromPath && fromLabel && (
+                <div className="shrink-0 mb-2">
+                    <button
+                        onClick={() => navigate(-1)}
+                        className="inline-flex items-center gap-2 px-3 py-1.5 text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-200 bg-blue-50 dark:bg-blue-900/20 hover:bg-blue-100 dark:hover:bg-blue-900/40 rounded-lg border border-blue-200 dark:border-blue-800 transition-colors"
+                    >
+                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                        </svg>
+                        ← Quay lại {fromLabel}
+                    </button>
+                </div>
+            )}
+
             {/* Header Section */}
             <LegalHeader
                 searchQuery={searchQuery}

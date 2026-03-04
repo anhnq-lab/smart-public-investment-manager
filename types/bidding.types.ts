@@ -9,6 +9,9 @@ export interface Contractor {
     OpLicenseNo?: string;
     Address: string;
     ContactInfo: string;
+    TaxCode?: string;
+    Representative?: string;
+    EstablishedYear?: number;
 }
 
 // 5.1. Bảng dữ liệu: BiddingPackages (Gói thầu)
