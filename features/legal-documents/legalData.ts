@@ -8372,6 +8372,9 @@ VÍ DỤ 2: MÃ SỐ DỮ LIỆU DỰ ÁN ĐẦU TƯ XÂY DỰNG (13 ký tự)
         issuedBy: 'Chính phủ',
         status: 'hieu-luc',
         summary: 'Quy định chi tiết một số điều và biện pháp thi hành Luật Đấu thầu số 22/2023/QH15 về lựa chọn nhà thầu, bao gồm: bảo đảm cạnh tranh, ưu đãi, kế hoạch lựa chọn nhà thầu, quy trình đấu thầu, hợp đồng, mua sắm tập trung, xử lý vi phạm.',
+        fileName: 'NĐ 214-2025-NĐ-CP.pdf',
+        filePath: '/resources/NĐ 214-2025-NĐ-CP.pdf',
+        fileSize: '',
         tags: ['đấu thầu', 'lựa chọn nhà thầu', 'hồ sơ mời thầu', 'đánh giá HSDT', 'hợp đồng', 'mua sắm tập trung', 'chào giá trực tuyến'],
         relatedDocIds: ['luat-dau-tu-cong-2024', 'nd-175-2024'],
         chapters: [
@@ -8382,6 +8385,7 @@ VÍ DỤ 2: MÃ SỐ DỮ LIỆU DỰ ÁN ĐẦU TƯ XÂY DỰNG (13 ký tự)
                         id: 'nd214-d1',
                         code: 'Điều 1',
                         title: `Phạm vi điều chỉnh`,
+                        summary: '',
                         content: `1. Nghị định này quy định chi tiết một số điều của Luật Đấu thầu về lựa chọn nhà thầu, bao gồm: khoản 5 Điều 3; khoản 1 Điều 5; khoản 6 Điều 6; khoản 6 Điều 10; khoản 3 Điều 15; khoản 4 Điều 19; khoản 2 Điều 20; Điều 23; khoản 1 Điều 24; khoản 2 Điều 29; khoản 2 Điều 29a; khoản 3 Điều 29b; khoản 4 Điều 36; khoản 2 Điều 39; khoản 2 Điều 43; khoản 2 và khoản 4 Điều 44; khoản 3 Điều 45; Điều 50; khoản 3 và khoản 7 Điều 53; khoản 3 và khoản 4 Điều 55; Điều 57; khoản 1 Điều 61; khoản 4 Điều 67; khoản 6 Điều 70; khoản 2 Điều 84; khoản 4 Điều 86; khoản 5 Điều 87; khoản 4 Điều 88; khoản 5 Điều 89 Luật Đấu thầu. 
 2. Các biện pháp thi hành Luật Đấu thầu về lựa chọn nhà thầu, bao gồm:
 a) Đăng ký trên Hệ thống mạng đấu thầu quốc gia; 
@@ -8393,6 +8397,7 @@ d) Quản lý nhà thầu.`
                         id: 'nd214-d2',
                         code: 'Điều 2',
                         title: `Giải thích từ ngữ`,
+                        summary: '',
                         content: `1. Chào giá trực tuyến là một quá trình lặp lại nhiều lần việc nhà thầu sử dụng phương tiện điện tử để đưa ra mức giá mới hoặc giá trị mới cho yếu tố ngoài giá có thể định lượng được theo các tiêu chuẩn đánh giá trong hồ sơ mời thầu để làm cơ sở cho việc xếp hạng hoặc xếp hạng lại hồ sơ dự thầu trên Hệ thống mạng đấu thầu quốc gia.
 2. Đấu thầu bền vững bao gồm 03 yếu tố quan trọng về môi trường, xã hội, kinh tế được lồng ghép vào quá trình lựa chọn nhà thầu: lập kế hoạch tổng thể lựa chọn nhà thầu (nếu có), kế hoạch lựa chọn nhà thầu, lập thiết kế, lập hồ sơ mời thầu, hồ sơ yêu cầu, đánh giá hồ sơ dự thầu, hồ sơ đề xuất, ký kết và quản lý thực hiện hợp đồng.
 3. Giá trúng thầu là giá được ghi trong quyết định phê duyệt kết quả lựa chọn nhà thầu.
@@ -8402,6 +8407,7 @@ d) Quản lý nhà thầu.`
                         id: 'nd214-d3',
                         code: 'Điều 3',
                         title: `Áp dụng Luật Đấu thầu trong trường hợp có quy định khác với điều ước quốc tế, thỏa thuận vay nước ngoài`,
+                        summary: '',
                         content: `Trước khi ký kết điều ước quốc tế, thỏa thuận vay nước ngoài có quy định về đấu thầu khác hoặc chưa được quy định tại Luật Đấu thầu, Chính phủ quyết định việc áp dụng quy định về đấu thầu theo trình tự, thủ tục như sau: 
 1. Trước khi đàm phán, cơ quan chủ quản dự án gửi cơ quan chủ trì đàm phán văn bản đề xuất việc áp dụng các nội dung khác hoặc chưa được quy định tại Luật Đấu thầu. Nội dung của văn bản đề xuất gồm:
 a) Các quy định của nhà tài trợ hoặc tổ chức quốc tế mà Nhà nước, Chính phủ Cộng hòa xã hội chủ nghĩa Việt Nam là thành viên có nội dung khác hoặc chưa được quy định tại Luật Đấu thầu;
@@ -8413,6 +8419,7 @@ b) Sự cần thiết và đánh giá tác động của việc áp dụng các 
                         id: 'nd214-d4',
                         code: 'Điều 4',
                         title: `Bảo đảm cạnh tranh trong đấu thầu`,
+                        summary: '',
                         content: `1. Nhà thầu tham dự thầu gói thầu xây lắp, mua sắm hàng hóa, phi tư vấn, PC phải độc lập về pháp lý và độc lập về tài chính với các bên sau đây:
 a) Nhà thầu cung cấp dịch vụ tư vấn cho gói thầu đó, bao gồm: lập, thẩm tra thiết kế kỹ thuật, thiết kế bản vẽ thi công, dự toán, thiết kế kỹ thuật tổng thể (Front - End Engineering Design - thiết kế FEED); thẩm định giá; giám sát thực hiện hợp đồng, kiểm định; lập, thẩm định hồ sơ mời sơ tuyển, hồ sơ mời thầu; đánh giá hồ sơ dự sơ tuyển, hồ sơ dự thầu; thẩm định kết quả sơ tuyển, kết quả lựa chọn nhà thầu; tư vấn quản lý dự án, quản lý hợp đồng, tư vấn khác mà các dịch vụ tư vấn này có phần công việc liên quan trực tiếp tới gói thầu;
 b) Chủ đầu tư theo quy định tại điểm d khoản 1 Điều 6 của Luật Đấu thầu.
@@ -8455,6 +8462,7 @@ n: Là số thành viên tham gia trong liên danh.`
                         id: 'nd214-d5',
                         code: 'Điều 5',
                         title: `Nguyên tắc ưu đãi`,
+                        summary: '',
                         content: `1. Nhà thầu tham dự thầu thuộc đối tượng được hưởng nhiều hơn một loại ưu đãi trong đánh giá về năng lực và kinh nghiệm hoặc trong đánh giá về tài chính thì khi tính ưu đãi chỉ được hưởng một loại ưu đãi có lợi nhất cho nhà thầu tương ứng với từng nội dung đánh giá về năng lực và kinh nghiệm hoặc đánh giá về tài chính.
 2. Trường hợp tất cả các nhà thầu tham dự thầu đều được hưởng ưu đãi như nhau hoặc tất cả các nhà thầu đều không thuộc đối tượng được hưởng ưu đãi thì không cần tính ưu đãi để so sánh, xếp hạng.
 3. Đối với gói thầu hỗn hợp, việc tính ưu đãi căn cứ tất cả các đề xuất của nhà thầu trong các phần công việc tư vấn, cung cấp hàng hóa, xây lắp. Nhà thầu được hưởng ưu đãi khi có đề xuất chi phí trong nước (chi phí tư vấn; phi tư vấn; hàng hóa có xuất xứ Việt Nam; xây lắp) từ 25% trở lên giá trị công việc của gói thầu.
@@ -8464,6 +8472,7 @@ n: Là số thành viên tham gia trong liên danh.`
                         id: 'nd214-d6',
                         code: 'Điều 6',
                         title: `Ưu đãi đối với hàng hóa có xuất xứ Việt Nam`,
+                        summary: '',
                         content: `1. Ưu đãi đối với hàng hóa có xuất xứ Việt Nam có tỷ lệ chi phí sản xuất trong nước dưới 50% và không có hàng hóa nào có chi phí sản xuất trong nước từ 50% trở lên và ưu đãi đối với thuốc được xác định như sau: 
 a) Trường hợp áp dụng phương pháp giá thấp nhất, hàng hóa, thuốc không thuộc đối tượng được hưởng ưu đãi phải cộng thêm một khoản tiền bằng 7,5% giá dự thầu sau sửa lỗi, hiệu chỉnh sai lệch, trừ đi giá trị giảm giá (nếu có) của hàng hóa, thuốc đó vào giá dự thầu sau sửa lỗi, hiệu chỉnh sai lệch, trừ đi giá trị giảm giá (nếu có) của nhà thầu để so sánh, xếp hạng;
 b) Trường hợp áp dụng phương pháp giá đánh giá, hàng hóa, thuốc không thuộc đối tượng được hưởng ưu đãi phải cộng thêm một khoản tiền bằng 7,5% giá dự thầu sau sửa lỗi, hiệu chỉnh sai lệch, trừ đi giá trị giảm giá (nếu có) của hàng hóa, thuốc đó vào giá đánh giá của nhà thầu để so sánh, xếp hạng; 
@@ -8514,6 +8523,7 @@ D: Là tỷ lệ % chi phí sản xuất trong nước của hàng hóa. D ≥ 3
                         id: 'nd214-d7',
                         code: 'Điều 7',
                         title: `Ưu đãi đối với đấu thầu quốc tế`,
+                        summary: '',
                         content: `1. Đối với gói thầu dịch vụ tư vấn:
 a) Trường hợp áp dụng phương pháp giá thấp nhất, nhà thầu không thuộc đối tượng được hưởng ưu đãi phải cộng thêm một khoản tiền bằng 7,5% giá dự thầu sau sửa lỗi, hiệu chỉnh sai lệch, trừ đi giá trị giảm giá (nếu có) vào giá dự thầu sau sửa lỗi, hiệu chỉnh sai lệch, trừ đi giá trị giảm giá (nếu có) của nhà thầu đó để so sánh, xếp hạng;
 b) Trường hợp áp dụng phương pháp dựa trên kỹ thuật, nhà thầu thuộc đối tượng được hưởng ưu đãi được cộng thêm 7,5% điểm kỹ thuật của nhà thầu vào điểm kỹ thuật của nhà thầu đó để so sánh, xếp hạng;
@@ -8532,6 +8542,7 @@ d) Trường hợp áp dụng phương pháp dựa trên kỹ thuật, nhà th�
                         id: 'nd214-d8',
                         code: 'Điều 8',
                         title: `Ưu đãi đối với đấu thầu trong nước`,
+                        summary: '',
                         content: `1. Đối với gói thầu mua sắm hàng hóa, việc áp dụng ưu đãi đối với hàng hóa có xuất xứ Việt Nam thực hiện theo quy định tại Điều 6 của Nghị định này, việc áp dụng ưu đãi đối với sản phẩm quy định tại điểm i khoản 1 Điều 10 của Luật Đấu thầu thực hiện theo quy định tại khoản 3 Điều 6 của Nghị định này.
 Chủ đầu tư quyết định áp dụng hoặc không áp dụng việc gói thầu có giá gói thầu dưới 500 triệu đồng đối với dự toán mua sắm chỉ cho phép nhà thầu có từ 50% lao động trở lên là người khuyết tật, thương binh, dân tộc thiểu số có hợp đồng lao động với thời gian thực hiện hợp đồng từ 03 tháng trở lên và đến thời điểm đóng thầu hợp đồng vẫn còn hiệu lực được tham dự thầu. Trường hợp chủ đầu tư quyết định áp dụng mà không có nhà thầu tham dự hoặc không có nhà thầu đáp ứng yêu cầu thì tổ chức đấu thầu lại và cho phép các loại hình nhà thầu khác được tham dự thầu.
 2. Đối với gói thầu xây lắp có giá gói thầu không quá 05 tỷ đồng, ưu đãi cho doanh nghiệp siêu nhỏ, doanh nghiệp nhỏ thực hiện theo quy định tại điểm đ khoản 2 Điều 10 của Luật Đấu thầu.
@@ -8543,6 +8554,7 @@ Chủ đầu tư quyết định áp dụng hoặc không áp dụng việc gói
                         id: 'nd214-d9',
                         code: 'Điều 9',
                         title: `Ưu đãi đối với nhà thầu trong nước thuộc trường hợp quy định tại điểm g khoản 1 Điều 10 của Luật Đấu thầu`,
+                        summary: '',
                         content: `1. Doanh nghiệp khởi nghiệp sáng tạo trong nước khi chào thầu sản phẩm đổi mới sáng tạo của doanh nghiệp đó theo quy định tại khoản 4 Điều 6 của Nghị định này không phải đáp ứng yêu cầu về doanh thu, số năm hoạt động trong cùng ngành nghề trong thời hạn 06 năm kể từ khi sản phẩm lần đầu được sản xuất và đủ điều kiện để đưa ra thị trường.
 2. Nhà thầu trong nước thuộc trường hợp quy định tại điểm g khoản 1 Điều 10 của Luật Đấu thầu khi chào thầu sản phẩm, dịch vụ do nhà thầu sản xuất hoặc cung cấp không phải đáp ứng điều kiện về bảo đảm cạnh tranh trong nội dung đánh giá về tư cách hợp lệ và yêu cầu về năng lực, kinh nghiệm trong thời hạn 05 năm kể từ khi được cơ quan có thẩm quyền công nhận.
 3. Sản phẩm đổi mới sáng tạo quy định tại khoản 4 Điều 6 của Nghị định này là hàng hóa của cá nhân, nhóm cá nhân, doanh nghiệp khởi nghiệp sáng tạo trong nước khi tham dự thầu được hưởng ưu đãi theo quy định tại khoản 3 Điều 6 của Nghị định này.
@@ -8552,6 +8564,7 @@ Chủ đầu tư quyết định áp dụng hoặc không áp dụng việc gói
                         id: 'nd214-d10',
                         code: 'Điều 10',
                         title: `Ưu đãi đối với nhà thầu trong nước sản xuất hàng hóa có xuất xứ Việt Nam`,
+                        summary: '',
                         content: `1. Đối với nhà thầu trong nước được chuyển giao công nghệ để sản xuất hàng hóa có xuất xứ Việt Nam phù hợp với hồ sơ mời thầu:
 a) Không phải đáp ứng yêu cầu về doanh thu, số năm hoạt động trong cùng ngành nghề trong thời hạn 05 năm kể từ khi sản phẩm lần đầu được sản xuất và đủ điều kiện để đưa ra thị trường;
 b) Đối với các công nghệ chuyển giao thuộc danh mục ngành nghề ưu đãi đầu tư, danh mục công nghệ khuyến khích chuyển giao theo quy định của pháp luật, ngoài ưu đãi theo quy định tại điểm a khoản này, không phải đáp ứng yêu cầu về xác nhận vận hành thành công, thời gian sản phẩm đã được sử dụng đảm bảo yêu cầu chất lượng được người sử dụng xác nhận. Trường hợp bên chuyển giao công nghệ có cam kết với chủ đầu tư về việc chịu trách nhiệm đối với chất lượng sản phẩm do nhà thầu sản xuất theo yêu cầu của chủ đầu tư, nhà thầu nhận chuyển giao công nghệ được sử dụng các tài liệu, kết quả thử nghiệm của bên chuyển giao công nghệ đối với đối tượng công nghệ được chuyển giao để chứng minh tính kiểm chứng và phù hợp của loại hàng hóa sản xuất đối với những nội dung được chuyển giao theo hợp đồng chuyển giao công nghệ hoặc theo giấy chứng nhận chuyển giao công nghệ quy định tại khoản 4 Điều này được cơ quan có thẩm quyền cấp;
@@ -8566,6 +8579,7 @@ b) Được hưởng ưu đãi theo quy định tại điểm b khoản 1 Điề
                         id: 'nd214-d11',
                         code: 'Điều 11',
                         title: `Ưu đãi đối với sản phẩm, dịch vụ được chứng nhận nhãn sinh thái, nhãn năng lượng và tương đương`,
+                        summary: '',
                         content: `1. Sản phẩm, dịch vụ được chứng nhận nhãn sinh thái, nhãn năng lượng và tương đương theo quy định của pháp luật được hưởng ưu đãi theo quy định tại khoản 3 Điều 10 của Luật Đấu thầu.
 2. Căn cứ tính chất của gói thầu và nhu cầu sử dụng, chủ đầu tư được quy định trong hồ sơ yêu cầu, hồ sơ mời thầu yêu cầu về kỹ thuật để mua sản phẩm, dịch vụ được chứng nhận nhãn sinh thái, nhãn năng lượng và tương đương trên cơ sở tuân thủ quy định tại khoản 3 Điều 44 của Luật Đấu thầu; được quy định trong công thức xác định giá đánh giá để ưu tiên đối với sản phẩm, dịch vụ được chứng nhận nhãn sinh thái, nhãn năng lượng và tương đương.`
                     },
@@ -8573,6 +8587,7 @@ b) Được hưởng ưu đãi theo quy định tại điểm b khoản 1 Điề
                         id: 'nd214-d12',
                         code: 'Điều 12',
                         title: `Đấu thầu bền vững`,
+                        summary: '',
                         content: `Căn cứ tính chất gói thầu, chủ đầu tư được quy định các yêu cầu về đấu thầu bền vững trong hồ sơ mời thầu, hồ sơ yêu cầu theo một hoặc các cách thức sau:
 1. Quy định yêu cầu về kỹ thuật trong hồ sơ mời thầu, hồ sơ yêu cầu theo phương pháp chấm điểm hoặc phương pháp đạt, không đạt. Nhà thầu chào giải pháp, hàng hoá, dịch vụ đáp ứng yêu cầu về đấu thầu bền vững được tiếp tục xem xét, đánh giá.
 2. Quy định trong công thức xác định giá đánh giá, trong đó lượng hóa các yếu tố đấu thầu bền vững vào công thức xác định giá đánh giá để so sánh, xếp hạng nhà thầu.`
@@ -8581,6 +8596,7 @@ b) Được hưởng ưu đãi theo quy định tại điểm b khoản 1 Điề
                         id: 'nd214-d13',
                         code: 'Điều 13',
                         title: `Nguyên tắc áp dụng hình thức lựa chọn nhà thầu`,
+                        summary: '',
                         content: `1. Chủ đầu tư được lựa chọn áp dụng các hình thức lựa chọn nhà thầu theo quy định tại Điều 29b của Luật Đấu thầu. 
 2. Gói thầu đáp ứng điều kiện áp dụng hình thức chào giá trực tuyến theo quy trình rút gọn và mua sắm trực tuyến quy định tại khoản 3 Điều 99, Điều 103 của Nghị định này nhưng chủ đầu tư quyết định không áp dụng các hình thức này thì được áp dụng hình thức đấu thầu rộng rãi hoặc chào hàng cạnh tranh quy định tại Điều 21 và Điều 24 của Luật Đấu thầu.`
                     },
@@ -8588,6 +8604,7 @@ b) Được hưởng ưu đãi theo quy định tại điểm b khoản 1 Điề
                         id: 'nd214-d14',
                         code: 'Điều 14',
                         title: `Chi phí trong lựa chọn nhà thầu`,
+                        summary: '',
                         content: `1. Đối với đấu thầu quốc tế, căn cứ quy mô, tính chất của gói thầu, chủ đầu tư quyết định theo thông lệ đấu thầu quốc tế mức tiền nhà thầu phải nộp để mua bản điện tử hồ sơ mời thầu, hồ sơ yêu cầu khi nộp hồ sơ dự thầu, hồ sơ đề xuất.
 Đối với gói thầu sử dụng vốn ngân sách nhà nước, tiền bán bản điện tử hồ sơ mời thầu, hồ sơ yêu cầu được chủ đầu tư nộp vào ngân sách nhà nước theo quy định của Luật Ngân sách nhà nước. Đối với các gói thầu không sử dụng vốn ngân sách nhà nước thì tiền bán bản điện tử hồ sơ mời thầu, hồ sơ yêu cầu là nguồn thu của chủ đầu tư và được quản lý, sử dụng theo cơ chế tài chính của chủ đầu tư.
 2. Chi phí lập, thẩm định các nội dung trong quá trình lựa chọn nhà thầu:
@@ -8628,6 +8645,7 @@ d) Chi phí kết nối chức năng bảo lãnh dự thầu điện tử giữa
                         id: 'nd214-d15',
                         code: 'Điều 15',
                         title: `Nội dung chi cho Hội đồng giải quyết kiến nghị của nhà thầu về kết quả lựa chọn nhà thầu`,
+                        summary: '',
                         content: `1. Nội dung chi gồm: chi trực tiếp thù lao cho các thành viên Hội đồng để thực hiện nhiệm vụ, chi công tác phí, văn phòng phẩm, dịch thuật, in ấn, họp và các chi phí khác phục vụ giải quyết kiến nghị của nhà thầu.
 Việc sử dụng kinh phí để chi trả cho Hội đồng giải quyết kiến nghị được thực hiện theo hình thức khoán chi. Tổng mức chi không được vượt số tiền nhà thầu có kiến nghị đã nộp theo quy định tại khoản 8 Điều 14 của Nghị định này. 
 2. Nhà thầu có kiến nghị được hoàn trả số tiền bằng số tiền mà nhà thầu có kiến nghị đã nộp trong trường hợp kiến nghị của nhà thầu được kết luận là đúng. 
@@ -8639,6 +8657,7 @@ b) Nhà thầu rút đơn kiến nghị trong quá trình giải quyết kiến 
                         id: 'nd214-d16',
                         code: 'Điều 16',
                         title: `Lập, trình và phê duyệt kế hoạch tổng thể lựa chọn nhà thầu cho dự án`,
+                        summary: '',
                         content: `1. Căn cứ quy mô, tính chất công tác đấu thầu của dự án, chủ đầu tư (trường hợp đã được xác định) có thể trình người có thẩm quyền xem xét chủ trương lập kế hoạch tổng thể lựa chọn nhà thầu cho dự án. Trường hợp chưa xác định được chủ đầu tư, cơ quan được giao chuẩn bị dự án có thể trình người có thẩm quyền xem xét chủ trương lập kế hoạch tổng thể lựa chọn nhà thầu cho dự án.
 2. Trường hợp người có thẩm quyền đồng ý chủ trương lập kế hoạch tổng thể lựa chọn nhà thầu, chủ đầu tư hoặc cơ quan được giao chuẩn bị dự án trong trường hợp chưa xác định được chủ đầu tư (sau đây gọi là chủ đầu tư) tổ chức lập kế hoạch tổng thể lựa chọn nhà thầu căn cứ các tài liệu sau:
 a) Quyết định chủ trương đầu tư chương trình, dự án;
@@ -8655,6 +8674,7 @@ Kế hoạch tổng thể lựa chọn nhà thầu bao gồm các nội dung quy
                         id: 'nd214-d17',
                         code: 'Điều 17',
                         title: `Nội dung kế hoạch tổng thể lựa chọn nhà thầu cho dự án`,
+                        summary: '',
                         content: `1. Phân tích bối cảnh thực hiện dự án:
 Xác định yêu cầu cụ thể, mục tiêu của dự án, phân tích các yếu tố trong bối cảnh thực hiện dự án có thể tác động tới hoạt động đấu thầu; mức độ sẵn sàng dự thầu của nhà thầu; các yếu tố bao gồm: quy định của pháp luật, các yếu tố về kinh tế, xã hội, công nghệ, đấu thầu bền vững và các yếu tố khác.
 2. Đánh giá năng lực, nguồn lực và kinh nghiệm thực hiện của chủ đầu tư:
@@ -8686,6 +8706,7 @@ d) Nội dung cần lưu ý trong quá trình xây dựng hồ sơ mời thầu,
                         id: 'nd214-d18',
                         code: 'Điều 18',
                         title: `Giá gói thầu và thời gian tổ chức lựa chọn nhà thầu`,
+                        summary: '',
                         content: `1. Giá gói thầu được tính đúng, tính đủ toàn bộ chi phí để thực hiện gói thầu, kể cả chi phí dự phòng (chi phí dự phòng trượt giá, chi phí dự phòng phát sinh khối lượng), phí, lệ phí và thuế. Đối với gói thầu xây lắp áp dụng loại hợp đồng theo đơn giá cố định và đơn giá điều chỉnh, chi phí dự phòng bao gồm cả các khoản tạm tính (nếu có) và chỉ được sử dụng khi có phát sinh xảy ra. Đối với các gói thầu có thời gian thực hiện gói thầu ngắn, ít có khả năng phát sinh rủi ro, trượt giá thì chi phí dự phòng cho yếu tố trượt giá được tính bằng không. Chi phí dự phòng do chủ đầu tư xác định theo tính chất từng gói thầu nhưng không được vượt mức tối đa theo quy định của pháp luật (nếu có). Trường hợp pháp luật có quy định hàng hóa thuộc đối tượng được miễn thuế, miễn phí thì giá gói thầu không bao gồm các khoản thuế, phí được miễn. Giá gói thầu được cập nhật trong thời hạn 28 ngày trước ngày mở thầu nếu cần thiết. Trường hợp gói thầu gồm nhiều phần riêng biệt thì nêu rõ giá trị ước tính của từng phần.
 2. Căn cứ xác định giá gói thầu: 
 Giá gói thầu được lập căn cứ theo một trong các thông tin sau:
@@ -8717,6 +8738,7 @@ Trường hợp gói thầu có thời gian thực hiện hợp đồng dài hơ
                         id: 'nd214-d19',
                         code: 'Điều 19',
                         title: `Cơ sở dữ liệu quốc gia về nhà thầu, chất lượng hàng hóa đã được sử dụng`,
+                        summary: '',
                         content: `1. Cơ sở dữ liệu quốc gia về nhà thầu bao gồm:
 a) Thông tin về tình trạng pháp lý của nhà thầu;
 b) Thông tin về vi phạm của nhà thầu;
@@ -8738,6 +8760,7 @@ e) Các thông tin khác.
                         id: 'nd214-d20',
                         code: 'Điều 20',
                         title: `Thông tin về kết quả thực hiện hợp đồng của nhà thầu và chất lượng hàng hóa đã được sử dụng`,
+                        summary: '',
                         content: `1. Trừ trường hợp nhà thầu đồng thời được xếp thứ nhất ở nhiều gói thầu hoặc do bất khả kháng, nhà thầu bị đánh giá về uy tín trong việc tham dự thầu khi thực hiện các hành vi sau:
 a) Nhà thầu không tiến hành hoặc từ chối đối chiếu tài liệu hoặc đã đối chiếu tài liệu nhưng từ chối hoặc không ký biên bản đối chiếu tài liệu trong thời gian có hiệu lực của hồ sơ dự thầu, hồ sơ đề xuất khi được mời đối chiếu tài liệu;
 b) Nhà thầu không tiến hành hoặc từ chối thương thảo hợp đồng (nếu có) hoặc đã tiến hành nhưng từ chối hoặc không ký kết biên bản thương thảo hợp đồng trong thời gian có hiệu lực của hồ sơ dự thầu, hồ sơ đề xuất khi được mời vào thương thảo hợp đồng, trừ trường hợp quy định tại khoản 7 Điều 45 của Nghị định này;
@@ -8772,6 +8795,7 @@ Trong thời hạn tối đa 20 ngày kể từ ngày chủ đầu tư hoặc đ
                         id: 'nd214-d21',
                         code: 'Điều 21',
                         title: `Điều kiện năng lực, kinh nghiệm đối với tổ chuyên gia, tổ thẩm định`,
+                        summary: '',
                         content: `1. Thành viên tổ chuyên gia, tổ thẩm định phải đáp ứng yêu cầu sau đây:
 a) Có chứng chỉ nghiệp vụ chuyên môn về đấu thầu, trừ trường hợp quy định tại khoản 2 Điều này; 
 b) Tốt nghiệp đại học trở lên; đối với gói thầu thuộc lĩnh vực an ninh, quốc phòng, giáo dục, chủ đầu tư quyết định lựa chọn thành viên tham gia tổ chuyên gia, tổ thẩm định bảo đảm có năng lực thực hiện công việc được giao;
@@ -8785,6 +8809,7 @@ Trường hợp cần ý kiến của chuyên gia chuyên ngành thì các chuy�
                         id: 'nd214-d22',
                         code: 'Điều 22',
                         title: `Công khai thông tin về lựa chọn nhà thầu`,
+                        summary: '',
                         content: `1. Các thông tin về lựa chọn nhà thầu được đăng tải công khai trên Hệ thống mạng đấu thầu quốc gia theo quy định tại Điều 7 và Điều 8 của Luật Đấu thầu. Chủ đầu tư có trách nhiệm đăng tải thông tin sau trên Hệ thống mạng đấu thầu quốc gia: 
 a) Nhà thầu không bảo đảm uy tín khi tham dự thầu;
 b) Nhà thầu bị chấm dứt hợp đồng do lỗi của nhà thầu;
@@ -8796,6 +8821,7 @@ Trường hợp cần sửa đổi các thông tin này, chủ đầu tư thực
                         id: 'nd214-d23',
                         code: 'Điều 23',
                         title: `Đăng ký và quản lý tài khoản trên Hệ thống mạng đấu thầu quốc gia`,
+                        summary: '',
                         content: `1. Việc đăng ký tham gia Hệ thống mạng đấu thầu quốc gia thực hiện như sau:
 a) Tổ chức, cá nhân nhập thông tin vào đơn đăng ký được hình thành trên Hệ thống mạng đấu thầu quốc gia hoặc Cổng dịch vụ công quốc gia (nếu có);
 b) Tổ chức nộp Hồ sơ đăng ký trên Hệ thống mạng đấu thầu quốc gia hoặc Cổng dịch vụ công quốc gia (nếu có) gồm các tài liệu sau: đơn đăng ký quy định tại điểm a khoản này được ký hoặc xác thực điện tử, đóng dấu (nếu có) bởi đại diện hợp pháp của tổ chức; giấy ủy quyền (nếu có); quyết định thành lập hoặc giấy chứng nhận đăng ký doanh nghiệp hoặc giấy chứng nhận đăng ký hộ kinh doanh hoặc giấy chứng nhận đăng ký hợp tác xã, liên hiệp hợp tác xã, tổ hợp tác hoặc các tài liệu tương đương khác trong trường hợp tổ chức không có tên trên Hệ thống thông tin quốc gia về đăng ký doanh nghiệp;
@@ -8816,6 +8842,7 @@ b) Tổ chức, cá nhân cập nhật thông tin tài khoản và thực hiện
                         id: 'nd214-d24',
                         code: 'Điều 24',
                         title: `Quy trình chi tiết`,
+                        summary: '',
                         content: `1. Chuẩn bị lựa chọn nhà thầu, bao gồm:
 a) Lựa chọn danh sách ngắn (nếu cần thiết);
 b) Lập hồ sơ mời thầu; 
@@ -8839,6 +8866,7 @@ c) Trình kết quả đánh giá hồ sơ dự thầu.
                         id: 'nd214-d25',
                         code: 'Điều 25',
                         title: `Lựa chọn danh sách ngắn`,
+                        summary: '',
                         content: `Căn cứ quy mô, tính chất của gói thầu, chủ đầu tư quyết định áp dụng thủ tục lựa chọn danh sách ngắn. Việc áp dụng thủ tục lựa chọn danh sách ngắn phải được ghi trong kế hoạch lựa chọn nhà thầu.
 1. Đối với đấu thầu rộng rãi:
 a) Lập hồ sơ mời sơ tuyển:
@@ -8866,6 +8894,7 @@ b) Sau khi phê duyệt, danh sách ngắn được đăng tải theo quy địn
                         id: 'nd214-d26',
                         code: 'Điều 26',
                         title: `Lập hồ sơ mời thầu`,
+                        summary: '',
                         content: `1. Căn cứ lập hồ sơ mời thầu:
 a) Kế hoạch tổng thể lựa chọn nhà thầu được duyệt (nếu có);
 b) Kế hoạch lựa chọn nhà thầu được duyệt.
@@ -8949,6 +8978,7 @@ Trường hợp nhà sản xuất hoặc văn phòng đại diện hoặc đại
                         id: 'nd214-d27',
                         code: 'Điều 27',
                         title: `Thẩm định và phê duyệt hồ sơ mời thầu`,
+                        summary: '',
                         content: `1. Chủ đầu tư không bắt buộc phải thẩm định hồ sơ mời thầu; trường hợp có yêu cầu thẩm định thì thực hiện theo quy định tại Điều 135 của Nghị định này trước khi phê duyệt. 
 2. Việc phê duyệt hồ sơ mời thầu phải căn cứ vào tờ trình phê duyệt, báo cáo thẩm định hồ sơ mời thầu (nếu có).`
                     },
@@ -8956,6 +8986,7 @@ Trường hợp nhà sản xuất hoặc văn phòng đại diện hoặc đại
                         id: 'nd214-d28',
                         code: 'Điều 28',
                         title: `Tổ chức lựa chọn nhà thầu`,
+                        summary: '',
                         content: `1. Mời thầu:
 a) Thông báo mời thầu được áp dụng đối với trường hợp không áp dụng thủ tục lựa chọn danh sách ngắn và được thực hiện theo quy định tại điểm b khoản 1 Điều 8 của Luật Đấu thầu;
 b) Trường hợp gói thầu áp dụng thủ tục lựa chọn danh sách ngắn, thư mời thầu được gửi đến các nhà thầu có tên trong danh sách ngắn. 
@@ -8979,6 +9010,7 @@ c) Đại diện của chủ đầu tư phải ký xác nhận vào bản gốc 
                         id: 'nd214-d29',
                         code: 'Điều 29',
                         title: `Nguyên tắc đánh giá hồ sơ dự thầu`,
+                        summary: '',
                         content: `1. Việc đánh giá hồ sơ dự thầu phải căn cứ vào tiêu chuẩn đánh giá hồ sơ dự thầu và các yêu cầu khác trong hồ sơ mời thầu, căn cứ vào hồ sơ dự thầu đã nộp, các tài liệu giải thích, làm rõ hồ sơ dự thầu của nhà thầu để bảo đảm lựa chọn được nhà thầu có đủ năng lực và kinh nghiệm, có giải pháp khả thi để thực hiện gói thầu; trường hợp hồ sơ mời thầu có các nội dung làm hạn chế cạnh tranh theo quy định tại khoản 2 Điều 26 của Nghị định này thì các nội dung này không phải căn cứ để xem xét đánh giá hồ sơ dự thầu. 
 2. Trường hợp nhân sự chủ chốt (trừ nhân sự chủ chốt thực hiện phần công việc tư vấn (E) trong gói thầu EPC, EP, EC, chìa khóa trao tay), thiết bị chủ yếu mà nhà thầu đề xuất trong hồ sơ dự thầu không đáp ứng yêu cầu hoặc không chứng minh được khả năng huy động nhân sự (bao gồm cả trường hợp nhân sự đã huy động cho hợp đồng khác có thời gian làm việc trùng với thời gian thực hiện gói thầu này) thì chủ đầu tư cho phép nhà thầu bổ sung, thay thế. Nhà thầu chỉ được bổ sung, thay thế một lần đối với từng vị trí nhân sự chủ chốt, thiết bị chủ yếu trong một khoảng thời gian phù hợp.
 Đối với gói thầu được tổ chức đấu thầu trong nước, tổ chuyên gia đánh giá nội dung về nhân sự chủ chốt, thiết bị thi công chủ yếu của gói thầu xây lắp, PC, phần xây lắp trong gói thầu EC trên cơ sở cam kết của nhà thầu trong đơn dự thầu mà không đánh giá theo nội dung kê khai, tài liệu đính kèm trong hồ sơ dự thầu. Sau khi đánh giá về tài chính, nhà thầu xếp hạng thứ nhất được đánh giá chi tiết về nhân sự chủ chốt, thiết bị thi công chủ yếu theo kê khai, tài liệu đính kèm của nhà thầu trong hồ sơ dự thầu. Trường hợp nội dung kê khai, tài liệu đính kèm của nhà thầu không đáp ứng, chủ đầu tư yêu cầu nhà thầu làm rõ hồ sơ dự thầu để bổ sung, thay đổi nhân sự chủ chốt, thiết bị thi công chủ yếu so với nội dung đã kê khai, tài liệu đính kèm trong hồ sơ dự thầu. Việc bổ sung, thay đổi đối với từng nhân sự chủ chốt, thiết bị thi công chủ yếu không đáp ứng được thực hiện tối đa 02 lần để bảo đảm nhà thầu có nhân sự chủ chốt, thiết bị thi công chủ yếu đáp ứng yêu cầu của hồ sơ mời thầu theo cam kết trong đơn dự thầu. Trường hợp nhà thầu không bổ sung, thay thế nhân sự chủ chốt, thiết bị thi công chủ yếu hoặc sau khi làm rõ, bổ sung, thay thế, nhà thầu không bố trí được nhân sự chủ chốt, thiết bị thi công chủ yếu đáp ứng yêu cầu của hồ sơ mời thầu theo cam kết trong đơn dự thầu thì nhà thầu sẽ bị loại và bị đánh giá về uy tín khi tham dự thầu theo quy định tại Điều 20 của Nghị định này, bị khóa tài khoản trong thời hạn 03 tháng kể từ ngày chủ đầu tư công khai tên nhà thầu trên Hệ thống mạng đấu thầu quốc gia.
@@ -8998,6 +9030,7 @@ d) Với điều kiện hồ sơ dự thầu đáp ứng cơ bản yêu cầu n�
                         id: 'nd214-d30',
                         code: 'Điều 30',
                         title: `Làm rõ hồ sơ dự thầu`,
+                        summary: '',
                         content: `1. Sau khi mở thầu, nhà thầu có trách nhiệm làm rõ hồ sơ dự thầu theo yêu cầu của chủ đầu tư. Trường hợp hồ sơ dự thầu của nhà thầu thiếu tài liệu về tư cách hợp lệ, hợp đồng tương tự, năng lực sản xuất, báo cáo tài chính, nghĩa vụ kê khai thuế và nộp thuế, nhân sự, thiết bị thì chủ đầu tư yêu cầu nhà thầu làm rõ, bổ sung tài liệu để chứng minh tư cách hợp lệ, năng lực và kinh nghiệm, đối với phần xây lắp trong gói thầu EC, gói thầu xây lắp, PC được tổ chức đấu thầu trong nước, nội dung nhân sự chủ chốt, thiết bị chủ yếu, chủ đầu tư chỉ yêu cầu nhà thầu làm rõ, bổ sung tài liệu để chứng minh đối với nhà thầu xếp hạng thứ nhất.
 2. Trường hợp sau khi đóng thầu, nhà thầu phát hiện hồ sơ dự thầu thiếu các tài liệu chứng minh về tư cách hợp lệ, hợp đồng tương tự, năng lực sản xuất, báo cáo tài chính, nghĩa vụ kê khai thuế và nộp thuế, tài liệu về nhân sự, thiết bị cụ thể đã đề xuất trong hồ sơ dự thầu thì được gửi tài liệu đến chủ đầu tư để làm rõ về tư cách hợp lệ, năng lực và kinh nghiệm của mình. Chủ đầu tư có trách nhiệm tiếp nhận những tài liệu làm rõ của nhà thầu để xem xét, đánh giá; các tài liệu bổ sung, làm rõ là một phần của hồ sơ dự thầu.
 3. Đối với nội dung về tư cách hợp lệ, việc làm rõ phải bảo đảm nguyên tắc không làm thay đổi bản chất của nhà thầu tham dự thầu. Đối với các nội dung về tính hợp lệ của hồ sơ dự thầu (trừ nội dung về tư cách hợp lệ), đề xuất về kỹ thuật, tài chính, việc làm rõ phải bảo đảm nguyên tắc không làm thay đổi nội dung cơ bản của hồ sơ dự thầu đã nộp, không thay đổi giá dự thầu. 
@@ -9008,6 +9041,7 @@ d) Với điều kiện hồ sơ dự thầu đáp ứng cơ bản yêu cầu n�
                         id: 'nd214-d31',
                         code: 'Điều 31',
                         title: `Sửa lỗi và hiệu chỉnh sai lệch`,
+                        summary: '',
                         content: `1. Sửa lỗi là việc sửa lại những sai sót trong hồ sơ dự thầu bao gồm lỗi số học và các lỗi khác được tiến hành theo nguyên tắc sau đây:
 a) Lỗi số học bao gồm những lỗi do thực hiện các phép tính cộng, trừ, nhân, chia không chính xác khi tính toán giá dự thầu. Đối với hợp đồng theo đơn giá cố định, hợp đồng theo đơn giá điều chỉnh, hợp đồng theo thời gian, hợp đồng theo chi phí cộng phí, hợp đồng theo kết quả đầu ra, hợp đồng theo tỷ lệ phần trăm, trường hợp có sự không nhất quán giữa đơn giá và thành tiền thì lấy đơn giá làm cơ sở cho việc sửa lỗi; nếu phát hiện đơn giá có sự sai khác bất thường do lỗi hệ thập phân (10 lần, 100 lần, 1.000 lần) thì thành tiền là cơ sở cho việc sửa lỗi; 
 b) Trường hợp tổng giá trị của các hạng mục không chính xác do lỗi khi cộng trừ giá trị của các hạng mục thì giá trị của các hạng mục là cơ sở để sửa lỗi;
@@ -9037,6 +9071,7 @@ Trường hợp hồ sơ dự thầu của nhà thầu có sai lệch thiếu sa
                         id: 'nd214-d32',
                         code: 'Điều 32',
                         title: `Kiểm tra và đánh giá hồ sơ dự thầu`,
+                        summary: '',
                         content: `1. Kiểm tra tính hợp lệ của hồ sơ dự thầu:
 a) Kiểm tra các thành phần của hồ sơ dự thầu bao gồm: đơn dự thầu; thỏa thuận liên danh (nếu có); giấy ủy quyền của người đại diện theo pháp luật của nhà thầu (nếu có); bảo đảm dự thầu; số lượng bản gốc, bản chụp hồ sơ dự thầu;
 b) Kiểm tra sự thống nhất về nội dung giữa bản gốc và bản chụp để phục vụ quá trình đánh giá chi tiết hồ sơ dự thầu.
@@ -9065,6 +9100,7 @@ g) Những nội dung cần lưu ý (nếu có).
                         id: 'nd214-d33',
                         code: 'Điều 33',
                         title: `Thẩm định, phê duyệt và công khai kết quả lựa chọn nhà thầu`,
+                        summary: '',
                         content: `1. Căn cứ báo cáo đánh giá hồ sơ dự thầu của tổ chuyên gia, kết quả thương thảo hợp đồng (nếu có), tổ thẩm định thực hiện thẩm định kết quả lựa chọn nhà thầu theo quy định tại khoản 1 và khoản 4 Điều 136 của Nghị định này trước khi được chủ đầu tư phê duyệt.
 2. Căn cứ báo cáo đánh giá hồ sơ dự thầu, báo cáo thẩm định kết quả lựa chọn nhà thầu, chủ đầu tư phê duyệt kết quả lựa chọn nhà thầu.
 3. Trường hợp lựa chọn được nhà thầu trúng thầu, văn bản phê duyệt kết quả lựa chọn nhà thầu bao gồm các nội dung sau đây:
@@ -9084,6 +9120,7 @@ Trường hợp có yêu cầu giải thích về lý do cụ thể nhà thầu 
                         id: 'nd214-d34',
                         code: 'Điều 34',
                         title: `Hoàn thiện, ký kết hợp đồng`,
+                        summary: '',
                         content: `1. Chủ đầu tư mời nhà thầu trúng thầu đến hoàn thiện hợp đồng. Trong quá trình hoàn thiện hợp đồng, các bên tiến hành hoàn thiện dự thảo văn bản hợp đồng; điều kiện cụ thể của hợp đồng, phụ lục hợp đồng gồm danh mục chi tiết về phạm vi công việc, biểu giá, tiến độ thực hiện (nếu có). Việc hoàn thiện hợp đồng được thực hiện trên cơ sở:
 a) Mẫu hợp đồng đã điền đủ các thông tin cụ thể của gói thầu;
 b) Kết quả lựa chọn nhà thầu được duyệt;
@@ -9098,6 +9135,7 @@ d) Các nội dung nêu trong hồ sơ dự thầu và giải thích làm rõ h�
                         id: 'nd214-d35',
                         code: 'Điều 35',
                         title: `Quản lý thực hiện hợp đồng`,
+                        summary: '',
                         content: `1. Quản lý thực hiện hợp đồng bao gồm các nội dung: tiến độ thực hiện, chất lượng, chi phí và các nội dung khác của hợp đồng. Chủ đầu tư có trách nhiệm quản lý việc thực hiện hợp đồng.
 2. Chủ đầu tư phải cập nhật tiến độ thực tế thực hiện hợp đồng khi thực hiện xong các mốc hoàn thành quy định trong hợp đồng trên Hệ thống mạng đấu thầu quốc gia. 
 3. Chủ đầu tư có trách nhiệm công khai về kết quả thực hiện hợp đồng của nhà thầu trên Hệ thống mạng đấu thầu quốc gia theo quy định tại khoản 3 và khoản 4 Điều 20 của Nghị định này. Đối với gói thầu có nội dung cung cấp hàng hóa, chủ đầu tư còn phải công khai trên Hệ thống mạng đấu thầu quốc gia về chất lượng hàng hóa do nhà thầu cung cấp theo quy định tại các khoản 5, 6 và 7 Điều 20 của Nghị định này.
@@ -9107,6 +9145,7 @@ Mục 2. PHƯƠNG THỨC MỘT GIAI ĐOẠN HAI TÚI HỒ SƠ`
                         id: 'nd214-d36',
                         code: 'Điều 36',
                         title: `Quy trình chi tiết`,
+                        summary: '',
                         content: `1. Chuẩn bị lựa chọn nhà thầu, bao gồm:
 a) Lựa chọn danh sách ngắn (nếu cần thiết);
 b) Lập hồ sơ mời thầu; 
@@ -9135,6 +9174,7 @@ d) Trình kết quả đánh giá hồ sơ dự thầu.
                         id: 'nd214-d37',
                         code: 'Điều 37',
                         title: `Lập hồ sơ mời thầu`,
+                        summary: '',
                         content: `1. Trường hợp gói thầu áp dụng lựa chọn danh sách ngắn thì thực hiện theo quy định tại Điều 25 của Nghị định này. 
 2. Căn cứ lập hồ sơ mời thầu theo quy định tại khoản 1 Điều 26 của Nghị định này.
 3. Hồ sơ mời thầu phải bao gồm đầy đủ các nội dung cần thiết để nhà thầu lập hồ sơ dự thầu theo quy định tại khoản 2 Điều 26 của Nghị định này và không được nêu điều kiện dẫn đến làm hạn chế sự tham gia của nhà thầu hoặc nhằm tạo lợi thế cho một hoặc một số nhà thầu gây ra sự cạnh tranh không bình đẳng theo quy định tại khoản 3 Điều 44 của Luật Đấu thầu. 
@@ -9175,6 +9215,7 @@ d) Tiêu chuẩn xác định giá đánh giá (đối với trường hợp áp
                         id: 'nd214-d38',
                         code: 'Điều 38',
                         title: `Tiêu chuẩn đánh giá tổng hợp`,
+                        summary: '',
                         content: `1. Tiêu chuẩn đánh giá tổng hợp được áp dụng đối với phương pháp kết hợp giữa kỹ thuật và giá trên cơ sở xác định điểm tổng hợp.
 Điểm tổng hợp được xác định như sau:
 
@@ -9196,6 +9237,7 @@ c) Đối với gói thầu quy định khoản 1a Điều 31 của Luật Đấ
                         id: 'nd214-d39',
                         code: 'Điều 39',
                         title: `Thẩm định và phê duyệt hồ sơ mời thầu`,
+                        summary: '',
                         content: `1. Chủ đầu tư không bắt buộc phải thẩm định hồ sơ mời thầu; trường hợp có yêu cầu thẩm định thì thực hiện theo quy định tại Điều 135 của Nghị định này trước khi phê duyệt. 
 2. Việc phê duyệt hồ sơ mời thầu được thực hiện bằng văn bản căn cứ vào tờ trình phê duyệt, báo cáo thẩm định hồ sơ mời thầu (nếu có).`
                     },
@@ -9203,6 +9245,7 @@ c) Đối với gói thầu quy định khoản 1a Điều 31 của Luật Đấ
                         id: 'nd214-d40',
                         code: 'Điều 40',
                         title: `Tổ chức lựa chọn nhà thầu`,
+                        summary: '',
                         content: `1. Mời thầu:
 a) Thông báo mời thầu được áp dụng đối với trường hợp không tiến hành thủ tục lựa chọn danh sách ngắn và được thực hiện theo quy định tại điểm b khoản 1 Điều 8 của Luật Đấu thầu;
 b) Gửi thư mời thầu đến các nhà thầu có tên trong danh sách ngắn. 
@@ -9221,6 +9264,7 @@ d) Đại diện của chủ đầu tư phải ký xác nhận vào bản gốc 
                         id: 'nd214-d41',
                         code: 'Điều 41',
                         title: `Nguyên tắc đánh giá, làm rõ hồ sơ dự thầu, sửa lỗi và hiệu chỉnh sai lệch`,
+                        summary: '',
                         content: `1. Việc đánh giá hồ sơ dự thầu thực hiện theo nguyên tắc quy định tại các khoản 1, 2, 3, 5, 6, 7 và 8 Điều 29 của Nghị định này.
 Đối với gói thầu chia phần, việc đánh giá hồ sơ dự thầu và xét duyệt trúng thầu được thực hiện trên cơ sở bảo đảm tổng giá đề nghị trúng thầu của gói thầu là thấp nhất (đối với gói thầu áp dụng phương pháp giá thấp nhất); tổng giá đánh giá của gói thầu là thấp nhất (đối với gói thầu áp dụng phương pháp giá đánh giá); tổng điểm tổng hợp cao nhất (đối với gói thầu áp dụng phương pháp kết hợp giữa kỹ thuật và giá) và giá đề nghị trúng thầu của cả gói thầu không vượt giá gói thầu được duyệt mà không so sánh với ước tính chi phí của từng phần; đối với gói thầu mua thuốc, hóa chất, vật tư xét nghiệm, thiết bị y tế, dịch vụ kỹ thuật theo hướng dẫn của Bộ Y tế (nếu có).
 2. Việc làm rõ hồ sơ dự thầu thực hiện theo quy định tại Điều 30 của Nghị định này.
@@ -9230,6 +9274,7 @@ d) Đại diện của chủ đầu tư phải ký xác nhận vào bản gốc 
                         id: 'nd214-d42',
                         code: 'Điều 42',
                         title: `Kiểm tra và đánh giá hồ sơ đề xuất về kỹ thuật`,
+                        summary: '',
                         content: `1. Nội dung kiểm tra tính hợp lệ của hồ sơ đề xuất về kỹ thuật:
 a) Các thành phần của hồ sơ đề xuất về kỹ thuật, bao gồm: đơn dự thầu thuộc hồ sơ đề xuất về kỹ thuật, thỏa thuận liên danh (nếu có), giấy ủy quyền của người đại diện theo pháp luật của nhà thầu (nếu có); bảo đảm dự thầu; số lượng bản gốc, bản chụp hồ sơ đề xuất về kỹ thuật; 
 b) Tính thống nhất về nội dung giữa bản gốc và bản chụp để phục vụ quá trình đánh giá chi tiết hồ sơ đề xuất về kỹ thuật.
@@ -9250,6 +9295,7 @@ b) Nhà thầu đáp ứng yêu cầu về kỹ thuật hoặc đạt điểm k�
                         id: 'nd214-d43',
                         code: 'Điều 43',
                         title: `Mở hồ sơ đề xuất về tài chính`,
+                        summary: '',
                         content: `1. Chủ đầu tư kiểm tra niêm phong túi đựng các hồ sơ đề xuất về tài chính.
 2. Việc mở hồ sơ đề xuất về tài chính được thực hiện như sau:
 a) Chỉ mở hồ sơ đề xuất về tài chính của nhà thầu có tên trong danh sách nhà thầu đáp ứng yêu cầu về kỹ thuật trước sự chứng kiến của đại diện các nhà thầu tham dự lễ mở hồ sơ đề xuất về tài chính, không phụ thuộc vào sự có mặt hay vắng mặt của các nhà thầu. 
@@ -9263,6 +9309,7 @@ b) Đại diện của chủ đầu tư phải ký xác nhận vào tất cả c
                         id: 'nd214-d44',
                         code: 'Điều 44',
                         title: `Kiểm tra, đánh giá hồ sơ đề xuất về tài chính`,
+                        summary: '',
                         content: `1. Nội dung kiểm tra tính hợp lệ của hồ sơ đề xuất về tài chính:
 a) Số lượng bản gốc, bản chụp hồ sơ đề xuất về tài chính;
 b) Các thành phần của hồ sơ đề xuất về tài chính, bao gồm: đơn dự thầu thuộc hồ sơ đề xuất về tài chính; bảng giá dự thầu; các thành phần khác thuộc hồ sơ đề xuất về tài chính;
@@ -9278,6 +9325,7 @@ b) Tổ chuyên gia lập báo cáo đánh giá hồ sơ dự thầu, trình ch�
                         id: 'nd214-d45',
                         code: 'Điều 45',
                         title: `Thương thảo hợp đồng`,
+                        summary: '',
                         content: `1. Trường hợp gói thầu áp dụng thương thảo hợp đồng, nhà thầu xếp hạng thứ nhất được chủ đầu tư mời đến thương thảo hợp đồng. 
 2. Căn cứ thương thảo hợp đồng:
 a) Báo cáo đánh giá hồ sơ dự thầu;
@@ -9303,6 +9351,7 @@ e) Các nội dung cần thiết khác.
                         id: 'nd214-d46',
                         code: 'Điều 46',
                         title: `Thẩm định, phê duyệt, công khai kết quả lựa chọn nhà thầu, hoàn thiện, ký kết và quản lý thực hiện hợp đồng`,
+                        summary: '',
                         content: `1. Việc thẩm định, phê duyệt và công khai kết quả lựa chọn nhà thầu thực hiện theo quy định tại Điều 33 của Nghị định này.
 2. Việc hoàn thiện, ký kết và quản lý thực hiện hợp đồng thực hiện theo quy định tại Điều 34 và Điều 35 của Nghị định này.`
                     }
@@ -9315,6 +9364,7 @@ e) Các nội dung cần thiết khác.
                         id: 'nd214-d47',
                         code: 'Điều 47',
                         title: `Chuẩn bị đấu thầu giai đoạn một`,
+                        summary: '',
                         content: `1. Thủ tục lựa chọn danh sách ngắn đối với trường hợp đấu thầu rộng rãi và đấu thầu hạn chế thực hiện theo quy định tại Điều 25 của Nghị định này.
 2. Lập hồ sơ mời thầu giai đoạn một:
 a) Hồ sơ mời thầu được lập theo quy định tại khoản 1 và khoản 2 Điều 26 của Nghị định này;
@@ -9328,6 +9378,7 @@ b) Việc phê duyệt hồ sơ mời thầu căn cứ vào tờ trình phê duy
                         id: 'nd214-d48',
                         code: 'Điều 48',
                         title: `Tổ chức đấu thầu giai đoạn một`,
+                        summary: '',
                         content: `1. Việc mời thầu giai đoạn một thực hiện theo quy định tại khoản 1 Điều 28 của Nghị định này.
 2. Phát hành, sửa đổi, làm rõ hồ sơ mời thầu: 
 Việc phát hành, sửa đổi, làm rõ hồ sơ mời thầu thực hiện theo quy định tại khoản 2 Điều 28 của Nghị định này.
@@ -9341,6 +9392,7 @@ Biên bản mở thầu giai đoạn một không bao gồm các thông tin về
                         id: 'nd214-d49',
                         code: 'Điều 49',
                         title: `Đánh giá hồ sơ đề xuất về kỹ thuật, trình, phê duyệt, công khai danh sách nhà thầu đáp ứng yêu cầu của hồ sơ mời thầu giai đoạn một`,
+                        summary: '',
                         content: `1. Nguyên tắc đánh giá hồ sơ dự thầu thực hiện theo quy định tại Điều 29 của Nghị định này.
 2. Việc làm rõ hồ sơ dự thầu thực hiện theo quy định tại Điều 30 của Nghị định này.
 3. Việc phê duyệt, công khai danh sách nhà thầu đáp ứng yêu cầu của hồ sơ mời thầu giai đoạn một thực hiện theo quy định tại Điều 33 của Nghị định này. Danh sách nhà thầu đáp ứng yêu cầu của hồ sơ mời thầu giai đoạn một phải được đăng tải trên Hệ thống mạng đấu thầu quốc gia chậm nhất là 05 ngày làm việc kể từ ngày phê duyệt.`
@@ -9349,6 +9401,7 @@ Biên bản mở thầu giai đoạn một không bao gồm các thông tin về
                         id: 'nd214-d50',
                         code: 'Điều 50',
                         title: `Chuẩn bị, tổ chức đấu thầu giai đoạn hai`,
+                        summary: '',
                         content: `1. Trao đổi về hồ sơ dự thầu giai đoạn một:
 Chủ đầu tư mời từng nhà thầu thuộc danh sách nhà thầu đáp ứng yêu cầu của hồ sơ mời thầu giai đoạn một để làm rõ các nội dung về hồ sơ đề xuất kỹ thuật. Việc làm rõ hồ sơ đề xuất về kỹ thuật bao gồm các yêu cầu cần điều chỉnh về kỹ thuật so với đề xuất của nhà thầu tại giai đoạn một và các ý kiến góp ý về nội dung của hồ sơ mời thầu, phương án kỹ thuật thay thế của nhà thầu. Nội dung làm rõ được chủ đầu tư và từng nhà thầu lập thành biên bản. Chủ đầu tư, tổ chuyên gia phải bảo đảm thông tin trong hồ sơ dự thầu giai đoạn một của các nhà thầu không bị tiết lộ.
 Trên cơ sở nội dung làm rõ đề xuất về kỹ thuật với từng nhà thầu, tổ chuyên gia tổng hợp, báo cáo chủ đầu tư các nội dung cần điều chỉnh, bổ sung về chỉ dẫn nhà thầu, tiêu chuẩn đánh giá, yêu cầu kỹ thuật, điều kiện hợp đồng và các nội dung khác của hồ sơ mời thầu giai đoạn một. Chủ đầu tư có trách nhiệm xem xét, quyết định các nội dung điều chỉnh, bổ sung trên cơ sở đề xuất của tổ chuyên gia.
@@ -9372,6 +9425,7 @@ Việc mở thầu thực hiện theo quy định tại khoản 4 Điều 28 c�
                         id: 'nd214-d51',
                         code: 'Điều 51',
                         title: `Đánh giá hồ sơ dự thầu giai đoạn hai`,
+                        summary: '',
                         content: `1. Nguyên tắc đánh giá hồ sơ dự thầu thực hiện theo quy định tại Điều 29 của Nghị định này.
 2. Việc làm rõ hồ sơ dự thầu thực hiện theo quy định tại Điều 30 của Nghị định này.
 3. Việc sửa lỗi và hiệu chỉnh sai lệch thực hiện theo quy định tại Điều 31 của Nghị định này.
@@ -9381,6 +9435,7 @@ Việc mở thầu thực hiện theo quy định tại khoản 4 Điều 28 c�
                         id: 'nd214-d52',
                         code: 'Điều 52',
                         title: `Thương thảo hợp đồng, thẩm định, phê duyệt, công khai kết quả lựa chọn nhà thầu, hoàn thiện, ký kết và quản lý thực hiện hợp đồng`,
+                        summary: '',
                         content: `1. Nhà thầu xếp hạng thứ nhất được chủ đầu tư mời đến thương thảo hợp đồng.
 2. Việc thương thảo hợp đồng thực hiện theo quy định tại Điều 45 của Nghị định này.
 3. Việc thẩm định, phê duyệt, công khai kết quả lựa chọn nhà thầu thực hiện theo quy định tại Điều 33 của Nghị định này.
@@ -9391,6 +9446,7 @@ Mục 2. PHƯƠNG THỨC HAI GIAI ĐOẠN HAI TÚI HỒ SƠ`
                         id: 'nd214-d53',
                         code: 'Điều 53',
                         title: `Chuẩn bị đấu thầu giai đoạn một`,
+                        summary: '',
                         content: `1. Thủ tục lựa chọn danh sách ngắn đối với trường hợp đấu thầu rộng rãi và đấu thầu hạn chế thực hiện theo quy định tại Điều 25 của Nghị định này.
 2. Lập hồ sơ mời thầu giai đoạn một:
 a) Hồ sơ mời thầu được lập căn cứ quy định tại khoản 1 và khoản 2 Điều 26 của Nghị định này;
@@ -9403,6 +9459,7 @@ b) Việc phê duyệt hồ sơ mời thầu căn cứ vào tờ trình phê duy
                         id: 'nd214-d54',
                         code: 'Điều 54',
                         title: `Tổ chức đấu thầu giai đoạn một`,
+                        summary: '',
                         content: `1. Việc mời thầu giai đoạn một thực hiện theo quy định tại khoản 1 Điều 28 của Nghị định này.
 2. Việc phát hành, sửa đổi, làm rõ hồ sơ mời thầu thực hiện theo quy định tại khoản 2 Điều 28 của Nghị định này.
 3. Việc chuẩn bị, nộp, tiếp nhận, quản lý, sửa đổi, rút hồ sơ dự thầu thực hiện theo quy định tại khoản 3 Điều 28 của Nghị định này.
@@ -9414,6 +9471,7 @@ b) Biên bản mở thầu giai đoạn một không bao gồm các thông tin v
                         id: 'nd214-d55',
                         code: 'Điều 55',
                         title: `Đánh giá hồ sơ đề xuất về kỹ thuật, thẩm định, phê duyệt, công khai danh sách nhà thầu đáp ứng yêu cầu của hồ sơ mời thầu giai đoạn một`,
+                        summary: '',
                         content: `1. Nguyên tắc đánh giá hồ sơ dự thầu thực hiện theo quy định tại Điều 29 của Nghị định này.
 2. Việc làm rõ hồ sơ dự thầu thực hiện theo quy định tại Điều 30 của Nghị định này.
 3. Việc thẩm định, phê duyệt, công khai danh sách nhà thầu đáp ứng yêu cầu của hồ sơ mời thầu giai đoạn một thực hiện theo quy định tại Điều 33 của Nghị định này. Danh sách nhà thầu đáp ứng yêu cầu của hồ sơ mời thầu giai đoạn một được đăng tải trên Hệ thống mạng đấu thầu quốc gia chậm nhất là 05 ngày làm việc kể từ ngày phê duyệt.`
@@ -9422,6 +9480,7 @@ b) Biên bản mở thầu giai đoạn một không bao gồm các thông tin v
                         id: 'nd214-d56',
                         code: 'Điều 56',
                         title: `Chuẩn bị, tổ chức đấu thầu giai đoạn hai`,
+                        summary: '',
                         content: `1. Trao đổi về hồ sơ dự thầu giai đoạn một:
 Chủ đầu tư mời từng nhà thầu có hồ sơ đề xuất về kỹ thuật đã được phê duyệt đáp ứng yêu cầu của hồ sơ mời thầu giai đoạn một để làm rõ các nội dung về hồ sơ đề xuất kỹ thuật. Việc làm rõ hồ sơ đề xuất về kỹ thuật bao gồm các yêu cầu cần điều chỉnh về kỹ thuật so với đề xuất của nhà thầu tại giai đoạn một và các ý kiến góp ý về nội dung của hồ sơ mời thầu, phương án kỹ thuật thay thế của nhà thầu. Nội dung làm rõ được chủ đầu tư và từng nhà thầu lập thành biên bản. Chủ đầu tư, tổ chuyên gia phải bảo đảm thông tin trong hồ sơ dự thầu giai đoạn một của các nhà thầu không bị tiết lộ.
 Trên cơ sở nội dung làm rõ đề xuất về kỹ thuật với từng nhà thầu, tổ chuyên gia tổng hợp, báo cáo chủ đầu tư các nội dung cần điều chỉnh, bổ sung về chỉ dẫn nhà thầu, tiêu chuẩn đánh giá, yêu cầu kỹ thuật, điều kiện hợp đồng và các nội dung khác của hồ sơ mời thầu giai đoạn một. Chủ đầu tư có trách nhiệm xem xét, quyết định các nội dung điều chỉnh, bổ sung trên cơ sở đề xuất của tổ chuyên gia.
@@ -9445,6 +9504,7 @@ Việc mở hồ sơ đề xuất về kỹ thuật thực hiện theo quy đị
                         id: 'nd214-d57',
                         code: 'Điều 57',
                         title: `Đánh giá hồ sơ đề xuất về kỹ thuật giai đoạn hai`,
+                        summary: '',
                         content: `1. Nguyên tắc đánh giá hồ sơ dự thầu thực hiện theo quy định tại Điều 29 của Nghị định này.
 2. Việc làm rõ hồ sơ dự thầu thực hiện theo quy định tại Điều 30 của Nghị định này.`
                     },
@@ -9452,6 +9512,7 @@ Việc mở hồ sơ đề xuất về kỹ thuật thực hiện theo quy đị
                         id: 'nd214-d58',
                         code: 'Điều 58',
                         title: `Thẩm định, phê duyệt danh sách nhà thầu đáp ứng yêu cầu về kỹ thuật giai đoạn hai`,
+                        summary: '',
                         content: `1. Thẩm định, phê duyệt danh sách nhà thầu đáp ứng yêu cầu về kỹ thuật giai đoạn hai thực hiện theo quy định tại khoản 1 và khoản 3 Điều 136 của Nghị định này.
 2. Chủ đầu tư thông báo, đăng tải danh sách các nhà thầu đáp ứng yêu cầu về kỹ thuật trên Hệ thống mạng đấu thầu quốc gia chậm nhất là 05 ngày làm việc kể từ ngày danh sách này được phê duyệt và tiến hành mở hồ sơ đề xuất về tài chính đối với các nhà thầu đáp ứng yêu cầu về kỹ thuật.`
                     },
@@ -9459,6 +9520,7 @@ Việc mở hồ sơ đề xuất về kỹ thuật thực hiện theo quy đị
                         id: 'nd214-d59',
                         code: 'Điều 59',
                         title: `Đánh giá hồ sơ đề xuất về tài chính giai đoạn hai`,
+                        summary: '',
                         content: `1. Nguyên tắc đánh giá hồ sơ dự thầu thực hiện theo quy định tại Điều 29 của Nghị định này.
 2. Việc làm rõ hồ sơ dự thầu thực hiện theo quy định tại Điều 30 của Nghị định này.
 3. Việc sửa lỗi và hiệu chỉnh sai lệch thực hiện theo quy định tại Điều 31 của Nghị định này.
@@ -9468,6 +9530,7 @@ Việc mở hồ sơ đề xuất về kỹ thuật thực hiện theo quy đị
                         id: 'nd214-d60',
                         code: 'Điều 60',
                         title: `Thẩm định, phê duyệt và công khai kết quả lựa chọn nhà thầu, hoàn thiện, ký kết và quản lý thực hiện hợp đồng`,
+                        summary: '',
                         content: `1. Nhà thầu xếp hạng thứ nhất được chủ đầu tư mời đến thương thảo hợp đồng.
 2. Việc thương thảo hợp đồng thực hiện theo quy định tại Điều 45 của Nghị định này.
 3. Việc thẩm định, phê duyệt và công khai kết quả lựa chọn nhà thầu thực hiện theo quy định tại Điều 33 của Nghị định này.
@@ -9482,6 +9545,7 @@ Việc mở hồ sơ đề xuất về kỹ thuật thực hiện theo quy đị
                         id: 'nd214-d61',
                         code: 'Điều 61',
                         title: `Quy trình chi tiết`,
+                        summary: '',
                         content: `1. Chuẩn bị lựa chọn nhà thầu, bao gồm:
 a) Lựa chọn danh sách ngắn (nếu cần thiết);
 b) Lập hồ sơ mời thầu; 
@@ -9509,6 +9573,7 @@ d) Trình kết quả đánh giá hồ sơ dự thầu.
                         id: 'nd214-d62',
                         code: 'Điều 62',
                         title: `Lựa chọn danh sách ngắn`,
+                        summary: '',
                         content: `1. Căn cứ quy mô, tính chất của gói thầu, chủ đầu tư quyết định áp dụng thủ tục lựa chọn danh sách ngắn. Việc áp dụng thủ tục lựa chọn danh sách ngắn phải được ghi trong kế hoạch lựa chọn nhà thầu.
 2. Đối với đấu thầu rộng rãi:
 a) Lập hồ sơ mời quan tâm: 
@@ -9534,6 +9599,7 @@ b) Sau khi phê duyệt, danh sách ngắn được đăng tải theo quy địn
                         id: 'nd214-d63',
                         code: 'Điều 63',
                         title: `Lập hồ sơ mời thầu`,
+                        summary: '',
                         content: `1. Căn cứ lập hồ sơ mời thầu:
 a) Kế hoạch tổng thể lựa chọn nhà thầu được duyệt (nếu có);
 b) Kế hoạch lựa chọn nhà thầu được duyệt. 
@@ -9592,6 +9658,7 @@ K + G = 100%.`
                         id: 'nd214-d64',
                         code: 'Điều 64',
                         title: `Thẩm định và phê duyệt hồ sơ mời thầu`,
+                        summary: '',
                         content: `1. Chủ đầu tư không bắt buộc phải thẩm định hồ sơ mời thầu; trường hợp có yêu cầu thẩm định thì thực hiện theo quy định tại Điều 135 của Nghị định này trước khi phê duyệt. 
 2. Việc phê duyệt hồ sơ mời thầu phải được thực hiện bằng văn bản căn cứ vào tờ trình phê duyệt, báo cáo thẩm định hồ sơ mời thầu (nếu có).`
                     },
@@ -9599,6 +9666,7 @@ K + G = 100%.`
                         id: 'nd214-d65',
                         code: 'Điều 65',
                         title: `Tổ chức lựa chọn nhà thầu`,
+                        summary: '',
                         content: `1. Mời thầu:
 a) Trường hợp gói thầu không áp dụng thủ tục lựa chọn danh sách ngắn, thông báo mời thầu được thực hiện theo quy định tại điểm b khoản 1 Điều 8 của Luật Đấu thầu;
 b) Trường hợp gói thầu áp dụng thủ tục lựa chọn danh sách ngắn, thư mời thầu được gửi đến các nhà thầu có tên trong danh sách ngắn. 
@@ -9610,6 +9678,7 @@ b) Trường hợp gói thầu áp dụng thủ tục lựa chọn danh sách ng
                         id: 'nd214-d66',
                         code: 'Điều 66',
                         title: `Nguyên tắc đánh giá hồ sơ dự thầu`,
+                        summary: '',
                         content: `1. Việc đánh giá hồ sơ dự thầu phải căn cứ vào tiêu chuẩn đánh giá hồ sơ dự thầu và các yêu cầu khác trong hồ sơ mời thầu, căn cứ vào hồ sơ dự thầu đã nộp, các tài liệu giải thích, làm rõ hồ sơ dự thầu của nhà thầu để bảo đảm lựa chọn được nhà thầu có đủ năng lực và kinh nghiệm, có giải pháp khả thi để thực hiện gói thầu; trường hợp hồ sơ mời thầu có các nội dung làm hạn chế cạnh tranh theo quy định tại khoản 2 Điều 63 của Nghị định này thì các nội dung này không phải căn cứ để xem xét đánh giá hồ sơ dự thầu. 
 2. Trường hợp hợp đồng có tính chất tương tự mà nhà thầu đã thực hiện nêu trong hồ sơ dự thầu không đáp ứng yêu cầu của hồ sơ mời thầu, chủ đầu tư yêu cầu nhà thầu bổ sung, thay thế hợp đồng khác để đánh giá trong thời hạn phù hợp.
 3. Việc đánh giá hồ sơ dự thầu được thực hiện trên bản chụp, nhà thầu phải chịu trách nhiệm về tính thống nhất giữa bản gốc và bản chụp. Trường hợp có sự sai khác giữa bản gốc và bản chụp nhưng không làm thay đổi thứ tự xếp hạng nhà thầu thì căn cứ vào bản gốc để đánh giá. Trường hợp có sự sai khác giữa bản gốc và bản chụp dẫn đến kết quả đánh giá trên bản gốc khác kết quả đánh giá trên bản chụp, làm thay đổi thứ tự xếp hạng nhà thầu thì hồ sơ dự thầu của nhà thầu bị loại, nhà thầu bị coi là có hành vi gian lận và bị xử lý theo quy định tại điểm a khoản 1 Điều 133 của Nghị định này.`
@@ -9618,6 +9687,7 @@ b) Trường hợp gói thầu áp dụng thủ tục lựa chọn danh sách ng
                         id: 'nd214-d67',
                         code: 'Điều 67',
                         title: `Làm rõ hồ sơ dự thầu`,
+                        summary: '',
                         content: `1. Sau khi mở thầu, nhà thầu có trách nhiệm làm rõ hồ sơ dự thầu theo yêu cầu của chủ đầu tư. Trường hợp hồ sơ dự thầu của nhà thầu thiếu tài liệu về tư cách hợp lệ, hợp đồng có tính chất tương tự, nghĩa vụ kê khai thuế và nộp thuế, tài liệu về nhân sự cụ thể đã được đề xuất trong hồ sơ dự thầu thì chủ đầu tư yêu cầu nhà thầu làm rõ, bổ sung tài liệu.
 2. Trường hợp sau khi đóng thầu, nhà thầu phát hiện hồ sơ dự thầu thiếu các tài liệu chứng minh về tư cách hợp lệ, hợp đồng có tính chất tương tự, nghĩa vụ kê khai thuế và nộp thuế, tài liệu về nhân sự cụ thể đã được đề xuất trong hồ sơ dự thầu thì được gửi tài liệu đến chủ đầu tư. Chủ đầu tư có trách nhiệm tiếp nhận những tài liệu bổ sung, làm rõ của nhà thầu để xem xét, đánh giá; các tài liệu bổ sung, làm rõ là một phần của hồ sơ dự thầu.
 3. Đối với nội dung về tư cách hợp lệ, việc làm rõ phải bảo đảm nguyên tắc không làm thay đổi bản chất của nhà thầu tham dự thầu. Đối với các nội dung về tính hợp lệ của hồ sơ dự thầu (trừ nội dung về tư cách hợp lệ), đề xuất về kỹ thuật, tài chính, việc làm rõ phải bảo đảm nguyên tắc không làm thay đổi nội dung cơ bản của hồ sơ dự thầu đã nộp, không thay đổi giá dự thầu. 
@@ -9628,6 +9698,7 @@ b) Trường hợp gói thầu áp dụng thủ tục lựa chọn danh sách ng
                         id: 'nd214-d68',
                         code: 'Điều 68',
                         title: `Sửa lỗi và hiệu chỉnh sai lệch`,
+                        summary: '',
                         content: `1. Đối với các loại hợp đồng quy định tại Điều 64 của Luật Đấu thầu, trường hợp trong hồ sơ đề xuất về tài chính, nhà thầu không chào giá cho một hoặc nhiều hạng mục công việc đã nêu trong hồ sơ đề xuất về kỹ thuật theo yêu cầu của hồ sơ mời thầu thì nhà thầu được coi là đã chào giá cho các hạng mục công việc này và phân bổ chi phí vào các phần công việc khác của gói thầu.
 2. Đối với hợp đồng theo thời gian:
 a) Trường hợp tổng giá trị của các hạng mục không chính xác do lỗi khi cộng trừ giá trị của các hạng mục thì giá trị của các hạng mục là cơ sở để sửa lỗi; 
@@ -9644,6 +9715,7 @@ Việc sửa lỗi, hiệu chỉnh sai lệch được thực hiện theo quy đ
                         id: 'nd214-d69',
                         code: 'Điều 69',
                         title: `Kiểm tra và đánh giá hồ sơ đề xuất về kỹ thuật`,
+                        summary: '',
                         content: `1. Kiểm tra tính hợp lệ của hồ sơ đề xuất về kỹ thuật:
 Việc kiểm tra tính hợp lệ của hồ sơ đề xuất về kỹ thuật thực hiện theo quy định tại khoản 1 Điều 42 của Nghị định này, trừ nội dung về tính hợp lệ của bảo đảm dự thầu. 
 2. Đánh giá tính hợp lệ của hồ sơ đề xuất về kỹ thuật:
@@ -9658,6 +9730,7 @@ c) Nhà thầu đáp ứng yêu cầu về kỹ thuật hoặc đạt điểm k�
                         id: 'nd214-d70',
                         code: 'Điều 70',
                         title: `Mở, kiểm tra và đánh giá hồ sơ đề xuất về tài chính`,
+                        summary: '',
                         content: `1. Việc mở hồ sơ đề xuất về tài chính thực hiện theo quy định tại Điều 43 của Nghị định này; đối với gói thầu áp dụng phương pháp dựa trên kỹ thuật, chỉ mở hồ sơ đề xuất của nhà thầu có điểm kỹ thuật cao nhất.
 2. Việc đánh giá tính hợp lệ của hồ sơ đề xuất về tài chính thực hiện theo quy định tại điểm b khoản 3 Điều 63 của Nghị định này.
 Nhà thầu có hồ sơ đề xuất về tài chính hợp lệ sẽ được đánh giá chi tiết về tài chính.
@@ -9667,6 +9740,7 @@ Nhà thầu có hồ sơ đề xuất về tài chính hợp lệ sẽ được 
                         id: 'nd214-d71',
                         code: 'Điều 71',
                         title: `Thương thảo hợp đồng`,
+                        summary: '',
                         content: `1. Nhà thầu xếp hạng thứ nhất được chủ đầu tư mời đến thương thảo hợp đồng. Căn cứ thương thảo hợp đồng và nguyên tắc thương thảo hợp đồng được thực hiện theo quy định tại khoản 2 và điểm a khoản 3 Điều 45 của Nghị định này.
 2. Nội dung thương thảo hợp đồng:
 a) Thương thảo về những nội dung chưa đủ chi tiết, chưa rõ hoặc chưa phù hợp, thống nhất giữa hồ sơ mời thầu và hồ sơ dự thầu, giữa các nội dung khác nhau trong hồ sơ dự thầu có thể dẫn đến các phát sinh, tranh chấp hoặc ảnh hưởng đến trách nhiệm của các bên trong quá trình thực hiện hợp đồng;
@@ -9683,6 +9757,7 @@ e) Thương thảo về các nội dung cần thiết khác.
                         id: 'nd214-d72',
                         code: 'Điều 72',
                         title: `Thẩm định, phê duyệt, công khai kết quả lựa chọn nhà thầu, hoàn thiện, ký kết và quản lý thực hiện hợp đồng`,
+                        summary: '',
                         content: `Việc thẩm định, phê duyệt, công khai kết quả lựa chọn nhà thầu, hoàn thiện, ký kết và quản lý thực hiện hợp đồng thực hiện theo quy định tại các Điều 33, 34 và 35 của Nghị định này.
 Mục 2. NHÀ THẦU LÀ CÁ NHÂN`
                     },
@@ -9690,6 +9765,7 @@ Mục 2. NHÀ THẦU LÀ CÁ NHÂN`
                         id: 'nd214-d73',
                         code: 'Điều 73',
                         title: `Lựa chọn tư vấn cá nhân`,
+                        summary: '',
                         content: `1. Tư vấn cá nhân có thể bao gồm một hoặc một nhóm chuyên gia. Trường hợp tư vấn là nhóm chuyên gia thì các chuyên gia cử đại diện để giao dịch với chủ đầu tư. Đối với nhóm chuyên gia, trường hợp trúng thầu, tất cả các thành viên trong nhóm chuyên gia phải trực tiếp ký hợp đồng với chủ đầu tư. Việc lựa chọn tư vấn cá nhân được thực hiện theo phương pháp giá cố định trên cơ sở năng lực và kinh nghiệm của tư vấn cá nhân.
 2. Đối với gói thầu dịch vụ tư vấn cá nhân có giá gói thầu không quá 300 triệu đồng, việc lựa chọn nhà thầu được thực hiện theo quy trình rút gọn quy định tại Điều 76 và Điều 77 của Nghị định này. Đối với gói thầu dịch vụ tư vấn cá nhân có giá gói thầu trên 300 triệu đồng, việc lựa chọn nhà thầu được thực hiện theo quy trình thông thường quy định tại Điều 74 và Điều 75 của Nghị định này.`
                     },
@@ -9697,6 +9773,7 @@ Mục 2. NHÀ THẦU LÀ CÁ NHÂN`
                         id: 'nd214-d74',
                         code: 'Điều 74',
                         title: `Lập, phê duyệt điều khoản tham chiếu theo quy trình thông thường`,
+                        summary: '',
                         content: `1. Điều khoản tham chiếu bao gồm các nội dung: 
 a) Mô tả tóm tắt về dự án, dự toán mua sắm; 
 b) Yêu cầu về phạm vi, khối lượng, chất lượng và thời gian thực hiện gói thầu;
@@ -9710,6 +9787,7 @@ e) Các nội dung cần thiết khác (nếu có).
                         id: 'nd214-d75',
                         code: 'Điều 75',
                         title: `Đăng tải thông báo mời thầu và đánh giá hồ sơ lý lịch khoa học của tư vấn cá nhân; phê duyệt kết quả lựa chọn nhà thầu; ký kết hợp đồng; đăng tải kết quả lựa chọn tư vấn cá nhân theo quy trình thông thường`,
+                        summary: '',
                         content: `1. Sau khi điều khoản tham chiếu được phê duyệt, chủ đầu tư đăng tải thông báo mời thầu kèm theo điều khoản tham chiếu trên Hệ thống mạng đấu thầu quốc gia, trong đó nêu rõ thời hạn nhận hồ sơ lý lịch khoa học. Thời gian tối thiểu để tư vấn cá nhân chuẩn bị hồ sơ lý lịch khoa học là 05 ngày làm việc.
 Trường hợp cần làm rõ nội dung điều khoản tham chiếu, tổ chức, cá nhân thực hiện làm rõ trên Hệ thống mạng đấu thầu quốc gia trong thời hạn tối thiểu là 03 ngày làm việc trước ngày có thời điểm đóng thầu để xem xét, xử lý. Chủ đầu tư trả lời yêu cầu làm rõ trên Hệ thống mạng đấu thầu quốc gia trong thời hạn tối thiểu 02 ngày làm việc trước ngày có thời điểm đóng thầu. 
 Trường hợp sửa đổi điều khoản tham chiếu sau khi phát hành, chủ đầu tư phải đăng tải quyết định sửa đổi kèm theo điều khoản tham chiếu sửa đổi và các nội dung sửa đổi điều khoản tham chiếu trên Hệ thống mạng đấu thầu quốc gia trong thời hạn tối thiểu 03 ngày làm việc trước ngày có thời điểm đóng thầu. 
@@ -9726,6 +9804,7 @@ Chủ đầu tư mời tư vấn cá nhân xếp hạng thứ nhất đến thư
                         id: 'nd214-d76',
                         code: 'Điều 76',
                         title: `Lập, phê duyệt điều khoản tham chiếu, danh sách tư vấn cá nhân theo quy trình rút gọn`,
+                        summary: '',
                         content: `1. Việc lập, phê duyệt điều khoản tham chiếu được thực hiện theo quy định tại Điều 74 của Nghị định này.
 2. Chủ đầu tư xác định và phê duyệt danh sách tối thiểu 03 tư vấn cá nhân được gửi thư mời.`
                     },
@@ -9733,6 +9812,7 @@ Chủ đầu tư mời tư vấn cá nhân xếp hạng thứ nhất đến thư
                         id: 'nd214-d77',
                         code: 'Điều 77',
                         title: `Gửi thư mời và đánh giá hồ sơ lý lịch khoa học của tư vấn cá nhân; phê duyệt kết quả lựa chọn nhà thầu; ký kết hợp đồng; đăng tải kết quả lựa chọn tư vấn cá nhân theo quy trình rút gọn`,
+                        summary: '',
                         content: `1. Sau khi điều khoản tham chiếu và danh sách tư vấn cá nhân được phê duyệt, chủ đầu tư gửi thư mời và điều khoản tham chiếu đến các tư vấn cá nhân có tên trong danh sách, trong đó nêu rõ thời hạn và địa chỉ nhận hồ sơ lý lịch khoa học. Thời gian tối thiểu để tư vấn cá nhân chuẩn bị hồ sơ lý lịch khoa học là 03 ngày làm việc.
 2. Nộp hồ sơ lý lịch khoa học:
 Tư vấn cá nhân chuẩn bị hồ sơ lý lịch khoa học theo yêu cầu nêu trong điều khoản tham chiếu và đề xuất kỹ thuật (nếu có) nộp cho chủ đầu tư trong thời hạn, địa chỉ nêu tại thư mời.
@@ -9747,6 +9827,7 @@ Tư vấn cá nhân chuẩn bị hồ sơ lý lịch khoa học theo yêu cầu 
                         id: 'nd214-d78',
                         code: 'Điều 78',
                         title: `Các trường hợp chỉ định thầu`,
+                        summary: '',
                         content: `1. Các gói thầu có yêu cầu cấp bách, khẩn cấp, gồm:
 a) Gói thầu có yêu cầu cấp bách, khẩn cấp nhằm thực hiện nhiệm vụ quốc phòng, an ninh, đối ngoại, bảo vệ chủ quyền quốc gia;
 b) Gói thầu cần thực hiện để ngăn chặn, khắc phục ngay hoặc để cứu trợ, hỗ trợ, xử lý kịp thời hậu quả gây ra do thiên tai, hỏa hoạn, dịch bệnh, tai nạn bất ngờ, sự cố, thảm họa hoặc sự kiện bất khả kháng khác; 
@@ -9789,6 +9870,7 @@ h) Gói thầu cung cấp dịch vụ tư vấn lập báo cáo nghiên cứu kh
                         id: 'nd214-d79',
                         code: 'Điều 79',
                         title: `Quy trình chỉ định thầu thông thường`,
+                        summary: '',
                         content: `1. Gói thầu thuộc các trường hợp quy định tại các điểm c, d, đ, e, g và h khoản 5 và khoản 6 Điều 78 của Nghị định này được áp dụng quy trình chỉ định thầu thông thường. 
 2. Việc áp dụng chỉ định thầu đối với các trường hợp quy định tại khoản 1 Điều này phải đáp ứng đủ các điều kiện sau:
 a) Có kế hoạch lựa chọn nhà thầu được phê duyệt;
@@ -9816,6 +9898,7 @@ Hợp đồng ký kết giữa các bên phải phù hợp với quyết định
                         id: 'nd214-d80',
                         code: 'Điều 80',
                         title: `Quy trình chỉ định thầu rút gọn`,
+                        summary: '',
                         content: `1. Đối với gói thầu thuộc trường hợp quy định tại khoản 1 Điều 78 của Nghị định này, căn cứ quy mô, tính chất của gói thầu và thông tin sơ bộ về nhà thầu có khả năng thực hiện gói thầu, chủ đầu tư hoặc cơ quan trực tiếp quản lý gói thầu xác định và giao cho nhà thầu có năng lực, kinh nghiệm thực hiện ngay gói thầu. Trong thời hạn 15 ngày kể từ ngày bắt đầu thực hiện gói thầu, các bên phải hoàn thiện thủ tục chỉ định thầu quy định tại khoản 3 Điều này. Việc thực hiện chỉ định thầu không phải đáp ứng các điều kiện quy định tại khoản 2 Điều 79 của Nghị định này.
 2. Đối với gói thầu thuộc trường hợp quy định tại các khoản 2, 3, 4 và các điểm a, b khoản 5 Điều 78 của Nghị định này, chủ đầu tư áp dụng quy trình chỉ định thầu rút gọn quy định tại khoản 3 Điều này. Việc thực hiện chỉ định thầu phải đáp ứng đủ các điều kiện quy định tại khoản 2 Điều 79 của Nghị định này.
 3. Chỉ định thầu rút gọn được thực hiện theo quy trình sau:
@@ -9835,6 +9918,7 @@ Mục 2. CHÀO HÀNG CẠNH TRANH, MUA SẮM TRỰC TIẾP, TỰ THỰC HIỆN`
                         id: 'nd214-d81',
                         code: 'Điều 81',
                         title: `Chào hàng cạnh tranh`,
+                        summary: '',
                         content: `Chào hàng cạnh tranh được áp dụng đối với gói thầu quy định tại khoản 1 Điều 24 của Luật Đấu thầu và có giá gói thầu không quá 10 tỷ đồng. Chào hàng cạnh tranh được thực hiện theo quy trình sau:
 1. Chuẩn bị lựa chọn nhà thầu:
 a) Hồ sơ mời thầu được lập căn cứ quy định tại khoản 1 và khoản 2 Điều 26 của Nghị định này. Nội dung hồ sơ mời thầu bao gồm: thông tin tóm tắt về dự án, dự toán mua sắm, gói thầu; chỉ dẫn nhà thầu; bảng dữ liệu đấu thầu; tiêu chuẩn đánh giá về tính hợp lệ của hồ sơ dự thầu; tiêu chuẩn đánh giá về năng lực, kinh nghiệm và đánh giá về kỹ thuật sử dụng tiêu chí đạt, không đạt; tiêu chuẩn đánh giá về tài chính theo phương pháp giá thấp nhất hoặc phương pháp giá đánh giá. Đối với gói thầu mua sắm hàng hóa, xây lắp, căn cứ vào quy mô, tính chất của gói thầu, hồ sơ mời thầu có thể bao gồm tiêu chuẩn đánh giá về năng lực và kinh nghiệm hoặc không bao gồm tiêu chuẩn này nhưng nhà thầu tham dự thầu phải cam kết có đủ năng lực, kinh nghiệm để thực hiện gói thầu. Đối với gói thầu dịch vụ phi tư vấn, hồ sơ mời thầu không yêu cầu tiêu chuẩn đánh giá về năng lực và kinh nghiệm.
@@ -9861,6 +9945,7 @@ Hợp đồng ký kết giữa các bên phải phù hợp với quyết địn
                         id: 'nd214-d82',
                         code: 'Điều 82',
                         title: `Quy trình mua sắm trực tiếp`,
+                        summary: '',
                         content: `1. Chủ đầu tư chỉ được áp dụng mua sắm trực tiếp một lần đối với các hàng hóa thuộc gói thầu dự kiến áp dụng mua sắm trực tiếp trong thời gian thực hiện dự án hoặc trong một năm ngân sách, năm tài chính của dự toán mua sắm; đối với dự toán mua sắm, trường hợp gói thầu dự kiến áp dụng mua sắm trực tiếp có thời gian thực hiện dài hơn một năm thì chỉ được áp dụng mua sắm trực tiếp một lần đối với các hàng hóa thuộc gói thầu đó trong tất cả các năm của dự toán mua sắm.
 2. Chuẩn bị lựa chọn nhà thầu:
 a) Lập hồ sơ yêu cầu:
@@ -9884,6 +9969,7 @@ Hợp đồng ký kết giữa các bên phải phù hợp với quyết địn
                         id: 'nd214-d83',
                         code: 'Điều 83',
                         title: `Quy trình tự thực hiện`,
+                        summary: '',
                         content: `1. Chuẩn bị phương án tự thực hiện và dự thảo thỏa thuận giao việc, văn bản giao việc:
 Phương án tự thực hiện bao gồm yêu cầu về phạm vi, nội dung công việc; giá trị, thời gian thực hiện; chất lượng công việc cần thực hiện; các điều kiện nghiệm thu, thanh toán; thỏa thuận giao việc hoặc văn bản giao việc đối với đơn vị hạch toán phụ thuộc hoặc đơn vị thuộc mình (sau đây gọi là đơn vị được giao thực hiện gói thầu).
 Việc chi trả lương, phụ cấp, chi phí quản lý và các chi phí khác do chủ đầu tư, đơn vị được giao thực hiện gói thầu thỏa thuận.
@@ -9900,6 +9986,7 @@ Mục 3. LỰA CHỌN NHÀ THẦU TRONG TRƯỜNG HỢP ĐẶC BIỆT`
                         id: 'nd214-d84',
                         code: 'Điều 84',
                         title: `Các gói thầu áp dụng hình thức lựa chọn nhà thầu trong trường hợp đặc biệt`,
+                        summary: '',
                         content: `1. Gói thầu thực hiện nhiệm vụ chính trị của quốc gia, lợi ích quốc gia theo chỉ đạo tại Nghị quyết, Kết luận, văn bản chỉ đạo của Ban Chấp hành Trung ương Đảng, Bộ Chính trị, Ban Bí thư, lãnh đạo chủ chốt của Đảng và Nhà nước mà không thể áp dụng được một trong các hình thức lựa chọn nhà thầu quy định tại các Điều 21, 22, 23, 24, 25, 26, 27, 28 và 29a của Luật Đấu thầu hoặc nếu áp dụng một trong các hình thức lựa chọn nhà thầu quy định tại các Điều 21, 22, 23, 24, 25, 26, 27, 28 và 29a của Luật Đấu thầu thì không đáp ứng được yêu cầu thực hiện dự án, gói thầu.
 2. Gói thầu khi triển khai thực hiện có yêu cầu phải bảo đảm quốc phòng, an ninh, đối ngoại, biên giới lãnh thổ mà không thể áp dụng được một trong các hình thức lựa chọn nhà thầu quy định tại các Điều 21, 22, 23, 24, 25, 26, 27, 28 và 29a của Luật Đấu thầu hoặc nếu áp dụng một trong các hình thức lựa chọn nhà thầu quy định tại các Điều 21, 22, 23, 24, 25, 26, 27, 28 và 29a của Luật Đấu thầu thì không đáp ứng được yêu cầu thực hiện dự án, gói thầu.
 3. Gói thầu có đặc thù về phát triển khoa học, công nghệ, đổi mới sáng tạo và chuyển đổi số mà không thể áp dụng được một trong các hình thức lựa chọn nhà thầu quy định tại các Điều 21, 22, 23, 24, 25, 26, 27, 28 và 29a của Luật Đấu thầu hoặc nếu áp dụng một trong các hình thức lựa chọn nhà thầu quy định tại các Điều 21, 22, 23, 24, 25, 26, 27, 28 và 29a của Luật Đấu thầu thì không đáp ứng được yêu cầu thực hiện dự án, gói thầu.
@@ -9929,6 +10016,7 @@ u) Gói thầu thuộc dự án, dự toán mua sắm khác có một hoặc m�
                         id: 'nd214-d85',
                         code: 'Điều 85',
                         title: `Quy trình, thủ tục lựa chọn nhà thầu trong trường hợp đặc biệt`,
+                        summary: '',
                         content: `1. Đối với gói thầu thuộc trường hợp quy định tại khoản 1, khoản 2, khoản 3 và các điểm i, k, l, m, n, o, p, q, r, s và u khoản 4 Điều 84 của Nghị định này, chủ đầu tư thực hiện như sau: 
 a) Lập, phê duyệt kế hoạch lựa chọn nhà thầu; 
 Đối với gói thầu phục vụ công tác đối ngoại đón đoàn khách quốc tế thăm và làm việc tại Việt Nam theo quy định của pháp luật về nghi lễ đối ngoại, mua tặng phẩm để phục vụ công tác đối ngoại của lãnh đạo Đảng, Nhà nước và Thủ trưởng cơ quan trung ương đi công tác nước ngoài, đón đoàn khách quốc tế thăm và làm việc tại Việt Nam thuộc trường hợp quy định tại điểm s khoản 4 Điều 84 của Nghị định này không phải thực hiện quy định tại điểm này. 
@@ -9979,6 +10067,7 @@ Mục 4. LỰA CHỌN NHÀ THẦU THỰC HIỆN GÓI THẦU CÓ SỰ THAM GIA TH
                         id: 'nd214-d86',
                         code: 'Điều 86',
                         title: `Tư cách hợp lệ của cộng đồng dân cư, tổ chức đoàn thể, nhóm thợ tại địa phương`,
+                        summary: '',
                         content: `1. Cộng đồng dân cư, tổ chức đoàn thể, nhóm thợ tại địa phương có tư cách hợp lệ để tham gia thực hiện các gói thầu quy định tại Điều 27 của Luật Đấu thầu khi người dân thuộc cộng đồng dân cư, nhóm thợ hoặc các hội viên của tổ chức đoàn thể sinh sống, cư trú trên địa bàn triển khai gói thầu và được hưởng lợi từ gói thầu.
 2. Người đại diện của cộng đồng dân cư, tổ chức đoàn thể, nhóm thợ phải có năng lực hành vi dân sự đầy đủ theo quy định pháp luật, không đang bị truy cứu trách nhiệm hình sự, được cộng đồng dân cư, tổ chức đoàn thể, nhóm thợ lựa chọn để thay mặt cộng đồng dân cư, tổ chức đoàn thể, nhóm thợ ký kết hợp đồng.`
                     },
@@ -9986,6 +10075,7 @@ Mục 4. LỰA CHỌN NHÀ THẦU THỰC HIỆN GÓI THẦU CÓ SỰ THAM GIA TH
                         id: 'nd214-d87',
                         code: 'Điều 87',
                         title: `Quy trình lựa chọn nhà thầu là cộng đồng dân cư, tổ chức đoàn thể, nhóm thợ tại địa phương`,
+                        summary: '',
                         content: `1. Sau khi có kế hoạch lựa chọn nhà thầu được phê duyệt, chủ đầu tư dự thảo hợp đồng bao gồm các yêu cầu về phạm vi, nội dung công việc cần thực hiện, chất lượng, tiến độ công việc cần đạt được, giá hợp đồng, quyền và nghĩa vụ của các bên. 
 2. Chủ đầu tư niêm yết thông báo công khai về việc mời tham gia thực hiện gói thầu tại trụ sở Ủy ban nhân dân cấp xã và thông báo trên các phương tiện truyền thông cấp xã, các nơi sinh hoạt cộng đồng để các cộng đồng dân cư, tổ chức đoàn thể và nhóm thợ trên địa bàn biết. Thông báo cần ghi rõ thời gian họp bàn về phương án thực hiện gói thầu.
 3. Cộng đồng dân cư, tổ chức đoàn thể, nhóm thợ quan tâm nhận dự thảo hợp đồng để nghiên cứu và chuẩn bị hồ sơ năng lực bao gồm các nội dung: họ tên, độ tuổi, năng lực và kinh nghiệm phù hợp với tính chất gói thầu của các thành viên tham gia thực hiện gói thầu.
@@ -9998,6 +10088,7 @@ Trường hợp chỉ có một cộng đồng dân cư hoặc tổ chức đoà
                         id: 'nd214-d88',
                         code: 'Điều 88',
                         title: `Tạm ứng, thanh toán và giám sát, nghiệm thu gói thầu`,
+                        summary: '',
                         content: `1. Cộng đồng dân cư, tổ chức đoàn thể, nhóm thợ được chủ đầu tư tạm ứng, thanh toán trực tiếp bằng tiền mặt hoặc chuyển khoản thông qua người đại diện của cộng đồng dân cư, tổ chức đoàn thể, nhóm thợ.
 2. Chủ đầu tư chịu trách nhiệm tổ chức giám sát việc thực hiện gói thầu. Ủy ban nhân dân cấp xã và các tổ chức đoàn thể có trách nhiệm tham gia giám sát việc thực hiện của cộng đồng dân cư, tổ chức đoàn thể, nhóm thợ.
 3. Chủ đầu tư tổ chức nghiệm thu gói thầu đã hoàn thành. Các thành phần tham gia nghiệm thu bao gồm:
@@ -10015,6 +10106,7 @@ d) Các thành phần có liên quan khác do chủ đầu tư quyết định.`
                         id: 'nd214-d89',
                         code: 'Điều 89',
                         title: `Nguyên tắc mua sắm tập trung`,
+                        summary: '',
                         content: `1. Việc mua sắm tập trung được thực hiện thông qua đơn vị mua sắm tập trung thuộc bộ, cơ quan ngang bộ, cơ quan thuộc Chính phủ, cơ quan khác ở trung ương, Ủy ban nhân dân cấp tỉnh, trừ trường hợp quy định tại khoản 5 Điều 53 của Luật Đấu thầu. Trường hợp đơn vị mua sắm tập trung không đủ năng lực thì thuê tư vấn đấu thầu thực hiện việc lựa chọn nhà thầu.
 2. Đối với hàng hóa, dịch vụ thuộc danh mục phải áp dụng mua sắm tập trung sử dụng thỏa thuận khung, đơn vị có nhu cầu mua sắm hàng hóa, dịch vụ phải ký kết hợp đồng với nhà thầu đã được lựa chọn thông qua mua sắm tập trung. Trường hợp thỏa thuận khung còn hiệu lực mà ký kết hợp đồng với nhà thầu khác không được lựa chọn thông qua mua sắm tập trung thì không được thanh toán, trừ trường hợp quy định tại khoản 22 và khoản 23 Điều 140 của Nghị định này.
 3. Mua sắm tập trung được thực hiện thông qua hình thức đấu thầu rộng rãi. Trường hợp hàng hóa thuộc danh mục mua sắm tập trung đáp ứng điều kiện áp dụng hình thức chỉ định thầu, chào hàng cạnh tranh, đàm phán giá, lựa chọn nhà thầu trong trường hợp đặc biệt theo quy định tại khoản 1 Điều 23, khoản 1 Điều 24, khoản 1 Điều 28, Điều 29 của Luật Đấu thầu và khoản 1 Điều 78, Điều 81, Điều 84 của Nghị định này thì được áp dụng các hình thức tương ứng.`
@@ -10023,6 +10115,7 @@ d) Các thành phần có liên quan khác do chủ đầu tư quyết định.`
                         id: 'nd214-d90',
                         code: 'Điều 90',
                         title: `Trách nhiệm trong mua sắm tập trung`,
+                        summary: '',
                         content: `1. Đơn vị mua sắm tập trung thực hiện trách nhiệm của chủ đầu tư quy định tại Điều 78 của Luật Đấu thầu. 
 2. Các hàng hóa, dịch vụ được khuyến khích mua sắm tập trung gồm:
 a) Thiết bị công nghệ thông tin đã được chuẩn hóa: máy tính để bàn, máy in và các thiết bị khác;
@@ -10035,6 +10128,7 @@ d) Dịch vụ bảo vệ, vệ sinh;
                         id: 'nd214-d91',
                         code: 'Điều 91',
                         title: `Quy trình mua sắm tập trung áp dụng đấu thầu rộng rãi`,
+                        summary: '',
                         content: `1. Quy trình mua sắm tập trung:
 Việc mua sắm tập trung áp dụng đấu thầu rộng rãi được thực hiện theo quy định tại Điều 24 và Điều 36 của Nghị định này, bao gồm các bước sau:
 a) Xác định khối lượng mua sắm:
@@ -10064,6 +10158,7 @@ Việc lựa chọn nhà thầu căn cứ tiêu chuẩn đánh giá nêu trong h
                         id: 'nd214-d92',
                         code: 'Điều 92',
                         title: `Nội dung thỏa thuận khung`,
+                        summary: '',
                         content: `1. Căn cứ quy mô, tính chất của gói thầu, đơn vị mua sắm tập trung quy định cụ thể nội dung chi tiết của thỏa thuận khung trong hồ sơ mời thầu cho phù hợp nhưng phải bao gồm những nội dung chủ yếu quy định tại khoản 2 Điều này.
 2. Những nội dung chủ yếu của thỏa thuận khung:
 a) Phạm vi cung cấp hàng hóa, dịch vụ;
@@ -10083,6 +10178,7 @@ Mục 2. MUA SẮM THUỘC DỰ TOÁN MUA SẮM`
                         id: 'nd214-d93',
                         code: 'Điều 93',
                         title: `Quy trình thực hiện mua sắm`,
+                        summary: '',
                         content: `1. Việc lựa chọn nhà thầu thuộc dự toán mua sắm thực hiện theo quy trình quy định tại các Chương I, II, III, IV, V, VI, VII và VIII của Nghị định này, không phải trình, phê duyệt quyết định mua sắm.
 2. Đối với các hàng hóa thuộc danh mục do Chính phủ, Thủ tướng Chính phủ quy định tiêu chuẩn, định mức hoặc quyết định việc phân cấp quy định tiêu chuẩn, định mức thì điều kiện xét duyệt trúng thầu là giá đề nghị trúng thầu của từng hàng hóa đảm bảo không vượt mức giá của từng hàng hóa đó theo tiêu chuẩn, định mức do cấp có thẩm quyền ban hành.
 Mục 3. MUA THUỐC, HÓA CHẤT, VẬT TƯ XÉT NGHIỆM, THIẾT BỊ Y TẾ`
@@ -10091,6 +10187,7 @@ Mục 3. MUA THUỐC, HÓA CHẤT, VẬT TƯ XÉT NGHIỆM, THIẾT BỊ Y TẾ`
                         id: 'nd214-d94',
                         code: 'Điều 94',
                         title: `Lựa chọn nhà thầu theo số lượng dịch vụ kỹ thuật`,
+                        summary: '',
                         content: `1. Việc lựa chọn nhà thầu cung cấp trọn gói thiết bị, hóa chất, vật tư xét nghiệm, dịch vụ đi kèm (không bao gồm nhân công vận hành) được thực hiện theo quy định tại điểm b khoản 1 Điều 55 của Luật Đấu thầu. Hồ sơ mời thầu bao gồm các nội dung sau:
 a) Yêu cầu về kỹ thuật đối với thiết bị; yêu cầu đối với phần mềm vận hành thiết bị, hiệu chỉnh thiết bị;
 b) Yêu cầu về thời hạn sử dụng của hóa chất, vật tư xét nghiệm;
@@ -10111,6 +10208,7 @@ i) Các nội dung cần thiết khác.
                         id: 'nd214-d95',
                         code: 'Điều 95',
                         title: `Mua thuốc, hóa chất, vật tư xét nghiệm, thiết bị y tế`,
+                        summary: '',
                         content: `1. Trường hợp thuốc, thiết bị y tế, vật tư xét nghiệm thuộc danh mục mua sắm tập trung trong kế hoạch lựa chọn nhà thầu được cấp có thẩm quyền phê duyệt nhưng chưa có kết quả lựa chọn nhà thầu hoặc không lựa chọn được nhà thầu trúng thầu hoặc khi thỏa thuận khung của gói thầu mua sắm tập trung hết hiệu lực thì cơ sở khám bệnh, chữa bệnh được mua sắm theo thông báo của đơn vị được giao nhiệm vụ mua sắm tập trung để đáp ứng nhu cầu sử dụng nhưng tối đa không quá 12 tháng theo một trong các hình thức lựa chọn nhà thầu: đấu thầu rộng rãi, đấu thầu hạn chế, chỉ định thầu, mua sắm trực tiếp, chào giá trực tuyến, mua sắm trực tuyến, chào hàng cạnh tranh theo quy định của Luật Đấu thầu, Nghị định này và được quỹ bảo hiểm y tế thanh toán theo đúng giá hợp đồng; trường hợp có kết quả trúng thầu mua sắm tập trung, chủ đầu tư được tiếp tục mua sắm theo hợp đồng đã ký với nhà thầu.
 2. Bộ Y tế tổ chức mua thuốc tập trung cấp quốc gia và chủ trì, phối hợp với Bộ Tài chính thực hiện đàm phán giá. Trường hợp áp dụng đàm phán giá, nhà thầu được mời vào đàm phán phải đáp ứng tư cách hợp lệ quy định tại các điểm a, b, c, d, e, g và i khoản 1 Điều 5 của Luật Đấu thầu.
 3. Đối với việc lựa chọn nhà thầu cung cấp thuốc, Bảo hiểm xã hội Việt Nam có trách nhiệm công khai giá từng loại thuốc trúng thầu được thanh toán từ nguồn quỹ bảo hiểm y tế của từng bệnh viện, địa phương, Bộ Y tế trên trang thông tin điện tử của Bảo hiểm xã hội Việt Nam.`
@@ -10119,6 +10217,7 @@ i) Các nội dung cần thiết khác.
                         id: 'nd214-d96',
                         code: 'Điều 96',
                         title: `Thanh toán chi phí mua thuốc, hóa chất, vật tư xét nghiệm, thiết bị y tế cho các cơ sở khám bệnh, chữa bệnh tư nhân, cơ sở y tế là đơn vị sự nghiệp công lập tự bảo đảm chi thường xuyên và chi đầu tư, đơn vị sự nghiệp công lập tự bảo đảm chi thường xuyên`,
+                        summary: '',
                         content: `1. Cơ sở khám bệnh, chữa bệnh tư nhân, cơ sở y tế là đơn vị sự nghiệp công lập tự bảo đảm chi thường xuyên và chi đầu tư, đơn vị sự nghiệp công lập tự bảo đảm chi thường xuyên được tổng hợp, gửi nhu cầu mua thuốc, hóa chất, vật tư xét nghiệm, thiết bị y tế của mình cho đơn vị mua sắm tập trung ở địa phương nơi cơ sở đó đặt trụ sở để mua sắm tập trung (cấp quốc gia, cấp địa phương), đàm phán giá. Khi tổng hợp nhu cầu mua sắm tập trung, cơ sở khám bệnh, chữa bệnh tư nhân, cơ sở y tế là đơn vị sự nghiệp công lập tự bảo đảm chi thường xuyên và chi đầu tư, đơn vị sự nghiệp công lập tự bảo đảm chi thường xuyên có trách nhiệm xây dựng kế hoạch sử dụng thuốc, hóa chất, vật tư xét nghiệm, thiết bị y tế tuân thủ các quy định về đấu thầu thuốc, hóa chất, vật tư xét nghiệm, thiết bị y tế tập trung tại địa phương như đối với cơ sở khám bệnh, chữa bệnh công lập trên địa bàn. 
 Trường hợp cơ sở khám bệnh, chữa bệnh tư nhân, cơ sở y tế là đơn vị sự nghiệp công lập tự bảo đảm chi thường xuyên và chi đầu tư, đơn vị sự nghiệp công lập tự bảo đảm chi thường xuyên có nhu cầu mua sắm thuốc, hóa chất, vật tư xét nghiệm, thiết bị y tế thông qua đơn vị mua sắm tập trung thì phải ký kết hợp đồng với đơn vị mua sắm tập trung.
 2. Các cơ sở khám bệnh, chữa bệnh tư nhân, cơ sở y tế là đơn vị sự nghiệp công lập tự bảo đảm chi thường xuyên và chi đầu tư, đơn vị sự nghiệp công lập tự bảo đảm chi thường xuyên không tổng hợp nhu cầu để mua sắm tập trung, đàm phán giá theo quy định tại khoản 1 Điều này thì tự tổ chức mua sắm thuốc, hóa chất, vật tư xét nghiệm, thiết bị y tế.
@@ -10133,6 +10232,7 @@ Trường hợp cơ sở khám bệnh, chữa bệnh tư nhân, cơ sở y tế 
                         id: 'nd214-d97',
                         code: 'Điều 97',
                         title: `Kết nối Hệ thống mạng đấu thầu quốc gia với các hệ thống khác`,
+                        summary: '',
                         content: `1. Kết nối với Hệ thống thông tin quốc gia về đăng ký doanh nghiệp, đăng ký hợp tác xã, đăng ký hộ kinh doanh:
 a) Hệ thống mạng đấu thầu quốc gia tiếp nhận thông tin về đăng ký doanh nghiệp, đăng ký hợp tác xã, đăng ký hộ kinh doanh để phục vụ cho việc đăng ký tham gia, hoạt động của nhà thầu trên Hệ thống mạng đấu thầu quốc gia;
 b) Hệ thống mạng đấu thầu quốc gia sử dụng thông tin về tình trạng pháp lý, báo cáo tài chính và các thông tin khác của doanh nghiệp, hợp tác xã, hộ kinh doanh lưu giữ tại Hệ thống thông tin quốc gia về đăng ký doanh nghiệp, đăng ký hợp tác xã, đăng ký hộ kinh doanh để đánh giá hồ sơ dự sơ tuyển, hồ sơ quan tâm, hồ sơ dự thầu và xét duyệt trúng thầu. Dữ liệu chia sẻ giữa Hệ thống thông tin quốc gia về đăng ký doanh nghiệp, đăng ký hợp tác xã, đăng ký hộ kinh doanh với Hệ thống mạng đấu thầu quốc gia được cập nhật thường xuyên, liên tục;
@@ -10150,6 +10250,7 @@ b) Bộ Tài chính tổ chức thực hiện kết nối Hệ thống thông ti
                         id: 'nd214-d98',
                         code: 'Điều 98',
                         title: `Quy trình lựa chọn nhà thầu qua mạng`,
+                        summary: '',
                         content: `1. Việc lập, thẩm định, phê duyệt hồ sơ mời sơ tuyển, hồ sơ mời quan tâm, hồ sơ mời thầu thực hiện theo quy định tại các Điều 25, 26, 27, 37, 38, 39, 62, 63 và 64 của Nghị định này.
 a) Đối với các nội dung yêu cầu trong bảng dữ liệu, tiêu chuẩn đánh giá về tính hợp lệ, năng lực, kinh nghiệm trong hồ sơ mời sơ tuyển, hồ sơ mời thầu của gói thầu mua sắm hàng hóa, xây lắp, dịch vụ phi tư vấn, chủ đầu tư không được đính kèm các file yêu cầu khác ngoài các nội dung đã được số hóa dưới dạng webform trên Hệ thống mạng đấu thầu quốc gia;
 b) Đối với các nội dung yêu cầu trong bảng dữ liệu, tiêu chuẩn đánh giá về tính hợp lệ, năng lực, kinh nghiệm, tiêu chuẩn đánh giá về kỹ thuật trong hồ sơ mời quan tâm, hồ sơ mời thầu của gói thầu dịch vụ tư vấn, chủ đầu tư không được đính kèm các file yêu cầu khác ngoài các nội dung đã được số hóa dưới dạng webform trên Hệ thống mạng đấu thầu quốc gia.
@@ -10178,6 +10279,7 @@ Mục 2. CHÀO GIÁ TRỰC TUYẾN`
                         id: 'nd214-d99',
                         code: 'Điều 99',
                         title: `Điều kiện áp dụng chào giá trực tuyến`,
+                        summary: '',
                         content: `1. Chào giá trực tuyến bao gồm chào giá trực tuyến theo quy trình thông thường và chào giá trực tuyến theo quy trình rút gọn.
 2. Chào giá trực tuyến theo quy trình thông thường được áp dụng trong các trường hợp sau đây:
 a) Gói thầu dịch vụ phi tư vấn thông dụng, đơn giản;
@@ -10194,6 +10296,7 @@ d) Gói thầu mua sắm hàng hóa chia phần (trừ thuốc) để bán lẻ 
                         id: 'nd214-d100',
                         code: 'Điều 100',
                         title: `Nguyên tắc chào giá trực tuyến`,
+                        summary: '',
                         content: `1. Nhà thầu có thể liên tục thay đổi mức giá, các yếu tố khác ngoài giá (nếu có) trong thời gian chào giá trực tuyến. Mức giá, các yếu tố khác ngoài giá (nếu có) do các nhà thầu chào được công khai trên Hệ thống mạng đấu thầu quốc gia được công khai trong quá trình chào giá, trừ tên nhà thầu. Hệ thống mạng đấu thầu quốc gia tự động công khai mức giá, các yếu tố khác ngoài giá (nếu có) trong thời gian chào giá trực tuyến; thời gian còn lại của quá trình chào giá trực tuyến.
 2. Chào giá trực tuyến chỉ áp dụng đối với gói thầu đánh giá theo phương pháp giá thấp nhất.
 3. Trường hợp có nhiều nhà thầu cùng chào giá thấp nhất bằng nhau sau thời điểm kết thúc chào giá trực tuyến thì nhà thầu chào giá đầu tiên thấp nhất được xếp hạng cao nhất.
@@ -10204,6 +10307,7 @@ d) Gói thầu mua sắm hàng hóa chia phần (trừ thuốc) để bán lẻ 
                         id: 'nd214-d101',
                         code: 'Điều 101',
                         title: `Quy trình chào giá trực tuyến thông thường`,
+                        summary: '',
                         content: `1. Trên cơ sở kế hoạch lựa chọn nhà thầu được phê duyệt, việc tổ chức chào giá trực tuyến theo quy trình thông thường được thực hiện tại bước đánh giá về tài chính, làm căn cứ để so sánh hồ sơ dự thầu và xếp hạng nhà thầu.
 2. Chuẩn bị lựa chọn nhà thầu:
 Việc lập, thẩm định và phê duyệt hồ sơ mời thầu thực hiện theo quy định tại Điều 26 và Điều 27 của Nghị định này. Đối với gói thầu có giá gói thầu dưới 05 tỷ đồng, thời gian chuẩn bị hồ sơ dự thầu tối thiểu là 05 ngày làm việc kể từ ngày đầu tiên hồ sơ mời thầu được phát hành đến ngày có thời điểm đóng thầu.
@@ -10229,6 +10333,7 @@ Hợp đồng ký kết giữa các bên phải phù hợp với quyết định
                         id: 'nd214-d102',
                         code: 'Điều 102',
                         title: `Quy trình chào giá trực tuyến rút gọn`,
+                        summary: '',
                         content: `1. Chuẩn bị thông báo mời thầu trên cơ sở kế hoạch lựa chọn nhà thầu được phê duyệt:
 Thông báo mời thầu bao gồm các thông tin sau đây:
 a) Yêu cầu cụ thể về xuất xứ, ký mã hiệu, nhãn hiệu, hãng sản xuất, thông số kỹ thuật của hàng hóa, thời gian giao hàng, bảo hành và các nội dung cần thiết khác (nếu có) đối với gói thầu mua sắm hàng hóa; phạm vi công việc, yêu cầu kỹ thuật, thời gian thực hiện, thời gian hoàn thành dịch vụ và các nội dung cần thiết khác (nếu có) đối với gói thầu dịch vụ phi tư vấn; phạm vi công việc, yêu cầu kỹ thuật, bản vẽ thiết kế thi công, yêu cầu cụ thể về xuất xứ, ký mã hiệu, nhãn hiệu, hãng sản xuất của nguyên vật liệu, vật tư, thiết bị (nếu có), yêu cầu về nhân sự chủ chốt, thiết bị thi công chủ yếu (nếu có), thời gian thực hiện gói thầu và các nội dung cần thiết khác (nếu có) đối với gói thầu xây lắp. Thời gian giao hàng, thời gian hoàn thành phải bảo đảm phù hợp, không làm hạn chế sự tham gia của nhà thầu theo quy định tại khoản 3 Điều 44 của Luật Đấu thầu;
@@ -10251,6 +10356,7 @@ Mục 3. MUA SẮM TRỰC TUYẾN`
                         id: 'nd214-d103',
                         code: 'Điều 103',
                         title: `Hình thức mua sắm trực tuyến`,
+                        summary: '',
                         content: `1. Mua sắm trực tuyến phải được phê duyệt trong kế hoạch lựa chọn nhà thầu và được áp dụng đối với hàng hóa, dịch vụ của gói thầu thuộc dự toán mua sắm có giá gói thầu không quá 500 triệu đồng; gói thầu mua sắm hàng hóa, dịch vụ thuộc dự án có giá gói thầu không quá 01 tỷ đồng. 
 2. Thời gian áp dụng mua sắm trực tuyến đối với các hạng mục trong danh mục hàng hóa, dịch vụ mua sắm tập trung là thời gian thực hiện hợp đồng trong trường hợp không ký thỏa thuận khung nhưng không quá 24 tháng kể từ ngày hợp đồng có hiệu lực hoặc thời gian có hiệu lực của thỏa thuận khung; trường hợp hợp đồng, thỏa thuận khung chưa được công khai theo quy định tại Điều 22 của Nghị định này, thời gian áp dụng mua sắm trực tuyến là 24 tháng kể từ ngày kết quả lựa chọn nhà thầu được đăng tải trên Hệ thống mạng đấu thầu quốc gia.`
                     },
@@ -10258,6 +10364,7 @@ Mục 3. MUA SẮM TRỰC TUYẾN`
                         id: 'nd214-d104',
                         code: 'Điều 104',
                         title: `Quy trình mua sắm trực tuyến`,
+                        summary: '',
                         content: `1. Hệ thống mạng đấu thầu quốc gia tự động trích xuất thông tin về kết quả lựa chọn nhà thầu đối với mua sắm tập trung vào danh mục hàng hóa, dịch vụ áp dụng mua sắm trực tuyến. 
 2. Căn cứ danh mục hàng hóa, dịch vụ quy định tại khoản 1 Điều này, chủ đầu tư có nhu cầu mua sắm trực tuyến đặt mua hàng hóa, dịch vụ trực tiếp trên Hệ thống mạng đấu thầu quốc gia. Nội dung đơn hàng đối với từng hàng hóa, dịch vụ bao gồm: số lượng, khối lượng; phương thức vận chuyển và đơn giá vận chuyển (nếu có); đơn giá của hàng hóa, dịch vụ; phương thức thanh toán; địa điểm giao hàng hoặc địa điểm thực hiện; các thông tin cần thiết khác. 
 3. Đối với mỗi yêu cầu đặt hàng, Hệ thống mạng đấu thầu quốc gia tự động gửi thông báo cho nhà thầu đã trúng thầu trong mua sắm tập trung trước đó. Nhà thầu có trách nhiệm xác nhận đơn hàng hoặc từ chối đơn hàng trên Hệ thống mạng đấu thầu quốc gia trong thời hạn 03 ngày làm việc kể từ ngày nhận được yêu cầu đặt hàng.
@@ -10269,6 +10376,7 @@ Mục 3. MUA SẮM TRỰC TUYẾN`
                         id: 'nd214-d105',
                         code: 'Điều 105',
                         title: `Thông tin hàng hóa, dịch vụ được mua sắm trực tuyến`,
+                        summary: '',
                         content: `Trường hợp điều chỉnh giảm giá hàng hóa, dịch vụ so với quy định trong thỏa thuận khung, hợp đồng đã ký trước đó, nhà thầu thông báo cho đơn vị mua sắm tập trung và Hệ thống mạng đấu thầu quốc gia tối thiểu 05 ngày trước thời điểm điều chỉnh giảm giá hàng hóa, dịch vụ.`
                     }
                 ]
@@ -10280,6 +10388,7 @@ Mục 3. MUA SẮM TRỰC TUYẾN`
                         id: 'nd214-d106',
                         code: 'Điều 106',
                         title: `Hàng hoá, dịch vụ đặt hàng`,
+                        summary: '',
                         content: `1. Việc đặt hàng để sản xuất, cung cấp hàng hoá, dịch vụ là sản phẩm, dịch vụ công ích và dịch vụ sự nghiệp công thực hiện theo quy định của Chính phủ về giao nhiệm vụ, đặt hàng cung cấp sản phẩm, dịch vụ công sử dụng ngân sách nhà nước từ nguồn kinh phí chi thường xuyên.
 2. Hàng hoá, dịch vụ không thuộc quy định tại khoản 1 Điều này được đặt hàng từ nguồn ngân sách nhà nước và nguồn thu hợp pháp theo quy định của pháp luật của các cơ quan nhà nước, đơn vị sự nghiệp công lập, gồm:
 a) Hàng hoá, dịch vụ thuộc nhóm công nghệ chiến lược của các ngành, lĩnh vực; các dự án, nhiệm vụ nghiên cứu khoa học trọng điểm, quan trọng quốc gia, công nghiệp nền tảng, công nghiệp mũi nhọn, hạ tầng năng lượng, hạ tầng số, giao thông xanh, quốc phòng, an ninh, đào tạo nhân lực gắn với chuyển giao công nghệ;
@@ -10293,6 +10402,7 @@ d) Hàng hóa, dịch vụ khẩn cấp, cấp bách có yêu cầu đặt hàng
                         id: 'nd214-d107',
                         code: 'Điều 107',
                         title: `Các bên liên quan trong quá trình đặt hàng`,
+                        summary: '',
                         content: `1. Người có thẩm quyền là người quyết định đầu tư đối với dự án hoặc người đứng đầu cơ quan, đơn vị cấp trên trực tiếp của tổ chức đặt hàng.
 2. Tổ chức đặt hàng là cơ quan, đơn vị được giao trực tiếp quản lý, sử dụng nguồn ngân sách nhà nước và nguồn thu hợp pháp khác (nếu có) để đặt hàng.
 3. Nhà cung cấp là tổ chức, doanh nghiệp, cá nhân nhận đặt hàng cung cấp hàng hoá, dịch vụ.`
@@ -10301,6 +10411,7 @@ d) Hàng hóa, dịch vụ khẩn cấp, cấp bách có yêu cầu đặt hàng
                         id: 'nd214-d108',
                         code: 'Điều 108',
                         title: `Điều kiện đối với nhà cung cấp nhận đặt hàng`,
+                        summary: '',
                         content: `1. Đối với tổ chức, doanh nghiệp:
 Nhà cung cấp là tổ chức, doanh nghiệp phải đáp ứng đủ các điều kiện sau đây:
 a) Đối với tổ chức: có chức năng, nhiệm vụ phù hợp với hoạt động cung cấp hàng hoá, dịch vụ được đặt hàng; đối với doanh nghiệp: có đăng ký ngành nghề kinh doanh, giấy phép hoạt động phù hợp với hoạt động cung cấp hàng hoá, dịch vụ được đặt hàng; 
@@ -10311,6 +10422,7 @@ b) Không đang trong quá trình thực hiện thủ tục giải thể hoặc 
                         id: 'nd214-d109',
                         code: 'Điều 109',
                         title: `Quy trình đặt hàng`,
+                        summary: '',
                         content: `1. Lập và phê duyệt phương án đặt hàng:
 a) Lập phương án đặt hàng:
 Tổ chức đặt hàng lập phương án đặt hàng gồm các nội dung cơ bản sau: Tên hàng hóa, dịch vụ đặt hàng; dự kiến số lượng, khối lượng hàng hoá, dịch vụ; chất lượng hàng hoá, dịch vụ; thời gian triển khai và thời gian hoàn thành cung cấp hàng hóa, dịch vụ; dự toán đặt hàng; các yêu cầu cụ thể đối với nhà cung cấp về tài chính, cơ sở vật chất, trang thiết bị, máy móc, trình độ kỹ thuật, công nghệ sản xuất, giải pháp thực hiện, nhân sự chủ chốt; cơ chế giám sát, đánh giá, kiểm định chất lượng và quy chế kiểm tra, nghiệm thu hàng hóa, dịch vụ được đặt hàng.
@@ -10345,6 +10457,7 @@ Tổ chức đặt hàng công khai thông tin về kết quả thực hiện h�
                         id: 'nd214-d110',
                         code: 'Điều 110',
                         title: `Giá đặt hàng`,
+                        summary: '',
                         content: `Giá đặt hàng do tổ chức đặt hàng thương thảo với nhà cung cấp đảm bảo công khai, minh bạch, tiết kiệm, phòng chống tiêu cực, lãng phí và không vượt dự toán đặt hàng trên cơ sở một hoặc một số thông tin sau:
 1. Tổng nguồn vốn của chương trình, nhiệm vụ, tổng mức đầu tư của dự án (nếu có).
 2. So sánh với giá của hàng hoá, dịch vụ tương tự.
@@ -10355,6 +10468,7 @@ Tổ chức đặt hàng công khai thông tin về kết quả thực hiện h�
                         id: 'nd214-d111',
                         code: 'Điều 111',
                         title: `Hợp đồng đặt hàng, tạm ứng, thanh toán, nghiệm thu, thanh lý hợp đồng`,
+                        summary: '',
                         content: `1. Căn cứ tính chất của hàng hoá, dịch vụ, tổ chức đặt hàng và nhà cung cấp xem xét áp dụng một trong các loại hợp đồng theo quy định tại Điều 64 của Luật Đấu thầu và quy định của pháp luật quản lý ngành, lĩnh vực (nếu có). 
 2. Hợp đồng đặt hàng bao gồm những nội dung cơ bản sau:
 a) Tên hàng hóa, dịch vụ đặt hàng;
@@ -10378,6 +10492,7 @@ o) Nội dung khác theo thỏa thuận của các bên nhưng không được t
                         id: 'nd214-d112',
                         code: 'Điều 112',
                         title: `Giao nhiệm vụ cung cấp hàng hoá, dịch vụ`,
+                        summary: '',
                         content: `1. Giao nhiệm vụ cung cấp sản phẩm, dịch vụ công thực hiện theo quy định của pháp luật về ngân sách nhà nước, quy định của Chính phủ về giao nhiệm vụ, đặt hàng cung cấp sản phẩm, dịch vụ công sử dụng ngân sách nhà nước từ nguồn kinh phí chi thường xuyên và quy định về cơ chế tự chủ tài chính của đơn vị sự nghiệp công lập.
 2. Việc giao nhiệm vụ cung cấp hàng hoá, dịch vụ khác từ nguồn ngân sách nhà nước và nguồn thu hợp pháp của các cơ quan nhà nước, đơn vị sự nghiệp công lập thực hiện theo quy định của pháp luật về đầu tư công, ngân sách nhà nước và pháp luật quản lý ngành, lĩnh vực về điều kiện, quy trình, thủ tục giao nhiệm vụ cung cấp hàng hoá, dịch vụ.`
                     }
@@ -10390,6 +10505,7 @@ o) Nội dung khác theo thỏa thuận của các bên nhưng không được t
                         id: 'nd214-d113',
                         code: 'Điều 113',
                         title: `Hợp đồng đối với nhà thầu được lựa chọn`,
+                        summary: '',
                         content: `1. Hợp đồng ký kết giữa chủ đầu tư (hoặc đơn vị được ủy quyền) với nhà thầu là hợp đồng dân sự và được xác lập bằng văn bản. Người đại diện theo pháp luật hoặc người được đại diện theo pháp luật ủy quyền (sau đây gọi là đại diện hợp pháp) của nhà thầu có trách nhiệm ký hợp đồng; đối với nhà thầu liên danh, đại diện hợp pháp của các thành viên liên danh chịu trách nhiệm ký hợp đồng theo quy định tại khoản 3 Điều 67 của Luật Đấu thầu. Hợp đồng đã được các bên ký kết, có hiệu lực và phù hợp với quy định của pháp luật là cơ sở pháp lý cao nhất ràng buộc trách nhiệm, nghĩa vụ của các bên trong quá trình thực hiện hợp đồng và để giải quyết tranh chấp phát sinh (nếu có).
 Nội dung của hợp đồng phải được lập theo mẫu quy định trong hồ sơ mời thầu, hồ sơ yêu cầu, đồng thời phù hợp với kết quả thương thảo hợp đồng (nếu có), kết quả hoàn thiện hợp đồng, kết quả lựa chọn nhà thầu trên cơ sở yêu cầu của gói thầu và quy định của pháp luật quản lý ngành, lĩnh vực (nếu có).
 2. Khi ký kết hợp đồng, văn bản hợp đồng phải đảm bảo phù hợp với các nội dung sau:
@@ -10403,6 +10519,7 @@ d) Quy định của pháp luật.
                         id: 'nd214-d114',
                         code: 'Điều 114',
                         title: `Sửa đổi hợp đồng`,
+                        summary: '',
                         content: `1. Sửa đổi hợp đồng là việc chủ đầu tư, nhà thầu thống nhất sửa đổi, bổ sung một hoặc một số nội dung so với quy định trong hợp đồng đã ký. Việc sửa đổi hợp đồng chỉ được thực hiện trong thời gian hợp đồng còn hiệu lực; việc sửa đổi các nội dung về tiến độ, khối lượng, giá thực hiện theo quy định tại khoản 2 Điều 70 của Luật Đấu thầu. Việc sửa đổi hợp đồng được áp dụng đối với tất cả loại hợp đồng quy định tại Điều 64 của Luật Đấu thầu và phải được thực hiện bằng văn bản sửa đổi hợp đồng.
 2. Các bên có thể thỏa thuận trong hợp đồng về quy trình, thủ tục sửa đổi hợp đồng theo quy định tại điểm a khoản 1 Điều 70 của Luật Đấu thầu trong các trường hợp sau đây:
 a) Khi có sự thay đổi về chính sách, pháp luật làm ảnh hưởng trực tiếp đến việc thực hiện hợp đồng;
@@ -10427,6 +10544,7 @@ Trường hợp việc thay đổi các nội dung quy định tại khoản nà
                         id: 'nd214-d115',
                         code: 'Điều 115',
                         title: `Điều chỉnh giá hợp đồng do lạm phát, giảm phát`,
+                        summary: '',
                         content: `1. Việc điều chỉnh giá hợp đồng do lạm phát, giảm phát (sau đây gọi là điều chỉnh trượt giá hợp đồng) đối với loại hợp đồng theo đơn giá điều chỉnh được thực hiện theo quy định tại khoản 2 và khoản 3 Điều này. Đối với hợp đồng theo thời gian, hợp đồng theo kết quả đầu ra, trượt giá hợp đồng có thể được áp dụng đối với hợp đồng có thời gian thực hiện dài hoặc trong hoàn cảnh thị trường có biến động giá lớn. 
 2. Việc áp dụng điều chỉnh trượt giá phải được quy định trong hồ sơ mời thầu, hồ sơ yêu cầu và được hoàn thiện nội dung trong quá trình thương thảo hợp đồng (nếu có), hoàn thiện hợp đồng. Hợp đồng phải quy định nguyên tắc, thời gian tính điều chỉnh; cơ sở dữ liệu đầu vào để tính điều chỉnh; thời điểm để tính toán chỉ số giá hoặc giá gốc để làm cơ sở xác định chênh lệch do trượt giá cho mỗi lần thanh toán hợp đồng. Nội dung giá hợp đồng phải bao gồm mục giá trị trượt giá tạm tính trên cơ sở dự kiến trượt giá và quy định pháp luật về quản lý chi phí để làm cơ sở thanh toán. Việc quản lý và thanh toán giá trị trượt giá theo quy định đã có trong hợp đồng, không yêu cầu phải ký văn bản sửa đổi hợp đồng; trường hợp do biến động về giá, việc thanh toán các đợt tiếp theo dẫn đến giá hợp đồng vượt giá gói thầu nhưng không làm vượt tổng mức đầu tư, dự toán mua sắm thì chủ đầu tư xem xét, chấp thuận. Các bên ký kết văn bản sửa đổi hợp đồng trước khi thực hiện thanh toán.
 3. Trượt giá hợp đồng được xác định theo các phương pháp sau:
@@ -10438,6 +10556,7 @@ c) Phương pháp điều chỉnh ngoài quy định tại điểm a và điểm
                         id: 'nd214-d116',
                         code: 'Điều 116',
                         title: `Quản lý chất lượng hàng hóa, dịch vụ`,
+                        summary: '',
                         content: `1. Các yêu cầu về chất lượng hàng hoá, dịch vụ phải được quy định cụ thể thông qua chỉ tiêu, thông số, quy cách kỹ thuật sản phẩm, quy trình kiểm soát chất lượng nêu trong yêu cầu kỹ thuật, điều kiện cụ thể của hợp đồng và các nội dung khác trong hồ sơ mời thầu, hồ sơ yêu cầu. Trên cơ sở đề xuất của nhà thầu trong hồ sơ dự thầu, các nội dung làm rõ, bổ sung trong quá trình đánh giá hồ sơ dự thầu, hồ sơ đề xuất và nội dung thương thảo (nếu có), hoàn thiện hợp đồng, yêu cầu về chất lượng hàng hóa, dịch vụ được bổ sung, hoàn thiện để ký kết hợp đồng làm cơ sở thực hiện. 
 2. Hợp đồng phải quy định quy trình và thủ tục để kiểm soát các chỉ tiêu chất lượng của hàng hóa, dịch vụ; kiểm soát nguồn gốc xuất xứ của hàng hóa.`
                     },
@@ -10445,6 +10564,7 @@ c) Phương pháp điều chỉnh ngoài quy định tại điểm a và điểm
                         id: 'nd214-d117',
                         code: 'Điều 117',
                         title: `Đồng tiền và hình thức thanh toán hợp đồng`,
+                        summary: '',
                         content: `1. Đồng tiền sử dụng để thanh toán hợp đồng phải được quy định cụ thể trong hợp đồng và phù hợp với yêu cầu của hồ sơ mời thầu, hồ sơ yêu cầu và không được trái với các quy định của pháp luật.
 2. Các chi phí trong nước phải được thanh toán bằng đồng Việt Nam, các chi phí bên ngoài lãnh thổ Việt Nam được thanh toán bằng đồng tiền nước ngoài, đồng Việt Nam theo quy định trong hợp đồng.
 3. Hình thức thanh toán có thể bằng tiền mặt, chuyển khoản và các hình thức khác do các bên thỏa thuận theo quy định của pháp luật và phải được ghi trong hợp đồng.`
@@ -10453,6 +10573,7 @@ c) Phương pháp điều chỉnh ngoài quy định tại điểm a và điểm
                         id: 'nd214-d118',
                         code: 'Điều 118',
                         title: `Tạm ứng hợp đồng`,
+                        summary: '',
                         content: `1. Tạm ứng hợp đồng là khoản kinh phí được ứng trước cho nhà thầu để triển khai thực hiện các công việc theo hợp đồng.
 2. Tùy theo quy mô, tính chất của gói thầu để xác định mức tạm ứng, phù hợp với quy định của pháp luật (nếu có). Hợp đồng phải quy định về mức tạm ứng, thời điểm tạm ứng, bảo lãnh tạm ứng, thu hồi tạm ứng; trách nhiệm của các bên trong việc quản lý, sử dụng kinh phí tạm ứng; thu giá trị của bảo lãnh tạm ứng trong trường hợp sử dụng kinh phí tạm ứng không đúng mục đích.
 3. Nhà thầu chịu trách nhiệm quản lý việc sử dụng vốn tạm ứng đúng mục đích, đúng đối tượng, có hiệu quả. Nghiêm cấm việc tạm ứng mà không sử dụng hoặc sử dụng không đúng mục đích.`
@@ -10461,6 +10582,7 @@ c) Phương pháp điều chỉnh ngoài quy định tại điểm a và điểm
                         id: 'nd214-d119',
                         code: 'Điều 119',
                         title: `Thanh toán hợp đồng`,
+                        summary: '',
                         content: `1. Giá hợp đồng và các điều khoản cụ thể về thanh toán được ghi trong hợp đồng là cơ sở để thanh toán cho nhà thầu. 
 2. Việc thanh toán không căn cứ theo dự toán và các quy định, hướng dẫn hiện hành của Nhà nước về định mức, đơn giá; không căn cứ vào đơn giá trong hóa đơn tài chính đối với các yếu tố đầu vào của nhà thầu, bao gồm vật tư, máy móc, thiết bị và các yếu tố đầu vào khác.
 3. Trường hợp trong một hợp đồng có nhiều loại hợp đồng khác nhau thì áp dụng nguyên tắc thanh toán tương ứng với từng loại hợp đồng theo quy định tại Điều 120 của Nghị định này.`
@@ -10469,6 +10591,7 @@ c) Phương pháp điều chỉnh ngoài quy định tại điểm a và điểm
                         id: 'nd214-d120',
                         code: 'Điều 120',
                         title: `Nguyên tắc thanh toán đối với các loại hợp đồng`,
+                        summary: '',
                         content: `1. Đối với hợp đồng trọn gói:
 Việc thanh toán được thực hiện theo tỷ lệ phần trăm giá hợp đồng hoặc giá công trình, hạng mục công trình, khối lượng công việc tương ứng với giai đoạn thanh toán được các bên thỏa thuận trong hợp đồng; khi thanh toán không yêu cầu có xác nhận khối lượng hoàn thành chi tiết.
 2. Đối với hợp đồng theo đơn giá cố định:
@@ -10491,6 +10614,7 @@ Việc thanh toán căn cứ vào các chi phí thực tế mà nhà thầu đã
                         id: 'nd214-d121',
                         code: 'Điều 121',
                         title: `Thanh lý hợp đồng`,
+                        summary: '',
                         content: `1. Hợp đồng được thanh lý trong trường hợp sau đây:
 a) Các bên hoàn thành các nghĩa vụ theo hợp đồng đã ký;
 b) Hợp đồng bị chấm dứt (hủy bỏ) theo quy định của pháp luật.
@@ -10505,6 +10629,7 @@ b) Hợp đồng bị chấm dứt (hủy bỏ) theo quy định của pháp lu�
                         id: 'nd214-d122',
                         code: 'Điều 122',
                         title: `Trách nhiệm kiểm tra hoạt động đấu thầu`,
+                        summary: '',
                         content: `1. Bộ Tài chính:
 a) Chủ trì tổ chức kiểm tra hoạt động đấu thầu tại các bộ, cơ quan ngang bộ, cơ quan thuộc Chính phủ, cơ quan khác ở trung ương, địa phương, các đơn vị sự nghiệp công lập, doanh nghiệp nhà nước theo kế hoạch định kỳ hoặc đột xuất do Bộ trưởng Bộ Tài chính phê duyệt; 
 b) Cơ quan, đơn vị có chức năng, nhiệm vụ quản lý về hoạt động đấu thầu thuộc Bộ Tài chính giúp Bộ trưởng Bộ Tài chính thực hiện kiểm tra hoạt động đấu thầu theo quy định tại điểm a khoản này.
@@ -10518,6 +10643,7 @@ b) Sở Tài chính giúp Ủy ban nhân dân cấp tỉnh thực hiện kiểm 
                         id: 'nd214-d123',
                         code: 'Điều 123',
                         title: `Trách nhiệm của đoàn kiểm tra, thành viên đoàn kiểm tra`,
+                        summary: '',
                         content: `1. Trách nhiệm của đoàn kiểm tra:
 a) Thực hiện kiểm tra hoạt động đấu thầu theo quy định tại quyết định kiểm tra;
 b) Đề nghị đơn vị được kiểm tra, tổ chức, cá nhân có liên quan cung cấp thông tin, tài liệu để phục vụ việc kiểm tra theo yêu cầu của đoàn kiểm tra;
@@ -10536,6 +10662,7 @@ d) Được quyền bảo lưu ý kiến và chịu trách nhiệm trước phá
                         id: 'nd214-d124',
                         code: 'Điều 124',
                         title: `Trách nhiệm của tổ chức, cá nhân thuộc đơn vị được kiểm tra và tổ chức, cá nhân có liên quan`,
+                        summary: '',
                         content: `1. Trách nhiệm của tổ chức, cá nhân thuộc đơn vị được kiểm tra:
 a) Phối hợp và tạo điều kiện cho đoàn kiểm tra trong quá trình kiểm tra;
 b) Báo cáo trung thực, cung cấp thông tin, tài liệu kịp thời, đầy đủ và chịu trách nhiệm trước pháp luật về nội dung đã cung cấp;
@@ -10550,6 +10677,7 @@ b) Giải trình về các nội dung tại dự thảo báo cáo kiểm tra (n�
                         id: 'nd214-d125',
                         code: 'Điều 125',
                         title: `Nguyên tắc tổ chức kiểm tra`,
+                        summary: '',
                         content: `1. Tuân thủ quy định của pháp luật, bảo đảm chính xác, khách quan, công khai, minh bạch và kịp thời.
 2. Công tâm, khách quan, không gây khó khăn cho đơn vị được kiểm tra; tuân thủ các quy định về phòng, chống tham nhũng.
 3. Tiến hành độc lập nhưng có sự phối hợp và phân định rõ thẩm quyền giữa các cơ quan có thẩm quyền kiểm tra.
@@ -10560,6 +10688,7 @@ b) Giải trình về các nội dung tại dự thảo báo cáo kiểm tra (n�
                         id: 'nd214-d126',
                         code: 'Điều 126',
                         title: `Hình thức kiểm tra`,
+                        summary: '',
                         content: `1. Kiểm tra định kỳ:
 a) Kiểm tra định kỳ được thực hiện theo kế hoạch thường xuyên hằng năm được người đứng đầu cơ quan có thẩm quyền kiểm tra phê duyệt;
 b) Căn cứ tình hình thực hiện hoạt động đấu thầu của từng năm, đơn vị chủ trì kiểm tra lập kế hoạch kiểm tra định kỳ cho năm kế tiếp, trình người đứng đầu cơ quan có thẩm quyền kiểm tra phê duyệt. Kế hoạch kiểm tra định kỳ bao gồm các nội dung sau đây: danh sách các đơn vị được kiểm tra; thời gian thực hiện kiểm tra; phạm vi và nội dung kiểm tra; đơn vị phối hợp kiểm tra (nếu có);
@@ -10574,6 +10703,7 @@ b) Kiểm tra đột xuất được thực hiện đối với từng trường
                         id: 'nd214-d127',
                         code: 'Điều 127',
                         title: `Phương thức kiểm tra`,
+                        summary: '',
                         content: `1. Một cuộc kiểm tra có thể được tiến hành theo một hoặc kết hợp các phương thức kiểm tra quy định tại khoản 2 và khoản 3 Điều này.
 2. Kiểm tra trực tiếp là phương thức được áp dụng chủ yếu và được thực hiện trực tiếp tại cơ sở của đơn vị được kiểm tra.
 3. Báo cáo bằng văn bản là phương thức đoàn kiểm tra yêu cầu đơn vị được kiểm tra báo cáo bằng văn bản về nội dung cần kiểm tra.`
@@ -10582,6 +10712,7 @@ b) Kiểm tra đột xuất được thực hiện đối với từng trường
                         id: 'nd214-d128',
                         code: 'Điều 128',
                         title: `Thời gian và kinh phí kiểm tra hoạt động đấu thầu`,
+                        summary: '',
                         content: `1. Thời gian kiểm tra hoạt động đấu thầu:
 a) Thời gian kiểm tra trực tiếp tại cơ sở tối đa là 15 ngày kể từ ngày công bố quyết định kiểm tra, trừ trường hợp quy định tại điểm b khoản này. Trong thời hạn tối đa 45 ngày kể từ ngày kết thúc kiểm tra trực tiếp, đoàn kiểm tra phải có báo cáo kiểm tra. Người đứng đầu cơ quan có thẩm quyền kiểm tra phê duyệt kết luận kiểm tra trong thời hạn tối đa 20 ngày kể từ ngày đoàn kiểm tra trình dự thảo kết luận kiểm tra;
 b) Trường hợp cuộc kiểm tra có nội dung phức tạp và liên quan đến nhiều đơn vị được kiểm tra thì thời gian kiểm tra trực tiếp tại cơ sở tối đa là 20 ngày kể từ ngày công bố quyết định kiểm tra. Trong thời hạn tối đa 45 ngày kể từ ngày kết thúc kiểm tra trực tiếp, đoàn kiểm tra phải có báo cáo kiểm tra. Người đứng đầu cơ quan có thẩm quyền kiểm tra phê duyệt kết luận kiểm tra trong thời hạn tối đa 20 ngày kể từ ngày đoàn kiểm tra trình dự thảo kết luận kiểm tra.
@@ -10593,6 +10724,7 @@ b) Doanh nghiệp nhà nước, người có thẩm quyền tự bố trí kinh 
                         id: 'nd214-d129',
                         code: 'Điều 129',
                         title: `Quy trình kiểm tra theo phương thức kiểm tra trực tiếp`,
+                        summary: '',
                         content: `1. Chuẩn bị kiểm tra:
 Căn cứ kế hoạch kiểm tra định kỳ hoặc yêu cầu kiểm tra đột xuất, đơn vị chủ trì kiểm tra thực hiện các công việc sau:
 a) Thu thập thông tin, tài liệu liên quan đến cuộc kiểm tra; trường hợp kiểm tra đột xuất, việc thu thập thông tin, tài liệu được thực hiện trước hoặc sau khi có quyết định kiểm tra;
@@ -10618,6 +10750,7 @@ b) Việc theo dõi thực hiện kết luận kiểm tra được thực hiện
                         id: 'nd214-d130',
                         code: 'Điều 130',
                         title: `Quy trình kiểm tra theo phương thức báo cáo bằng văn bản`,
+                        summary: '',
                         content: `1. Chuẩn bị kiểm tra:
 Cơ quan có thẩm quyền kiểm tra hoặc đoàn kiểm tra do cơ quan có thẩm quyền kiểm tra thành lập yêu cầu đơn vị được kiểm tra báo cáo tình hình thực hiện trách nhiệm quản lý về đấu thầu hoặc tình hình thực hiện hoạt động đấu thầu gồm các nội dung sau:
 a) Mục đích, yêu cầu báo cáo;
@@ -10636,6 +10769,7 @@ Mục 2. GIÁM SÁT HOẠT ĐỘNG ĐẤU THẦU`
                         id: 'nd214-d131',
                         code: 'Điều 131',
                         title: `Giám sát hoạt động đấu thầu của người có thẩm quyền`,
+                        summary: '',
                         content: `1. Mục đích giám sát hoạt động đấu thầu 
 a) Bảo đảm quá trình lựa chọn nhà thầu tuân thủ quy định pháp luật về đấu thầu và pháp luật có liên quan, chỉ đạo của cơ quan cấp trên (nếu có); 
 b) Lựa chọn được nhà thầu đáp ứng yêu cầu về tiến độ, chất lượng, hiệu quả để thực hiện gói thầu; 
@@ -10675,6 +10809,7 @@ e) Thực hiện các trách nhiệm khác theo quy định của pháp luật v
                         id: 'nd214-d132',
                         code: 'Điều 132',
                         title: `Giám sát thường xuyên hoạt động đấu thầu của cơ quan quản lý nhà nước về đấu thầu thuộc bộ, ngành, địa phương`,
+                        summary: '',
                         content: `1. Bộ Tài chính 
 a) Giám sát đối với các gói thầu thuộc dự án theo yêu cầu của Thủ tướng Chính phủ;
 b) Giám sát hoạt động lựa chọn nhà thầu của doanh nghiệp nhà nước không sử dụng vốn ngân sách nhà nước theo quy định tại điểm d khoản 7 Điều 3 của Luật Đấu thầu thuộc phạm vi quản lý của Bộ Tài chính;
@@ -10699,6 +10834,7 @@ Mục 3. XỬ LÝ VI PHẠM`
                         id: 'nd214-d133',
                         code: 'Điều 133',
                         title: `Cấm tham gia hoạt động đấu thầu`,
+                        summary: '',
                         content: `1. Thời gian cấm tham gia hoạt động đấu thầu đối với tổ chức, cá nhân có hành vi vi phạm, bao gồm cả cá nhân thuộc chủ đầu tư, tổ chuyên gia, tổ thẩm định: 
 a) Cấm tham gia hoạt động đấu thầu từ 03 năm đến 05 năm đối với một trong các hành vi vi phạm các khoản 1, 2, 4 và điểm a khoản 3 Điều 16 của Luật Đấu thầu;
 b) Cấm tham gia hoạt động đấu thầu từ 01 năm đến 03 năm đối với một trong các hành vi vi phạm điểm b, điểm c khoản 3; khoản 5; điểm g, i và l khoản 6; khoản 8; khoản 9 Điều 16 của Luật Đấu thầu;
@@ -10729,6 +10865,7 @@ c) Hiệu lực thi hành quyết định.
                         id: 'nd214-d134',
                         code: 'Điều 134',
                         title: `Trách nhiệm của đơn vị thẩm định`,
+                        summary: '',
                         content: `1. Chủ đầu tư chịu trách nhiệm tổ chức thẩm định các nội dung sau đây: hồ sơ mời quan tâm (nếu có), hồ sơ mời sơ tuyển (nếu có), hồ sơ mời thầu (nếu có), hồ sơ yêu cầu (nếu có), kết quả đánh giá hồ sơ quan tâm, kết quả đánh giá hồ sơ dự sơ tuyển, danh sách nhà thầu đáp ứng yêu cầu về kỹ thuật (đối với gói thầu áp dụng phương thức một giai đoạn hai túi hồ sơ, hai giai đoạn hai túi hồ sơ), kết quả lựa chọn nhà thầu. 
 2. Trường hợp tổ chức, cá nhân được giao thẩm định không đủ năng lực thì tiến hành lựa chọn một tổ chức tư vấn có đủ năng lực và kinh nghiệm để thẩm định.`
                     },
@@ -10736,6 +10873,7 @@ c) Hiệu lực thi hành quyết định.
                         id: 'nd214-d135',
                         code: 'Điều 135',
                         title: `Thẩm định hồ sơ mời quan tâm, hồ sơ mời sơ tuyển, hồ sơ mời thầu, hồ sơ yêu cầu`,
+                        summary: '',
                         content: `1. Hồ sơ trình thẩm định, phê duyệt bao gồm:
 a) Tờ trình đề nghị phê duyệt hồ sơ mời quan tâm, hồ sơ mời sơ tuyển, hồ sơ mời thầu, hồ sơ yêu cầu của tổ chuyên gia;
 b) Dự thảo hồ sơ mời quan tâm, hồ sơ mời sơ tuyển, hồ sơ mời thầu, hồ sơ yêu cầu;
@@ -10757,6 +10895,7 @@ d) Các ý kiến khác (nếu có).
                         id: 'nd214-d136',
                         code: 'Điều 136',
                         title: `Thẩm định kết quả đánh giá hồ sơ quan tâm, kết quả đánh giá hồ sơ dự sơ tuyển, danh sách nhà thầu đáp ứng yêu cầu về kỹ thuật, kết quả lựa chọn nhà thầu`,
+                        summary: '',
                         content: `1. Nguyên tắc chung:
 a) Kết quả đánh giá hồ sơ quan tâm, kết quả đánh giá hồ sơ dự sơ tuyển được thẩm định theo yêu cầu của chủ đầu tư, kết quả lựa chọn nhà thầu được thẩm định trước khi phê duyệt;
 b) Đối với gói thầu áp dụng phương thức một giai đoạn một túi hồ sơ thì tiến hành thẩm định kết quả lựa chọn nhà thầu mà không phải thẩm định danh sách nhà thầu đáp ứng yêu cầu về kỹ thuật;
@@ -10824,6 +10963,7 @@ Các ý kiến khác (nếu có).`
                         id: 'nd214-d137',
                         code: 'Điều 137',
                         title: `Điều kiện xem xét, giải quyết kiến nghị`,
+                        summary: '',
                         content: `1. Đối với các vấn đề trước khi có thông báo kết quả lựa chọn nhà thầu, để được xem xét, giải quyết thì đơn kiến nghị phải đáp ứng đủ các điều kiện sau đây:
 a) Đối với kiến nghị về nội dung hồ sơ mời thầu, đơn kiến nghị là của các cơ quan, tổ chức quan tâm đến gói thầu; đối với các nội dung khác về quá trình tổ chức lựa chọn nhà thầu, đơn kiến nghị phải là của nhà thầu tham dự thầu;
 b) Đơn kiến nghị phải có chữ ký, đóng dấu (nếu có) của người đại diện hợp pháp của nhà thầu, cơ quan, tổ chức gửi đơn hoặc được ký số thông qua tài khoản, gửi trên Hệ thống mạng đấu thầu quốc gia;
@@ -10841,6 +10981,7 @@ e) Nhà thầu phải gửi đơn kiến nghị đến chủ đầu tư, bộ ph
                         id: 'nd214-d138',
                         code: 'Điều 138',
                         title: `Quy trình giải quyết kiến nghị`,
+                        summary: '',
                         content: `1. Việc giải quyết kiến nghị về các vấn đề trước khi có thông báo kết quả lựa chọn nhà thầu được thực hiện theo một trong hai quy trình sau đây:
 a) Nhà thầu, cơ quan, tổ chức gửi đơn kiến nghị về hồ sơ mời thầu đến chủ đầu tư trước thời điểm đóng thầu, nhà thầu tham dự thầu gửi đơn kiến nghị các nội dung khác về quá trình tổ chức lựa chọn nhà thầu đến chủ đầu tư trước khi có thông báo kết quả lựa chọn nhà thầu. Nội dung kiến nghị được công khai trên Hệ thống mạng đấu thầu quốc gia. Thông tin nhà thầu, cơ quan, tổ chức gửi đơn kiến nghị, thời điểm gửi đơn kiến nghị được Hệ thống mạng đấu thầu quốc gia công khai cho chủ đầu tư. Trong thời hạn 07 ngày làm việc kể từ ngày nhận được đơn kiến nghị của nhà thầu, cơ quan, tổ chức, chủ đầu tư phải có văn bản giải quyết kiến nghị gửi đến nhà thầu, cơ quan, tổ chức và đăng tải trên Hệ thống mạng đấu thầu quốc gia.
 Trường hợp nhà thầu, cơ quan, tổ chức không đồng ý với kết quả giải quyết kiến nghị hoặc hết thời hạn quy định tại điểm này mà chủ đầu tư không có văn bản giải quyết kiến nghị thì nhà thầu, cơ quan, tổ chức có quyền gửi đơn kiến nghị đến người có thẩm quyền trong thời hạn 05 ngày làm việc kể từ ngày hết hạn giải quyết kiến nghị hoặc ngày nhận được văn bản giải quyết kiến nghị của chủ đầu tư. Người có thẩm quyền phải có văn bản giải quyết kiến nghị gửi đến nhà thầu, cơ quan, tổ chức trong thời hạn 07 ngày làm việc kể từ ngày nhận được đơn kiến nghị của nhà thầu, cơ quan, tổ chức và gửi đến chủ đầu tư để đăng tải trên Hệ thống mạng đấu thầu quốc gia;
@@ -10861,6 +11002,7 @@ Trường hợp nhà thầu gửi đơn kiến nghị đồng thời đến bộ
                         id: 'nd214-d139',
                         code: 'Điều 139',
                         title: `Thành phần, trách nhiệm và hoạt động của Hội đồng giải quyết kiến nghị`,
+                        summary: '',
                         content: `1. Thẩm quyền, trách nhiệm của Hội đồng giải quyết kiến nghị:
 a) Hội đồng giải quyết kiến nghị do đơn vị được giao nhiệm vụ quản lý về hoạt động đấu thầu của bộ, cơ quan ngang bộ, cơ quan thuộc Chính phủ, cơ quan khác ở trung ương thành lập có trách nhiệm giải quyết kiến nghị đối với gói thầu thuộc phạm vi điều chỉnh, đối tượng áp dụng quy định tại Điều 1 và Điều 2 của Luật Đấu thầu do bộ, cơ quan ngang bộ, cơ quan thuộc Chính phủ, cơ quan khác ở trung ương là chủ đầu tư hoặc tổ chức, đơn vị thuộc phạm vi quản lý của bộ, cơ quan ngang bộ, cơ quan thuộc Chính phủ, cơ quan khác ở trung ương là chủ đầu tư; 
 b) Hội đồng giải quyết kiến nghị do Giám đốc Sở Tài chính thành lập có trách nhiệm giải quyết kiến nghị đối với gói thầu thuộc phạm vi điều chỉnh, đối tượng áp dụng quy định tại Điều 1 và Điều 2 của Luật Đấu thầu do Ủy ban nhân dân tỉnh, thành phố trực thuộc trung ương là chủ đầu tư hoặc tổ chức, đơn vị thuộc phạm vi quản lý của tỉnh, thành phố trực thuộc trung ương là chủ đầu tư, trừ gói thầu quy định tại điểm a khoản này.
@@ -10883,6 +11025,7 @@ c) Hội đồng giải quyết kiến nghị có quyền yêu cầu nhà thầu
                         id: 'nd214-d140',
                         code: 'Điều 140',
                         title: `Xử lý tình huống trong đấu thầu qua mạng và không qua mạng`,
+                        summary: '',
                         content: `1. Trường hợp có lý do cần điều chỉnh giá gói thầu hoặc nội dung gói thầu, phải điều chỉnh kế hoạch lựa chọn nhà thầu theo quy định của pháp luật trước thời điểm đóng thầu, trừ trường hợp quy định tại khoản 2 và khoản 8 Điều này.
 2. Trường hợp gói thầu có dự toán được duyệt sau khi phê duyệt kế hoạch lựa chọn nhà thầu mà dự toán gói thầu cao hơn hoặc thấp hơn giá gói thầu ghi trong kế hoạch lựa chọn nhà thầu thì dự toán đó sẽ thay thế giá gói thầu trong kế hoạch lựa chọn nhà thầu theo nguyên tắc sau đây:
 a) Trường hợp dự toán gói thầu được duyệt cao hơn giá gói thầu trong kế hoạch lựa chọn nhà thầu nhưng bảo đảm giá trị cao hơn đó không làm vượt tổng mức đầu tư của dự án, dự toán mua sắm thì không phải điều chỉnh kế hoạch lựa chọn nhà thầu. Trường hợp giá trị cao hơn đó làm vượt tổng mức đầu tư của dự án, dự toán mua sắm thì phải điều chỉnh kế hoạch lựa chọn nhà thầu; nếu hình thức lựa chọn nhà thầu trong kế hoạch lựa chọn nhà thầu đã duyệt không còn phù hợp thì phải điều chỉnh hình thức lựa chọn nhà thầu;
@@ -10996,6 +11139,7 @@ Trường hợp việc làm rõ đáp ứng được các điều kiện quy đ�
                         id: 'nd214-d141',
                         code: 'Điều 141',
                         title: `Quản lý nhà thầu`,
+                        summary: '',
                         content: `1. Trách nhiệm của nhà thầu:
 a) Đăng ký trên Hệ thống mạng đấu thầu quốc gia theo quy định tại điểm d khoản 1 Điều 5 của Luật Đấu thầu trước khi kết quả lựa chọn nhà thầu được phê duyệt;
 b) Thường xuyên cập nhật, chịu trách nhiệm về tính chính xác, trung thực của thông tin về năng lực, kinh nghiệm của mình trên Hệ thống mạng đấu thầu quốc gia;
@@ -11013,6 +11157,7 @@ d) Nhà thầu chịu trách nhiệm thanh toán đầy đủ, đúng tiến đ�
                         id: 'nd214-d142',
                         code: 'Điều 142',
                         title: `Người có thẩm quyền đối với các dự án thành phần, tiểu dự án`,
+                        summary: '',
                         content: `Trường hợp dự án đầu tư được phân chia thành các dự án thành phần, vận hành, khai thác độc lập hoặc công tác bồi thường, hỗ trợ, tái định cư được tách thành tiểu dự án riêng theo các quy định pháp luật thì việc lựa chọn nhà thầu thực hiện các dự án thành phần, tiểu dự án được áp dụng như quy định đối với dự án độc lập. Người có thẩm quyền quyết định đầu tư các dự án thành phần, Chủ tịch Ủy ban nhân dân các cấp đối với tiểu dự án bồi thường, hỗ trợ, tái định cư thực hiện thẩm quyền, trách nhiệm của người có thẩm quyền trong việc tổ chức lựa chọn nhà thầu theo quy định của Luật Đấu thầu và Nghị định này.`
                     }
                 ]
@@ -11024,6 +11169,7 @@ d) Nhà thầu chịu trách nhiệm thanh toán đầy đủ, đúng tiến đ�
                         id: 'nd214-d143',
                         code: 'Điều 143',
                         title: `Sửa đổi, bổ sung một số điều của Nghị định số 32/2019/NĐ-CP ngày 10 tháng 4 năm 2019 của Chính phủ quy định giao nhiệm vụ, đặt hàng hoặc đấu thầu cung cấp sản phẩm, dịch vụ công sử dụng ngân sách nhà nước từ nguồn kinh phí chi thường xuyên (đã được sửa đổi, bổ sung một số điều theo Nghị định số 111/2025/NĐ-CP ngày 22 tháng 5 năm 2025 của Chính phủ)`,
+                        summary: '',
                         content: `1. Sửa đổi, bổ sung khoản 1 và khoản 2 Điều 12 như sau:
 “1. Đặt hàng cung cấp dịch vụ sự nghiệp công sử dụng kinh phí ngân sách nhà nước đối với đơn vị sự nghiệp công lập trực thuộc cơ quan quản lý cấp trên đặt hàng cung cấp dịch vụ sự nghiệp công, theo danh mục quy định tại Phụ lục I ban hành kèm theo Nghị định này, khi đáp ứng đồng thời các điều kiện sau:
 a) Đáp ứng điều kiện quy định tại điểm a khoản 2 Điều 9 Nghị định này;
@@ -11082,6 +11228,7 @@ c) Cơ quan đặt hàng chịu trách nhiệm xác định nhà sản xuất, c
                         id: 'nd214-d144',
                         code: 'Điều 144',
                         title: `Quy định chuyển tiếp`,
+                        summary: '',
                         content: `1. Đối với gói thầu đã phê duyệt kế hoạch lựa chọn nhà thầu nhưng đến ngày Nghị định này có hiệu lực thi hành chưa phát hành hồ sơ mời quan tâm, hồ sơ mời sơ tuyển, hồ sơ mời thầu, hồ sơ yêu cầu, chủ đầu tư được điều chỉnh kế hoạch lựa chọn nhà thầu đã phê duyệt để thực hiện theo quy định của Luật số 90/2025/QH15 và Nghị định này.
 Đối với gói thầu áp dụng hình thức chỉ định thầu theo quy trình rút gọn, mua sắm trực tiếp, tự thực hiện, lựa chọn nhà thầu trong trường hợp đặc biệt, lựa chọn nhà thầu thực hiện gói thầu có sự tham gia thực hiện của cộng đồng, trường hợp đã phê duyệt kế hoạch lựa chọn nhà thầu nhưng đến ngày Nghị định này có hiệu lực thi hành chưa phê duyệt kết quả lựa chọn nhà thầu thì chủ đầu tư được điều chỉnh kế hoạch lựa chọn nhà thầu đã được phê duyệt để thực hiện theo quy định của Luật số 90/2025/QH15 và Nghị định này.
 2. Các gói thầu đã phát hành hồ sơ mời quan tâm, hồ sơ mời sơ tuyển, hồ sơ mời thầu, hồ sơ yêu cầu trước ngày 01 tháng 7 năm 2025 và đã mở thầu trước ngày Nghị định này có hiệu lực thi hành thì tiếp tục tổ chức lựa chọn danh sách ngắn, lựa chọn nhà thầu, ký kết và quản lý thực hiện hợp đồng theo quy định của Luật Đấu thầu số 22/2023/QH15 (đã được sửa đổi, bổ sung một số điều theo Luật số 57/2024/QH15) và các văn bản quy định chi tiết, hướng dẫn thi hành Luật này.
@@ -11107,6 +11254,7 @@ d) Đối với các Quyết định cấm tham gia hoạt động đấu thầu
                         id: 'nd214-d145',
                         code: 'Điều 145',
                         title: `Hiệu lực thi hành`,
+                        summary: '',
                         content: `1. Nghị định này có hiệu lực thi hành kể từ ngày ký ban hành.
 2. Kể từ ngày Nghị định này có hiệu lực thi hành, các Nghị định và các điều khoản sau đây hết hiệu lực thi hành:
 a) Nghị định số 24/2024/NĐ-CP ngày 27 tháng 02 năm 2024 của Chính phủ quy định chi tiết một số điều và biện pháp thi hành Luật Đấu thầu về lựa chọn nhà thầu (đã được sửa đổi, bổ sung theo Nghị định số 115/2024/NĐ-CP ngày 16 tháng 9 năm 2024 của Chính phủ quy định chi tiết một số điều và biện pháp thi hành Luật Đấu thầu về lựa chọn nhà đầu tư thực hiện dự án đầu tư có sử dụng đất và Nghị định số 17/2025/NĐ-CP ngày 06 tháng 02 năm 2025 của Chính phủ sửa đổi, bổ sung một số điều của các Nghị định quy định chi tiết một số điều và biện pháp thi hành Luật Đấu thầu); 
@@ -11119,6 +11267,7 @@ b) Khoản 5 Điều 13 và khoản 3 Điều 14 Nghị định số 165/2017/N�
                         id: 'nd214-d146',
                         code: 'Điều 146',
                         title: `Trách nhiệm thi hành`,
+                        summary: '',
                         content: `1. Bộ Tài chính có trách nhiệm:
 a) Quy định chi tiết và hướng dẫn thực hiện các điều, khoản được giao theo quy định tại Luật Đấu thầu số 22/2023/QH15 (đã được sửa đổi, bổ sung tại Luật số 57/2024/QH15, Luật số 90/2025/QH15), Nghị định này và các nội dung cần thiết khác để đáp ứng yêu cầu quản lý nhà nước về đấu thầu;
 b) Tổng hợp, quản lý cơ sở dữ liệu về nhà thầu; chất lượng hàng hóa đã được sử dụng; nhà thầu không bảo đảm uy tín khi tham dự thầu, nhà thầu bị chấm dứt hợp đồng do lỗi của nhà thầu, nhà thầu bị cấm tham gia hoạt động đấu thầu và các tổ chức, cá nhân có hành vi vi phạm khác; danh sách nhà thầu nước ngoài trúng thầu;
@@ -11159,6 +11308,660 @@ PHÓ THỦ TƯỚNG
 
 
 Trần Hồng Hà`
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        id: 'luat-cds-2025',
+        code: 'Luật số 148/2025/QH15',
+        title: 'Luật Chuyển đổi số',
+        shortTitle: 'Luật CĐS 148/2025',
+        type: 'luat',
+        issuedDate: '11/12/2025',
+        effectiveDate: '01/07/2026',
+        issuedBy: 'Quốc hội',
+        status: 'hieu-luc',
+        summary: 'Quy định về chuyển đổi số, bao gồm: nguyên tắc, chính sách; điều phối quốc gia; biện pháp bảo đảm; Chính phủ số; kinh tế số, xã hội số; trách nhiệm của cơ quan, tổ chức, cá nhân trong chuyển đổi số.',
+        fileName: 'luat148-CĐS-2025.pdf',
+        filePath: '/resources/luat148-CĐS-2025.pdf',
+        fileSize: '',
+        tags: ['chuyển đổi số', 'chính phủ số', 'kinh tế số', 'xã hội số', 'hạ tầng số', 'dịch vụ công trực tuyến', 'năng lực số', 'công dân số'],
+        relatedDocIds: [],
+        chapters: [
+            {
+                id: 'luat148-ch1', code: 'Chương I', title: `NHỮNG QUY ĐỊNH CHUNG`,
+                articles: [
+                    {
+                        id: 'luat148-d1',
+                        code: 'Điều 1',
+                        title: `Phạm vi điều chỉnh`,
+                        summary: '',
+                        content: `1. Luật này quy định về chuyển đổi số, bao gồm nguyên tắc, chính sách về chuyển đổi số; điều phối quốc gia về chuyển đổi số; biện pháp bảo đảm chuyển đổi số; Chính phủ số; kinh tế số, xã hội số; trách nhiệm của cơ quan, tổ chức, cá nhân trong chuyển đổi số.
+2. Các nội dung thuộc lĩnh vực dữ liệu, giao dịch điện tử, an ninh mạng, viễn thông, trí tuệ nhân tạo và các lĩnh vực chuyên ngành khác được thực hiện theo quy định của pháp luật tương ứng và phải bảo đảm thống nhất với nguyên tắc, yêu cầu quy định tại Luật này.`
+                    },
+                    {
+                        id: 'luat148-d2',
+                        code: 'Điều 2',
+                        title: `Đối tượng áp dụng`,
+                        summary: '',
+                        content: `Luật này áp dụng đối với cơ quan, tổ chức, cá nhân trong nước và ngoài nước trực tiếp tham gia hoặc có liên quan đến chuyển đổi số tại Việt Nam.`
+                    },
+                    {
+                        id: 'luat148-d3',
+                        code: 'Điều 3',
+                        title: `Giải thích từ ngữ`,
+                        summary: '',
+                        content: `Trong Luật này, các từ ngữ dưới đây được hiểu như sau:
+1. Chuyển đổi số là quá trình chuyển đổi phương thức hoạt động, quản trị và cung cấp dịch vụ dựa trên công nghệ số, dữ liệu số, hệ thống số, nền tảng số, quy trình số nhằm tạo ra giá trị mới, hiệu quả và minh bạch.
+2. Hạ tầng số là tập hợp các hệ thống kỹ thuật, kết nối, điện toán, lưu trữ và các thành phần công nghệ số bảo đảm cho hoạt động trên môi trường số, bao gồm cơ sở hạ tầng viễn thông, hạ tầng trung tâm dữ liệu, điện toán đám mây và hạ tầng truyền dẫn cho kết nối máy tới máy.
+3. Hạ tầng số công cộng bao gồm nền tảng số và dịch vụ số dùng chung do Nhà nước đầu tư, quản lý hoặc bảo đảm vận hành; được xây dựng theo nguyên tắc mở, tiêu chuẩn và khả năng tương thích cao nhằm phục vụ lợi ích công cộng; có khả năng kết nối, tích hợp và liên thông an toàn trong nước, khu vực và quốc tế.
+4. Hệ thống số là sự phát triển của hệ thống thông tin, bao gồm các thành phần công nghệ số, dữ liệu số, nền tảng số, phần mềm, phần cứng, thuật toán, mô hình xử lý và thiết bị kết nối được tổ chức để tạo lập, xử lý, lưu trữ, kết nối và vận hành dịch vụ số hoặc quy trình số; bao gồm cả trường hợp hoạt động điều hành theo thời gian thực.
+5. Nền tảng số là hệ thống thông tin nhằm tạo môi trường số cho phép các bên thực hiện giao dịch hoặc cung cấp, sử dụng sản phẩm, dịch vụ hoặc sử dụng để phát triển sản phẩm, dịch vụ.
+6. Quy trình số là chuỗi hoạt động hoặc thao tác nghiệp vụ được thực hiện, xử lý và kiểm soát bằng phương tiện điện tử trên môi trường số.
+7. Môi trường số là không gian hoạt động, tương tác, giao dịch và cung cấp dịch vụ được hình thành và vận hành thông qua hạ tầng số, hạ tầng số công cộng, hệ thống số, nền tảng số và dữ liệu số.
+8. Số hóa là việc chuyển đổi thông tin, dữ liệu, tài liệu từ dạng vật lý hoặc tương tự sang dạng dữ liệu số.
+9. Số hóa quy trình là việc sử dụng công nghệ số, dữ liệu số để tự động hóa và tối ưu hóa các quy trình hoạt động của cơ quan, tổ chức, cá nhân.
+10. Chia sẻ dữ liệu số là việc cung cấp, trao đổi hoặc cho phép truy cập dữ liệu số giữa các cơ quan, tổ chức và cá nhân theo nguyên tắc, tiêu chuẩn và yêu cầu bảo đảm an toàn.
+11. Chính phủ số là mô hình để tổ chức và vận hành các hoạt động của cơ quan nhà nước trên môi trường số, dựa trên dữ liệu số, hạ tầng số, hạ tầng số công cộng, hệ thống số và nền tảng số để ra quyết định kịp thời, điều hành hiệu quả, bảo đảm minh bạch và kết nối, liên thông với tổ chức, doanh nghiệp và người dân.
+12. Kinh tế số là hoạt động kinh tế dựa trên dữ liệu số, hạ tầng số, hạ tầng số công cộng, hệ thống số, nền tảng số và mô hình vận hành số.
+13. Xã hội số là xã hội trong đó cá nhân, tổ chức chủ yếu hoạt động, tương tác thông qua dịch vụ số, hệ thống số, nền tảng số và môi trường số.
+14. Dịch vụ số là dịch vụ được cung cấp trên môi trường số.
+15. Dịch vụ công trực tuyến là dịch vụ hành chính công và các dịch vụ khác do cơ quan nhà nước cung cấp trên môi trường số, bao gồm dịch vụ công trực tuyến toàn trình và dịch vụ công trực tuyến một phần.
+Dịch vụ công trực tuyến toàn trình là dịch vụ công trực tuyến được thực hiện hoàn toàn trên môi trường số, bao gồm nộp, tiếp nhận hồ sơ, xử lý, thanh toán (nếu có) và trả kết quả.
+Dịch vụ công trực tuyến một phần là dịch vụ công trực tuyến được thực hiện một hoặc một số công đoạn trên môi trường số.
+16. Công dân số là cá nhân có khả năng truy cập, sử dụng, tham gia các hoạt động trên môi trường số một cách an toàn, hiệu quả theo quy định của pháp luật.
+17. Năng lực số là tập hợp kiến thức, kỹ năng sử dụng công nghệ số để tham gia an toàn, hiệu quả, có trách nhiệm vào các hoạt động trên môi trường số.
+18. Nhân lực số là lực lượng lao động trong mọi ngành, lĩnh vực có năng lực số để tham gia hoạt động chuyển đổi số.
+19. Khoảng cách số là sự chênh lệch giữa các nhóm đối tượng, tổ chức, cá nhân về năng lực số, điều kiện, khả năng tiếp cận, sử dụng và hưởng lợi từ hạ tầng số, hạ tầng số công cộng, công nghệ số, nền tảng số, dữ liệu số.
+20. Công nghệ thông tin là tập hợp các phương pháp khoa học, công nghệ và công cụ kỹ thuật hiện đại để sản xuất, truyền đưa, thu thập, xử lý, lưu trữ và trao đổi thông tin số. Công nghệ thông tin là bộ phận của công nghệ số theo quy định của Luật Công nghiệp công nghệ số.
+21. Thông tin số là thông tin được tạo lập bằng phương pháp dùng tín hiệu số.
+22. Môi trường mạng là môi trường trong đó thông tin được cung cấp, truyền đưa, thu thập, xử lý, lưu trữ và trao đổi thông qua cơ sở hạ tầng thông tin.
+23. Cơ sở hạ tầng thông tin là hệ thống trang thiết bị phục vụ cho việc sản xuất, truyền đưa, thu thập, xử lý, lưu trữ và trao đổi thông tin số, bao gồm mạng viễn thông, mạng Internet, mạng máy tính và cơ sở dữ liệu.
+24. Ứng dụng công nghệ thông tin là việc sử dụng công nghệ thông tin vào các hoạt động thuộc lĩnh vực kinh tế - xã hội, đối ngoại, quốc phòng, an ninh và các hoạt động khác nhằm nâng cao năng suất, chất lượng, hiệu quả của các hoạt động này. Ứng dụng công nghệ thông tin là bộ phận của ứng dụng công nghệ số.`
+                    },
+                    {
+                        id: 'luat148-d4',
+                        code: 'Điều 4',
+                        title: `Hoạt động chuyển đổi số`,
+                        summary: '',
+                        content: `1. Xây dựng, ban hành, tổ chức thực hiện chiến lược, chương trình, kế hoạch, kiến trúc, quy chế, yêu cầu kỹ thuật, tiêu chuẩn và quy chuẩn kỹ thuật về chuyển đổi số; quản lý, điều phối, thống kê, đo lường, giám sát, kiểm toán hoạt động chuyển đổi số; đánh giá mức độ chuyển đổi số, hiệu quả chuyển đổi số.
+2. Xây dựng, phát triển, nâng cấp, tích hợp, kết nối, quản lý, giám sát, vận hành, bảo trì, duy trì hạ tầng số, hạ tầng số công cộng, hệ thống số, nền tảng số, phần mềm dùng chung, phần mềm chuyên ngành, cơ sở dữ liệu.
+3. Xây dựng, phát triển, bảo vệ, quản trị, xử lý, sử dụng dữ liệu; điều phối, kết nối, chia sẻ, mở, giám sát, đánh giá, khai thác, kiểm toán, xếp hạng dữ liệu và các hoạt động khác theo quy định của pháp luật về dữ liệu.
+4. Số hóa thông tin, dữ liệu, tài liệu; số hóa quy trình; đổi mới, tái cấu trúc quy trình, mô hình tổ chức và phương thức hoạt động quản trị nội bộ, lãnh đạo, chỉ đạo, điều hành, thanh tra, kiểm tra, cung cấp dịch vụ; phát triển và cung cấp dịch vụ công trực tuyến, dịch vụ số, ứng dụng khác trong hoạt động quản lý nhà nước, sản xuất, kinh doanh và đời sống xã hội; xây dựng và phát triển bản sao số.
+5. Thực hiện các biện pháp bảo vệ an ninh mạng và bảo vệ dữ liệu trong thiết kế, triển khai, vận hành và sử dụng hệ thống số; triển khai hoạt động giám sát, đánh giá, ứng phó, quản trị rủi ro và khắc phục sự cố an ninh mạng theo quy định của pháp luật về an ninh mạng.
+6. Nghiên cứu, thử nghiệm, thí điểm, đánh giá, triển khai ứng dụng sản phẩm, dịch vụ số, mô hình và giải pháp mới về chuyển đổi số; thực hiện cơ chế thử nghiệm có kiểm soát trong chuyển đổi số.
+7. Đào tạo, bồi dưỡng và phát triển năng lực số; phổ cập năng lực số cơ bản.
+8. Truyền thông, phổ biến chủ trương, chính sách, pháp luật về chuyển đổi số; hướng dẫn và hỗ trợ tổ chức, cá nhân tiếp cận, sử dụng dịch vụ số và tham gia hoạt động trên môi trường số.
+9. Thuê chuyên gia, dịch vụ tư vấn, dịch vụ số, dịch vụ hỗ trợ kỹ thuật và dịch vụ khác phục vụ việc khảo sát, thiết kế, xây dựng, triển khai, vận hành, bảo trì, kiểm thử, kiểm toán, giám sát và đánh giá hoạt động chuyển đổi số.
+10. Trang bị, mua sắm, thuê, khai thác và sử dụng hạ tầng chuyển đổi số, hệ thống số, nền tảng số; sản phẩm, dịch vụ công nghệ số, dịch vụ điện toán đám mây, dịch vụ dữ liệu, dịch vụ an ninh mạng, dịch vụ tư vấn và các dịch vụ số khác; công cụ và thiết bị đầu cuối phục vụ chuyển đổi số.
+11. Phát triển thử nghiệm bao gồm việc xây dựng, vận hành thử nghiệm hệ thống số, nền tảng số, dịch vụ số chưa có sẵn trên thị trường; dự án chưa có tiền lệ trong phạm vi giới hạn nhằm đánh giá hiệu quả trước khi thực hiện các thủ tục đầu tư, thuê, mua sắm theo quy định.
+12. Hoạt động chuyển đổi số khác theo quy định của Chính phủ.`
+                    },
+                    {
+                        id: 'luat148-d5',
+                        code: 'Điều 5',
+                        title: `Các hành vi bị nghiêm cấm`,
+                        summary: '',
+                        content: `1. Cản trở, phá hoại hoạt động chuyển đổi số; làm gián đoạn, đình trệ, gây mất an toàn cho hệ thống số của cơ quan, tổ chức, cá nhân.
+2. Truy cập, can thiệp trái phép, làm sai lệch, vô hiệu hóa, gây tổn hại đến hệ thống số, dữ liệu số, nền tảng số và dịch vụ số.
+3. Thu thập, sử dụng, chia sẻ, mua, bán, khai thác dữ liệu số trái quy định của pháp luật.
+4. Lợi dụng chuyển đổi số để lừa đảo, thao túng, trục lợi, xâm phạm quyền và lợi ích hợp pháp của cơ quan, tổ chức, cá nhân.
+5. Lợi dụng chức trách, quyền hạn để gây cản trở, phân biệt đối xử, tạo độc quyền, cát cứ, hạn chế cạnh tranh trong phát triển, vận hành, khai thác hệ thống số.`
+                    }
+                ]
+            },
+            {
+                id: 'luat148-ch2', code: 'Chương II', title: `NGUYÊN TẮC, CHÍNH SÁCH VỀ CHUYỂN ĐỔI SỐ`,
+                articles: [
+                    {
+                        id: 'luat148-d6',
+                        code: 'Điều 6',
+                        title: `Nguyên tắc chuyển đổi số`,
+                        summary: '',
+                        content: `1. Thúc đẩy đổi mới sáng tạo, lấy người sử dụng làm trung tâm, nâng cao chất lượng dịch vụ và tạo giá trị mới cho cơ quan, tổ chức, doanh nghiệp và người dân.
+2. Tăng cường kết nối, chia sẻ và sử dụng lại dữ liệu, khai báo một lần là mặc định để nâng cao hiệu quả quản lý, hạn chế trùng lặp, giảm thủ tục và nâng cao năng lực ra quyết định.
+3. Bảo đảm an ninh mạng, bảo vệ dữ liệu và quyền riêng tư theo quy định của pháp luật; khuyến khích áp dụng các biện pháp tiên tiến để nâng cao mức độ an toàn.
+4. Được triển khai linh hoạt, thích ứng với sự phát triển nhanh của công nghệ; khuyến khích thử nghiệm, ứng dụng công nghệ mới phù hợp với đặc thù từng lĩnh vực.
+5. Bảo đảm tính bao trùm, tạo điều kiện để mọi tổ chức và cá nhân đều có cơ hội tiếp cận, sử dụng dịch vụ số thuận lợi, an toàn và hiệu quả.
+6. Bảo đảm minh bạch và trách nhiệm giải trình đối với quyết định dựa trên công nghệ số nhằm nâng cao niềm tin của người sử dụng.
+7. Khuyến khích gắn chuyển đổi số với hoạt động đo lường, đánh giá, giám sát và cải thiện liên tục để nâng cao hiệu quả triển khai và chất lượng dịch vụ.
+8. Cơ quan nhà nước có trách nhiệm tuân thủ các nguyên tắc chuyển đổi số. Nhà nước khuyến khích tổ chức, doanh nghiệp ngoài khu vực nhà nước áp dụng các nguyên tắc quy định tại Điều này trong hoạt động của mình.`
+                    },
+                    {
+                        id: 'luat148-d7',
+                        code: 'Điều 7',
+                        title: `Nguyên tắc kiến trúc và thiết kế hệ thống số`,
+                        summary: '',
+                        content: `1. Được thiết kế theo hướng sử dụng nền tảng số và các thành phần dùng chung, thúc đẩy khả năng mở rộng, tích hợp và sử dụng lại để nâng cao hiệu quả đầu tư và hạn chế trùng lặp.
+2. Bảo đảm khai thác hiệu quả hạ tầng điện toán đám mây và các công nghệ cho phép mở rộng linh hoạt theo nhu cầu, bảo đảm hiệu quả vận hành, an toàn và tối ưu chi phí.
+3. Hỗ trợ kết nối và tích hợp ngay từ giai đoạn thiết kế, dựa trên chuẩn mở, kiến trúc mở và giao diện lập trình ứng dụng theo chuẩn để thuận lợi cho chia sẻ dữ liệu và liên thông giữa các hệ thống.
+4. Bảo đảm an ninh mạng và bảo vệ dữ liệu ngay từ giai đoạn thiết kế và phát triển; khuyến khích áp dụng các biện pháp bảo vệ tiên tiến phù hợp với rủi ro.
+5. Lấy dữ liệu làm trung tâm; bảo đảm dữ liệu được thu thập, quản lý, chia sẻ và khai báo một lần là yêu cầu mặc định; sử dụng hiệu quả để nâng cao chất lượng ra quyết định, chất lượng dịch vụ.
+6. Lấy người sử dụng làm trung tâm, bảo đảm thuận tiện, dễ tiếp cận, dễ sử dụng và phù hợp với nhiều nhóm đối tượng, đặc biệt là người yếu thế, các nhóm đối tượng dễ bị tổn thương.
+7. Bảo đảm linh hoạt, dễ nâng cấp và thích ứng với sự phát triển nhanh của công nghệ, khuyến khích áp dụng mô hình kiến trúc mô-đun, thành phần độc lập và công nghệ mới phù hợp.
+8. Cơ quan nhà nước có trách nhiệm tuân thủ các nguyên tắc thiết kế và kiến trúc hệ thống số. Nhà nước khuyến khích tổ chức, doanh nghiệp ngoài khu vực nhà nước áp dụng các nguyên tắc quy định tại Điều này trong hoạt động của mình.
+9. Chính phủ quy định chi tiết Điều này phù hợp với yêu cầu quản lý và thực tiễn triển khai.`
+                    },
+                    {
+                        id: 'luat148-d8',
+                        code: 'Điều 8',
+                        title: `Yêu cầu tối thiểu đối với hệ thống số`,
+                        summary: '',
+                        content: `1. Yêu cầu tối thiểu đối với hệ thống số được áp dụng bắt buộc đối với hệ thống thông tin, nền tảng số, cơ sở dữ liệu và dịch vụ số của cơ quan nhà nước, hệ thống số phục vụ lợi ích công, dịch vụ số thiết yếu và hệ thống số của tổ chức, doanh nghiệp được cơ quan nhà nước giao cung cấp dịch vụ công.
+Đối với hệ thống số của tổ chức, doanh nghiệp khác, Nhà nước khuyến khích áp dụng theo khả năng và nhu cầu.
+2. Bảo đảm an ninh mạng theo cấp độ; có cơ chế giám sát, phát hiện, cảnh báo, ứng cứu và khôi phục hoạt động khi xảy ra sự cố.
+3. Bảo đảm khả năng kết nối và chia sẻ dữ liệu theo chuẩn với các hệ thống khác; hỗ trợ giao diện lập trình ứng dụng theo tiêu chuẩn, quy chuẩn kỹ thuật; sử dụng chuẩn dữ liệu quốc gia, chuẩn mở, tiêu chuẩn, quy chuẩn kỹ thuật theo quy định.
+4. Dữ liệu được xử lý bởi hệ thống số phải được lưu trữ, sao lưu, bảo vệ và phục hồi theo phương án bảo đảm tính toàn vẹn, tính sẵn sàng và khả năng chống chịu sự cố; tuân thủ quy định về bảo vệ dữ liệu cá nhân và dữ liệu quan trọng, dữ liệu cốt lõi theo pháp luật về bảo vệ dữ liệu cá nhân, pháp luật về dữ liệu.
+5. Hệ thống số và dịch vụ số phải duy trì mức độ sẵn sàng hoạt động tối thiểu; có phương án dự phòng và chuyển đổi dự phòng để bảo đảm hoạt động thông suốt đối với hệ thống quan trọng hoặc dịch vụ thiết yếu.
+6. Hệ thống số phải ghi nhận, lưu trữ và bảo vệ nhật ký hoạt động; bảo đảm khả năng kiểm tra, giám sát và truy vết phục vụ thanh tra, kiểm tra, kiểm toán, giải trình khi cần thiết.
+7. Hệ thống số và dịch vụ số phải đáp ứng tiêu chuẩn, quy chuẩn, yêu cầu kỹ thuật về khả năng tiếp cận tối thiểu đối với người sử dụng, đặc biệt là người khuyết tật, người cao tuổi và các nhóm đối tượng dễ bị tổn thương khác.
+8. Hệ thống số được phân loại theo mức độ rủi ro, quan trọng, lĩnh vực, phạm vi ảnh hưởng và có lộ trình áp dụng yêu cầu tối thiểu theo quy định của Chính phủ.`
+                    },
+                    {
+                        id: 'luat148-d9',
+                        code: 'Điều 9',
+                        title: `Chính sách của Nhà nước về chuyển đổi số`,
+                        summary: '',
+                        content: `1. Phát triển hạ tầng chuyển đổi số thống nhất, an toàn, tin cậy và có khả năng mở rộng, đáp ứng yêu cầu kết nối, chia sẻ và cung cấp dịch vụ số.
+2. Thúc đẩy hình thành và phát triển dữ liệu số, bảo đảm khả năng truy cập, chia sẻ, sử dụng lại và khai thác dữ liệu số theo quy định của pháp luật.
+3. Khuyến khích phát triển và sử dụng nền tảng số dùng chung, nền tảng số mở và các sản phẩm, dịch vụ công nghệ số phục vụ quản trị, cung cấp dịch vụ và phát triển kinh tế - xã hội; bảo đảm khả năng tiếp cận và thụ hưởng bình đẳng trong chuyển đổi số, đặc biệt là trong các lĩnh vực giáo dục, y tế, văn hóa, lao động, việc làm và an sinh xã hội.
+4. Bảo đảm an ninh mạng và bảo vệ dữ liệu trong hoạt động chuyển đổi số; phòng ngừa, phát hiện và xử lý các hành vi vi phạm pháp luật trên môi trường số.
+5. Khuyến khích đổi mới sáng tạo, thử nghiệm có kiểm soát và ứng dụng công nghệ số mới nhằm nâng cao hiệu quả cung cấp dịch vụ và phát triển sản phẩm, dịch vụ số.
+6. Thúc đẩy, hỗ trợ doanh nghiệp, hợp tác xã, hộ kinh doanh thực hiện chuyển đổi số; ưu tiên hỗ trợ doanh nghiệp nhỏ và vừa, doanh nghiệp hoạt động tại vùng có điều kiện kinh tế - xã hội khó khăn, đặc biệt khó khăn.
+7. Tăng cường quản lý, giám sát hoạt động của hệ thống số, nền tảng số, đặc biệt là nền tảng số trung gian có quy mô lớn, rất lớn nhằm bảo đảm cạnh tranh lành mạnh, an toàn, minh bạch trên môi trường số.
+8. Bảo đảm điều phối thống nhất giữa các Bộ, ngành, địa phương; hoàn thiện cơ chế, chính sách, tiêu chuẩn và quy chuẩn kỹ thuật phục vụ chuyển đổi số; tránh phân tán nguồn lực, trùng lặp hệ thống số, nền tảng số và dữ liệu số.
+9. Thu hút, trọng dụng nhân tài, nhân lực chất lượng cao; phổ cập, phát triển năng lực số cho cơ quan, tổ chức, doanh nghiệp và người dân; bảo đảm khả năng triển khai, vận hành và thụ hưởng lợi ích từ chuyển đổi số an toàn, bền vững; hỗ trợ đào tạo, bồi dưỡng, chuyển đổi nghề nghiệp đối với lực lượng lao động bị ảnh hưởng hoặc mất việc làm do quá trình chuyển đổi số.
+10. Phát triển công dân số, thúc đẩy các điều kiện tiếp cận, sử dụng công bằng dịch vụ số cơ bản, tối thiểu bao gồm danh tính điện tử, năng lực số cơ bản, chứng thư chữ ký số theo pháp luật về giao dịch điện tử, dịch vụ công trực tuyến, dịch vụ viễn thông cơ bản theo pháp luật về viễn thông, dịch vụ thanh toán không dùng tiền mặt theo pháp luật về ngân hàng.
+11. Hỗ trợ phát triển hạ tầng chuyển đổi số, thu hẹp khoảng cách số; hỗ trợ tiếp cận, khai thác, sử dụng hiệu quả hạ tầng chuyển đổi số, thiết bị công nghệ số, năng lực số; nâng cao năng lực tiếp cận thông tin, tri thức chuyển đổi số cho người khuyết tật, người cao tuổi, trẻ em, người dân sinh sống ở khu vực biên giới, hải đảo, vùng đồng bào dân tộc thiểu số, miền núi, vùng có điều kiện kinh tế - xã hội khó khăn, đặc biệt khó khăn, các nhóm dễ bị tổn thương khác trong xã hội theo quy định của pháp luật.
+12. Cơ quan nhà nước công khai, minh bạch các kế hoạch chuyển đổi số ngay sau khi phê duyệt để tạo cơ hội cho các thành phần kinh tế tham gia thị trường chuyển đổi số; khuyến khích sử dụng sản phẩm, dịch vụ công nghệ số do doanh nghiệp Việt Nam sản xuất, làm chủ công nghệ; thực hiện cơ chế Nhà nước đặt hàng doanh nghiệp công nghệ số nghiên cứu, giải quyết các nhiệm vụ quan trọng của quốc gia.`
+                    },
+                    {
+                        id: 'luat148-d10',
+                        code: 'Điều 10',
+                        title: `Hợp tác quốc tế về chuyển đổi số`,
+                        summary: '',
+                        content: `1. Nhà nước đẩy mạnh hợp tác song phương, đa phương với các quốc gia, tổ chức quốc tế, doanh nghiệp toàn cầu trong lĩnh vực chuyển đổi số theo nguyên tắc tôn trọng độc lập, chủ quyền và bảo vệ chủ quyền quốc gia trên không gian mạng.
+2. Hợp tác quốc tế về chuyển đổi số tập trung vào các hoạt động sau đây:
+a) Trao đổi kinh nghiệm, chuyển giao công nghệ;
+b) Thu hút đầu tư nước ngoài và mở rộng thị trường cho sản phẩm, hàng hóa, dịch vụ phục vụ chuyển đổi số của Việt Nam; thúc đẩy, mở rộng thương mại điện tử;
+c) Đào tạo, trao đổi chuyên gia; đào tạo, phát triển nguồn nhân lực số;
+d) Xây dựng tiêu chuẩn, quy chuẩn kỹ thuật có tính tương thích quốc tế;
+đ) Tham gia tích cực các diễn đàn, sáng kiến và thiết lập khuôn khổ hợp tác quốc tế về chuyển đổi số.`
+                    }
+                ]
+            },
+            {
+                id: 'luat148-ch3', code: 'Chương III', title: `ĐIỀU PHỐI QUỐC GIA VỀ CHUYỂN ĐỔI SỐ`,
+                articles: [
+                    {
+                        id: 'luat148-d11',
+                        code: 'Điều 11',
+                        title: `Nội dung quản lý nhà nước về chuyển đổi số`,
+                        summary: '',
+                        content: `1. Xây dựng, ban hành và tổ chức thực hiện chính sách, pháp luật về chuyển đổi số; tiêu chuẩn, quy chuẩn kỹ thuật; bộ chỉ số thống nhất về chuyển đổi số.
+2. Xây dựng, ban hành và tổ chức thực hiện chiến lược, chương trình, kế hoạch về chuyển đổi số.
+3. Tuyên truyền, phổ biến về chuyển đổi số.
+4. Quản lý, giám sát các hoạt động chuyển đổi số.
+5. Tổ chức thực hiện thống kê, đo lường, giám sát, đánh giá mức độ chuyển đổi số, hiệu quả chuyển đổi số.
+6. Thanh tra, kiểm tra, giải quyết khiếu nại, tố cáo và xử lý vi phạm pháp luật về chuyển đổi số.
+7. Đào tạo, bồi dưỡng, phát triển nguồn nhân lực số.
+8. Hợp tác quốc tế về chuyển đổi số.`
+                    },
+                    {
+                        id: 'luat148-d12',
+                        code: 'Điều 12',
+                        title: `Chiến lược, chương trình, kế hoạch chuyển đổi số`,
+                        summary: '',
+                        content: `1. Thủ tướng Chính phủ phê duyệt Chiến lược quốc gia về Chuyển đổi số phù hợp với chiến lược phát triển kinh tế - xã hội.
+2. Chương trình Chuyển đổi số quốc gia là tập hợp các nội dung, nhiệm vụ về hoạt động chuyển đổi số, bao gồm nhiệm vụ liên ngành, liên vùng do Cơ quan quản lý nhà nước về chuyển đổi số xây dựng, trình Thủ tướng Chính phủ ban hành theo từng thời kỳ, phù hợp với Chiến lược quốc gia về Chuyển đổi số quy định tại khoản 1 Điều này.
+3. Kế hoạch chuyển đổi số của Bộ, ngành, địa phương được xây dựng và ban hành phù hợp với Chiến lược quốc gia về Chuyển đổi số, Chương trình Chuyển đổi số quốc gia quy định tại khoản 1 và khoản 2 Điều này.
+4. Kinh phí thực hiện Chiến lược, Chương trình Chuyển đổi số quốc gia, kế hoạch 05 năm, hằng năm từ nguồn tài chính cho chuyển đổi số được quy định tại Mục 2 Chương V của Luật này.
+5. Chính phủ quy định chi tiết Điều này.`
+                    },
+                    {
+                        id: 'luat148-d13',
+                        code: 'Điều 13',
+                        title: `Khung kiến trúc tổng thể quốc gia số`,
+                        summary: '',
+                        content: `1. Khung kiến trúc tổng thể quốc gia số khái quát mô hình kiến trúc số tổng thể cho quốc gia, trong đó xác định những thành phần dùng chung, cơ bản nhất cho các cơ quan trong hệ thống chính trị; bảo đảm an ninh mạng; bảo vệ dữ liệu; bảo đảm kết nối, chia sẻ, dùng chung tài nguyên, dữ liệu; tránh trùng lặp trên quy mô quốc gia; hỗ trợ phát triển kinh tế - xã hội, phục vụ người dân, doanh nghiệp.
+2. Các hợp phần chính của Khung kiến trúc tổng thể quốc gia số bao gồm:
+a) Khung kiến trúc số của cơ quan Đảng;
+b) Khung kiến trúc số của Quốc hội;
+c) Khung kiến trúc số của Mặt trận Tổ quốc Việt Nam;
+d) Khung kiến trúc Chính phủ số;
+đ) Khung kiến trúc số của các cơ quan, tổ chức khác.
+3. Cơ quan quản lý nhà nước về chuyển đổi số chủ trì, phối hợp với các cơ quan liên quan thực hiện:
+a) Xây dựng và trình Thủ tướng Chính phủ ban hành Khung kiến trúc tổng thể quốc gia số;
+b) Cập nhật, tổ chức triển khai Khung kiến trúc tổng thể quốc gia số.
+4. Việc xây dựng, phát triển, kết nối, chia sẻ giữa các hệ thống số, hệ thống thông tin, nền tảng số, cơ sở dữ liệu và dịch vụ số của các cơ quan trong hệ thống chính trị cần tuân thủ Khung kiến trúc tổng thể quốc gia số, Khung kiến trúc dữ liệu quốc gia, Khung quản trị, quản lý dữ liệu quốc gia.`
+                    },
+                    {
+                        id: 'luat148-d14',
+                        code: 'Điều 14',
+                        title: `Tiêu chuẩn, quy chuẩn kỹ thuật và đánh giá sự phù hợp với tiêu chuẩn, quy chuẩn kỹ thuật cho chuyển đổi số`,
+                        summary: '',
+                        content: `1. Hoạt động tiêu chuẩn, quy chuẩn kỹ thuật, đánh giá sự phù hợp trong lĩnh vực chuyển đổi số phải bảo đảm nguyên tắc quy định tại Luật Tiêu chuẩn và quy chuẩn kỹ thuật, Luật Chất lượng sản phẩm, hàng hóa.
+2. Ngoài việc tuân thủ nguyên tắc quy định tại khoản 1 Điều này, hoạt động tiêu chuẩn, quy chuẩn kỹ thuật trong lĩnh vực chuyển đổi số phải bảo đảm phù hợp với các nguyên tắc sau đây:
+a) Bảo đảm tính thống nhất, đồng bộ, liên thông và khả năng kết nối, chia sẻ dữ liệu giữa các hệ thống số;
+b) Phù hợp trình độ và định hướng phát triển công nghệ, điều kiện kinh tế - xã hội và yêu cầu quản lý nhà nước;
+c) Cơ quan, tổ chức, cá nhân được phép áp dụng trực tiếp tiêu chuẩn quốc tế, tiêu chuẩn khu vực, tiêu chuẩn nước ngoài. Việc áp dụng các tiêu chuẩn quốc tế, tiêu chuẩn khu vực và tiêu chuẩn nước ngoài không trái với quy định của pháp luật Việt Nam, không làm tổn hại tới quốc phòng, an ninh, lợi ích kinh tế - xã hội và các lợi ích khác của quốc gia;
+d) Không tạo rào cản kỹ thuật không cần thiết cho chuyển đổi số;
+đ) Bảo đảm an ninh mạng, bảo vệ dữ liệu cá nhân và quyền con người, quyền công dân trên môi trường số.
+3. Chính phủ phân công Bộ chủ trì lập kế hoạch tổng thể xây dựng và định hướng phát triển tiêu chuẩn quốc gia, quy chuẩn kỹ thuật quốc gia trong lĩnh vực chuyển đổi số; điều phối và thúc đẩy các Bộ, ngành triển khai kế hoạch phù hợp với Chiến lược quốc gia về Chuyển đổi số, Chương trình Chuyển đổi số quốc gia.
+Bộ trưởng Bộ Khoa học và Công nghệ, Bộ trưởng, Thủ trưởng cơ quan ngang Bộ, trong phạm vi nhiệm vụ, quyền hạn của mình tổ chức xây dựng, thẩm định, công bố tiêu chuẩn quốc gia, ban hành quy chuẩn kỹ thuật quốc gia trong lĩnh vực chuyển đổi số theo lĩnh vực quản lý nhà nước được phân công, phù hợp với quy định của Luật Tiêu chuẩn và quy chuẩn kỹ thuật.
+4. Cơ quan, tổ chức, cá nhân triển khai chuyển đổi số chịu trách nhiệm lựa chọn và áp dụng tiêu chuẩn phù hợp, bảo đảm tuân thủ các quy chuẩn kỹ thuật quốc gia.
+5. Nhà nước khuyến khích, hỗ trợ các doanh nghiệp, tổ chức, cá nhân tham gia hoạt động tiêu chuẩn, quy chuẩn kỹ thuật trong lĩnh vực chuyển đổi số thông qua Chiến lược quốc gia về Chuyển đổi số, Chương trình Chuyển đổi số quốc gia, kế hoạch về chuyển đổi số, cụ thể như sau:
+a) Tham gia các tổ chức quốc tế về tiêu chuẩn trong lĩnh vực chuyển đổi số mà Việt Nam là thành viên;
+b) Khuyến khích chuyên gia là người Việt Nam tham gia các diễn đàn, tổ chức quốc tế về tiêu chuẩn trong lĩnh vực chuyển đổi số;
+c) Đào tạo, bồi dưỡng chuyên gia kỹ thuật trình độ cao, có đủ năng lực đảm nhiệm vai trò chủ chốt tại các ban kỹ thuật, các nhóm công tác quốc tế về tiêu chuẩn trong lĩnh vực chuyển đổi số;
+d) Khuyến khích tổ chức, doanh nghiệp, cá nhân tham gia xây dựng, áp dụng tiêu chuẩn trong lĩnh vực chuyển đổi số.`
+                    }
+                ]
+            },
+            {
+                id: 'luat148-ch4', code: 'Chương IV', title: `TRÁCH NHIỆM CỦA CƠ QUAN NHÀ NƯỚC, TỔ CHỨC, CÁ NHÂN`,
+                articles: [
+                    {
+                        id: 'luat148-d15',
+                        code: 'Điều 15',
+                        title: `Phân công trách nhiệm trong quản lý nhà nước về chuyển đổi số`,
+                        summary: '',
+                        content: `1. Chính phủ thống nhất quản lý nhà nước về chuyển đổi số trên phạm vi toàn quốc; hằng năm báo cáo Quốc hội về kết quả triển khai chuyển đổi số.
+2. Bộ Khoa học và Công nghệ là cơ quan đầu mối chịu trách nhiệm trước Chính phủ thực hiện quản lý nhà nước về chuyển đổi số.
+3. Các Bộ, cơ quan ngang Bộ, ủy ban nhân dân cấp tỉnh thực hiện quản lý nhà nước về chuyển đổi số trong ngành, lĩnh vực, địa bàn trong phạm vi nhiệm vụ, quyền hạn được phân công.
+4. Bộ Công an, Bộ Quốc phòng, Bộ trưởng Bộ Quốc phòng thực hiện quản lý nhà nước về dữ liệu theo quy định của pháp luật về dữ liệu, pháp luật về cơ yếu.
+5. Trách nhiệm của người đứng đầu cơ quan nhà nước:
+a) Trực tiếp chỉ đạo, tổ chức triển khai và chịu trách nhiệm về kết quả chuyển đổi số trong phạm vi ngành, lĩnh vực, địa bàn và cơ quan, đơn vị được phân công;
+b) Ưu tiên nguồn lực, nhân lực và các điều kiện cần thiết để thực hiện chuyển đổi số hiệu quả;
+c) Tổ chức kiểm tra nội bộ và báo cáo định kỳ về kết quả chuyển đổi số theo quy định.`
+                    },
+                    {
+                        id: 'luat148-d16',
+                        code: 'Điều 16',
+                        title: `Trách nhiệm của tổ chức, cá nhân trong chuyển đổi số`,
+                        summary: '',
+                        content: `1. Trách nhiệm của tổ chức:
+a) Tuân thủ pháp luật về chuyển đổi số, an ninh mạng, giao dịch điện tử, bảo vệ dữ liệu cá nhân, trí tuệ nhân tạo và pháp luật khác có liên quan khi tham gia, cung cấp hoặc sử dụng hệ thống số, hệ thống thông tin, nền tảng số, dữ liệu số và dịch vụ số;
+b) Cung cấp, cập nhật và chịu trách nhiệm về tính chính xác của thông tin, dữ liệu phục vụ giao dịch điện tử, dịch vụ số;
+c) Bảo đảm an ninh mạng, bảo vệ dữ liệu cá nhân và triển khai các biện pháp phòng ngừa rủi ro trong quá trình ứng dụng công nghệ số và vận hành hệ thống số, hệ thống thông tin, nền tảng số của tổ chức;
+d) Phối hợp với cơ quan nhà nước trong việc xác thực, chia sẻ dữ liệu số và thực hiện các nghĩa vụ khác phục vụ chuyển đổi số theo quy định của pháp luật;
+đ) Thực hiện các nghĩa vụ khác có liên quan theo quy định của pháp luật.
+2. Trách nhiệm của cá nhân:
+a) Tuân thủ pháp luật khi tham gia hoạt động trên môi trường số, sử dụng dịch vụ số, nền tảng số, hệ thống số, hệ thống thông tin;
+b) Cung cấp thông tin, dữ liệu đầy đủ, chính xác và chịu trách nhiệm về nội dung đã cung cấp khi thực hiện thủ tục hành chính, dịch vụ số, giao dịch điện tử;
+c) Bảo vệ thông tin tài khoản, dữ liệu cá nhân và thực hiện các biện pháp an toàn trong sử dụng dịch vụ số;
+d) Tham gia góp ý, phản hồi, đánh giá để nâng cao chất lượng dịch vụ số.`
+                    }
+                ]
+            },
+            {
+                id: 'luat148-ch5', code: 'Chương V', title: `BIỆN PHÁP BẢO ĐẢM CHUYỂN ĐỔI SỐ`,
+                articles: [
+                    {
+                        id: 'luat148-d17',
+                        code: 'Điều 17',
+                        title: `Đào tạo, phát triển nguồn nhân lực số`,
+                        summary: '',
+                        content: `1. Năng lực số là nội dung bắt buộc trong các chương trình giáo dục, đào tạo theo quy định của pháp luật về giáo dục, giáo dục nghề nghiệp và giáo dục đại học.
+2. Cơ quan quản lý nhà nước về chuyển đổi số ban hành, cập nhật Khung năng lực số làm cơ sở cho các hoạt động đào tạo, bồi dưỡng, đánh giá, phân tích, tổng hợp thông tin về nguồn nhân lực số.
+3. Bộ, cơ quan ngang Bộ, cơ quan thuộc Chính phủ, Ủy ban nhân dân các cấp có trách nhiệm tổ chức phổ cập năng lực số cơ bản phù hợp với Khung năng lực số cho các đối tượng phù hợp với ngành, lĩnh vực, địa bàn được phân công.
+4. Cơ quan trong hệ thống chính trị có trách nhiệm tổ chức đào tạo, bồi dưỡng năng lực số theo Khung năng lực số, bảo đảm cán bộ, công chức, viên chức có đủ năng lực số cần thiết để triển khai chuyển đổi số.
+5. Doanh nghiệp, tổ chức sử dụng lao động có trách nhiệm tổ chức đào tạo, bồi dưỡng, phổ cập năng lực số cơ bản cho người lao động; đào tạo, hướng dẫn chuyển đổi nghề nghiệp, nâng cao năng lực số phù hợp nhu cầu thị trường cho người lao động có nguy cơ mất việc làm do chuyển đổi số.`
+                    },
+                    {
+                        id: 'luat148-d18',
+                        code: 'Điều 18',
+                        title: `Thu hút, trọng dụng chuyên gia về chuyển đổi số`,
+                        summary: '',
+                        content: `1. Nhà nước thực hiện cơ chế, chính sách đặc biệt nhằm thu hút, trọng dụng chuyên gia, nhân tài, nhân lực chất lượng cao trong lĩnh vực chuyển đổi số theo quy định của pháp luật về cán bộ, công chức, viên chức, pháp luật về khoa học, công nghệ và đổi mới sáng tạo, pháp luật về công nghiệp công nghệ số và pháp luật khác có liên quan.
+2. Cơ quan nhà nước, doanh nghiệp nhà nước được phép thuê chuyên gia, cộng tác viên như sau:
+a) Chủ động lựa chọn hình thức và thời hạn giao kết với các nhân sự và chuyên gia trong nước, nước ngoài;
+b) Doanh nghiệp nhà nước được hợp tác, trao đổi, sử dụng chuyên gia và nhân sự phục vụ hoạt động chuyển đổi số.
+3. Người có thành tích xuất sắc tiêu biểu trong chuyển đổi số được tôn vinh, khen thưởng theo quy định của pháp luật về thi đua, khen thưởng.`
+                    },
+                    {
+                        id: 'luat148-d19',
+                        code: 'Điều 19',
+                        title: `Ưu đãi cán bộ, công chức, viên chức làm công tác chuyển đổi số`,
+                        summary: '',
+                        content: `1. Cơ quan thuộc hệ thống chính trị thực hiện chế độ đãi ngộ đặc thù cho người làm công tác chuyển đổi số, bao gồm cán bộ, công chức, viên chức thuộc đơn vị được giao thực hiện chức năng quản lý nhà nước về chuyển đổi số của các cơ quan ở Trung ương, tỉnh, thành phố; người làm công tác chuyên trách về chuyển đổi số, an ninh mạng trong cơ quan trong hệ thống chính trị; tổng công trình sư, kiến trúc sư trưởng về khoa học, công nghệ, đổi mới sáng tạo, chuyển đổi số và các vị trí việc làm khác liên quan đến chuyển đổi số.
+2. Các hình thức đãi ngộ bao gồm tiền lương, phụ cấp, điều kiện làm việc, cơ hội phát triển nghề nghiệp và các hình thức khen thưởng khác.
+3. Chế độ, chính sách đãi ngộ cho đối tượng quy định tại khoản 1 Điều này được thực hiện theo quy định của Chính phủ.
+Mục 2. TÀI CHÍNH CHO CHUYỂN ĐỔI SỐ`
+                    },
+                    {
+                        id: 'luat148-d20',
+                        code: 'Điều 20',
+                        title: `Nguồn tài chính cho chuyển đổi số`,
+                        summary: '',
+                        content: `1. Nhà nước bảo đảm chi cho chuyển đổi số hằng năm tối thiểu 1% tổng chi ngân sách nhà nước từ nguồn tổng chi tối thiểu 3% ngân sách nhà nước cho phát triển khoa học, công nghệ, đổi mới sáng tạo và chuyển đổi số và tăng dần theo yêu cầu phát triển để thực hiện chủ trương, chính sách của Đảng, Nhà nước trong từng thời kỳ.
+Nguồn ngân sách nhà nước bố trí cho chuyển đổi số phục vụ quốc phòng, an ninh được thực hiện theo quy định về một số nội dung đặc thù tại Luật Ngân sách nhà nước quy định của Luật này và được tổng hợp chung trong tổng chi khoa học, công nghệ, đổi mới sáng tạo và chuyển đổi số.
+2. Nguồn tài chính ngoài ngân sách nhà nước bao gồm nguồn tài chính hợp pháp của doanh nghiệp, tổ chức, cá nhân; Quỹ phát triển khoa học và công nghệ của doanh nghiệp, tổ chức, đơn vị sự nghiệp; các nguồn tài chính hợp pháp khác theo quy định của pháp luật.`
+                    },
+                    {
+                        id: 'luat148-d21',
+                        code: 'Điều 21',
+                        title: `Chi ngân sách nhà nước cho chuyển đổi số`,
+                        summary: '',
+                        content: `1. Nhiệm vụ chi của ngân sách nhà nước cho hoạt động chuyển đổi số theo quy định tại Điều 4 của Luật này.
+2. Chính phủ quy định về quản lý đầu tư, mua sắm, thuê dịch vụ và cơ chế đặc thù cho phát triển thử nghiệm trong chuyển đổi số sử dụng nguồn vốn ngân sách nhà nước; nhiệm vụ chi ngân sách nhà nước và phân cấp nhiệm vụ chi giữa ngân sách trung ương và ngân sách địa phương cho chuyển đổi số.
+3. Bộ, cơ quan ngang Bộ, cơ quan thuộc Chính phủ, cơ quan khác ở trung ương và địa phương đề xuất sử dụng ngân sách nhà nước cho chuyển đổi số bảo đảm phù hợp với chiến lược, chương trình, kế hoạch chuyển đổi số quy định tại Điều 12 của Luật này và nhiệm vụ chi ngân sách nhà nước theo quy định tại khoản 2 Điều này.
+Mục 3. PHÁT TRIỂN HẠ TẦNG CHUYỂN ĐỔI SỐ`
+                    },
+                    {
+                        id: 'luat148-d22',
+                        code: 'Điều 22',
+                        title: `Hạ tầng chuyển đổi số`,
+                        summary: '',
+                        content: `1. Hạ tầng chuyển đổi số là hạ tầng để chuyển đổi số toàn diện, phục vụ việc sản xuất, truyền đưa, thu thập, xử lý, lưu trữ và trao đổi dữ liệu số. Hạ tầng chuyển đổi số bao gồm hạ tầng số và hạ tầng số công cộng.
+2. Nhà nước thống nhất quản lý, vận hành theo các quy tắc mở, an toàn, minh bạch và bảo đảm quyền tiếp cận bình đẳng đối với các hạ tầng số công cộng sau đây:
+a) Định danh và xác thực điện tử theo pháp luật về căn cước;
+b) Hạ tầng thanh toán số do Nhà nước quản lý, vận hành;
+c) Nền tảng kết nối, tích hợp, chia sẻ, điều phối dữ liệu cấp quốc gia;
+d) Hạ tầng chứng thực điện tử quốc gia.
+3. Trong từng thời kỳ, Cơ quan quản lý nhà nước về chuyển đổi số xây dựng, trình Thủ tướng Chính phủ ban hành Chiến lược hạ tầng số, trong đó xác định các thành phần hạ tầng số, mục tiêu phát triển hạ tầng số, nhiệm vụ và giải pháp thực hiện.`
+                    },
+                    {
+                        id: 'luat148-d23',
+                        code: 'Điều 23',
+                        title: `Phát triển trung tâm dữ liệu, điện toán đám mây`,
+                        summary: '',
+                        content: `1. Cơ quan quản lý nhà nước về điện lực chủ trì xây dựng, ban hành hoặc trình cấp có thẩm quyền ban hành, điều chỉnh, bổ sung quy hoạch phát triển điện lực quốc gia để bảo đảm đáp ứng nguồn điện xanh, sạch, bảo đảm dự phòng cho các trung tâm dữ liệu; chỉ đạo các đơn vị điện lực ưu tiên bố trí nguồn điện ổn định, chất lượng cao tại các khu vực được quy hoạch phát triển trung tâm dữ liệu, phù hợp với Quy hoạch hạ tầng thông tin và truyền thông, Chiến lược hạ tầng số và quy hoạch tỉnh.
+2. Ủy ban nhân dân cấp tỉnh có trách nhiệm bố trí quỹ đất phù hợp trong quy hoạch, kế hoạch sử dụng đất tại địa phương cho các dự án trung tâm dữ liệu, ưu tiên việc bố trí tại các khu công nghệ cao, khu công nghệ số tập trung và các khu vực có điều kiện thuận lợi về hạ tầng kỹ thuật trên cơ sở phù hợp với Quy hoạch hạ tầng thông tin và truyền thông, Chiến lược hạ tầng số và quy hoạch tỉnh.
+3. Bộ, ngành, địa phương có trách nhiệm đánh giá, ưu tiên xem xét phương án lựa chọn mô hình triển khai trên điện toán đám mây trong các hoạt động đầu tư, mua sắm, thuê dịch vụ phục vụ hoạt động chuyển đổi số.
+4. Cơ quan có thẩm quyền ban hành, công bố các tiêu chuẩn quốc gia, quy chuẩn kỹ thuật quốc gia về trung tâm dữ liệu; quy định về công bố sự phù hợp của trung tâm dữ liệu với các tiêu chuẩn, quy chuẩn kỹ thuật theo pháp luật về viễn thông.
+5. Cơ sở hạ tầng Trung tâm dữ liệu quốc gia là thành phần hạ tầng số quan trọng phục vụ chuyển đổi số quốc gia. Việc bảo đảm nguồn lực xây dựng, phát triển cơ sở hạ tầng Trung tâm dữ liệu quốc gia thực hiện theo quy định của pháp luật về dữ liệu.`
+                    },
+                    {
+                        id: 'luat148-d24',
+                        code: 'Điều 24',
+                        title: `Phát triển hạ tầng truyền dẫn cho kết nối máy tới máy`,
+                        summary: '',
+                        content: `1. Nhà nước khuyến khích và tạo điều kiện tích hợp thiết bị cảm biến cho phép thu thập dữ liệu về môi trường xung quanh và các ứng dụng công nghệ số vào hạ tầng kỹ thuật giao thông, năng lượng, cấp thoát nước, đô thị, tòa nhà công cộng, môi trường và hạ tầng kỹ thuật khác.
+2. Việc triển khai các dự án tích hợp vào hạ tầng kỹ thuật quy định tại khoản 1 Điều này bảo đảm các yêu cầu sau đây:
+a) Khả năng kết nối và chia sẻ dữ liệu thiết yếu phát sinh từ các thiết bị cảm biến, tuân thủ quy định của pháp luật về dữ liệu và bảo vệ dữ liệu cá nhân;
+b) Tuân thủ tiêu chuẩn, quy chuẩn kỹ thuật có liên quan; bảo đảm an ninh mạng và khả năng mở rộng, tương thích, liên thông, vận hành liên tục giữa các hệ thống; thúc đẩy chuyển đổi số toàn diện trong từng lĩnh vực.
+3. Các Bộ, cơ quan ngang Bộ, Ủy ban nhân dân cấp tỉnh trong phạm vi nhiệm vụ, quyền hạn của mình có trách nhiệm sau đây:
+a) Ban hành hoặc trình cấp có thẩm quyền ban hành quy định về công trình hạ tầng kỹ thuật thuộc phạm vi quản lý bắt buộc tích hợp thiết bị cảm biến và các ứng dụng công nghệ số khác, kèm theo lộ trình áp dụng phù hợp với Chiến lược hạ tầng số, các quy hoạch, chiến lược trong từng lĩnh vực;
+b) Ban hành tiêu chuẩn, quy chuẩn kỹ thuật, yêu cầu về kết nối, chia sẻ, khai thác phù hợp với từng lĩnh vực;
+c) Ban hành các tiêu chuẩn, quy chuẩn kỹ thuật, hướng dẫn để bảo đảm dữ liệu từ hạ tầng truyền dẫn cho kết nối máy tới máy có khả năng kết nối, chia sẻ và khai thác thống nhất; ban hành tiêu chuẩn, quy chuẩn kỹ thuật về an ninh mạng đối với dữ liệu được tạo ra, xử lý, truy xuất từ hạ tầng truyền dẫn cho kết nối máy tới máy.
+Mục 4. PHÁT TRIỂN HỆ THỐNG SỐ, NỀN TẢNG SỐ DÙNG CHUNG QUỐC GIA`
+                    },
+                    {
+                        id: 'luat148-d25',
+                        code: 'Điều 25',
+                        title: `Phát triển hệ thống số dùng chung quốc gia`,
+                        summary: '',
+                        content: `1. Nhà nước ưu tiên nguồn lực ngân sách nhà nước để đầu tư, phát triển các hệ thống số dùng chung quốc gia.
+2. Nhà nước khuyến khích tổ chức, doanh nghiệp tham gia phát triển, vận hành hệ thống số theo phương thức đối tác công tư trên cơ sở tuân thủ tiêu chuẩn kỹ thuật, quy chuẩn kỹ thuật.`
+                    },
+                    {
+                        id: 'luat148-d26',
+                        code: 'Điều 26',
+                        title: `Nền tảng số dùng chung của các cơ quan thuộc hệ thống chính trị`,
+                        summary: '',
+                        content: `1. Cơ quan quản lý nhà nước về chuyển đổi số chủ trì xây dựng, trình Thủ tướng Chính phủ ban hành tiêu chí, Danh mục nền tảng số dùng chung quốc gia trong các cơ quan thuộc hệ thống chính trị; công bố, ban hành tiêu chuẩn, quy chuẩn, yêu cầu kỹ thuật về nền tảng số dùng chung; đo lường và giám sát trực tuyến hoạt động vận hành, khai thác nền tảng số dùng chung.
+2. Các cơ quan trong hệ thống chính trị có trách nhiệm xây dựng, quản lý, vận hành các nền tảng số dùng chung thuộc thẩm quyền quản lý phục vụ hoạt động nghiệp vụ chuyên môn dùng chung, tránh trùng lặp, bảo đảm hiệu quả, theo hướng mở, linh hoạt; mở và công bố công khai các tiêu chuẩn, quy chuẩn kỹ thuật cho phép doanh nghiệp cùng tham gia phát triển, cung cấp dịch vụ trên nền tảng số.
+Mục 5. CÁC BIỆN PHÁP BẢO ĐẢM KHÁC`
+                    },
+                    {
+                        id: 'luat148-d27',
+                        code: 'Điều 27',
+                        title: `Bảo đảm an ninh mạng`,
+                        summary: '',
+                        content: `1. Cơ quan, tổ chức, cá nhân tham gia hoặc có liên quan đến hoạt động chuyển đổi số phải tuân thủ quy định của pháp luật về an ninh mạng, dữ liệu, bảo vệ dữ liệu cá nhân, bí mật nhà nước và pháp luật khác có liên quan. Chủ quản dữ liệu phải chủ động thiết lập quy trình, biện pháp bảo vệ dữ liệu phù hợp với tính chất hoạt động và phương thức đáp ứng yêu cầu của chủ thể dữ liệu, trừ trường hợp pháp luật có quy định khác.
+2. Chủ quản hạ tầng số, hạ tầng số công cộng, hệ thống số, nền tảng số, hệ thống thông tin, cơ sở dữ liệu có trách nhiệm xây dựng công cụ để chủ động sàng lọc, phát hiện, thông báo, xử lý nhằm bảo vệ người sử dụng khỏi các nội dung xấu, độc hại, thông tin vi phạm pháp luật, tin giả, nội dung lừa đảo theo quy định của pháp luật về an ninh mạng và pháp luật khác có liên quan.`
+                    },
+                    {
+                        id: 'luat148-d28',
+                        code: 'Điều 28',
+                        title: `Thử nghiệm có kiểm soát`,
+                        summary: '',
+                        content: `Cơ quan, tổ chức, doanh nghiệp được triển khai thử nghiệm có kiểm soát đối với quy trình, giải pháp, sản phẩm, dịch vụ và mô hình kinh doanh trong chuyển đổi số theo quy định của pháp luật về khoa học, công nghệ và đổi mới sáng tạo, pháp luật về công nghiệp công nghệ số, pháp luật về dữ liệu và pháp luật khác có liên quan.`
+                    },
+                    {
+                        id: 'luat148-d29',
+                        code: 'Điều 29',
+                        title: `Thúc đẩy phát triển và ứng dụng bản sao số`,
+                        summary: '',
+                        content: `1. Cơ quan, tổ chức, cá nhân nghiên cứu, phát triển và ứng dụng bản sao số trong các ngành, lĩnh vực được hưởng ưu đãi theo quy định của pháp luật về khoa học, công nghệ và đổi mới sáng tạo, pháp luật về công nghiệp công nghệ số; được bảo hộ quyền sở hữu trí tuệ đối với mô hình, thuật toán và giải pháp liên quan.
+2. Tổ chức, cá nhân triển khai bản sao số có nghĩa vụ bảo đảm tính chính xác, cập nhật và đồng bộ dữ liệu; thông báo cho người sử dụng khi đang tương tác hoặc sử dụng kết quả đầu ra do bản sao số tạo ra; chịu trách nhiệm về hệ quả phát sinh từ việc sử dụng bản sao số trong quản lý, vận hành và ra quyết định.`
+                    },
+                    {
+                        id: 'luat148-d30',
+                        code: 'Điều 30',
+                        title: `Thống kê, đo lường, giám sát, đánh giá hiệu quả chuyển đổi số`,
+                        summary: '',
+                        content: `1. Cơ quan quản lý nhà nước về chuyển đổi số có trách nhiệm sau đây:
+a) Xây dựng, công bố bộ chỉ số thống nhất phục vụ đánh giá mức độ chuyển đổi số; xây dựng, quản lý, vận hành Nền tảng thống kê, đo lường, giám sát, đánh giá triển khai chuyển đổi số;
+b) Định kỳ hằng năm tổ chức đánh giá mức độ chuyển đổi số của quốc gia, các Bộ, ngành, địa phương; kết quả đánh giá được công bố công khai và là căn cứ xếp hạng, khen thưởng, điều chỉnh chính sách, ưu tiên bố trí kinh phí cho các cơ quan, địa phương.
+2. Bộ, cơ quan ngang Bộ, cơ quan thuộc Chính phủ, cơ quan khác ở trung ương và Ủy ban nhân dân cấp tỉnh có trách nhiệm thu thập, cung cấp, cập nhật dữ liệu đầy đủ, chính xác, kịp thời trên Nền tảng thống kê, đo lường, giám sát, đánh giá triển khai chuyển đổi số phục vụ công tác quản lý nhà nước về chuyển đổi số.`
+                    }
+                ]
+            },
+            {
+                id: 'luat148-ch6', code: 'Chương VI', title: `CHÍNH PHỦ SỐ`,
+                articles: [
+                    {
+                        id: 'luat148-d31',
+                        code: 'Điều 31',
+                        title: `Hoạt động của Chính phủ số`,
+                        summary: '',
+                        content: `1. Cơ quan nhà nước có trách nhiệm thực hiện cung cấp dịch vụ công, công tác quản trị nội bộ, chỉ đạo, điều hành, giám sát, kiểm tra thực hiện toàn trình trên môi trường số, trừ trường hợp pháp luật có quy định khác; có phương án xử lý trong tình huống khẩn cấp hoặc xảy ra sự cố làm gián đoạn hoạt động trên môi trường số và phương án ứng phó, khắc phục sự cố, duy trì hoạt động bình thường.
+2. Hoạt động chỉ đạo, điều hành, ra quyết định được thực hiện dựa trên dữ liệu số đầy đủ, chính xác, kịp thời.
+3. Quy trình nghiệp vụ phải được rà soát, chuẩn hóa, tái cấu trúc và đơn giản hóa trước khi thực hiện số hóa; bảo đảm tinh gọn, không trùng lặp, tăng cường tự động hóa và không yêu cầu tổ chức, cá nhân cung cấp lại thông tin, dữ liệu số hợp lệ đã được cung cấp.
+4. Tuân thủ nguyên tắc chuyển đổi số quy định tại Điều 6 của Luật này.`
+                    },
+                    {
+                        id: 'luat148-d32',
+                        code: 'Điều 32',
+                        title: `Cung cấp dịch vụ công trực tuyến`,
+                        summary: '',
+                        content: `1. Cơ quan nhà nước cung cấp dịch vụ công trực tuyến thống nhất, tập trung từ trung ương đến địa phương trên Cổng dịch vụ công quốc gia và ứng dụng định danh quốc gia, cụ thể như sau:
+a) Thủ tục hành chính được cung cấp mặc định theo hình thức dịch vụ công trực tuyến toàn trình;
+b) Chỉ cung cấp theo hình thức dịch vụ công trực tuyến một phần trong trường hợp pháp luật có quy định khác hoặc trong trường hợp xảy ra sự cố kỹ thuật chưa thể khắc phục ngay.
+2. Việc cung cấp thông tin và dịch vụ công trực tuyến của cơ quan nhà nước trên môi trường số thực hiện theo quy định của Chính phủ.
+3. Cơ quan nhà nước có trách nhiệm sau đây:
+a) Hướng dẫn, hỗ trợ người dân trong quá trình thực hiện dịch vụ công trực tuyến; công khai quy trình, thời hạn xử lý và kết quả xử lý theo quy định của Luật này và pháp luật có liên quan;
+b) Xử lý theo quy định của pháp luật có liên quan đối với cán bộ, công chức, viên chức, người lao động khi yêu cầu nộp thêm giấy tờ trong trường hợp hệ thống thông tin phục vụ giải quyết thủ tục hành chính đã kết nối, khai thác, sử dụng được dữ liệu từ cơ sở dữ liệu quốc gia, cơ sở dữ liệu chuyên ngành.`
+                    },
+                    {
+                        id: 'luat148-d33',
+                        code: 'Điều 33',
+                        title: `Liên thông, tích hợp và khai thác dữ liệu phục vụ giải quyết thủ tục hành chính`,
+                        summary: '',
+                        content: `1. Hệ thống thông tin giải quyết thủ tục hành chính, hệ thống thông tin tham gia vào việc xử lý thủ tục hành chính, cung cấp dịch vụ công trực tuyến phải được thiết kế, xây dựng, kết nối, liên thông, vận hành tuân thủ Khung kiến trúc tổng thể quốc gia số, Khung kiến trúc dữ liệu quốc gia, Khung quản trị, quản lý dữ liệu quốc gia, Từ điển dữ liệu dùng chung, tiêu chuẩn, quy chuẩn, yêu cầu kỹ thuật liên quan.
+2. Cơ quan nhà nước có trách nhiệm kết nối, chia sẻ, khai thác dữ liệu từ cơ sở dữ liệu quốc gia, cơ sở dữ liệu chuyên ngành và hệ thống thông tin của cơ quan khác để giải quyết thủ tục hành chính, cung cấp dịch vụ công trực tuyến, bảo đảm liên thông xuyên suốt, không phân mảnh giữa trung ương và địa phương.`
+                    },
+                    {
+                        id: 'luat148-d34',
+                        code: 'Điều 34',
+                        title: `Bảo đảm chất lượng dịch vụ công trực tuyến`,
+                        summary: '',
+                        content: `1. Hệ thống thông tin giải quyết thủ tục hành chính và hệ thống thông tin tham gia vào việc xử lý thủ tục hành chính, cung cấp dịch vụ công trực tuyến phải được thiết kế để đo lường, giám sát chất lượng dịch vụ theo thời gian thực, bao gồm tốc độ, tính ổn định, khả năng xử lý, mức độ tự động hóa, trải nghiệm của người sử dụng và bảo đảm an ninh mạng.
+2. Cơ quan nhà nước có trách nhiệm tuân thủ các tiêu chuẩn, quy chuẩn, yêu cầu kỹ thuật để cung cấp dịch vụ công trực tuyến chất lượng, hiệu quả trên môi trường số; có biện pháp khắc phục và hướng dẫn phương án thay thế khi xảy ra sự cố; xử lý kịp thời lỗi kỹ thuật, vấn đề phát sinh và công khai trên Cổng dịch vụ công quốc gia, Cổng thông tin điện tử của cơ quan các nội dung sau đây:
+a) Cam kết chất lượng dịch vụ;
+b) Các chỉ số giám sát chất lượng theo thời gian thực;
+c) Cơ chế phản hồi và xử lý sự cố;
+d) Kết quả cải thiện chất lượng dịch vụ;
+đ) Hiệu quả sử dụng dịch vụ;
+e) Mức độ hài lòng của người dân, doanh nghiệp khi sử dụng dịch vụ.
+3. Chất lượng dịch vụ công trực tuyến phải được cải thiện liên tục dựa trên kết quả đánh giá độc lập, khảo sát người sử dụng và dữ liệu thực tế sử dụng.
+4. Bộ trưởng Bộ Khoa học và Công nghệ ban hành tiêu chuẩn, quy chuẩn, yêu cầu kỹ thuật đối với dịch vụ công trực tuyến; hướng dẫn phương pháp đo lường, đánh giá và công bố chất lượng dịch vụ công trực tuyến.`
+                    },
+                    {
+                        id: 'luat148-d35',
+                        code: 'Điều 35',
+                        title: `Khả năng tiếp cận toàn dân trong sử dụng dịch vụ công trực tuyến`,
+                        summary: '',
+                        content: `1. Cơ quan cung cấp dịch vụ công trực tuyến phải bảo đảm người sử dụng dễ dàng tiếp cận và truy cập, đặc biệt là người khuyết tật, người cao tuổi, trẻ em, người dân sinh sống ở khu vực biên giới, hải đảo, vùng đồng bào dân tộc thiểu số, miền núi, vùng có điều kiện kinh tế - xã hội khó khăn, đặc biệt khó khăn và các nhóm đối tượng dễ bị tổn thương khác.
+2. Cơ quan thực hiện dịch vụ công trực tuyến có trách nhiệm tự đánh giá định kỳ mức độ phổ cập và khả năng tiếp cận dịch vụ công trực tuyến; công khai kết quả đánh giá; tiếp nhận, xử lý phản ánh của tổ chức, cá nhân và có biện pháp khắc phục kịp thời.`
+                    }
+                ]
+            },
+            {
+                id: 'luat148-ch7', code: 'Chương VII', title: `KINH TẾ SỐ, XÃ HỘI SỐ`,
+                articles: [
+                    {
+                        id: 'luat148-d36',
+                        code: 'Điều 36',
+                        title: `Phát triển kinh tế số`,
+                        summary: '',
+                        content: `1. Phát triển kinh tế số là nhiệm vụ trọng tâm, đột phá trong chiến lược phát triển kinh tế - xã hội của đất nước nhằm thúc đẩy tăng trưởng nhanh, bền vững, bao trùm và hiệu quả dựa trên hệ thống số, nền tảng số, công nghệ số và dữ liệu số.
+2. Việc phát triển kinh tế số phải bảo đảm các yêu cầu sau đây:
+a) Lấy doanh nghiệp là trung tâm, thúc đẩy việc ứng dụng, phát triển công nghệ số;
+b) Ưu tiên phát triển các hệ thống số, nền tảng số, hệ sinh thái số phục vụ nhu cầu thị trường trong nước và quốc tế;
+c) Gắn với việc bảo đảm an ninh mạng và bảo vệ dữ liệu cá nhân;
+d) Tuân thủ nguyên tắc chuyển đổi số quy định tại Điều 6 của Luật này.
+3. Nhà nước có trách nhiệm tạo môi trường cạnh tranh lành mạnh, thúc đẩy các hoạt động kinh tế số; quản lý rủi ro và giám sát hoạt động kinh tế số.`
+                    },
+                    {
+                        id: 'luat148-d37',
+                        code: 'Điều 37',
+                        title: `Chính sách phát triển kinh tế số đối với các doanh nghiệp nhỏ và vừa, hợp tác xã, hộ kinh doanh`,
+                        summary: '',
+                        content: `1. Nhà nước thực hiện các biện pháp hỗ trợ tài chính và các hình thức hỗ trợ khác cho doanh nghiệp nhỏ và vừa, hợp tác xã, hộ kinh doanh chuyển đổi số, tham gia vào hoạt động phát triển kinh tế số, đóng góp cho mục tiêu tăng trưởng nhanh, bền vững.
+2. Việc hỗ trợ được thực hiện theo nguyên tắc công khai, minh bạch, đúng đối tượng, phù hợp với nhu cầu, mức độ chuyển đổi số của từng tổ chức, doanh nghiệp; bảo đảm trọng tâm, trọng điểm, phù hợp với khả năng cân đối nguồn lực.
+3. Chính phủ quy định chi tiết nội dung, tiêu chí, điều kiện, hình thức hỗ trợ, trong đó ưu tiên cho các doanh nghiệp nhỏ và vừa, hợp tác xã, hộ kinh doanh đáp ứng một trong những tiêu chí sau đây:
+a) Hoạt động tại vùng đồng bào dân tộc thiểu số, vùng có điều kiện kinh tế - xã hội khó khăn, đặc biệt khó khăn;
+b) Hoạt động trong các ngành, lĩnh vực được ưu tiên chuyển đổi số theo Chiến lược quốc gia về Chuyển đổi số, Chương trình Chuyển đổi số quốc gia.
+4. Cơ quan quản lý nhà nước về chuyển đổi số chủ trì, phối hợp với Bộ, cơ quan ngang Bộ, cơ quan thuộc Chính phủ và Ủy ban nhân dân cấp tỉnh hướng dẫn, tổ chức thực hiện hoạt động hỗ trợ; định kỳ tổng hợp, đánh giá và báo cáo Chính phủ theo quy định.`
+                    },
+                    {
+                        id: 'luat148-d38',
+                        code: 'Điều 38',
+                        title: `Trách nhiệm của chủ quản hệ thống số, nền tảng số`,
+                        summary: '',
+                        content: `1. Công khai, minh bạch quy tắc ứng xử, điều khoản, điều kiện sử dụng, cơ chế tiếp nhận, giải quyết khiếu nại và chính sách bảo vệ quyền lợi người sử dụng.
+2. Chịu trách nhiệm thiết lập biện pháp kỹ thuật và quy trình quản lý để phát hiện, ngăn chặn, gỡ bỏ thông tin, nội dung vi phạm pháp luật, trái thuần phong mỹ tục hoặc gây hại cho người sử dụng trên hệ thống số, nền tảng số theo yêu cầu của cơ quan nhà nước có thẩm quyền.
+3. Chủ quản nền tảng số trung gian không được thực hiện các hành vi ngăn cản, áp đặt, phân biệt đối xử trái pháp luật, cạnh tranh không lành mạnh đối với các nhà cung cấp khác khi tham gia cung cấp sản phẩm, dịch vụ trên nền tảng số.
+4. Tuân thủ pháp luật về giao dịch điện tử, thương mại điện tử, an ninh mạng, bảo vệ dữ liệu cá nhân và pháp luật khác có liên quan.`
+                    },
+                    {
+                        id: 'luat148-d39',
+                        code: 'Điều 39',
+                        title: `Thống kê và báo cáo về kinh tế số`,
+                        summary: '',
+                        content: `1. Hệ thống thống kê về kinh tế số được thiết lập nhằm theo dõi, đo lường và đánh giá các hoạt động thuộc kinh tế số, làm cơ sở cho việc hoạch định chính sách, chiến lược, quy hoạch và phục vụ công tác quản lý nhà nước đối với phát triển kinh tế số.
+2. Cơ quan quản lý nhà nước về thống kê có trách nhiệm xây dựng, cập nhật và công bố hệ thống chỉ tiêu thống kê, phương pháp đo lường, cơ chế báo cáo và chia sẻ dữ liệu thống kê về kinh tế số.
+3. Cơ quan, tổ chức, doanh nghiệp có trách nhiệm cung cấp và báo cáo dữ liệu phục vụ thống kê về kinh tế số theo yêu cầu của cơ quan nhà nước có thẩm quyền và theo quy định của pháp luật.
+Mục 2. XÃ HỘI SỐ`
+                    },
+                    {
+                        id: 'luat148-d40',
+                        code: 'Điều 40',
+                        title: `Phát triển xã hội số`,
+                        summary: '',
+                        content: `1. Phát triển xã hội số nhằm tạo lập môi trường làm việc, học tập, tương tác bảo đảm tổ chức, cá nhân được tiếp cận, sử dụng và thụ hưởng lợi ích từ chuyển đổi số một cách thuận tiện, an toàn và hiệu quả trên môi trường số.
+2. Việc phát triển xã hội số phải bảo đảm các yêu cầu sau đây:
+a) Bảo đảm mọi đối tượng người dân, đặc biệt là các nhóm đối tượng dễ bị tổn thương và người dân sinh sống ở khu vực biên giới, hải đảo, vùng đồng bào dân tộc thiểu số, miền núi, vùng có điều kiện kinh tế - xã hội khó khăn, đặc biệt khó khăn đều có cơ hội tiếp cận và thụ hưởng các dịch vụ số;
+b) Bảo vệ dữ liệu cá nhân, bảo đảm an ninh mạng cho người dân, doanh nghiệp khi tham gia vào giao dịch điện tử, dịch vụ số;
+c) Thúc đẩy hành vi và văn hóa ứng xử có trách nhiệm trên môi trường số;
+d) Tuân thủ nguyên tắc chuyển đổi số quy định tại Điều 6 của Luật này.
+3. Nhà nước có chính sách ưu tiên phát triển xã hội số, tập trung vào các nhiệm vụ sau đây:
+a) Phát triển năng lực số;
+b) Thu hẹp khoảng cách số;
+c) Bảo đảm môi trường số an toàn;
+d) Bảo vệ quyền con người, quyền công dân trên môi trường số;
+đ) Phát triển văn hóa số.`
+                    },
+                    {
+                        id: 'luat148-d41',
+                        code: 'Điều 41',
+                        title: `Quyền con người, quyền công dân trên môi trường số`,
+                        summary: '',
+                        content: `1. Quyền con người, quyền công dân được công nhận, tôn trọng, bảo vệ và không bị phủ nhận chỉ vì được thực hiện trên môi trường số.
+2. Đăng ký, sử dụng và quản lý tài khoản danh tính điện tử, tài khoản giao dịch điện tử, chữ ký số theo quy định của pháp luật về định danh và xác thực điện tử, giao dịch điện tử.
+3. Được bảo vệ dữ liệu cá nhân theo pháp luật về bảo vệ dữ liệu cá nhân.
+4. Được phổ cập năng lực số cơ bản.
+5. Được lựa chọn sử dụng hoặc ngừng sử dụng sản phẩm, dịch vụ số trên cơ sở được cung cấp thông tin đầy đủ, rõ ràng, chính xác, minh bạch, kịp thời về điều khoản, điều kiện sử dụng; không bị áp đặt điều kiện bất hợp lý hoặc bị phân biệt đối xử khi sử dụng sản phẩm, dịch vụ số.
+6. Được bảo đảm điều kiện tiếp cận công bằng, an toàn, đặc biệt là đối tượng dễ bị tổn thương trên môi trường số.
+7. Được yêu cầu cơ quan có thẩm quyền bảo vệ quyền hợp pháp trên môi trường số.
+8. Được bảo đảm các quyền lợi của công dân số theo quy định của pháp luật có liên quan.`
+                    },
+                    {
+                        id: 'luat148-d42',
+                        code: 'Điều 42',
+                        title: `Thu hẹp khoảng cách số`,
+                        summary: '',
+                        content: `1. Nhà nước ưu tiên bố trí nguồn lực gồm nguồn vốn đầu tư và các hình thức hỗ trợ tài chính để thu hẹp khoảng cách số; bảo đảm bố trí nguồn lực cao hơn mức trung bình của cả nước đối với khu vực biên giới, hải đảo, vùng đồng bào dân tộc thiểu số, miền núi, vùng có điều kiện kinh tế - xã hội khó khăn, đặc biệt khó khăn.
+2. Bộ, cơ quan ngang Bộ, cơ quan thuộc Chính phủ, Ủy ban nhân dân các cấp theo Chiến lược quốc gia về Chuyển đổi số, Chương trình Chuyển đổi số quốc gia có trách nhiệm phổ cập, hỗ trợ các điều kiện tiếp cận, khả năng sử dụng dịch vụ số cơ bản, nâng yêu cầu phổ cập dịch vụ viễn thông, chú trọng nhóm đối tượng dễ bị tổn thương; người dân sinh sống ở khu vực biên giới, hải đảo, vùng đồng bào dân tộc thiểu số, miền núi, vùng có điều kiện kinh tế - xã hội khó khăn, đặc biệt khó khăn.
+3. Nhà nước có chính sách hỗ trợ doanh nghiệp cấp miễn phí chứng thư chữ ký số công cộng cho người dân phù hợp với địa bàn, đối tượng và thời gian trong Chiến lược quốc gia về chuyển đổi số, Chương trình chuyển đổi số quốc gia quy định tại Điều 12 của Luật này.
+4. Doanh nghiệp viễn thông có trách nhiệm cung cấp dịch vụ viễn thông phổ cập theo danh mục, địa bàn, khu vực, điều kiện, chất lượng và giá dịch vụ theo quy định của pháp luật về viễn thông.`
+                    },
+                    {
+                        id: 'luat148-d43',
+                        code: 'Điều 43',
+                        title: `Bảo đảm môi trường số an toàn, phù hợp với trẻ em`,
+                        summary: '',
+                        content: `1. Quyền của trẻ em được bảo vệ, bảo đảm an toàn, lành mạnh trên môi trường số ngay từ giai đoạn thiết kế sản phẩm và dịch vụ số.
+2. Bộ trưởng, Thủ trưởng cơ quan ngang Bộ tổ chức xây dựng, công bố, ban hành tiêu chuẩn, quy chuẩn kỹ thuật đối với sản phẩm, dịch vụ bảo vệ trẻ em trên môi trường số; cơ chế giám sát, cảnh báo và xử lý nghiêm các hành vi xâm hại hoặc cung cấp thông tin gây hại đến trẻ em trên môi trường số phù hợp với yêu cầu quản lý ngành, lĩnh vực được phân công.
+3. Gia đình, nhà trường có trách nhiệm chủ động giáo dục, hướng dẫn trẻ em về năng lực số và hành vi ứng xử trên môi trường số; giám sát thời gian, nội dung truy cập và lựa chọn cho phép các hoạt động trực tuyến của trẻ em trên môi trường số.
+4. Sản phẩm nội dung số mang nội dung không có lợi cho trẻ em phải có dấu hiệu cảnh báo.`
+                    },
+                    {
+                        id: 'luat148-d44',
+                        code: 'Điều 44',
+                        title: `Hỗ trợ người cao tuổi, người khuyết tật trong chuyển đổi số`,
+                        summary: '',
+                        content: `1. Người cao tuổi và người khuyết tật được Nhà nước ưu tiên hỗ trợ trong quá trình tham gia, sử dụng sản phẩm, dịch vụ số, bao gồm các nội dung sau đây:
+a) Được miễn, giảm phí xác thực điện tử, phí thực hiện dịch vụ công trực tuyến theo quy định của pháp luật;
+b) Được tư vấn, hướng dẫn khi thực hiện giao dịch điện tử liên quan đến thủ tục hành chính, y tế, bảo hiểm và an sinh xã hội;
+c) Được hỗ trợ tham gia các chương trình phổ cập, bồi dưỡng năng lực số cơ bản được thiết kế phù hợp với người cao tuổi và người khuyết tật.
+2. Doanh nghiệp được khuyến khích tham gia phát triển, cung cấp sản phẩm, dịch vụ số đáp ứng tiêu chuẩn hỗ trợ tiếp cận đối với người cao tuổi và người khuyết tật theo quy định của pháp luật.
+3. Ủy ban nhân dân cấp tỉnh có trách nhiệm tổ chức triển khai các hoạt động hỗ trợ và thúc đẩy chuyển đổi số đối với người cao tuổi và người khuyết tật trên địa bàn; bảo đảm điều kiện tiếp cận thuận lợi, an toàn và phù hợp với nhu cầu của nhóm đối tượng này.`
+                    },
+                    {
+                        id: 'luat148-d45',
+                        code: 'Điều 45',
+                        title: `Văn hóa số`,
+                        summary: '',
+                        content: `1. Văn hóa số là các giá trị, chuẩn mực, hành vi ứng xử, hoạt động sáng tạo và chia sẻ nội dung văn hóa trên môi trường số phù hợp với quy định của pháp luật và truyền thống văn hóa Việt Nam.
+2. Bộ Văn hóa, Thể thao và Du lịch có trách nhiệm sau đây:
+a) Ban hành và tổ chức thực hiện Bộ quy tắc ứng xử văn hóa trên môi trường số;
+b) Xây dựng, quản lý, vận hành, cập nhật, duy trì và hướng dẫn khai thác, sử dụng cơ sở dữ liệu quốc gia về di sản văn hóa.
+3. Nhà nước có chính sách khuyến khích, hỗ trợ tổ chức, cá nhân sáng tạo, sản xuất và phân phối sản phẩm nội dung số bảo đảm tuân thủ quy định của pháp luật, phù hợp với truyền thống văn hóa Việt Nam.`
+                    }
+                ]
+            },
+            {
+                id: 'luat148-ch8', code: 'Chương VIII', title: `ĐIỀU KHOẢN THI HÀNH`,
+                articles: [
+                    {
+                        id: 'luat148-d46',
+                        code: 'Điều 46',
+                        title: `Sửa đổi, bổ sung, bãi bỏ một số điều, khoản, điểm của các luật có liên quan`,
+                        summary: '',
+                        content: `1. Bổ sung điểm d1 vào sau điểm d khoản 2 Điều 66 của Luật Khoa học, công nghệ và đổi mới sáng tạo số 93/2025/QH15 như sau:
+“d1) Thực hiện hoạt động chuyển đổi số theo quy định của pháp luật về chuyển đổi số;”.
+2. Bãi bỏ khoản 5 Điều 42 của Luật Giao dịch điện tử số 20/2023/QH15 đã được sửa đổi, bổ sung một số điều theo Luật số 60/2024/QH15 và Luật số 116/2025/QH15.`
+                    },
+                    {
+                        id: 'luat148-d47',
+                        code: 'Điều 47',
+                        title: `Hiệu lực thi hành`,
+                        summary: '',
+                        content: `1. Luật này có hiệu lực thi hành từ ngày 01 tháng 7 năm 2026.
+2. Luật Công nghệ thông tin số 67/2006/QH11 đã được sửa đổi, bổ sung một số điều theo Luật số 21/2017/QH14, Luật số 20/2023/QH15, Luật số 24/2023/QH15, Luật số 71/2025/QH15 và Luật số 84/2025/QH15 (sau đây gọi là Luật Công nghệ thông tin số 67/2006/QH11) hết hiệu lực kể từ ngày Luật này có hiệu lực thi hành, trừ trường hợp quy định tại khoản 1 và khoản 2 Điều 48 của Luật này.`
+                    },
+                    {
+                        id: 'luat148-d48',
+                        code: 'Điều 48',
+                        title: `Điều khoản chuyển tiếp`,
+                        summary: '',
+                        content: `1. Chiến lược, chương trình, đề án, dự án, nhiệm vụ công nghệ thông tin, ứng dụng công nghệ thông tin, chuyển đổi số đã được phê duyệt và đang triển khai trước ngày Luật này có hiệu lực thi hành thì được tiếp tục thực hiện theo quy định của Luật Công nghệ thông tin số 67/2006/QH11 và các văn bản quy phạm pháp luật quy định chi tiết Luật Công nghệ thông tin số 67/2006/QH11 cho đến khi kết thúc, trừ trường hợp các bên lựa chọn áp dụng Luật này.
+2. Chứng chỉ công nghệ thông tin, chứng chỉ ứng dụng công nghệ thông tin đã được cấp theo Luật Công nghệ thông tin số 67/2006/QH11 và các văn bản quy phạm pháp luật khác có liên quan tiếp tục có hiệu lực cho đến khi hết thời hạn ghi trên chứng chỉ.
+3. Đối với các văn bản quy phạm pháp luật quy định chi tiết, quy định biện pháp cụ thể để tổ chức, hướng dẫn thi hành Luật Công nghệ thông tin số 67/2006/QH11 đã được ban hành trước ngày Luật này có hiệu lực thi hành, các Bộ, cơ quan ngang Bộ có trách nhiệm rà soát, công bố hoặc trình cấp có thẩm quyền công bố việc tiếp tục có hiệu lực toàn bộ hoặc một phần theo quy định của Luật Ban hành văn bản quy phạm pháp luật.
+Luật này được Quốc hội nước Cộng hòa xã hội chủ nghĩa Việt Nam khóa XV, Kỳ họp thứ 10 thông qua ngày 11 tháng 12 năm 2025.
+ 
+ CHỦ TỊCH QUỐC HỘI
+
+
+
+
+Trần Thanh Mẫn`
                     }
                 ]
             }

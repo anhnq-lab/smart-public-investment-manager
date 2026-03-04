@@ -60,6 +60,12 @@ const LEGAL_DOC_MAP: {
             articlePrefix: 'nd214',
             label: 'NĐ 214/2025/NĐ-CP',
         },
+        {
+            patterns: [/Luật\s*(?:CĐS|Chuyển\s*đổi\s*số)\s*148/i, /Luật\s*(?:số\s*)?148\/2025/i, /Luật\s*Chuyển\s*đổi\s*số/i],
+            docId: 'luat-cds-2025',
+            articlePrefix: 'luat148',
+            label: 'Luật CĐS 148/2025/QH15',
+        },
     ];
 
 interface LegalRef {
