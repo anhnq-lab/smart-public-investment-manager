@@ -1,12 +1,11 @@
 /**
- * Parse NĐ 214/2025/NĐ-CP full text and generate legalData.ts entry
- * Uses backtick template literals to avoid escaping issues
+ * Parse Luật 148/2025/QH15 (Luật Chuyển đổi số) full text and generate legalData.ts entry
  */
 const fs = require('fs');
 const path = require('path');
 
 const text = fs.readFileSync(
-    path.join(__dirname, '..', 'Doccument', 'nghidinh214-full-text.txt'),
+    path.join(__dirname, '..', 'Doccument', 'luat148-full-text.txt'),
     'utf-8'
 );
 
@@ -36,7 +35,8 @@ function flushChapter() {
     }
 }
 
-const chapterRegex = /^Chương\s+(I{1,4}V?|VI{0,4}|IX|XI{0,4}V?|XIV)\s*$/;
+// Match chapter headers like "Chương I", "Chương II", "Chương VII ", "Chương VIII"
+const chapterRegex = /^Chương\s+(I{1,4}V?|VI{0,4}|IX|XI{0,4}V?|XIV)\s*$/i;
 const articleRegex = /^Điều\s+(\d+)\.\s+(.+)/;
 
 for (let i = 0; i < lines.length; i++) {
@@ -46,6 +46,7 @@ for (let i = 0; i < lines.length; i++) {
     if (chMatch) {
         flushChapter();
         const chCode = chMatch[1];
+        // Next non-empty line is title
         let title = '';
         for (let j = i + 1; j < Math.min(i + 5, lines.length); j++) {
             const nextLine = lines[j].trim();
@@ -83,7 +84,7 @@ for (let i = 0; i < lines.length; i++) {
 
 flushChapter();
 
-// Escape backticks and ${} in content for template literals
+// Escape backticks and ${} for template literals
 function escapeTemplateStr(s) {
     return s.replace(/\\/g, '\\\\').replace(/`/g, '\\`').replace(/\$\{/g, '\\${');
 }
@@ -96,7 +97,7 @@ const chapterEntries = chapters.map(ch => {
         const escapedTitle = escapeTemplateStr(art.title);
 
         return `                    {
-                        id: 'nd214-d${art.num}',
+                        id: 'luat148-d${art.num}',
                         code: '${art.code}',
                         title: \`${escapedTitle}\`,
                         summary: '',
@@ -107,7 +108,7 @@ const chapterEntries = chapters.map(ch => {
     const escapedChTitle = escapeTemplateStr(ch.title);
 
     return `            {
-                id: 'nd214-ch${chapterIdx}', code: '${ch.code}', title: \`${escapedChTitle}\`,
+                id: 'luat148-ch${chapterIdx}', code: '${ch.code}', title: \`${escapedChTitle}\`,
                 articles: [
 ${articleEntries.join(',\n')}
                 ]
@@ -115,27 +116,28 @@ ${articleEntries.join(',\n')}
 });
 
 const output = `    {
-        id: 'nd-214-2025',
-        code: 'NĐ 214/2025/NĐ-CP',
-        title: 'Nghị định quy định chi tiết một số điều và biện pháp thi hành Luật Đấu thầu về lựa chọn nhà thầu',
-        shortTitle: 'NĐ 214/2025 (đấu thầu nhà thầu)',
-        type: 'nghi-dinh',
-        issuedDate: '04/08/2025',
-        effectiveDate: '04/08/2025',
-        issuedBy: 'Chính phủ',
+        id: 'luat-cds-2025',
+        code: 'Luật số 148/2025/QH15',
+        title: 'Luật Chuyển đổi số',
+        shortTitle: 'Luật CĐS 148/2025',
+        type: 'luat',
+        issuedDate: '11/12/2025',
+        effectiveDate: '01/07/2026',
+        issuedBy: 'Quốc hội',
         status: 'hieu-luc',
-        summary: 'Quy định chi tiết một số điều và biện pháp thi hành Luật Đấu thầu số 22/2023/QH15 về lựa chọn nhà thầu, bao gồm: bảo đảm cạnh tranh, ưu đãi, kế hoạch lựa chọn nhà thầu, quy trình đấu thầu, hợp đồng, mua sắm tập trung, xử lý vi phạm.',
-        fileName: 'NĐ 214-2025-NĐ-CP.pdf',
-        filePath: '/resources/NĐ 214-2025-NĐ-CP.pdf',
+        summary: 'Quy định về chuyển đổi số, bao gồm: nguyên tắc, chính sách; điều phối quốc gia; biện pháp bảo đảm; Chính phủ số; kinh tế số, xã hội số; trách nhiệm của cơ quan, tổ chức, cá nhân trong chuyển đổi số.',
+        fileName: 'luat148-CĐS-2025.pdf',
+        filePath: '/resources/luat148-CĐS-2025.pdf',
         fileSize: '',
-        tags: ['đấu thầu', 'lựa chọn nhà thầu', 'hồ sơ mời thầu', 'đánh giá HSDT', 'hợp đồng', 'mua sắm tập trung', 'chào giá trực tuyến'],
-        relatedDocIds: ['luat-dau-tu-cong-2024', 'nd-175-2024'],
+        tags: ['chuyển đổi số', 'chính phủ số', 'kinh tế số', 'xã hội số', 'hạ tầng số', 'dịch vụ công trực tuyến', 'năng lực số', 'công dân số'],
+        relatedDocIds: [],
         chapters: [
 ${chapterEntries.join(',\n')}
         ]
     },`;
 
-fs.writeFileSync(path.join(__dirname, 'nd214-output.ts'), output, 'utf-8');
+fs.writeFileSync(path.join(__dirname, 'luat148-output.ts'), output, 'utf-8');
 
-console.log(`Parsed ${chapters.length} chapters, total ${chapters.reduce((s, c) => s + c.articles.length, 0)} articles.`);
-console.log('Output written to scripts/nd214-output.ts');
+console.log('Parsed ' + chapters.length + ' chapters, total ' + chapters.reduce((s, c) => s + c.articles.length, 0) + ' articles.');
+chapters.forEach((ch, i) => console.log('  Ch' + (i + 1) + ': ' + ch.code + ' - ' + ch.title + ' (' + ch.articles.length + ' articles)'));
+console.log('Output written to scripts/luat148-output.ts');
