@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import { X, Building2, Calendar, DollarSign, MapPin, User, Clock, FileText, HardHat, Search, Shield, Users, Check, ChevronDown } from 'lucide-react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { X, Building2, Calendar, DollarSign, MapPin, User, Clock, FileText, HardHat, Search, Shield, Users, Check, ChevronDown, Sparkles, ImagePlus, Loader2, CheckCircle2 } from 'lucide-react';
 import { ProjectGroup, InvestmentType, Project, Employee } from '../../../types';
 import { generateProjectCode, ConstructionType, PermitType } from '../../../utils/projectCodeGenerator';
 import EmployeeService from '../../../services/EmployeeService';
+import { extractProjectFromImage, fileToBase64, ExtractedProjectData } from '../../../services/ai/aiImageExtractor';
 
 export interface SelectedMember {
     employeeId: string;
@@ -78,6 +79,13 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ isOpen, 
     const [selectedMembers, setSelectedMembers] = useState<SelectedMember[]>([]);
     const [memberSearch, setMemberSearch] = useState('');
     const [showMemberDropdown, setShowMemberDropdown] = useState(false);
+
+    // ── AI Image Extraction ──
+    const [aiStatus, setAiStatus] = useState<'idle' | 'extracting' | 'done' | 'error'>('idle');
+    const [aiPreviewUrl, setAiPreviewUrl] = useState<string | null>(null);
+    const [aiFilledFields, setAiFilledFields] = useState<Set<string>>(new Set());
+    const [aiError, setAiError] = useState('');
+    const aiFileInputRef = useRef<HTMLInputElement>(null);
     const [formData, setFormData] = useState({
         // Section 1 - Thông tin cơ bản
         ProjectID: '',
@@ -135,8 +143,124 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ isOpen, 
         } else {
             setSelectedMembers([]);
             setMemberSearch('');
+            // Reset AI state
+            setAiStatus('idle');
+            setAiPreviewUrl(null);
+            setAiFilledFields(new Set());
+            setAiError('');
         }
     }, [isOpen]);
+
+    // ── AI: Listen for paste events ──
+    useEffect(() => {
+        if (!isOpen || isEditMode) return;
+        const handlePaste = (e: ClipboardEvent) => {
+            const items = e.clipboardData?.items;
+            if (!items) return;
+            for (const item of Array.from(items)) {
+                if (item.type.startsWith('image/')) {
+                    e.preventDefault();
+                    const file = item.getAsFile();
+                    if (file) handleAiImageExtract(file);
+                    return;
+                }
+            }
+        };
+        document.addEventListener('paste', handlePaste);
+        return () => document.removeEventListener('paste', handlePaste);
+    }, [isOpen, isEditMode]);
+
+    // ── AI: Process image extraction ──
+    const handleAiImageExtract = useCallback(async (file: File) => {
+        setAiStatus('extracting');
+        setAiError('');
+        setAiFilledFields(new Set());
+
+        // Show preview
+        const previewUrl = URL.createObjectURL(file);
+        setAiPreviewUrl(previewUrl);
+
+        try {
+            const base64 = await fileToBase64(file);
+            const extracted = await extractProjectFromImage(base64, file.type || 'image/png');
+            applyExtractedData(extracted);
+            setAiStatus('done');
+        } catch (err) {
+            console.error('AI extraction error:', err);
+            setAiError((err as Error)?.message || 'Lỗi trích xuất AI');
+            setAiStatus('error');
+        }
+    }, []);
+
+    // ── AI: Apply extracted data to form ──
+    const applyExtractedData = (data: ExtractedProjectData) => {
+        const filled = new Set<string>();
+
+        setFormData(prev => {
+            const next = { ...prev };
+
+            if (data.ProjectName) { next.ProjectName = data.ProjectName; filled.add('ProjectName'); }
+            if (data.Duration) { next.Duration = data.Duration; filled.add('Duration'); }
+            if (data.CompetentAuthority) { next.CompetentAuthority = data.CompetentAuthority; filled.add('CompetentAuthority'); }
+            if (data.InvestorName) { next.InvestorName = data.InvestorName; filled.add('InvestorName'); }
+            if (data.CapitalSource) { next.CapitalSource = data.CapitalSource; filled.add('CapitalSource'); }
+            if (data.LocationCode) { next.LocationCode = data.LocationCode; filled.add('LocationCode'); }
+            if (data.ApplicableStandards) { next.ApplicableStandards = data.ApplicableStandards; filled.add('ApplicableStandards'); }
+            if (data.FeasibilityContractor) { next.FeasibilityContractor = data.FeasibilityContractor; filled.add('FeasibilityContractor'); }
+            if (data.SurveyContractor) { next.SurveyContractor = data.SurveyContractor; filled.add('SurveyContractor'); }
+            if (data.ReviewContractor) { next.ReviewContractor = data.ReviewContractor; filled.add('ReviewContractor'); }
+
+            // TotalInvestment
+            if (data.TotalInvestment && data.TotalInvestment > 0) {
+                next.TotalInvestment = data.TotalInvestment;
+                filled.add('TotalInvestment');
+            }
+
+            // StartDate (YYYY-MM-DD)
+            if (data.StartDate && /^\d{4}-\d{2}-\d{2}$/.test(data.StartDate)) {
+                next.StartDate = data.StartDate;
+                filled.add('StartDate');
+            }
+
+            // GroupCode mapping
+            if (data.GroupCode) {
+                const gMap: Record<string, ProjectGroup> = {
+                    'A': ProjectGroup.A, 'B': ProjectGroup.B, 'C': ProjectGroup.C, 'QN': ProjectGroup.QN,
+                    'Nhóm A': ProjectGroup.A, 'Nhóm B': ProjectGroup.B, 'Nhóm C': ProjectGroup.C,
+                };
+                const mapped = gMap[data.GroupCode];
+                if (mapped) { next.GroupCode = mapped; filled.add('GroupCode'); }
+            }
+
+            // ConstructionType mapping
+            if (data.ConstructionType) {
+                const validTypes = CONSTRUCTION_TYPES.map(t => t.label);
+                const match = validTypes.find(t => data.ConstructionType!.includes(t));
+                if (match) { next.ConstructionType = match; filled.add('ConstructionType'); }
+            }
+
+            // ConstructionGrade mapping
+            if (data.ConstructionGrade) {
+                const validGrades = CONSTRUCTION_GRADES.map(g => g.value);
+                const match = validGrades.find(g => data.ConstructionGrade!.includes(g));
+                if (match) { next.ConstructionGrade = match; filled.add('ConstructionGrade'); }
+            }
+
+            // Province mapping (match name → code)
+            if (data.ProvinceName) {
+                const pMatch = PROVINCES.find(p =>
+                    data.ProvinceName!.includes(p.name) || p.name.includes(data.ProvinceName!)
+                );
+                if (pMatch) { next.ProvinceCode = pMatch.code; filled.add('ProvinceCode'); }
+            }
+
+            return next;
+        });
+
+        setAiFilledFields(filled);
+        // Auto-clear highlights after 6 seconds
+        setTimeout(() => setAiFilledFields(new Set()), 6000);
+    };
 
     // Auto-generate Project Code theo TT 24/2025/TT-BXD (only in create mode)
     useEffect(() => {
@@ -224,6 +348,9 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ isOpen, 
         </div>
     );
 
+    // ── AI highlight helper ──
+    const aiHighlight = (field: string) => aiFilledFields.has(field) ? ' ring-2 ring-emerald-400 dark:ring-emerald-500 border-emerald-400 dark:border-emerald-500 animate-pulse' : '';
+
     // Reusable class strings for dark mode
     const inputClass = "w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-slate-600 dark:bg-slate-700/50 dark:text-slate-100 dark:placeholder:text-slate-500 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 dark:focus:border-blue-400 outline-none transition-all";
     const inputWithIconClass = "w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 dark:border-slate-600 dark:bg-slate-700/50 dark:text-slate-100 dark:placeholder:text-slate-500 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 dark:focus:border-blue-400 outline-none transition-all";
@@ -255,6 +382,107 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ isOpen, 
                     </button>
                 </div>
 
+                {/* ── AI Image Import Zone (only in create mode) ── */}
+                {!isEditMode && (
+                    <div className="px-6 py-3 border-b border-gray-100 dark:border-slate-700">
+                        <div
+                            className={`relative rounded-xl border-2 border-dashed transition-all cursor-pointer
+                                ${aiStatus === 'extracting' ? 'border-blue-400 dark:border-blue-500 bg-blue-50/50 dark:bg-blue-900/20' : ''}
+                                ${aiStatus === 'done' ? 'border-emerald-400 dark:border-emerald-500 bg-emerald-50/50 dark:bg-emerald-900/20' : ''}
+                                ${aiStatus === 'error' ? 'border-red-400 dark:border-red-400 bg-red-50/50 dark:bg-red-900/20' : ''}
+                                ${aiStatus === 'idle' ? 'border-gray-300 dark:border-slate-600 hover:border-violet-400 dark:hover:border-violet-500 hover:bg-violet-50/30 dark:hover:bg-violet-900/10' : ''}
+                            `}
+                            onClick={() => aiStatus !== 'extracting' && aiFileInputRef.current?.click()}
+                        >
+                            <input
+                                ref={aiFileInputRef}
+                                type="file"
+                                accept="image/*"
+                                className="hidden"
+                                onChange={e => {
+                                    const f = e.target.files?.[0];
+                                    if (f) handleAiImageExtract(f);
+                                    e.target.value = '';
+                                }}
+                            />
+
+                            <div className="flex items-center gap-4 p-3">
+                                {/* Preview or Icon */}
+                                {aiPreviewUrl ? (
+                                    <div className="w-16 h-12 rounded-lg overflow-hidden border border-gray-200 dark:border-slate-600 flex-shrink-0">
+                                        <img src={aiPreviewUrl} alt="Preview" className="w-full h-full object-cover" />
+                                    </div>
+                                ) : (
+                                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0
+                                        ${aiStatus === 'idle' ? 'bg-gradient-to-br from-violet-500 to-purple-600' : 'bg-blue-500'}
+                                    `}>
+                                        {aiStatus === 'extracting' ? (
+                                            <Loader2 className="w-5 h-5 text-white animate-spin" />
+                                        ) : (
+                                            <Sparkles className="w-5 h-5 text-white" />
+                                        )}
+                                    </div>
+                                )}
+
+                                {/* Text */}
+                                <div className="flex-1 min-w-0">
+                                    {aiStatus === 'idle' && (
+                                        <>
+                                            <p className="text-sm font-bold text-gray-700 dark:text-slate-200 flex items-center gap-1.5">
+                                                <Sparkles className="w-3.5 h-3.5 text-violet-500" />
+                                                Nhập liệu bằng AI
+                                            </p>
+                                            <p className="text-[11px] text-gray-400 dark:text-slate-500">
+                                                Dán ảnh chụp màn hình (Ctrl+V) hoặc click để chọn ảnh — AI sẽ tự điền thông tin
+                                            </p>
+                                        </>
+                                    )}
+                                    {aiStatus === 'extracting' && (
+                                        <>
+                                            <p className="text-sm font-bold text-blue-600 dark:text-blue-400 flex items-center gap-1.5">
+                                                <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                                                Đang trích xuất bằng AI...
+                                            </p>
+                                            <p className="text-[11px] text-blue-500/70 dark:text-blue-400/60">
+                                                Gemini đang phân tích ảnh và trích xuất thông tin dự án
+                                            </p>
+                                        </>
+                                    )}
+                                    {aiStatus === 'done' && (
+                                        <>
+                                            <p className="text-sm font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5">
+                                                <CheckCircle2 className="w-3.5 h-3.5" />
+                                                Đã trích xuất thành công!
+                                            </p>
+                                            <p className="text-[11px] text-emerald-500/70 dark:text-emerald-400/60">
+                                                {aiFilledFields.size > 0 ? `${aiFilledFields.size} trường đã được AI điền — ` : ''}
+                                                Click hoặc dán ảnh mới để trích xuất lại
+                                            </p>
+                                        </>
+                                    )}
+                                    {aiStatus === 'error' && (
+                                        <>
+                                            <p className="text-sm font-bold text-red-600 dark:text-red-400">
+                                                Lỗi trích xuất
+                                            </p>
+                                            <p className="text-[11px] text-red-500/70 dark:text-red-400/60">
+                                                {aiError || 'Vui lòng thử lại'} — Click hoặc dán ảnh mới
+                                            </p>
+                                        </>
+                                    )}
+                                </div>
+
+                                {/* Action icon */}
+                                {aiStatus !== 'extracting' && (
+                                    <div className="flex-shrink-0">
+                                        <ImagePlus className="w-5 h-5 text-gray-400 dark:text-slate-500" />
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                )}
+
                 {/* Body */}
                 <form onSubmit={handleSubmit} className="p-6 overflow-y-auto space-y-8">
 
@@ -282,7 +510,7 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ isOpen, 
                                 type="text"
                                 required
                                 placeholder="VD: Xây dựng Đường Cao tốc Bắc Nam..."
-                                className={inputClass}
+                                className={inputClass + aiHighlight('ProjectName')}
                                 value={formData.ProjectName}
                                 onChange={e => updateField('ProjectName', e.target.value)}
                             />
@@ -359,7 +587,7 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ isOpen, 
                                         type="number"
                                         min="0"
                                         placeholder="0"
-                                        className={inputWithIconClass}
+                                        className={inputWithIconClass + aiHighlight('TotalInvestment')}
                                         value={formData.TotalInvestment}
                                         onChange={e => updateField('TotalInvestment', Number(e.target.value))}
                                     />
@@ -373,7 +601,7 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ isOpen, 
                                 <div className="relative">
                                     <input
                                         type="date"
-                                        className={inputWithIconClass}
+                                        className={inputWithIconClass + aiHighlight('StartDate')}
                                         value={formData.StartDate}
                                         onChange={e => updateField('StartDate', e.target.value)}
                                     />
@@ -387,7 +615,7 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ isOpen, 
                                 <input
                                     type="text"
                                     placeholder="Ngân sách Tỉnh, NSTW..."
-                                    className={inputClass}
+                                    className={inputClass + aiHighlight('CapitalSource')}
                                     value={formData.CapitalSource}
                                     onChange={e => updateField('CapitalSource', e.target.value)}
                                 />
@@ -421,7 +649,7 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ isOpen, 
                                     <input
                                         type="text"
                                         placeholder="VD: Xã Thạch Hạ, TP. Hà Tĩnh"
-                                        className={inputWithIconClass}
+                                        className={inputWithIconClass + aiHighlight('LocationCode')}
                                         value={formData.LocationCode}
                                         onChange={e => updateField('LocationCode', e.target.value)}
                                     />
@@ -436,7 +664,7 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ isOpen, 
                                     <input
                                         type="text"
                                         placeholder="VD: 36 tháng (2025-2028)"
-                                        className={inputWithIconClass}
+                                        className={inputWithIconClass + aiHighlight('Duration')}
                                         value={formData.Duration}
                                         onChange={e => updateField('Duration', e.target.value)}
                                     />
@@ -451,7 +679,7 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ isOpen, 
                                     <input
                                         type="text"
                                         placeholder="VD: Giám đốc Học viện CTQG HCM"
-                                        className={inputWithIconClass}
+                                        className={inputWithIconClass + aiHighlight('CompetentAuthority')}
                                         value={formData.CompetentAuthority}
                                         onChange={e => updateField('CompetentAuthority', e.target.value)}
                                     />
@@ -467,7 +695,7 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ isOpen, 
                                 <input
                                     type="text"
                                     placeholder="VD: Ban QLDA Đầu tư xây dựng khu vực..."
-                                    className={inputWithIconClass}
+                                    className={inputWithIconClass + aiHighlight('InvestorName')}
                                     value={formData.InvestorName}
                                     onChange={e => updateField('InvestorName', e.target.value)}
                                 />
@@ -489,7 +717,7 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ isOpen, 
                                 <input
                                     type="text"
                                     placeholder="VD: TCVN 5574:2018, QCVN 03:2022/BXD..."
-                                    className={inputWithIconClass}
+                                    className={inputWithIconClass + aiHighlight('ApplicableStandards')}
                                     value={formData.ApplicableStandards}
                                     onChange={e => updateField('ApplicableStandards', e.target.value)}
                                 />

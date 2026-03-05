@@ -53,6 +53,7 @@ export const ProjectPackagesTab: React.FC<ProjectPackagesTabProps> = ({ projectI
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
     const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
+    const [isDeleteAllConfirmOpen, setIsDeleteAllConfirmOpen] = useState(false);
     const [selectedPackage, setSelectedPackage] = useState<BiddingPackage | null>(null);
 
     // Dropdown state
@@ -77,6 +78,19 @@ export const ProjectPackagesTab: React.FC<ProjectPackagesTabProps> = ({ projectI
             queryClient.invalidateQueries({ queryKey: ['project-packages', projectID] });
             setIsDeleteConfirmOpen(false);
             setSelectedPackage(null);
+        },
+    });
+
+    // Delete ALL packages mutation
+    const deleteAllMutation = useMutation({
+        mutationFn: async () => {
+            await (supabase.from('bidding_packages') as any)
+                .delete()
+                .eq('project_id', projectID);
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['project-packages', projectID] });
+            setIsDeleteAllConfirmOpen(false);
         },
     });
 
@@ -427,6 +441,14 @@ export const ProjectPackagesTab: React.FC<ProjectPackagesTabProps> = ({ projectI
                     >
                         <Upload size={16} />
                         <span>Import Excel</span>
+                    </button>
+                    <button
+                        onClick={() => setIsDeleteAllConfirmOpen(true)}
+                        disabled={!packages || packages.length === 0}
+                        className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-slate-700 border border-red-300 dark:border-red-600 text-red-600 dark:text-red-400 rounded-lg hover:bg-red-50 dark:hover:bg-slate-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm font-medium"
+                    >
+                        <Trash2 size={16} />
+                        <span>Xóa tất cả</span>
                     </button>
                     <button
                         onClick={() => setIsCreateModalOpen(true)}
@@ -836,6 +858,47 @@ export const ProjectPackagesTab: React.FC<ProjectPackagesTabProps> = ({ projectI
                                     <Trash2 className="w-4 h-4" />
                                 )}
                                 Xóa
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Delete ALL Confirmation */}
+            {isDeleteAllConfirmOpen && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center">
+                    <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setIsDeleteAllConfirmOpen(false)} />
+                    <div className="relative bg-white dark:bg-slate-800 rounded-xl shadow-2xl w-full max-w-md p-6 animate-scale-in">
+                        <div className="flex items-center gap-4 mb-4">
+                            <div className="p-3 bg-red-100 dark:bg-red-900/30 rounded-full">
+                                <AlertTriangle className="w-6 h-6 text-red-600" />
+                            </div>
+                            <div>
+                                <h3 className="text-lg font-bold text-gray-800 dark:text-slate-100">Xóa tất cả gói thầu</h3>
+                                <p className="text-sm text-gray-500 dark:text-slate-400">Hành động này không thể hoàn tác</p>
+                            </div>
+                        </div>
+                        <p className="text-gray-600 dark:text-slate-300 mb-6">
+                            Bạn có chắc chắn muốn xóa <strong className="text-red-600">{packages?.length || 0} gói thầu</strong> của dự án này?
+                        </p>
+                        <div className="flex justify-end gap-3">
+                            <button
+                                onClick={() => setIsDeleteAllConfirmOpen(false)}
+                                className="px-4 py-2 text-gray-600 dark:text-slate-300 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
+                            >
+                                Hủy
+                            </button>
+                            <button
+                                onClick={() => deleteAllMutation.mutate()}
+                                disabled={deleteAllMutation.isPending}
+                                className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50 transition-colors"
+                            >
+                                {deleteAllMutation.isPending ? (
+                                    <Loader2 className="w-4 h-4 animate-spin" />
+                                ) : (
+                                    <Trash2 className="w-4 h-4" />
+                                )}
+                                Xóa tất cả
                             </button>
                         </div>
                     </div>

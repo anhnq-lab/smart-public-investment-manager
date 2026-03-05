@@ -185,8 +185,8 @@ const Dashboard: React.FC = () => {
     // --- FILTERED STATS ---
     const filteredStatusData = useMemo(() => {
         const statusMap = [
-            { name: 'Chuẩn bị dự án', value: 0, color: '#F59E0B' },
-            { name: 'Thực hiện dự án', value: 0, color: '#3B82F6' },
+            { name: 'Chuẩn bị dự án', value: 0, color: '#3B82F6' },
+            { name: 'Thực hiện dự án', value: 0, color: '#F97316' },
             { name: 'Kết thúc xây dựng', value: 0, color: '#10B981' },
         ];
         filteredProjects.forEach(p => {

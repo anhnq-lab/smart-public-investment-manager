@@ -150,8 +150,8 @@ export const DashboardService = {
         });
 
         return [
-            { name: 'Chuẩn bị dự án', value: counts[ProjectStatus.Preparation], color: '#F59E0B' },
-            { name: 'Thực hiện dự án', value: counts[ProjectStatus.Execution], color: '#3B82F6' },
+            { name: 'Chuẩn bị dự án', value: counts[ProjectStatus.Preparation], color: '#3B82F6' },
+            { name: 'Thực hiện dự án', value: counts[ProjectStatus.Execution], color: '#F97316' },
             { name: 'Kết thúc xây dựng', value: counts[ProjectStatus.Completion], color: '#10B981' },
         ];
     },

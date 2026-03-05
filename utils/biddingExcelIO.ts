@@ -156,21 +156,26 @@ export interface ImportResult {
 /**
  * Header matching — fuzzy match Vietnamese column headers
  */
+// Order matters: more specific patterns MUST come before broader ones.
+// "Thời gian bắt đầu tổ chức LCNT" must match SelectionStartDate before
+// "Thời gian tổ chức LCNT" matches SelectionDuration (substring overlap).
 const HEADER_PATTERNS: { patterns: string[]; field: keyof BiddingPackage | 'stt' }[] = [
-    { patterns: ['stt', 'tt', 'số thứ tự'], field: 'stt' },
-    { patterns: ['tên gói thầu', 'tên gói', 'gói thầu'], field: 'PackageName' },
-    { patterns: ['tóm tắt', 'công việc chính', 'mô tả'], field: 'Description' },
+    { patterns: ['stt', 'số thứ tự'], field: 'stt' },
+    { patterns: ['giá gói thầu', 'giá gói'], field: 'Price' },
+    { patterns: ['tên gói thầu', 'tên gói'], field: 'PackageName' },
+    { patterns: ['tóm tắt công việc', 'tóm tắt', 'công việc chính', 'mô tả công việc'], field: 'Description' },
     { patterns: ['lĩnh vực'], field: 'Field' },
-    { patterns: ['giá gói thầu', 'giá gói', 'giá (vnd)', 'giá'], field: 'Price' },
-    { patterns: ['nguồn vốn', 'chi tiết nguồn vốn'], field: 'FundingSource' },
-    { patterns: ['hình thức lcnt', 'hình thức lựa chọn', 'hình thức'], field: 'SelectionMethod' },
-    { patterns: ['phương thức lcnt', 'phương thức lựa chọn', 'phương thức'], field: 'SelectionProcedure' },
-    { patterns: ['thời gian tổ chức lcnt', 'thời gian tổ chức lựa chọn', 'thời gian tổ chức'], field: 'SelectionDuration' },
-    { patterns: ['thời gian bắt đầu tổ chức', 'bắt đầu lcnt', 'bắt đầu tổ chức'], field: 'SelectionStartDate' },
-    { patterns: ['loại hợp đồng', 'hợp đồng'], field: 'ContractType' },
-    { patterns: ['thời gian thực hiện', 'thời gian thực hiện gói thầu'], field: 'Duration' },
+    { patterns: ['chi tiết nguồn vốn', 'nguồn vốn'], field: 'FundingSource' },
+    { patterns: ['hình thức lcnt', 'hình thức lựa chọn nhà thầu', 'hình thức lựa chọn'], field: 'SelectionMethod' },
+    { patterns: ['phương thức lcnt', 'phương thức lựa chọn nhà thầu', 'phương thức lựa chọn'], field: 'SelectionProcedure' },
+    // SelectionStartDate MUST come before SelectionDuration (more specific)
+    { patterns: ['thời gian bắt đầu tổ chức', 'bắt đầu tổ chức lcnt', 'bắt đầu lcnt'], field: 'SelectionStartDate' },
+    { patterns: ['thời gian tổ chức lcnt', 'thời gian tổ chức lựa chọn'], field: 'SelectionDuration' },
+    // Duration MUST come after SelectionDuration/SelectionStartDate
+    { patterns: ['thời gian thực hiện gói thầu', 'thời gian thực hiện hợp đồng', 'thời gian thực hiện'], field: 'Duration' },
+    { patterns: ['loại hợp đồng'], field: 'ContractType' },
     { patterns: ['tùy chọn mua thêm', 'mua thêm'], field: 'HasOption' },
-    { patterns: ['trạng thái', 'tình trạng', 'tình trạng tbmt'], field: 'Status' },
+    { patterns: ['trạng thái', 'tình trạng tbmt', 'tình trạng'], field: 'Status' },
 ];
 
 function matchHeader(header: string): keyof BiddingPackage | 'stt' | null {
@@ -180,13 +185,24 @@ function matchHeader(header: string): keyof BiddingPackage | 'stt' | null {
         .replace(/\(.*?\)/g, '')
         .trim();
 
+    if (!normalized) return null;
+
+    // Pass 1: exact match (strongest)
     for (const { patterns, field } of HEADER_PATTERNS) {
         for (const pattern of patterns) {
-            if (normalized.includes(pattern) || pattern.includes(normalized)) {
-                return field;
-            }
+            if (normalized === pattern) return field;
         }
     }
+
+    // Pass 2: header contains pattern (e.g., "Giá gói thầu (VND)" contains "giá gói thầu")
+    // Only check normalized.includes(pattern), NOT pattern.includes(normalized),
+    // to avoid short patterns matching unrelated long headers.
+    for (const { patterns, field } of HEADER_PATTERNS) {
+        for (const pattern of patterns) {
+            if (normalized.includes(pattern)) return field;
+        }
+    }
+
     return null;
 }
 
@@ -302,7 +318,6 @@ export async function parseBiddingPackagesFromExcel(
                 switch (field) {
                     case 'stt':
                         stt = strValue;
-                        pkg.PackageNumber = strValue.replace(/[^0-9]/g, '') || strValue;
                         break;
                     case 'PackageName':
                         pkg.PackageName = strValue;
@@ -311,7 +326,8 @@ export async function parseBiddingPackagesFromExcel(
                         pkg.Description = strValue;
                         break;
                     case 'Field':
-                        pkg.Field = reverseMapValue(strValue, FIELD_MAP_REVERSE) as any || 'Consultancy';
+                        // DB stores Vietnamese: 'Tư vấn', 'Xây lắp', 'Mua sắm'...
+                        pkg.Field = (strValue || 'Tư vấn') as any;
                         break;
                     case 'Price':
                         pkg.Price = parsePrice(cellValue);
@@ -322,20 +338,18 @@ export async function parseBiddingPackagesFromExcel(
                     case 'FundingSource':
                         pkg.FundingSource = strValue;
                         break;
-                    case 'SelectionMethod': {
-                        const mapped = reverseMapValue(strValue, SELECTION_METHOD_REVERSE);
-                        pkg.SelectionMethod = (mapped || 'Appointed') as any;
+                    case 'SelectionMethod':
+                        // DB stores Vietnamese: 'Đấu thầu rộng rãi', 'Chỉ định thầu'...
+                        pkg.SelectionMethod = (strValue || 'Chỉ định thầu') as any;
                         // Auto-detect "rút gọn" in method text
                         if (strValue.toLowerCase().includes('rút gọn')) {
-                            pkg.SelectionProcedure = 'Reduced' as any;
+                            pkg.SelectionProcedure = 'Rút gọn' as any;
                         }
                         break;
-                    }
-                    case 'SelectionProcedure': {
-                        const mapped = reverseMapValue(strValue, PROCEDURE_REVERSE);
-                        if (mapped) pkg.SelectionProcedure = mapped as any;
+                    case 'SelectionProcedure':
+                        // DB stores Vietnamese: 'Một giai đoạn một túi hồ sơ'...
+                        if (strValue) pkg.SelectionProcedure = strValue as any;
                         break;
-                    }
                     case 'SelectionDuration':
                         pkg.SelectionDuration = strValue;
                         break;
@@ -343,7 +357,8 @@ export async function parseBiddingPackagesFromExcel(
                         pkg.SelectionStartDate = strValue;
                         break;
                     case 'ContractType':
-                        pkg.ContractType = (reverseMapValue(strValue, CONTRACT_TYPE_REVERSE) || 'LumpSum') as any;
+                        // DB stores Vietnamese: 'Trọn gói', 'Theo đơn giá', 'Theo đơn giá điều chỉnh'...
+                        pkg.ContractType = (strValue || 'Trọn gói') as any;
                         break;
                     case 'Duration':
                         pkg.Duration = strValue;
@@ -352,10 +367,20 @@ export async function parseBiddingPackagesFromExcel(
                         pkg.HasOption = strValue.toLowerCase().includes('có') && !strValue.toLowerCase().includes('không');
                         break;
                     case 'Status': {
-                        const mapped = reverseMapValue(strValue, STATUS_REVERSE);
-                        if (mapped) pkg.Status = mapped as any;
-                        // "Đã có TBMT" → Posted
-                        if (strValue.toLowerCase().includes('tbmt')) pkg.Status = 'Posted' as any;
+                        // DB stores English status: 'Planning', 'Bidding', 'Executing'...
+                        const statusMap: Record<string, string> = {
+                            'trong kế hoạch': 'Planning',
+                            'đã đăng tải': 'Posted',
+                            'đang mời thầu': 'Bidding',
+                            'đang xét thầu': 'Evaluating',
+                            'đã có kết quả': 'Awarded',
+                            'hủy thầu': 'Cancelled',
+                            'đang thực hiện': 'Executing',
+                            'hoàn thành': 'Completed',
+                        };
+                        const lower = strValue.toLowerCase().trim();
+                        pkg.Status = (statusMap[lower] || strValue || 'Planning') as any;
+                        if (lower.includes('tbmt')) pkg.Status = 'Posted' as any;
                         break;
                     }
                 }

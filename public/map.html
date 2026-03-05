@@ -104,9 +104,10 @@
 
                     var statusColor = '#6B7280'; // default gray
                     var statusText = 'Không rõ';
-                    if (p.Status === 1) { statusColor = '#F59E0B'; statusText = 'Chuẩn bị dự án'; }
-                    else if (p.Status === 2) { statusColor = '#3B82F6'; statusText = 'Thực hiện dự án'; }
-                    else if (p.Status === 3) { statusColor = '#10B981'; statusText = 'Kết thúc xây dựng'; }
+                    var s = p.Status;
+                    if (s === 1 || s === '1' || s === 'Preparation') { statusColor = '#3B82F6'; statusText = 'Chuẩn bị dự án'; }
+                    else if (s === 2 || s === '2' || s === 'Execution') { statusColor = '#F97316'; statusText = 'Thực hiện dự án'; }
+                    else if (s === 3 || s === '3' || s === 'Completion') { statusColor = '#10B981'; statusText = 'Kết thúc xây dựng'; }
 
                     var iconHtml = '<div class="marker-pin pulse-animation" style="background-color: ' + statusColor + ';"></div>';
 

@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import {
     CheckCircle2, Circle, Briefcase, Settings, PlayCircle, Flag, Cog,
-    ChevronRight, Calendar, FileText, X, ArrowRight, AlertCircle,
-    History, Plus
+    ChevronRight, Calendar, FileText, X, ArrowRight, ArrowLeft, AlertCircle,
+    History, Plus, RotateCcw
 } from 'lucide-react';
 import { ProjectStage } from '@/types';
 
@@ -81,6 +81,7 @@ export const LifecycleStepper: React.FC<LifecycleStepperProps> = ({
     const [showTransitionModal, setShowTransitionModal] = useState(false);
     const [showHistoryPanel, setShowHistoryPanel] = useState(false);
     const [transitionData, setTransitionData] = useState<Partial<StageHistoryEntry>>({});
+    const [targetStageIndex, setTargetStageIndex] = useState<number | null>(null);
 
     const currentIndex = STAGES.findIndex(s => s.key === currentStage);
 
@@ -101,14 +102,34 @@ export const LifecycleStepper: React.FC<LifecycleStepperProps> = ({
         return null;
     };
 
-    const handleAdvanceStage = () => {
-        const nextStage = getNextStage();
-        if (nextStage) {
+    const getPrevStage = () => {
+        if (currentIndex > 0) {
+            return STAGES[currentIndex - 1];
+        }
+        return null;
+    };
+
+    const handleTransitionTo = (targetIdx: number) => {
+        const target = STAGES[targetIdx];
+        if (target && targetIdx !== currentIndex) {
+            setTargetStageIndex(targetIdx);
             setTransitionData({
-                stage: nextStage.key,
+                stage: target.key,
                 startDate: new Date().toISOString().split('T')[0]
             });
             setShowTransitionModal(true);
+        }
+    };
+
+    const handleAdvanceStage = () => {
+        if (currentIndex < STAGES.length - 1) {
+            handleTransitionTo(currentIndex + 1);
+        }
+    };
+
+    const handleRevertStage = () => {
+        if (currentIndex > 0) {
+            handleTransitionTo(currentIndex - 1);
         }
     };
 
@@ -159,6 +180,9 @@ export const LifecycleStepper: React.FC<LifecycleStepperProps> = ({
     }
 
     const nextStage = getNextStage();
+    const prevStage = getPrevStage();
+    const targetStage = targetStageIndex !== null ? STAGES[targetStageIndex] : null;
+    const isGoingBackward = targetStageIndex !== null && targetStageIndex < currentIndex;
 
     return (
         <>
@@ -177,6 +201,15 @@ export const LifecycleStepper: React.FC<LifecycleStepperProps> = ({
                             >
                                 <History className="w-3.5 h-3.5" />
                                 Lịch sử
+                            </button>
+                        )}
+                        {editable && prevStage && (
+                            <button
+                                onClick={handleRevertStage}
+                                className="flex items-center gap-1.5 px-3 py-1.5 bg-amber-500 hover:bg-amber-600 text-white text-[11px] font-bold rounded-lg transition-colors shadow-sm"
+                            >
+                                <ArrowLeft className="w-3.5 h-3.5" />
+                                Lùi giai đoạn
                             </button>
                         )}
                         {editable && nextStage && (
@@ -320,20 +353,24 @@ export const LifecycleStepper: React.FC<LifecycleStepperProps> = ({
                         </div>
 
                         <div className="p-5 space-y-4">
-                            {/* Current → Next Stage visual */}
+                            {/* Current → Target Stage visual */}
                             <div className="flex items-center justify-center gap-4 py-4 bg-gray-50 dark:bg-slate-700 rounded-xl">
                                 <div className="text-center">
-                                    <div className="w-12 h-12 rounded-full bg-emerald-100 flex items-center justify-center mx-auto mb-2">
-                                        {React.createElement(STAGES[currentIndex].icon, { className: "w-5 h-5 text-emerald-600" })}
+                                    <div className={`w-12 h-12 rounded-full ${isGoingBackward ? 'bg-amber-100 dark:bg-amber-900/30' : 'bg-emerald-100 dark:bg-emerald-900/30'} flex items-center justify-center mx-auto mb-2`}>
+                                        {React.createElement(STAGES[currentIndex].icon, { className: `w-5 h-5 ${isGoingBackward ? 'text-amber-600 dark:text-amber-400' : 'text-emerald-600 dark:text-emerald-400'}` })}
                                     </div>
-                                    <span className="text-xs font-bold text-gray-600">{STAGES[currentIndex].label}</span>
+                                    <span className="text-xs font-bold text-gray-600 dark:text-slate-300">{STAGES[currentIndex].label}</span>
                                 </div>
-                                <ArrowRight className="w-6 h-6 text-gray-400" />
+                                {isGoingBackward ? (
+                                    <RotateCcw className="w-6 h-6 text-amber-500" />
+                                ) : (
+                                    <ArrowRight className="w-6 h-6 text-gray-400" />
+                                )}
                                 <div className="text-center">
-                                    <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center mx-auto mb-2 ring-2 ring-blue-200">
-                                        {nextStage && React.createElement(nextStage.icon, { className: "w-5 h-5 text-blue-600" })}
+                                    <div className={`w-12 h-12 rounded-full ${isGoingBackward ? 'bg-blue-100 dark:bg-blue-900/30 ring-2 ring-blue-200 dark:ring-blue-800' : 'bg-blue-100 dark:bg-blue-900/30 ring-2 ring-blue-200 dark:ring-blue-800'} flex items-center justify-center mx-auto mb-2`}>
+                                        {targetStage && React.createElement(targetStage.icon, { className: "w-5 h-5 text-blue-600 dark:text-blue-400" })}
                                     </div>
-                                    <span className="text-xs font-bold text-blue-700">{nextStage?.label}</span>
+                                    <span className="text-xs font-bold text-blue-700 dark:text-blue-300">{targetStage?.label}</span>
                                 </div>
                             </div>
 
@@ -377,10 +414,13 @@ export const LifecycleStepper: React.FC<LifecycleStepperProps> = ({
                             </div>
 
                             {/* Warning */}
-                            <div className="flex items-start gap-2 p-3 bg-amber-50 border border-amber-100 rounded-lg">
-                                <AlertCircle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
-                                <p className="text-[11px] text-amber-700">
-                                    Việc chuyển giai đoạn sẽ được ghi lại vào lịch sử dự án. Hành động này không thể hoàn tác.
+                            <div className={`flex items-start gap-2 p-3 ${isGoingBackward ? 'bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800' : 'bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800'} rounded-lg`}>
+                                <AlertCircle className={`w-4 h-4 ${isGoingBackward ? 'text-amber-600 dark:text-amber-400' : 'text-blue-600 dark:text-blue-400'} shrink-0 mt-0.5`} />
+                                <p className={`text-[11px] ${isGoingBackward ? 'text-amber-700 dark:text-amber-300' : 'text-blue-700 dark:text-blue-300'}`}>
+                                    {isGoingBackward
+                                        ? 'Bạn đang lùi giai đoạn dự án. Việc này sẽ được ghi lại vào lịch sử.'
+                                        : 'Việc chuyển giai đoạn sẽ được ghi lại vào lịch sử dự án.'
+                                    }
                                 </p>
                             </div>
                         </div>
@@ -395,9 +435,9 @@ export const LifecycleStepper: React.FC<LifecycleStepperProps> = ({
                             <button
                                 onClick={confirmTransition}
                                 disabled={!transitionData.startDate}
-                                className="flex-1 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-blue-200"
+                                className={`flex-1 py-2.5 ${isGoingBackward ? 'bg-amber-500 hover:bg-amber-600 shadow-amber-200 dark:shadow-amber-900/30' : 'bg-blue-600 hover:bg-blue-700 shadow-blue-200 dark:shadow-blue-900/30'} text-white font-bold rounded-xl text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-lg`}
                             >
-                                Xác nhận chuyển
+                                {isGoingBackward ? 'Xác nhận lùi' : 'Xác nhận chuyển'}
                             </button>
                         </div>
                     </div>

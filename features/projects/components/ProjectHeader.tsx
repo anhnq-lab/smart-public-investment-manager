@@ -26,7 +26,7 @@ const getGroupBadge = (group: ProjectGroup) => {
 const getStatusConfig = (status: ProjectStatus) => {
     switch (status) {
         case ProjectStatus.Preparation: return { label: 'CHUẨN BỊ DỰ ÁN', bg: 'bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400 border border-blue-100 dark:border-blue-800' };
-        case ProjectStatus.Execution: return { label: 'ĐANG TRIỂN KHAI', bg: 'bg-amber-50 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400 border border-amber-100 dark:border-amber-800' };
+        case ProjectStatus.Execution: return { label: 'ĐANG TRIỂN KHAI', bg: 'bg-orange-50 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400 border border-orange-100 dark:border-orange-800' };
         case ProjectStatus.Completion: return { label: 'ĐÃ KẾT THÚC', bg: 'bg-emerald-50 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-800' };
         default: return { label: 'N/A', bg: 'bg-gray-50 text-gray-700' };
     }
