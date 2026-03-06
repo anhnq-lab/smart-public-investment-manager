@@ -16,14 +16,19 @@ export interface AuthCredential {
 /** Login lookup - minimal data for authentication only */
 export const authCredentials: AuthCredential[] = [
     { EmployeeID: 'NV001', Username: 'Admin', Email: 'quocanhnguyen.ksxd@gmail.com', Password: '123456' },
-    { EmployeeID: 'NV002', Username: 'HVHUNG.BGD', Email: 'hvhung@hvctqg.edu.vn', Password: '123456' },
-    { EmployeeID: 'NV003', Username: 'TXBAN.BGD', Email: 'txban@hvctqg.edu.vn', Password: '123456' },
-    { EmployeeID: 'NV004', Username: 'LMTUAN.KTGS', Email: 'lmtuan@hvctqg.edu.vn', Password: '123456' },
-    { EmployeeID: 'NV005', Username: 'NTHNHUNG.KHTC', Email: 'nthnhung@hvctqg.edu.vn', Password: '123456' },
-    { EmployeeID: 'NV006', Username: 'PVDUC.KTGS', Email: 'pvduc@hvctqg.edu.vn', Password: '123456' },
-    { EmployeeID: 'NV007', Username: 'TTMANH.KHTC', Email: 'ttmanh@hvctqg.edu.vn', Password: '123456' },
-    { EmployeeID: 'NV008', Username: 'DQHUNG.KTGS', Email: 'dqhung@hvctqg.edu.vn', Password: '123456' },
-    { EmployeeID: 'NV009', Username: 'VTLPHUONG.HCTH', Email: 'vtlphuong@hvctqg.edu.vn', Password: '123456' },
+    { EmployeeID: 'NV002', Username: 'HUNG.HV', Email: '', Password: '123456' },
+    { EmployeeID: 'NV003', Username: 'DUAN.VD', Email: '', Password: '123456' },
+    { EmployeeID: 'NV004', Username: 'LUAT.NT', Email: '', Password: '123456' },
+    { EmployeeID: 'NV005', Username: 'VINH.NH', Email: '', Password: '123456' },
+    { EmployeeID: 'NV006', Username: 'THUY.DX', Email: '', Password: '123456' },
+    { EmployeeID: 'NV007', Username: 'MINH.LT', Email: '', Password: '123456' },
+    { EmployeeID: 'NV008', Username: 'PHUONG.NN', Email: '', Password: '123456' },
+    { EmployeeID: 'NV009', Username: 'LINH.HT', Email: '', Password: '123456' },
+    { EmployeeID: 'NV010', Username: 'ANH.NTL', Email: '', Password: '123456' },
+    { EmployeeID: 'NV011', Username: 'TOAN.PT', Email: '', Password: '123456' },
+    { EmployeeID: 'NV012', Username: 'TUNG.LT', Email: '', Password: '123456' },
+    { EmployeeID: 'NV013', Username: 'HA.DH', Email: '', Password: '123456' },
+    { EmployeeID: 'NV014', Username: 'HUNG.NM', Email: '', Password: '123456' },
 ];
 
 /** 

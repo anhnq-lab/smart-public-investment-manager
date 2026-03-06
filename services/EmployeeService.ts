@@ -28,10 +28,27 @@ export class EmployeeService {
             query = query.eq('role', params.filters.role);
         }
 
-        const { data, error } = await query.order('created_at', { ascending: false });
+        const { data, error } = await query;
 
         if (error) throw new Error(`Failed to fetch employees: ${error.message}`);
-        return (data || []).map(dbToEmployee);
+
+        // Sort by position hierarchy
+        const positionOrder: Record<string, number> = {
+            'Quản trị hệ thống': 0,
+            'Trưởng Ban': 1, 'Giám đốc Ban QLDA': 1,
+            'Phó Trưởng Ban': 2,
+            'Kế Toán trưởng': 3, 'Kế toán trưởng': 3,
+            'Chuyên viên chính': 4,
+            'Chuyên viên': 5,
+        };
+        const employees = (data || []).map(dbToEmployee);
+        employees.sort((a, b) => {
+            const oA = positionOrder[a.Position] ?? 99;
+            const oB = positionOrder[b.Position] ?? 99;
+            if (oA !== oB) return oA - oB;
+            return a.FullName.localeCompare(b.FullName, 'vi');
+        });
+        return employees;
     }
 
     /**
