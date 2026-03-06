@@ -18,7 +18,9 @@ import {
   ChevronRight,
   Scale,
   FolderTree,
+  ShieldCheck,
 } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 
 // ========================================
 // SIDEBAR COMPONENT - Design System v2
@@ -58,6 +60,12 @@ const Sidebar: React.FC<SidebarProps> = ({
   onToggleCollapse,
   onClose
 }) => {
+  const { currentUser } = useAuth();
+  const isAdmin = currentUser?.Role === 'Admin';
+
+  const adminItems: NavItem[] = isAdmin ? [
+    { name: 'Quản lý tài khoản', path: '/user-accounts', icon: ShieldCheck },
+  ] : [];
   return (
     <div className={`
             h-full flex flex-col justify-between py-6 bg-white dark:bg-slate-900 border-r border-gray-100 dark:border-slate-800
@@ -83,7 +91,7 @@ const Sidebar: React.FC<SidebarProps> = ({
 
         {/* Navigation */}
         <nav className="space-y-1">
-          {navItems.map((item) => (
+          {[...navItems, ...adminItems].map((item) => (
             <NavLink
               key={item.path}
               to={item.path}

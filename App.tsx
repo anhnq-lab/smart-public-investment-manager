@@ -31,6 +31,7 @@ const Regulations = React.lazy(() => import('./features/regulations/Regulations'
 const LegalDocumentSearch = React.lazy(() => import('./features/legal-documents/LegalDocumentSearch'));
 const Settings = React.lazy(() => import('./features/settings/Settings'));
 const AuditLogViewer = React.lazy(() => import('./features/admin/AuditLogViewer'));
+const UserAccountManager = React.lazy(() => import('./features/admin/UserAccountManager'));
 
 import { ToastProvider } from './components/ui/Toast';
 
@@ -101,6 +102,7 @@ const App: React.FC = () => {
 
                                         {/* Admin */}
                                         <Route path="audit-log" element={<AuditLogViewer />} />
+                                        <Route path="user-accounts" element={<UserAccountManager />} />
 
                                         {/* Settings */}
                                         <Route path="settings" element={<Settings />} />

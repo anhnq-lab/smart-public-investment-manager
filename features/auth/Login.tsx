@@ -46,7 +46,7 @@ const Login: React.FC = () => {
                         )}
 
                         <div className="space-y-2">
-                            <label className="text-sm font-semibold text-gray-700 dark:text-slate-300 ml-1">Tài khoản</label>
+                            <label className="text-sm font-semibold text-gray-700 dark:text-slate-300 ml-1">Tài khoản (Username / Email / SĐT)</label>
                             <div className="relative">
                                 <User className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
                                 <input

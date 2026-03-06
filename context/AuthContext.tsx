@@ -3,6 +3,7 @@ import React, { createContext, useContext, useState, ReactNode, useEffect } from
 import { Employee } from '../types';
 import { supabase } from '../lib/supabase';
 import { validateCredentials } from '../config/authConfig';
+import { UserAccountService } from '../services/UserAccountService';
 
 interface AuthContextType {
     currentUser: Employee | null;
@@ -39,11 +40,28 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    const login = async (username: string, pass: string): Promise<boolean> => {
-        // Validate credentials from authConfig (Bypass in Dev mode for Admin)
-        const isDevBypass = import.meta.env.VITE_DEV_BYPASS_AUTH === 'true' && username === 'Admin';
+    const login = async (identifier: string, pass: string): Promise<boolean> => {
+        // Dev bypass for Admin
+        const isDevBypass = import.meta.env.VITE_DEV_BYPASS_AUTH === 'true' && identifier === 'Admin';
 
-        const employeeId = isDevBypass ? 'ADMIN-DEV' : validateCredentials(username, pass);
+        let employeeId: string | null = null;
+
+        if (isDevBypass) {
+            employeeId = 'ADMIN-DEV';
+        } else {
+            // 1) Try DB-based authentication (username / email / phone)
+            try {
+                employeeId = await UserAccountService.validateLogin(identifier, pass);
+            } catch (err) {
+                console.warn('[Auth] DB validation failed, falling back to config:', err);
+            }
+
+            // 2) Fallback to hardcoded credentials if DB fails
+            if (!employeeId) {
+                employeeId = validateCredentials(identifier, pass);
+            }
+        }
+
         if (!employeeId) return false;
 
         let user: Employee;
@@ -60,7 +78,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
                 AvatarUrl: 'https://ui-avatars.com/api/?name=Admin&background=0D8ABC&color=fff',
                 JoinDate: new Date().toISOString().split('T')[0],
                 Status: 'Active' as any,
-                Username: username,
+                Username: identifier,
                 Password: '',
             };
         } else {
@@ -88,7 +106,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
                 AvatarUrl: data.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(data.full_name)}&background=0D8ABC&color=fff`,
                 JoinDate: data.join_date || '',
                 Status: data.status as any || 'Active',
-                Username: username,
+                Username: identifier,
                 Password: '', // Don't store password
             };
         }

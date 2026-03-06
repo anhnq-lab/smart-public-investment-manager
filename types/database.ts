@@ -1118,6 +1118,50 @@ export type Database = {
                 }
                 Relationships: []
             }
+            user_accounts: {
+                Row: {
+                    created_at: string | null
+                    created_by: string | null
+                    employee_id: string
+                    id: string
+                    is_active: boolean | null
+                    last_login: string | null
+                    password_hash: string
+                    updated_at: string | null
+                    username: string
+                }
+                Insert: {
+                    created_at?: string | null
+                    created_by?: string | null
+                    employee_id: string
+                    id?: string
+                    is_active?: boolean | null
+                    last_login?: string | null
+                    password_hash: string
+                    updated_at?: string | null
+                    username: string
+                }
+                Update: {
+                    created_at?: string | null
+                    created_by?: string | null
+                    employee_id?: string
+                    id?: string
+                    is_active?: boolean | null
+                    last_login?: string | null
+                    password_hash?: string
+                    updated_at?: string | null
+                    username?: string
+                }
+                Relationships: [
+                    {
+                        foreignKeyName: "user_accounts_employee_id_fkey"
+                        columns: ["employee_id"]
+                        isOneToOne: true
+                        referencedRelation: "employees"
+                        referencedColumns: ["employee_id"]
+                    },
+                ]
+            }
         }
         Views: {
             [_ in never]: never
