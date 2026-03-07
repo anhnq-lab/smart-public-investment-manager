@@ -40,11 +40,11 @@ export const ActionMenu: React.FC<ActionMenuProps> = ({ items, className = '' })
                 <MoreVertical className="w-4 h-4" />
             </button>
             {open && (
-                <div className="absolute right-0 top-full mt-1 w-48 bg-white dark:bg-slate-800 rounded-xl shadow-xl border border-gray-100 dark:border-slate-600 py-1 z-50 animate-in fade-in slide-in-from-top-2 duration-200">
+                <div className="absolute right-0 top-full mt-1 w-48 bg-white dark:bg-slate-800 rounded-xl shadow-xl border border-gray-200 dark:border-slate-600 py-1 z-50 animate-in fade-in slide-in-from-top-2 duration-200">
                     {items.map((item, idx) => (
                         <React.Fragment key={idx}>
                             {item.dividerBefore && (
-                                <div className="border-t border-gray-100 dark:border-slate-700 my-1" />
+                                <div className="border-t border-gray-200 dark:border-slate-700 my-1" />
                             )}
                             <button
                                 onClick={() => { item.onClick(); setOpen(false); }}

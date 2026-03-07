@@ -200,9 +200,9 @@ const SubmissionProcessChart = () => {
                             )}
 
                             {/* Content Bubble */}
-                            <div className="ml-6 flex-1 bg-white p-4 rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow relative">
+                            <div className="ml-6 flex-1 bg-white p-4 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow relative">
                                 {/* Triangle pointer */}
-                                <div className="absolute top-6 -left-2 w-4 h-4 bg-white border-l border-b border-gray-100 transform rotate-45"></div>
+                                <div className="absolute top-6 -left-2 w-4 h-4 bg-white border-l border-b border-gray-200 transform rotate-45"></div>
 
                                 <div className="flex justify-between items-start mb-1">
                                     <h5 className="font-bold text-gray-800 text-sm">{step.title}</h5>
@@ -240,7 +240,7 @@ const RelationshipMap = () => {
                     <div className="w-14 h-14 bg-red-50 text-red-600 border border-red-200 rounded-2xl flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform">
                         <Landmark className="w-6 h-6" />
                     </div>
-                    <div className="mt-2 bg-white px-3 py-1 rounded-lg shadow-sm border border-gray-100 text-center">
+                    <div className="mt-2 bg-white px-3 py-1 rounded-lg shadow-sm border border-gray-200 text-center">
                         <p className="text-[10px] font-bold text-gray-800 uppercase">Giám đốc Học viện</p>
                         <p className="text-[8px] text-gray-500">Chỉ đạo & Giám sát</p>
                     </div>
@@ -254,7 +254,7 @@ const RelationshipMap = () => {
                     <div className="w-14 h-14 bg-purple-50 text-purple-600 border border-purple-200 rounded-2xl flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform">
                         <Network className="w-6 h-6" />
                     </div>
-                    <div className="mt-2 bg-white px-3 py-1 rounded-lg shadow-sm border border-gray-100 text-center">
+                    <div className="mt-2 bg-white px-3 py-1 rounded-lg shadow-sm border border-gray-200 text-center">
                         <p className="text-[10px] font-bold text-gray-800 uppercase">Vụ KH-TC</p>
                         <p className="text-[8px] text-gray-500">Thẩm định & Phối hợp</p>
                     </div>
@@ -267,7 +267,7 @@ const RelationshipMap = () => {
                     <div className="w-14 h-14 bg-emerald-50 text-emerald-600 border border-emerald-200 rounded-2xl flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform">
                         <HardHat className="w-6 h-6" />
                     </div>
-                    <div className="mb-2 bg-white px-3 py-1 rounded-lg shadow-sm border border-gray-100 text-center">
+                    <div className="mb-2 bg-white px-3 py-1 rounded-lg shadow-sm border border-gray-200 text-center">
                         <p className="text-[10px] font-bold text-gray-800 uppercase">Nhà thầu / Đối tác</p>
                         <p className="text-[8px] text-gray-500">Hợp đồng kinh tế</p>
                     </div>
@@ -280,7 +280,7 @@ const RelationshipMap = () => {
                     <div className="w-14 h-14 bg-orange-50 text-orange-600 border border-orange-200 rounded-2xl flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform">
                         <Map className="w-6 h-6" />
                     </div>
-                    <div className="mt-2 bg-white px-3 py-1 rounded-lg shadow-sm border border-gray-100 text-center">
+                    <div className="mt-2 bg-white px-3 py-1 rounded-lg shadow-sm border border-gray-200 text-center">
                         <p className="text-[10px] font-bold text-gray-800 uppercase">HV trực thuộc</p>
                         <p className="text-[8px] text-gray-500">Bàn giao & Sử dụng</p>
                     </div>
@@ -343,7 +343,7 @@ const Article2Visual = () => {
     return (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {points.map((p) => (
-                <div key={p.idx} className="relative group h-48 bg-gray-50 rounded-2xl border border-gray-100 overflow-hidden cursor-default shadow-sm hover:shadow-md transition-all">
+                <div key={p.idx} className="relative group h-48 bg-gray-50 rounded-2xl border border-gray-200 overflow-hidden cursor-default shadow-sm hover:shadow-md transition-all">
                     {/* Default State: Summary */}
                     <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center transition-all duration-300 group-hover:opacity-0 group-hover:scale-90">
                         <div className="w-12 h-12 rounded-full bg-white shadow-sm flex items-center justify-center text-xl font-black text-blue-600 mb-4 border border-blue-50">{p.idx}</div>
@@ -415,7 +415,7 @@ const DeptTasksLayout: React.FC<{
                                 onMouseEnter={() => setHoveredTask(task.id)}
                                 className={`p-4 rounded-xl cursor-pointer border-2 transition-all duration-300 flex items-center justify-between group ${hoveredTask === task.id
                                     ? `${c.active} text-white shadow-lg border-transparent scale-105`
-                                    : 'bg-white text-gray-600 hover:bg-gray-50 border-gray-100'
+                                    : 'bg-white text-gray-600 hover:bg-gray-50 border-gray-200'
                                     }`}
                             >
                                 <h5 className="font-bold text-xs uppercase tracking-wide">{task.short}</h5>
@@ -1331,7 +1331,7 @@ const Regulations: React.FC = () => {
 
             {/* LEFT SIDEBAR - NAVIGATION */}
             <div className="w-80 bg-gray-50/50 dark:bg-slate-800/50 border-r border-gray-200 dark:border-slate-700 flex flex-col">
-                <div className="p-5 border-b border-gray-100 dark:border-slate-700 bg-white dark:bg-slate-800">
+                <div className="p-5 border-b border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800">
                     <h2 className="text-lg font-black text-gray-800 dark:text-slate-100 tracking-tight mb-4 flex items-center gap-2">
                         <Gavel className="w-5 h-5 text-blue-600" />
                         Quy chế Nội bộ
@@ -1390,7 +1390,7 @@ const Regulations: React.FC = () => {
             {/* RIGHT CONTENT - DETAILS */}
             <div className="flex-1 flex flex-col bg-white dark:bg-slate-800 overflow-hidden relative">
                 {/* Header */}
-                <div className="h-16 border-b border-gray-100 dark:border-slate-700 flex items-center justify-between px-8 bg-white dark:bg-slate-800 shrink-0 z-10 sticky top-0">
+                <div className="h-16 border-b border-gray-200 dark:border-slate-700 flex items-center justify-between px-8 bg-white dark:bg-slate-800 shrink-0 z-10 sticky top-0">
                     <div>
                         <div className="flex items-center gap-2 text-xs text-gray-400 dark:text-slate-500 mb-1">
                             <span>Hệ thống Quy chế</span>
@@ -1442,7 +1442,7 @@ const Regulations: React.FC = () => {
 
                                     {/* Comments Section */}
                                     {(activeCommentId === article.id) && (
-                                        <div className="mt-6 pt-6 border-t border-gray-100 dark:border-slate-700 animate-in fade-in">
+                                        <div className="mt-6 pt-6 border-t border-gray-200 dark:border-slate-700 animate-in fade-in">
                                             <h4 className="text-xs font-black text-gray-400 uppercase tracking-widest mb-4">Thảo luận nội bộ</h4>
 
                                             <div className="space-y-4 mb-4">

@@ -136,24 +136,52 @@ const ContractorList: React.FC = () => {
                 </button>
             </div>
 
-            {/* Stats Cards */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                {stats.map(stat => (
-                    <div key={stat.label} className="bg-white dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-700 p-4 flex items-center gap-4 shadow-sm">
-                        <div className={`p-3 rounded-xl ${stat.bg}`}>
-                            <stat.icon className={`w-5 h-5 ${stat.color}`} />
+                {stats.map(stat => {
+                    // Map stat.color (e.g. 'text-blue-600') to gradient
+                    const colorMatch = stat.color.match(/text-(\w+)-/);
+                    const colorName = colorMatch ? colorMatch[1] : 'blue';
+                    const gradientMap: Record<string, string> = {
+                        blue: 'from-blue-500 via-blue-600 to-indigo-700',
+                        emerald: 'from-emerald-500 via-emerald-600 to-teal-700',
+                        amber: 'from-amber-500 via-orange-500 to-red-500',
+                        red: 'from-red-500 via-red-600 to-rose-700',
+                        violet: 'from-violet-500 via-violet-600 to-purple-700',
+                        purple: 'from-purple-500 via-purple-600 to-fuchsia-700',
+                    };
+                    const gradient = gradientMap[colorName] || gradientMap.blue;
+                    const ringMap: Record<string, string> = {
+                        blue: 'ring-blue-400/30',
+                        emerald: 'ring-emerald-400/30',
+                        amber: 'ring-amber-400/30',
+                        red: 'ring-red-400/30',
+                        violet: 'ring-violet-400/30',
+                        purple: 'ring-purple-400/30',
+                    };
+                    const ring = ringMap[colorName] || ringMap.blue;
+
+                    return (
+                        <div key={stat.label} className={`relative overflow-hidden rounded-2xl bg-gradient-to-br ${gradient} text-white p-5 shadow-xl ring-1 ${ring} transition-transform hover:scale-[1.02] hover:shadow-2xl duration-300`}>
+                            <div className="absolute -right-3 -top-3 opacity-[0.12]">
+                                <stat.icon className="w-24 h-24" strokeWidth={1.2} />
+                            </div>
+                            <div className="relative z-10 flex items-center gap-4">
+                                <div className="p-3 rounded-xl bg-white/20 shadow-sm">
+                                    <stat.icon className="w-5 h-5 text-white" />
+                                </div>
+                                <div>
+                                    <p className="text-2xl font-black text-white drop-shadow-sm">{stat.value}</p>
+                                    <p className="text-[10px] font-extrabold text-white/90 uppercase tracking-[0.15em]">{stat.label}</p>
+                                </div>
+                            </div>
                         </div>
-                        <div>
-                            <p className="text-2xl font-bold text-gray-800 dark:text-slate-100">{stat.value}</p>
-                            <p className="text-xs text-gray-500 dark:text-slate-400 font-medium">{stat.label}</p>
-                        </div>
-                    </div>
-                ))}
+                    );
+                })}
             </div>
 
             {/* Search Bar + Table */}
-            <div className="bg-white dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-700 shadow-sm overflow-hidden">
-                <div className="p-4 border-b border-gray-100 dark:border-slate-700">
+            <div className="bg-white dark:bg-slate-800 rounded-2xl border border-gray-200 dark:border-slate-700 shadow-sm overflow-hidden">
+                <div className="p-4 border-b border-gray-200 dark:border-slate-700">
                     <div className="relative max-w-sm">
                         <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-slate-500" />
                         <input
@@ -167,16 +195,16 @@ const ContractorList: React.FC = () => {
                 </div>
 
                 {/* Table */}
-                <div className="overflow-x-auto">
+                <div className="overflow-x-auto overflow-y-auto max-h-[calc(100vh-360px)]">
                     <table className="w-full text-left text-sm">
                         <thead>
-                            <tr className="border-b border-gray-100 dark:border-slate-700">
-                                <th className="px-6 py-3.5 text-[10px] font-bold uppercase tracking-wider text-gray-500 dark:text-slate-400">Mã số thuế</th>
-                                <th className="px-6 py-3.5 text-[10px] font-bold uppercase tracking-wider text-gray-500 dark:text-slate-400">Tên nhà thầu</th>
-                                <th className="px-6 py-3.5 text-[10px] font-bold uppercase tracking-wider text-gray-500 dark:text-slate-400">Người đại diện</th>
-                                <th className="px-6 py-3.5 text-[10px] font-bold uppercase tracking-wider text-gray-500 dark:text-slate-400 text-center">Loại hình</th>
-                                <th className="px-6 py-3.5 text-[10px] font-bold uppercase tracking-wider text-gray-500 dark:text-slate-400">Địa chỉ / Liên hệ</th>
-                                <th className="px-6 py-3.5 text-[10px] font-bold uppercase tracking-wider text-gray-500 dark:text-slate-400 text-right">Thao tác</th>
+                            <tr className="table-header-row">
+                                <th className="px-6 py-3.5 text-[10px] font-black uppercase tracking-widest">Mã số thuế</th>
+                                <th className="px-6 py-3.5 text-[10px] font-black uppercase tracking-widest">Tên nhà thầu</th>
+                                <th className="px-6 py-3.5 text-[10px] font-black uppercase tracking-widest">Người đại diện</th>
+                                <th className="px-6 py-3.5 text-[10px] font-black uppercase tracking-widest text-center">Loại hình</th>
+                                <th className="px-6 py-3.5 text-[10px] font-black uppercase tracking-widest">Địa chỉ / Liên hệ</th>
+                                <th className="px-6 py-3.5 text-[10px] font-black uppercase tracking-widest text-right">Thao tác</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-100 dark:divide-slate-700">
@@ -267,7 +295,7 @@ const ContractorList: React.FC = () => {
                 </div>
 
                 {/* Table Footer */}
-                <div className="px-6 py-3 border-t border-gray-100 dark:border-slate-700 text-xs text-gray-500 dark:text-slate-400">
+                <div className="px-6 py-3 border-t border-gray-200 dark:border-slate-700 text-xs text-gray-500 dark:text-slate-400">
                     Hiển thị {filteredContractors.length} / {totalContractors} nhà thầu
                 </div>
             </div>
@@ -275,8 +303,8 @@ const ContractorList: React.FC = () => {
             {/* Add/Edit Modal */}
             {isModalOpen && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-in fade-in duration-200">
-                    <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl w-full max-w-lg border border-gray-100 dark:border-slate-700 animate-in zoom-in-95 duration-200">
-                        <div className="p-6 border-b border-gray-100 dark:border-slate-700 flex justify-between items-center">
+                    <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl w-full max-w-lg border border-gray-200 dark:border-slate-700 animate-in zoom-in-95 duration-200">
+                        <div className="p-6 border-b border-gray-200 dark:border-slate-700 flex justify-between items-center">
                             <h3 className="text-lg font-bold text-gray-800 dark:text-slate-100">
                                 {isEditing ? 'Cập nhật thông tin' : 'Thêm nhà thầu mới'}
                             </h3>
@@ -393,7 +421,7 @@ const ContractorList: React.FC = () => {
                             </div>
 
                             {/* Actions */}
-                            <div className="pt-4 flex justify-end gap-3 border-t border-gray-100 dark:border-slate-700 mt-4">
+                            <div className="pt-4 flex justify-end gap-3 border-t border-gray-200 dark:border-slate-700 mt-4">
                                 <button
                                     type="button"
                                     onClick={() => setIsModalOpen(false)}
@@ -419,7 +447,7 @@ const ContractorList: React.FC = () => {
             {/* Delete Confirmation Modal */}
             {isDeleteConfirmOpen && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-in fade-in duration-200">
-                    <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl w-full max-w-sm border border-gray-100 dark:border-slate-700 p-6 animate-in zoom-in-95 duration-200">
+                    <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl w-full max-w-sm border border-gray-200 dark:border-slate-700 p-6 animate-in zoom-in-95 duration-200">
                         <div className="text-center">
                             <div className="w-12 h-12 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
                                 <Trash2 className="w-6 h-6 text-red-600 dark:text-red-400" />

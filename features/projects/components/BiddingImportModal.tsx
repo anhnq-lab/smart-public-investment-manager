@@ -153,7 +153,7 @@ export const BiddingImportModal: React.FC<BiddingImportModalProps> = ({
                 </div>
 
                 {/* Step Progress */}
-                <div className="flex items-center gap-2 px-6 py-3 bg-gray-50 dark:bg-slate-750 border-b border-gray-100 dark:border-slate-700">
+                <div className="flex items-center gap-2 px-6 py-3 bg-gray-50 dark:bg-slate-750 border-b border-gray-200 dark:border-slate-700">
                     {['upload', 'preview', 'done'].map((s, i) => (
                         <React.Fragment key={s}>
                             {i > 0 && <ChevronRight className="w-4 h-4 text-gray-300 dark:text-slate-600" />}
@@ -296,7 +296,7 @@ export const BiddingImportModal: React.FC<BiddingImportModalProps> = ({
                                         {importResult.packages.map((pkg, idx) => (
                                             <tr
                                                 key={idx}
-                                                className={`border-t border-gray-100 dark:border-slate-700 ${selectedRows.has(idx)
+                                                className={`border-t border-gray-200 dark:border-slate-700 ${selectedRows.has(idx)
                                                     ? 'bg-white dark:bg-slate-800'
                                                     : 'bg-gray-50 dark:bg-slate-850 opacity-50'
                                                     } hover:bg-blue-50 dark:hover:bg-slate-750 transition-colors`}

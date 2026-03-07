@@ -15,26 +15,43 @@ export default {
     theme: {
         extend: {
             colors: {
-                // === SEMANTIC TOKENS ===
+                // === SEMANTIC TOKENS (HCMA Theme) ===
+                // Primary = Vàng cam (UI chủ đạo — giống thanh top bar hcma.vn)
                 primary: {
-                    50: '#d4eaf7',
-                    100: '#b6ccd8',
-                    200: '#71c4ef',
-                    300: '#4db5e8',
-                    400: '#29a3e0',
-                    500: '#00668c', // Main brand
-                    600: '#004d69',
-                    700: '#003a50',
-                    800: '#002837',
-                    900: '#00151e',
+                    50: '#FFFBEB',
+                    100: '#FEF3CD',
+                    200: '#FDDF8B',
+                    300: '#F9C946',
+                    400: '#F99715', // Vàng cam sáng
+                    500: '#EC6710', // Cam đậm — Main brand
+                    600: '#C4560D',
+                    700: '#9C4009',
+                    800: '#7C3308',
+                    900: '#5C2606',
                 },
 
+                // Accent = Đỏ cờ (branding, tiêu đề tổ chức)
                 accent: {
-                    100: '#71c4ef',
-                    200: '#00668c',
-                    light: '#71c4ef',
-                    DEFAULT: '#00668c',
-                    dark: '#004d69',
+                    50: '#fef2f2',
+                    100: '#fde3e3',
+                    200: '#f9b4b6',
+                    300: '#e85457',
+                    400: '#D42A30',
+                    light: '#D42A30',
+                    DEFAULT: '#AE1E23',
+                    dark: '#8B181C',
+                },
+
+                gold: {
+                    50: '#FFFBEB',
+                    100: '#FEF3CD',
+                    200: '#FDDF8B',
+                    300: '#F9C946',
+                    400: '#F99715',
+                    500: '#EC6710',
+                    600: '#C4560D',
+                    700: '#9C4009',
+                    800: '#D4A843',
                 },
 
                 success: {
@@ -100,16 +117,16 @@ export default {
 
                 // === LEGACY OVERRIDES (for backwards compatibility) ===
                 blue: {
-                    50: '#d4eaf7',
-                    100: '#d4eaf7',
-                    200: '#b6ccd8',
-                    300: '#71c4ef',
-                    400: '#71c4ef',
-                    500: '#00668c',
-                    600: '#00668c',
-                    700: '#004d69',
-                    800: '#003a50',
-                    900: '#002837',
+                    50: '#FFFBEB',
+                    100: '#FEF3CD',
+                    200: '#FDDF8B',
+                    300: '#F9C946',
+                    400: '#F99715',
+                    500: '#EC6710',
+                    600: '#EC6710',
+                    700: '#C4560D',
+                    800: '#9C4009',
+                    900: '#7C3308',
                 },
 
                 gray: {
@@ -151,7 +168,8 @@ export default {
             },
 
             fontFamily: {
-                sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+                sans: ['Roboto', 'system-ui', '-apple-system', 'sans-serif'],
+                heading: ['Noto Serif', 'Georgia', 'serif'],
                 mono: ['JetBrains Mono', 'Fira Code', 'monospace'],
             },
 
@@ -186,8 +204,8 @@ export default {
             boxShadow: {
                 'xs': '0 1px 2px 0 rgb(0 0 0 / 0.05)',
                 'soft': '0 2px 8px -2px rgb(0 0 0 / 0.1)',
-                'glow': '0 0 20px rgb(0 102 140 / 0.15)',
-                'glow-lg': '0 0 40px rgb(0 102 140 / 0.2)',
+                'glow': '0 0 20px rgb(249 151 21 / 0.2)',
+                'glow-lg': '0 0 40px rgb(236 103 16 / 0.25)',
                 'inner-sm': 'inset 0 1px 2px 0 rgb(0 0 0 / 0.05)',
                 'button': '0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)',
                 'button-hover': '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)',

@@ -342,7 +342,7 @@ export const BiddingPackageModal: React.FC<BiddingPackageModalProps> = ({
             {/* Modal */}
             <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden animate-scale-in">
                 {/* Header */}
-                <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+                <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
                     <div>
                         <h2 className="text-xl font-bold text-gray-800">
                             {isEditMode ? 'Chỉnh sửa gói thầu' : 'Thêm gói thầu mới'}
@@ -360,7 +360,7 @@ export const BiddingPackageModal: React.FC<BiddingPackageModalProps> = ({
                 </div>
 
                 {/* Tabs */}
-                <div className="flex border-b border-gray-100 px-6">
+                <div className="flex border-b border-gray-200 px-6">
                     {tabs.map(tab => (
                         <button
                             key={tab.id}
@@ -885,7 +885,7 @@ export const BiddingPackageModal: React.FC<BiddingPackageModalProps> = ({
                     </div>
 
                     {/* Footer */}
-                    <div className="flex items-center justify-between px-6 py-4 border-t border-gray-100 bg-gray-50">
+                    <div className="flex items-center justify-between px-6 py-4 border-t border-gray-200 bg-gray-50">
                         <button
                             type="button"
                             onClick={onClose}

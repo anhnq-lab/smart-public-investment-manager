@@ -155,7 +155,7 @@ const TaskList: React.FC = () => {
                         <div className="p-2 bg-white/10 rounded-xl backdrop-blur-sm">
                             <Target className="w-5 h-5 text-white/80" />
                         </div>
-                        <span className="text-xs font-medium text-white/60 uppercase tracking-wider">Tổng công việc</span>
+                        <span className="text-xs font-medium text-white/80 uppercase tracking-wider">Tổng công việc</span>
                     </div>
                     <p className="text-4xl font-black">{stats.total}</p>
                     <div className="mt-3 flex items-center gap-2">
@@ -170,55 +170,59 @@ const TaskList: React.FC = () => {
                 </div>
 
                 {/* In Progress */}
-                <div className="bg-white dark:bg-slate-800 rounded-2xl p-5 border border-blue-100 hover:border-blue-200 transition-colors group cursor-pointer"
+                <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-blue-500 via-blue-600 to-indigo-700 text-white p-5 shadow-xl ring-1 ring-blue-400/30 transition-transform hover:scale-[1.02] hover:shadow-2xl duration-300 cursor-pointer"
                     onClick={() => setFilterStatus(filterStatus === TaskStatus.InProgress ? 'All' : TaskStatus.InProgress)}>
-                    <div className="flex items-center justify-between mb-3">
-                        <div className="p-2 bg-blue-50 rounded-xl group-hover:bg-blue-100 transition-colors">
-                            <TrendingUp className="w-4 h-4 text-blue-600" />
-                        </div>
-                        <ArrowUpRight className="w-4 h-4 text-blue-400 opacity-0 group-hover:opacity-100 transition-opacity" />
+                    <div className="absolute -right-3 -top-3 opacity-[0.12]">
+                        <TrendingUp className="w-24 h-24" strokeWidth={1.2} />
                     </div>
-                    <p className="text-3xl font-black text-blue-600">{stats.inProgress}</p>
-                    <p className="text-xs font-medium text-slate-400 dark:text-slate-500 mt-1">Đang thực hiện</p>
+                    <div className="relative z-10">
+                        <p className="text-[10px] font-extrabold uppercase tracking-[0.2em] text-white/90">Đang thực hiện</p>
+                        <p className="text-3xl font-black mt-2 tracking-tight drop-shadow-sm">{stats.inProgress}</p>
+                    </div>
                 </div>
 
                 {/* Review */}
-                <div className="bg-white dark:bg-slate-800 rounded-2xl p-5 border border-violet-100 hover:border-violet-200 transition-colors group cursor-pointer"
+                <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-violet-500 via-violet-600 to-purple-700 text-white p-5 shadow-xl ring-1 ring-violet-400/30 transition-transform hover:scale-[1.02] hover:shadow-2xl duration-300 cursor-pointer"
                     onClick={() => setFilterStatus(filterStatus === TaskStatus.Review ? 'All' : TaskStatus.Review)}>
-                    <div className="flex items-center justify-between mb-3">
-                        <div className="p-2 bg-violet-50 rounded-xl group-hover:bg-violet-100 transition-colors">
-                            <AlertCircle className="w-4 h-4 text-violet-600" />
-                        </div>
-                        <ArrowUpRight className="w-4 h-4 text-violet-400 opacity-0 group-hover:opacity-100 transition-opacity" />
+                    <div className="absolute -right-3 -top-3 opacity-[0.12]">
+                        <AlertCircle className="w-24 h-24" strokeWidth={1.2} />
                     </div>
-                    <p className="text-3xl font-black text-violet-600">{stats.review}</p>
-                    <p className="text-xs font-medium text-slate-400 dark:text-slate-500 mt-1">Chờ duyệt</p>
+                    <div className="relative z-10">
+                        <p className="text-[10px] font-extrabold uppercase tracking-[0.2em] text-white/90">Chờ duyệt</p>
+                        <p className="text-3xl font-black mt-2 tracking-tight drop-shadow-sm">{stats.review}</p>
+                    </div>
                 </div>
 
                 {/* Done */}
-                <div className="bg-white dark:bg-slate-800 rounded-2xl p-5 border border-emerald-100 hover:border-emerald-200 transition-colors group cursor-pointer"
+                <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-emerald-500 via-emerald-600 to-teal-700 text-white p-5 shadow-xl ring-1 ring-emerald-400/30 transition-transform hover:scale-[1.02] hover:shadow-2xl duration-300 cursor-pointer"
                     onClick={() => setFilterStatus(filterStatus === TaskStatus.Done ? 'All' : TaskStatus.Done)}>
-                    <div className="flex items-center justify-between mb-3">
-                        <div className="p-2 bg-emerald-50 rounded-xl group-hover:bg-emerald-100 transition-colors">
-                            <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                        </div>
-                        <ArrowUpRight className="w-4 h-4 text-emerald-400 opacity-0 group-hover:opacity-100 transition-opacity" />
+                    <div className="absolute -right-3 -top-3 opacity-[0.12]">
+                        <CheckCircle2 className="w-24 h-24" strokeWidth={1.2} />
                     </div>
-                    <p className="text-3xl font-black text-emerald-600">{stats.done}</p>
-                    <p className="text-xs font-medium text-slate-400 dark:text-slate-500 mt-1">Hoàn thành</p>
+                    <div className="relative z-10">
+                        <p className="text-[10px] font-extrabold uppercase tracking-[0.2em] text-white/90">Hoàn thành</p>
+                        <p className="text-3xl font-black mt-2 tracking-tight drop-shadow-sm">{stats.done}</p>
+                    </div>
                 </div>
 
                 {/* Overdue */}
-                <div className="bg-white dark:bg-slate-800 rounded-2xl p-5 border border-red-100 hover:border-red-200 transition-colors group cursor-pointer"
+                <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-red-500 via-red-600 to-rose-700 text-white p-5 shadow-xl ring-1 ring-red-400/30 transition-transform hover:scale-[1.02] hover:shadow-2xl duration-300 cursor-pointer"
                     onClick={() => { /* custom overdue filter logic */ }}>
-                    <div className="flex items-center justify-between mb-3">
-                        <div className="p-2 bg-red-50 rounded-xl group-hover:bg-red-100 transition-colors">
-                            <AlertTriangle className="w-4 h-4 text-red-500" />
-                        </div>
-                        {stats.overdue > 0 && <span className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />}
+                    <div className="absolute -right-3 -top-3 opacity-[0.12]">
+                        <AlertTriangle className="w-24 h-24" strokeWidth={1.2} />
                     </div>
-                    <p className="text-3xl font-black text-red-600">{stats.overdue}</p>
-                    <p className="text-xs font-medium text-slate-400 dark:text-slate-500 mt-1">Quá hạn</p>
+                    {stats.overdue > 0 && (
+                        <div className="absolute top-3 right-3">
+                            <span className="flex h-3 w-3">
+                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-50"></span>
+                                <span className="relative inline-flex rounded-full h-3 w-3 bg-white/70"></span>
+                            </span>
+                        </div>
+                    )}
+                    <div className="relative z-10">
+                        <p className="text-[10px] font-extrabold uppercase tracking-[0.2em] text-white/90">Quá hạn</p>
+                        <p className="text-3xl font-black mt-2 tracking-tight drop-shadow-sm">{stats.overdue}</p>
+                    </div>
                 </div>
             </div>
 
@@ -314,44 +318,47 @@ const TaskList: React.FC = () => {
 
             {/* ══════════ TASK LIST ══════════ */}
             {viewMode === 'list' ? (
-                <div className="space-y-8">
+                <div className="space-y-0">
                     {Object.keys(tasksByProject).length > 0 ? (
-                        Object.entries(tasksByProject).map(([projectId, projectTasks]: [string, Task[]]) => (
-                            <div key={projectId} className="space-y-1">
-                                {/* ── Project Group Header ── */}
-                                <div className="flex items-center gap-3 px-2 py-2 group/header">
-                                    <div className="p-2 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl shadow-sm">
-                                        <Briefcase className="w-4 h-4 text-white" />
-                                    </div>
-                                    <div className="flex-1 min-w-0">
-                                        <h3 className="text-sm font-bold text-slate-800 dark:text-slate-200 truncate">{getProjectName(projectId)}</h3>
-                                        <p className="text-[10px] text-slate-400 dark:text-slate-500 mt-0.5">{projectTasks.length} công việc</p>
-                                    </div>
-                                    <button
-                                        onClick={(e) => { e.stopPropagation(); navigate(`/projects/${projectId}`, { state: { activeTab: 'plan' } }); }}
-                                        className="opacity-0 group-hover/header:opacity-100 transition-all flex items-center gap-1.5 text-xs text-blue-600 bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-lg font-medium"
-                                    >
-                                        <ExternalLink className="w-3 h-3" />
-                                        Xem kế hoạch
-                                    </button>
-                                </div>
-
-                                {/* ── Task Table ── */}
-                                <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm overflow-hidden">
-                                    <table className="w-full">
-                                        <thead>
-                                            <tr className="border-b border-slate-100 dark:border-slate-700">
-                                                <th className="px-4 py-3 text-left text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider w-12"></th>
-                                                <th className="px-4 py-3 text-left text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Công việc</th>
-                                                <th className="px-4 py-3 text-left text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider hidden md:table-cell w-44">Bước thực hiện</th>
-                                                <th className="px-4 py-3 text-center text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider w-24">Tiến độ</th>
-                                                <th className="px-4 py-3 text-left text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider hidden lg:table-cell w-40">Phụ trách</th>
-                                                <th className="px-4 py-3 text-left text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider hidden sm:table-cell w-28">Hạn chót</th>
-                                                <th className="px-4 py-3 text-center text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider w-24">Ưu tiên</th>
-                                                <th className="px-4 py-3 w-20"></th>
+                        <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm overflow-x-auto overflow-y-auto max-h-[calc(100vh-280px)]">
+                            <table className="w-full">
+                                <thead>
+                                    <tr className="table-header-row">
+                                        <th className="px-4 py-3 text-left text-[10px] font-black uppercase tracking-widest w-12"></th>
+                                        <th className="px-4 py-3 text-left text-[10px] font-black uppercase tracking-widest">Công việc</th>
+                                        <th className="px-4 py-3 text-left text-[10px] font-black uppercase tracking-widest hidden md:table-cell w-44">Bước thực hiện</th>
+                                        <th className="px-4 py-3 text-center text-[10px] font-black uppercase tracking-widest w-24">Tiến độ</th>
+                                        <th className="px-4 py-3 text-left text-[10px] font-black uppercase tracking-widest hidden lg:table-cell w-40">Phụ trách</th>
+                                        <th className="px-4 py-3 text-left text-[10px] font-black uppercase tracking-widest hidden sm:table-cell w-28">Hạn chót</th>
+                                        <th className="px-4 py-3 text-center text-[10px] font-black uppercase tracking-widest w-24">Ưu tiên</th>
+                                        <th className="px-4 py-3 w-20"></th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-slate-50 dark:divide-slate-700">
+                                    {Object.entries(tasksByProject).map(([projectId, projectTasks]: [string, Task[]]) => (
+                                        <React.Fragment key={projectId}>
+                                            {/* ── Project Group Separator ── */}
+                                            <tr className="bg-slate-50/80 dark:bg-slate-700/30 border-t-2 border-slate-200 dark:border-slate-600">
+                                                <td colSpan={8} className="px-4 py-2.5">
+                                                    <div className="flex items-center gap-3">
+                                                        <div className="p-1.5 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg shadow-sm">
+                                                            <Briefcase className="w-3.5 h-3.5 text-white" />
+                                                        </div>
+                                                        <div className="flex-1 min-w-0">
+                                                            <h3 className="text-xs font-bold text-slate-800 dark:text-slate-200 truncate">{getProjectName(projectId)}</h3>
+                                                            <p className="text-[10px] text-slate-400 dark:text-slate-500">{projectTasks.length} công việc</p>
+                                                        </div>
+                                                        <button
+                                                            onClick={(e) => { e.stopPropagation(); navigate(`/projects/${projectId}`, { state: { activeTab: 'plan' } }); }}
+                                                            className="flex items-center gap-1.5 text-xs text-blue-600 bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-lg font-medium transition-colors"
+                                                        >
+                                                            <ExternalLink className="w-3 h-3" />
+                                                            Xem kế hoạch
+                                                        </button>
+                                                    </div>
+                                                </td>
                                             </tr>
-                                        </thead>
-                                        <tbody className="divide-y divide-slate-50 dark:divide-slate-700">
+                                            {/* ── Tasks for this project ── */}
                                             {projectTasks.map(task => {
                                                 const assignee = getAssignee(task.AssigneeID);
                                                 const priorityInfo = getPriorityInfo(task.Priority);
@@ -480,11 +487,11 @@ const TaskList: React.FC = () => {
                                                     </tr>
                                                 );
                                             })}
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        ))
+                                        </React.Fragment>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
                     ) : (
                         <div className="text-center py-16 bg-white dark:bg-slate-800 rounded-2xl border border-dashed border-slate-200 dark:border-slate-700">
                             <div className="w-14 h-14 bg-slate-50 dark:bg-slate-700 rounded-2xl flex items-center justify-center mx-auto mb-4">

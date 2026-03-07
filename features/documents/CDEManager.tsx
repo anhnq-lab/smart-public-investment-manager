@@ -71,7 +71,7 @@ export const CDEManager: React.FC<CDEManagerProps> = ({ projectId, projectCode }
         if (children.length === 0) return null;
 
         return (
-            <div className={`space-y-1 ${level > 0 ? 'ml-4 border-l border-gray-100 dark:border-slate-700 pl-2' : ''}`}>
+            <div className={`space-y-1 ${level > 0 ? 'ml-4 border-l border-gray-200 dark:border-slate-700 pl-2' : ''}`}>
                 {children.map(folder => {
                     const isActive = folder.FolderID === activeFolderId;
                     const hasChildren = folders.some(f => f.ParentID === folder.FolderID);
@@ -110,7 +110,7 @@ export const CDEManager: React.FC<CDEManagerProps> = ({ projectId, projectCode }
             </div>
 
             <div className="flex-1 flex flex-col bg-white dark:bg-slate-800 overflow-hidden">
-                <div className="px-6 py-4 border-b border-gray-100 dark:border-slate-700 flex justify-between items-center">
+                <div className="px-6 py-4 border-b border-gray-200 dark:border-slate-700 flex justify-between items-center">
                     <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-slate-400">
                         {breadcrumbs.map((f, i) => (
                             <React.Fragment key={f.FolderID}>
@@ -143,9 +143,9 @@ export const CDEManager: React.FC<CDEManagerProps> = ({ projectId, projectCode }
                         </div>
                     ) : (
                         viewMode === 'list' ? (
-                            <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-100 dark:border-slate-700 shadow-sm overflow-hidden">
+                            <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 shadow-sm overflow-hidden">
                                 <table className="w-full text-left text-sm">
-                                    <thead className="bg-gray-50/80 dark:bg-slate-700/50 text-gray-500 dark:text-slate-400 font-bold text-[11px] uppercase border-b border-gray-100 dark:border-slate-700">
+                                    <thead className="bg-gray-50/80 dark:bg-slate-700/50 text-gray-500 dark:text-slate-400 font-bold text-[11px] uppercase border-b border-gray-200 dark:border-slate-700">
                                         <tr>
                                             <th className="px-5 py-3 w-10"></th>
                                             <th className="px-5 py-3">Tên tài liệu</th>
@@ -189,7 +189,7 @@ export const CDEManager: React.FC<CDEManagerProps> = ({ projectId, projectCode }
                         ) : (
                             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                                 {documents.map(doc => (
-                                    <div key={doc.DocID} onClick={() => setSelectedDoc(doc)} className={`bg-white dark:bg-slate-800 p-4 rounded-xl border hover:shadow-md transition-all cursor-pointer flex flex-col items-center text-center gap-3 ${selectedDoc?.DocID === doc.DocID ? 'border-blue-400 ring-2 ring-blue-100 dark:ring-blue-900/50' : 'border-gray-100 dark:border-slate-700'}`}>
+                                    <div key={doc.DocID} onClick={() => setSelectedDoc(doc)} className={`bg-white dark:bg-slate-800 p-4 rounded-xl border hover:shadow-md transition-all cursor-pointer flex flex-col items-center text-center gap-3 ${selectedDoc?.DocID === doc.DocID ? 'border-blue-400 ring-2 ring-blue-100 dark:ring-blue-900/50' : 'border-gray-200 dark:border-slate-700'}`}>
                                         <div className="w-16 h-16 bg-gray-50 dark:bg-slate-700 rounded-2xl flex items-center justify-center text-gray-400">
                                             {doc.DocName.endsWith('.pdf') ? <FileText className="w-8 h-8 text-red-500" /> : <FileText className="w-8 h-8 text-blue-500" />}
                                         </div>
@@ -214,13 +214,13 @@ export const CDEManager: React.FC<CDEManagerProps> = ({ projectId, projectCode }
 
             {selectedDoc && (
                 <div className="w-[360px] bg-white dark:bg-slate-800 border-l border-gray-200 dark:border-slate-700 flex flex-col shadow-xl animate-in slide-in-from-right-4 duration-300 relative z-10">
-                    <div className="p-4 border-b border-gray-100 dark:border-slate-700 flex justify-between items-center bg-gray-50 dark:bg-slate-800/80">
+                    <div className="p-4 border-b border-gray-200 dark:border-slate-700 flex justify-between items-center bg-gray-50 dark:bg-slate-800/80">
                         <span className="text-xs font-black text-gray-500 dark:text-slate-400 uppercase tracking-widest">PHÊ DUYỆT HỒ SƠ</span>
                         <button onClick={() => setSelectedDoc(null)} className="text-gray-400 hover:text-red-500"><X className="w-5 h-5" /></button>
                     </div>
 
                     <div className="flex-1 overflow-y-auto p-5 space-y-6">
-                        <div className="flex items-start gap-3 pb-4 border-b border-gray-100 dark:border-slate-700">
+                        <div className="flex items-start gap-3 pb-4 border-b border-gray-200 dark:border-slate-700">
                             <div className="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center text-blue-600 shrink-0 shadow-inner">
                                 <FileText className="w-6 h-6" />
                             </div>

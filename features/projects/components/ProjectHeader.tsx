@@ -41,7 +41,7 @@ export const ProjectHeader: React.FC<ProjectHeaderProps> = ({ project, onSync, i
     const progress = project.Progress || 0;
 
     return (
-        <div className="bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-800 rounded-2xl shadow-sm overflow-hidden">
+        <div className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-2xl shadow-sm overflow-hidden">
             {/* Top section - Header */}
             <div className="px-6 py-6 border-b border-gray-50 dark:border-slate-800/50">
                 <div className="flex flex-wrap items-start justify-between gap-4">
@@ -91,7 +91,7 @@ export const ProjectHeader: React.FC<ProjectHeaderProps> = ({ project, onSync, i
                                     {groupBadge.label}
                                 </span>
                                 {/* Budget */}
-                                <span className="text-xs font-bold text-gray-700 dark:text-slate-300 bg-gray-50 dark:bg-slate-800 px-2 py-0.5 rounded-md border border-gray-100 dark:border-slate-700">
+                                <span className="text-xs font-bold text-gray-700 dark:text-slate-300 bg-gray-50 dark:bg-slate-800 px-2 py-0.5 rounded-md border border-gray-200 dark:border-slate-700">
                                     {formatShortCurrency(project.TotalInvestment)}
                                 </span>
                             </div>

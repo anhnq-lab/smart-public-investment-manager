@@ -313,7 +313,7 @@ export const LifecycleStepper: React.FC<LifecycleStepperProps> = ({
                                 const stageConfig = STAGES.find(s => s.key === entry.stage);
                                 const Icon = stageConfig?.icon || Circle;
                                 return (
-                                    <div key={idx} className="flex items-center gap-3 p-3 bg-white dark:bg-slate-700 rounded-lg border border-gray-100 dark:border-slate-600 hover:shadow-sm transition-shadow">
+                                    <div key={idx} className="flex items-center gap-3 p-3 bg-white dark:bg-slate-700 rounded-lg border border-gray-200 dark:border-slate-600 hover:shadow-sm transition-shadow">
                                         <div className="w-8 h-8 rounded-lg bg-blue-50 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-blue-400">
                                             <Icon className="w-4 h-4" />
                                         </div>
@@ -342,7 +342,7 @@ export const LifecycleStepper: React.FC<LifecycleStepperProps> = ({
             {showTransitionModal && (
                 <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 animate-in fade-in duration-200">
                     <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full max-w-md m-4 animate-in zoom-in-95 duration-200">
-                        <div className="p-5 border-b border-gray-100 dark:border-slate-700 flex items-center justify-between">
+                        <div className="p-5 border-b border-gray-200 dark:border-slate-700 flex items-center justify-between">
                             <h3 className="text-lg font-black text-gray-800 dark:text-slate-100">Chuyển giai đoạn dự án</h3>
                             <button
                                 onClick={() => setShowTransitionModal(false)}
@@ -425,7 +425,7 @@ export const LifecycleStepper: React.FC<LifecycleStepperProps> = ({
                             </div>
                         </div>
 
-                        <div className="p-5 border-t border-gray-100 dark:border-slate-700 flex gap-3">
+                        <div className="p-5 border-t border-gray-200 dark:border-slate-700 flex gap-3">
                             <button
                                 onClick={() => setShowTransitionModal(false)}
                                 className="flex-1 py-2.5 border border-gray-200 dark:border-slate-600 text-gray-700 dark:text-slate-300 font-bold rounded-xl text-sm hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors"

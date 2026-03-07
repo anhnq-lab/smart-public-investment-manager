@@ -34,17 +34,34 @@ export const HighlightText: React.FC<{ text: string; query: string }> = ({ text,
 // ============================================
 // STAT CARD
 // ============================================
-export const StatCard: React.FC<{ label: string; value: number; color: string; icon: React.ElementType }> = ({ label, value, color, icon: Icon }) => (
-    <div className={`flex items-center gap-3 px-4 py-3 rounded-2xl border ${color} transition-all hover:shadow-sm`}>
-        <div className="p-2 rounded-xl bg-white/80 dark:bg-slate-800/80 shadow-sm">
-            <Icon className="w-4 h-4" />
+export const StatCard: React.FC<{ label: string; value: number; color: string; icon: React.ElementType }> = ({ label, value, color, icon: Icon }) => {
+    // Map inline color classes to gradient — color prop is like 'bg-gray-50 dark:bg-slate-800 ...'
+    // Detect the main color from the class string
+    const colorMatch = color.match(/(?:text|bg)-(\w+)-/);
+    const colorName = colorMatch ? colorMatch[1] : 'blue';
+    const gradientMap: Record<string, string> = {
+        gray: 'from-slate-600 via-slate-700 to-slate-800',
+        indigo: 'from-indigo-500 via-indigo-600 to-violet-700',
+        emerald: 'from-emerald-500 via-emerald-600 to-teal-700',
+        blue: 'from-blue-500 via-blue-600 to-indigo-700',
+    };
+    const gradient = gradientMap[colorName] || gradientMap.blue;
+
+    return (
+        <div className={`relative overflow-hidden flex items-center gap-3 px-4 py-3 rounded-2xl bg-gradient-to-br ${gradient} text-white shadow-xl ring-1 ring-white/10 transition-transform hover:scale-[1.02] hover:shadow-2xl duration-300`}>
+            <div className="absolute -right-3 -top-3 opacity-[0.12]">
+                <Icon className="w-20 h-20" strokeWidth={1.2} />
+            </div>
+            <div className="p-2 rounded-xl bg-white/20 shadow-sm relative z-10">
+                <Icon className="w-4 h-4 text-white" />
+            </div>
+            <div className="relative z-10">
+                <p className="text-2xl font-black tracking-tight text-white drop-shadow-sm">{value}</p>
+                <p className="text-[10px] font-extrabold uppercase tracking-[0.15em] text-white/90">{label}</p>
+            </div>
         </div>
-        <div>
-            <p className="text-2xl font-black tracking-tight">{value}</p>
-            <p className="text-[10px] font-bold uppercase tracking-widest opacity-70">{label}</p>
-        </div>
-    </div>
-);
+    );
+};
 
 // ============================================
 // DOCUMENT CARD (SIDEBAR)
@@ -108,7 +125,7 @@ export const DeepSearchResult: React.FC<{
 }> = ({ result, query, onNavigate }) => (
     <button
         onClick={() => onNavigate(result.docId, result.chapterId)}
-        className="w-full text-left p-3 rounded-xl border border-gray-100 dark:border-slate-700 hover:bg-indigo-50/50 dark:hover:bg-indigo-900/10 transition-all group"
+        className="w-full text-left p-3 rounded-xl border border-gray-200 dark:border-slate-700 hover:bg-indigo-50/50 dark:hover:bg-indigo-900/10 transition-all group"
     >
         <div className="flex items-center gap-2 mb-1">
             <span className="text-[9px] font-black uppercase tracking-wider text-indigo-500 bg-indigo-50 dark:bg-indigo-900/30 px-1.5 py-0.5 rounded">{result.docTitle}</span>

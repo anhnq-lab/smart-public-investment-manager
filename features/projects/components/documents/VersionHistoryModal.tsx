@@ -21,7 +21,7 @@ export const VersionHistoryModal: React.FC<VersionHistoryModalProps> = ({ doc, o
     return (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
             <div className="bg-white dark:bg-slate-800 w-full max-w-2xl rounded-2xl shadow-2xl overflow-hidden">
-                <div className="p-5 border-b border-gray-100 dark:border-slate-700 flex justify-between items-center bg-gradient-to-r from-gray-50 to-white dark:from-slate-700 dark:to-slate-800">
+                <div className="p-5 border-b border-gray-200 dark:border-slate-700 flex justify-between items-center bg-gradient-to-r from-gray-50 to-white dark:from-slate-700 dark:to-slate-800">
                     <div className="min-w-0">
                         <h3 className="text-base font-bold text-gray-800 dark:text-slate-100 flex items-center gap-2">
                             <History className="w-5 h-5 text-amber-500" /> Lịch sử phiên bản
@@ -64,7 +64,7 @@ export const VersionHistoryModal: React.FC<VersionHistoryModalProps> = ({ doc, o
                         </div>
                     )}
                 </div>
-                <div className="p-4 bg-gray-50 dark:bg-slate-700 border-t border-gray-100 dark:border-slate-600 text-right">
+                <div className="p-4 bg-gray-50 dark:bg-slate-700 border-t border-gray-200 dark:border-slate-600 text-right">
                     <button onClick={onClose} className="px-4 py-2 bg-white dark:bg-slate-600 border border-gray-200 dark:border-slate-500 rounded-lg text-sm font-medium hover:bg-gray-50 dark:hover:bg-slate-500 transition-colors dark:text-slate-200">
                         Đóng
                     </button>

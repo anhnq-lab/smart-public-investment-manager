@@ -52,24 +52,26 @@ export const KeyMetricsHeader: React.FC<KeyMetricsHeaderProps> = ({
             {metrics.map((metric, idx) => (
                 <div
                     key={idx}
-                    className={`bg-gradient-to-br ${metric.bgGradient} dark:from-slate-800 dark:to-slate-800 rounded-xl p-5 border border-gray-100 dark:border-slate-700 shadow-sm hover:shadow-md transition-shadow`}
+                    className={`relative overflow-hidden bg-gradient-to-br ${metric.gradient} rounded-2xl p-5 shadow-xl ring-1 ring-white/10 hover:scale-[1.02] hover:shadow-2xl transition-all duration-200 cursor-default`}
                 >
-                    <div className="flex items-start justify-between">
+                    {/* Icon watermark */}
+                    <metric.icon className="absolute -right-3 -top-3 w-20 h-20 text-white opacity-[0.12]" />
+                    <div className="relative z-10 flex items-start justify-between">
                         <div className="flex-1">
-                            <p className="text-xs font-semibold text-gray-500 dark:text-slate-400 uppercase tracking-wide mb-1">
+                            <p className="text-[10px] font-extrabold uppercase tracking-[0.15em] text-white/90 mb-1">
                                 {metric.label}
                             </p>
-                            <p className={`text-2xl font-bold bg-gradient-to-r ${metric.gradient} bg-clip-text text-transparent dark:text-slate-100 dark:bg-none tabular-nums`}>
+                            <p className="text-2xl font-black tracking-tight text-white drop-shadow-sm tabular-nums">
                                 {metric.value}
                             </p>
                             {metric.subValue && (
-                                <p className="text-sm text-gray-500 dark:text-slate-400 mt-1">
+                                <p className="text-sm text-white/80 mt-1">
                                     {metric.subValue} tổng mức
                                 </p>
                             )}
                         </div>
-                        <div className={`w-10 h-10 rounded-lg ${metric.iconBg} flex items-center justify-center`}>
-                            <metric.icon className="w-5 h-5" />
+                        <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center">
+                            <metric.icon className="w-5 h-5 text-white" />
                         </div>
                     </div>
                 </div>

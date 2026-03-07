@@ -40,24 +40,22 @@ export const BudgetVarianceCard: React.FC<BudgetVarianceProps> = ({
     };
 
     return (
-        <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 overflow-hidden">
+        <div className="section-card">
             {/* Header */}
-            <div className="px-5 py-3 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950 dark:to-indigo-950 border-b border-gray-100 dark:border-slate-700">
-                <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                        <DollarSign className="w-4 h-4 text-blue-600" />
-                        <h3 className="font-bold text-gray-800 dark:text-slate-200 text-xs uppercase">Phân tích ngân sách</h3>
-                    </div>
-                    {momChange !== null && (
-                        <div className={`flex items-center gap-1 text-xs font-bold ${momChange > 0 ? 'text-emerald-600' : momChange < 0 ? 'text-red-600' : 'text-gray-500'
-                            }`}>
-                            {momChange > 0 ? <TrendingUp className="w-3 h-3" /> :
-                                momChange < 0 ? <TrendingDown className="w-3 h-3" /> :
-                                    <Minus className="w-3 h-3" />}
-                            {momChange > 0 ? '+' : ''}{formatCurrency(momChange)} so với tháng trước
-                        </div>
-                    )}
+            <div className="section-card-header">
+                <div className="flex items-center gap-2">
+                    <div className="section-icon"><DollarSign className="w-3.5 h-3.5" /></div>
+                    <span>Phân tích ngân sách</span>
                 </div>
+                {momChange !== null && (
+                    <div className={`flex items-center gap-1 text-xs font-bold ${momChange > 0 ? 'text-emerald-600' : momChange < 0 ? 'text-red-600' : 'text-gray-500'
+                        }`}>
+                        {momChange > 0 ? <TrendingUp className="w-3 h-3" /> :
+                            momChange < 0 ? <TrendingDown className="w-3 h-3" /> :
+                                <Minus className="w-3 h-3" />}
+                        {momChange > 0 ? '+' : ''}{formatCurrency(momChange)} so với tháng trước
+                    </div>
+                )}
             </div>
 
             {/* Content */}

@@ -153,7 +153,7 @@ export const BiddingPackageDetail: React.FC<BiddingPackageDetailProps> = ({
             {/* Modal - Full width */}
             <div className="relative bg-white dark:bg-slate-900 rounded-2xl shadow-2xl w-full max-w-6xl max-h-[95vh] overflow-hidden animate-scale-in flex flex-col">
                 {/* Header with Package Info */}
-                <div className="shrink-0 px-6 py-4 border-b border-gray-100 dark:border-slate-700 bg-gradient-to-r from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-800 dark:via-slate-800 dark:to-slate-800">
+                <div className="shrink-0 px-6 py-4 border-b border-gray-200 dark:border-slate-700 bg-gradient-to-r from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-800 dark:via-slate-800 dark:to-slate-800">
                     <div className="flex items-start justify-between">
                         <div className="flex-1">
                             <button
@@ -250,7 +250,7 @@ export const BiddingPackageDetail: React.FC<BiddingPackageDetailProps> = ({
                 </div>
 
                 {/* Tabs - 4 Lifecycle Groups */}
-                <div className="shrink-0 flex border-b border-gray-100 dark:border-slate-700 px-6 bg-gray-50 dark:bg-slate-800">
+                <div className="shrink-0 flex border-b border-gray-200 dark:border-slate-700 px-6 bg-gray-50 dark:bg-slate-800">
                     {tabs.map(tab => {
                         const tabHasProgress = tab.stages.some(s => actualStage >= s);
                         return (
@@ -285,7 +285,7 @@ export const BiddingPackageDetail: React.FC<BiddingPackageDetailProps> = ({
                                     <InfoRow label="Mã KHLCNT" value={pkg.KHLCNTCode ? <span className="font-mono">{pkg.KHLCNTCode}</span> : '-'} />
                                     <InfoRow label="QĐ phê duyệt KHLCNT" value={pkg.DecisionNumber || '-'} />
                                     <InfoRow label="Ngày phê duyệt" value={pkg.DecisionDate ? formatDate(pkg.DecisionDate) : '-'} />
-                                    <div className="border-t border-gray-100 my-2" />
+                                    <div className="border-t border-gray-200 my-2" />
                                     <InfoRow label="Giá gói thầu" value={<span className="font-bold text-gray-900 dark:text-slate-100">{formatCurrency(pkg.Price)}</span>} />
                                     <InfoRow label="Nguồn vốn" value={pkg.FundingSource || 'Ngân sách Nhà nước'} />
                                     <InfoRow label="Thời gian thực hiện" value={pkg.Duration || '-'} />
@@ -339,7 +339,7 @@ export const BiddingPackageDetail: React.FC<BiddingPackageDetailProps> = ({
                                     <InfoRow label="Tùy chọn mua thêm" value={pkg.HasOption ? 'Có' : 'Không'} />
                                     {pkg.PlanGroupName && (
                                         <>
-                                            <div className="border-t border-gray-100 dark:border-slate-700 my-2" />
+                                            <div className="border-t border-gray-200 dark:border-slate-700 my-2" />
                                             <InfoRow label="Nhóm KH" value={<span className="font-medium text-indigo-600 dark:text-indigo-400">{pkg.PlanGroupName}</span>} />
                                             {pkg.PlanDecisionNumber && <InfoRow label="QĐ phê duyệt KH" value={pkg.PlanDecisionNumber} />}
                                             {pkg.PlanDecisionDate && <InfoRow label="Ngày QĐ" value={formatDate(pkg.PlanDecisionDate)} />}
@@ -384,7 +384,7 @@ export const BiddingPackageDetail: React.FC<BiddingPackageDetailProps> = ({
                                                     </div>
                                                 ))}
                                                 {/* MSC Links */}
-                                                <div className="flex gap-2 mt-3 pt-2 border-t border-gray-100 dark:border-slate-700">
+                                                <div className="flex gap-2 mt-3 pt-2 border-t border-gray-200 dark:border-slate-700">
                                                     {pkg.MSCPlanCode && (
                                                         <a href={getMSCPlanLink(pkg.MSCPlanCode)} target="_blank" rel="noopener noreferrer"
                                                             className="inline-flex items-center gap-1 px-2 py-1 text-[10px] font-mono text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 rounded hover:bg-blue-100 dark:hover:bg-blue-900/50">
@@ -420,7 +420,7 @@ export const BiddingPackageDetail: React.FC<BiddingPackageDetailProps> = ({
                                 <SectionCard title="Kết quả lựa chọn nhà thầu" icon={Award} color="green">
                                     <WinningContractorSelector packageId={pkg.PackageID} />
                                     {pkg.WinningPrice ? (
-                                        <div className="mt-3 pt-3 border-t border-gray-100 dark:border-slate-700">
+                                        <div className="mt-3 pt-3 border-t border-gray-200 dark:border-slate-700">
                                             <InfoRow label="Giá trúng thầu" value={<span className="font-bold text-green-600 dark:text-green-400">{formatCurrency(pkg.WinningPrice)}</span>} />
                                             <InfoRow label="Tiết kiệm" value={savings > 0 ? <span className="text-blue-600 dark:text-blue-400">{formatCurrency(savings)} ({savingsPercent}%)</span> : '-'} />
                                             <InfoRow label="Ngày phê duyệt KQLCNT" value={pkg.ApprovalDate_Result ? formatDate(pkg.ApprovalDate_Result) : '-'} />

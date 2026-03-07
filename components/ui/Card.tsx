@@ -19,7 +19,7 @@ export interface CardProps {
 
 const variantStyles: Record<CardVariant, string> = {
     default: `
-        bg-white border border-gray-100 shadow-card
+        bg-white border border-gray-200 shadow-card
     `,
     outlined: `
         bg-white border-2 border-gray-200
@@ -31,7 +31,7 @@ const variantStyles: Record<CardVariant, string> = {
         bg-white/70 backdrop-blur-xl border border-white/30 shadow-lg
     `,
     gradient: `
-        bg-gradient-to-br from-white to-gray-50 border border-gray-100 shadow-card
+        bg-gradient-to-br from-white to-gray-50 border border-gray-200 shadow-card
     `,
 };
 
@@ -169,7 +169,7 @@ export const CardFooter: React.FC<CardFooterProps> = ({
     return (
         <div className={`
             mt-4 pt-4 
-            ${divider ? 'border-t border-gray-100' : ''} 
+            ${divider ? 'border-t border-gray-200' : ''} 
             ${className}
         `}>
             {children}
@@ -206,32 +206,52 @@ export const StatCard: React.FC<StatCardProps> = ({
     iconColor = 'text-primary-600',
     className = '',
 }) => {
+    // Extract color name from iconColor prop (e.g., 'text-blue-600' -> 'blue')
+    const colorMatch = iconColor.match(/text-(\w+)-/);
+    const colorName = colorMatch ? colorMatch[1] : 'blue';
+
+    // Gradient mapping based on color
+    const gradientMap: Record<string, string> = {
+        blue: 'from-blue-500 via-blue-600 to-indigo-700',
+        primary: 'from-blue-500 via-blue-600 to-indigo-700',
+        indigo: 'from-indigo-500 via-indigo-600 to-violet-700',
+        emerald: 'from-emerald-500 via-emerald-600 to-teal-700',
+        green: 'from-emerald-500 via-emerald-600 to-teal-700',
+        amber: 'from-amber-500 via-orange-500 to-red-500',
+        orange: 'from-orange-500 via-orange-600 to-red-600',
+        red: 'from-red-500 via-red-600 to-rose-700',
+        violet: 'from-violet-500 via-violet-600 to-purple-700',
+        purple: 'from-purple-500 via-purple-600 to-fuchsia-700',
+        rose: 'from-rose-500 via-rose-600 to-pink-700',
+    };
+
+    const gradient = gradientMap[colorName] || gradientMap.blue;
+
     return (
-        <Card
-            hover
-            className={`relative overflow-hidden group h-36 ${className}`}
+        <div
+            className={`relative overflow-hidden rounded-2xl bg-gradient-to-br ${gradient} text-white p-5 shadow-xl ring-1 ring-white/10 transition-transform hover:scale-[1.02] hover:shadow-2xl duration-300 h-36 ${className}`}
         >
             {/* Background Icon */}
             {Icon && (
-                <div className={`absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity transform group-hover:scale-110 ${iconColor}`}>
-                    <Icon className="w-24 h-24" />
+                <div className="absolute -right-3 -top-3 opacity-[0.12]">
+                    <Icon className="w-24 h-24" strokeWidth={1.2} />
                 </div>
             )}
 
-            <div className="relative z-10 h-full flex flex-col justify-between">
+            <div className="relative z-10 h-full flex flex-col justify-center gap-2">
                 {/* Header */}
                 <div className="flex justify-between items-start">
                     {Icon && (
-                        <div className={`p-2.5 rounded-xl ${iconBgColor} border border-white/50 shadow-sm`}>
-                            <Icon className={`w-5 h-5 ${iconColor}`} />
+                        <div className="p-2.5 rounded-xl bg-white/20 shadow-sm">
+                            <Icon className="w-5 h-5 text-white" />
                         </div>
                     )}
                     {trend && !loading && (
                         <span className={`
-                            flex items-center gap-1 text-[10px] font-bold px-2 py-1 rounded-full border
+                            flex items-center gap-1 text-[10px] font-bold px-2 py-1 rounded-full
                             ${trendUp
-                                ? 'bg-success-50 text-success-600 border-success-100'
-                                : 'bg-danger-50 text-danger-600 border-danger-100'
+                                ? 'bg-white/20 text-white'
+                                : 'bg-white/20 text-white'
                             }
                         `}>
                             <svg
@@ -250,23 +270,23 @@ export const StatCard: React.FC<StatCardProps> = ({
                 {/* Content */}
                 <div>
                     {loading ? (
-                        <div className="h-8 w-24 bg-gray-200 rounded animate-pulse my-1" />
+                        <div className="h-8 w-24 bg-white/20 rounded animate-pulse my-1" />
                     ) : (
-                        <h3 className="text-2xl font-black text-gray-800 tracking-tight my-1">
+                        <h3 className="text-2xl font-black text-white tracking-tight my-1 drop-shadow-sm">
                             {value}
                         </h3>
                     )}
-                    <p className="text-xs font-bold text-gray-500 uppercase tracking-wide">
+                    <p className="text-[10px] font-extrabold text-white/90 uppercase tracking-[0.15em]">
                         {title}
                     </p>
                     {description && (
-                        <p className="text-[10px] text-gray-400 mt-1 font-medium">
+                        <p className="text-[10px] text-white/70 mt-1 font-medium">
                             {description}
                         </p>
                     )}
                 </div>
             </div>
-        </Card>
+        </div>
     );
 };
 

@@ -343,7 +343,7 @@ export const WinningContractorSelector: React.FC<WinningContractorSelectorProps>
 
             {/* Actions */}
             {(members.length > 0 || existingMembers && existingMembers.length > 0) && (
-                <div className="flex items-center justify-end gap-2 pt-2 border-t border-gray-100 dark:border-slate-700">
+                <div className="flex items-center justify-end gap-2 pt-2 border-t border-gray-200 dark:border-slate-700">
                     {isEditing && (
                         <button
                             onClick={() => {

@@ -40,7 +40,7 @@ export const LegalDetail: React.FC<LegalDetailProps> = ({
 }) => {
     if (!selectedDoc) {
         return (
-            <div className="flex-1 flex flex-col items-center justify-center p-8 bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-gray-100 dark:border-slate-700">
+            <div className="flex-1 flex flex-col items-center justify-center p-8 bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-gray-200 dark:border-slate-700">
                 <Scale className="w-16 h-16 text-gray-200 dark:text-slate-700 mb-4" />
                 <h3 className="text-lg font-bold text-gray-400 dark:text-slate-500">Chọn văn bản để xem chi tiết</h3>
                 <p className="text-sm text-gray-300 dark:text-slate-600 mt-1">Sử dụng thanh tìm kiếm hoặc bộ lọc bên trên</p>
@@ -55,7 +55,7 @@ export const LegalDetail: React.FC<LegalDetailProps> = ({
     return (
         <div className="flex-1 flex flex-col h-full">
             {/* Document Header */}
-            <div className="px-8 py-4 border-b border-gray-100 dark:border-slate-700 bg-gradient-to-r from-gray-50/80 to-white dark:from-slate-800/80 dark:to-slate-800 shrink-0">
+            <div className="px-8 py-4 border-b border-gray-200 dark:border-slate-700 bg-gradient-to-r from-gray-50/80 to-white dark:from-slate-800/80 dark:to-slate-800 shrink-0">
                 <div className="flex items-start justify-between gap-4">
                     <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-3 mb-3">
@@ -139,7 +139,7 @@ export const LegalDetail: React.FC<LegalDetailProps> = ({
                                     <div key={chapter.id} className="mb-10 last:mb-0">
                                         <div
                                             onClick={() => toggleChapter(chapter.id)}
-                                            className="sticky top-0 z-10 bg-white/95 dark:bg-slate-800/95 backdrop-blur-md py-3 -mx-4 px-4 mb-4 border-b-2 border-gray-100 dark:border-slate-700 flex items-center justify-between cursor-pointer group"
+                                            className="sticky top-0 z-10 bg-white/95 dark:bg-slate-800/95 backdrop-blur-md py-3 -mx-4 px-4 mb-4 border-b-2 border-gray-200 dark:border-slate-700 flex items-center justify-between cursor-pointer group"
                                         >
                                             <div>
                                                 <h3 className="text-sm font-black text-indigo-600 dark:text-indigo-400 uppercase tracking-widest mb-1">{chapter.code}</h3>

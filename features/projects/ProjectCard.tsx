@@ -44,7 +44,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = React.memo(({ project, on
         return (
             <div
                 onClick={onClick}
-                className="group flex flex-col md:flex-row bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-100 dark:border-slate-700 overflow-hidden hover:shadow-md transition-all cursor-pointer"
+                className="group flex flex-col md:flex-row bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 overflow-hidden hover:shadow-md transition-all cursor-pointer"
             >
                 <div className="w-full md:w-56 h-32 md:h-auto relative shrink-0">
                     <img
@@ -104,7 +104,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = React.memo(({ project, on
     return (
         <div
             onClick={onClick}
-            className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-100 dark:border-slate-700 overflow-hidden hover:shadow-lg hover:-translate-y-0.5 transition-all group flex flex-col cursor-pointer"
+            className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 overflow-hidden hover:shadow-lg hover:-translate-y-0.5 transition-all group flex flex-col cursor-pointer"
         >
             {/* Image - Only badges */}
             <div className="relative h-32 w-full overflow-hidden">
@@ -173,7 +173,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = React.memo(({ project, on
                 </div>
 
                 {/* Total Investment Footer */}
-                <div className="mt-auto pt-3 border-t border-gray-100 dark:border-slate-700">
+                <div className="mt-auto pt-3 border-t border-gray-200 dark:border-slate-700">
                     <div className="flex items-center justify-between">
                         <span className="text-[10px] text-gray-400 dark:text-slate-500 uppercase font-semibold tracking-wide">Tổng mức ĐT</span>
                         <span className="text-lg font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent dark:text-slate-100 dark:bg-none tabular-nums">{formatCurrency(project.TotalInvestment)}</span>

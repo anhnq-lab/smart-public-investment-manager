@@ -839,7 +839,7 @@ const ProjectBimTabContent: React.FC = () => {
                     <div className={`
                         flex items-center justify-between px-3 shrink-0 h-8
                         text-[11px] font-medium border-b
-                        ${isDark ? 'text-slate-400 border-slate-800/80 bg-slate-900' : 'text-gray-500 border-gray-100 bg-gray-50/80'}
+                        ${isDark ? 'text-slate-400 border-slate-800/80 bg-slate-900' : 'text-gray-500 border-gray-200 bg-gray-50/80'}
                     `}>
                         <div className="flex items-center gap-2">
                             <span className={`

@@ -238,7 +238,7 @@ const LegalDocumentSearch: React.FC = () => {
                     setShowDeepSearch={setShowDeepSearch}
                 />
 
-                <div className="flex-1 bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-gray-100 dark:border-slate-700 flex flex-col overflow-hidden">
+                <div className="flex-1 bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-gray-200 dark:border-slate-700 flex flex-col overflow-hidden">
                     {/* Content Area with optional TOC */}
                     {selectedDoc ? (
                         <LegalDetail

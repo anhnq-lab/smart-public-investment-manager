@@ -182,7 +182,7 @@ export const GlobalSearch: React.FC<GlobalSearchProps> = ({ isOpen, onClose, ini
                 onClick={e => e.stopPropagation()}
             >
                 {/* Search Input */}
-                <div className="flex items-center gap-3 px-5 py-4 border-b border-gray-100">
+                <div className="flex items-center gap-3 px-5 py-4 border-b border-gray-200">
                     <Search className="w-5 h-5 text-gray-400" />
                     <input
                         ref={inputRef}
@@ -275,7 +275,7 @@ export const GlobalSearch: React.FC<GlobalSearchProps> = ({ isOpen, onClose, ini
                 </div>
 
                 {/* Footer */}
-                <div className="px-5 py-3 bg-gray-50 border-t border-gray-100 flex items-center justify-between text-xs text-gray-400">
+                <div className="px-5 py-3 bg-gray-50 border-t border-gray-200 flex items-center justify-between text-xs text-gray-400">
                     <div className="flex items-center gap-4">
                         <span className="flex items-center gap-1">
                             <kbd className="px-1.5 py-0.5 bg-white border border-gray-200 rounded text-[10px] font-mono">↑</kbd>

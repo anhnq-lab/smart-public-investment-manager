@@ -32,7 +32,7 @@ export const ProjectTeamSection: React.FC<ProjectTeamSectionProps> = ({
                 {members.map((member, idx) => (
                     <div
                         key={member.EmployeeID}
-                        className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-slate-800/60 rounded-lg border border-gray-100 dark:border-slate-700/50 hover:bg-gray-100 dark:hover:bg-slate-700/60 transition-colors cursor-pointer group"
+                        className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-slate-800/60 rounded-lg border border-gray-200 dark:border-slate-700/50 hover:bg-gray-100 dark:hover:bg-slate-700/60 transition-colors cursor-pointer group"
                         onClick={() => onViewMember?.(member.EmployeeID)}
                     >
                         {/* Avatar */}

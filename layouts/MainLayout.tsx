@@ -47,7 +47,7 @@ const MainLayout: React.FC = () => {
     if (!isAuthenticated) return <Navigate to="/login" />;
 
     return (
-        <div className="flex min-h-screen bg-gray-50 dark:bg-slate-950">
+        <div className="flex h-screen overflow-hidden bg-surface-primary dark:bg-slate-950">
             {/* Mobile Overlay */}
             {isSidebarOpen && (
                 <div
@@ -59,7 +59,7 @@ const MainLayout: React.FC = () => {
 
             {/* Sidebar - Desktop */}
             <aside className={`
-                hidden lg:block shrink-0 sticky top-0 h-screen
+                hidden lg:block shrink-0 sticky top-0 h-screen z-10 overflow-hidden
                 transition-all duration-300 ease-out
                 ${isSidebarCollapsed ? 'w-20' : 'w-64'}
             `}>
@@ -87,14 +87,14 @@ const MainLayout: React.FC = () => {
                 />
 
                 {/* Page Content */}
-                <main className="flex-1 overflow-y-auto">
+                <main className="flex-1 overflow-y-auto overflow-x-hidden">
                     {/* Breadcrumb */}
-                    <div className="px-6 pt-6 pb-2">
+                    <div className="px-3 sm:px-4 lg:px-6 pt-4 sm:pt-6 pb-2">
                         <Breadcrumb />
                     </div>
 
                     {/* Content */}
-                    <div className="px-6 pb-8">
+                    <div className="px-3 sm:px-4 lg:px-6 pb-6 sm:pb-8">
                         <ErrorBoundary>
                             <Suspense fallback={<PageLoadingSkeleton />}>
                                 <Outlet />

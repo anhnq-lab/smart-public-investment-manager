@@ -87,7 +87,7 @@ export const BimSectionPanel: React.FC<BimSectionPanelProps> = ({
             {/* Header */}
             <div className={`
                 flex items-center justify-between px-3 py-2 border-b
-                ${isDark ? 'border-slate-700' : 'border-gray-100'}
+                ${isDark ? 'border-slate-700' : 'border-gray-200'}
             `}>
                 <div className="flex items-center gap-2">
                     <Box className={`w-4 h-4 ${isDark ? 'text-amber-400' : 'text-amber-500'}`} />
@@ -164,7 +164,7 @@ export const BimSectionPanel: React.FC<BimSectionPanelProps> = ({
             {/* Footer hint */}
             <div className={`
                 px-3 py-1.5 border-t text-center
-                ${isDark ? 'border-slate-700 text-slate-500' : 'border-gray-100 text-gray-400'}
+                ${isDark ? 'border-slate-700 text-slate-500' : 'border-gray-200 text-gray-400'}
             `}>
                 <span className="text-[9px]">
                     <ArrowLeftRight className="w-2.5 h-2.5 inline mr-1" />

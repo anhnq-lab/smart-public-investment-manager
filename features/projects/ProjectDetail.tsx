@@ -29,7 +29,7 @@ const ProjectDetailSkeleton: React.FC = () => (
     <div className="flex flex-col h-[calc(100vh-120px)] bg-[#F8FAFC] dark:bg-slate-900 animate-pulse">
         <div className="shrink-0 px-4 pt-4 space-y-4">
             {/* Header skeleton */}
-            <div className="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-gray-100 dark:border-slate-700">
+            <div className="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-gray-200 dark:border-slate-700">
                 <div className="flex items-start gap-4">
                     <div className="w-10 h-10 bg-gray-200 dark:bg-slate-700 rounded-xl" />
                     <div className="flex-1 space-y-3">
@@ -61,12 +61,12 @@ const ProjectDetailSkeleton: React.FC = () => (
         <div className="flex-1 px-4 py-6 space-y-4">
             <div className="grid grid-cols-3 gap-4">
                 {[1, 2, 3].map(i => (
-                    <div key={i} className="bg-white dark:bg-slate-800 rounded-xl p-6 h-28 border border-gray-100 dark:border-slate-700" />
+                    <div key={i} className="bg-white dark:bg-slate-800 rounded-xl p-6 h-28 border border-gray-200 dark:border-slate-700" />
                 ))}
             </div>
             <div className="grid grid-cols-3 gap-4">
-                <div className="col-span-2 bg-white dark:bg-slate-800 rounded-xl p-6 h-64 border border-gray-100 dark:border-slate-700" />
-                <div className="bg-white dark:bg-slate-800 rounded-xl p-6 h-64 border border-gray-100 dark:border-slate-700" />
+                <div className="col-span-2 bg-white dark:bg-slate-800 rounded-xl p-6 h-64 border border-gray-200 dark:border-slate-700" />
+                <div className="bg-white dark:bg-slate-800 rounded-xl p-6 h-64 border border-gray-200 dark:border-slate-700" />
             </div>
         </div>
     </div>

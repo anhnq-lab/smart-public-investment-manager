@@ -234,7 +234,7 @@ export const KanbanBoardView: React.FC<KanbanBoardViewProps> = ({
                                     </div>
 
                                     {/* Progress + Assignee Row */}
-                                    <div className="flex items-center justify-between mt-2 pt-2 border-t border-gray-100 dark:border-slate-700">
+                                    <div className="flex items-center justify-between mt-2 pt-2 border-t border-gray-200 dark:border-slate-700">
                                         {/* Progress */}
                                         {task.ProgressPercent !== undefined && (
                                             <ProgressBadge value={task.ProgressPercent} size="sm" />

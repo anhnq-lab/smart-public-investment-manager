@@ -72,10 +72,10 @@ export const KeyDatesWidget: React.FC<KeyDatesWidgetProps> = ({
     return (
         <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 overflow-hidden">
             {/* Header */}
-            <div className="px-5 py-3 bg-gray-50 dark:bg-slate-700 border-b border-gray-100 dark:border-slate-600 flex items-center justify-between">
+            <div className="section-card-header">
                 <div className="flex items-center gap-2">
-                    <Calendar className="w-4 h-4 text-gray-600 dark:text-slate-400" />
-                    <h3 className="font-bold text-gray-800 dark:text-slate-200 text-xs uppercase">Các mốc quan trọng</h3>
+                    <div className="section-icon"><Calendar className="w-3.5 h-3.5" /></div>
+                    <span>Các mốc quan trọng</span>
                 </div>
                 <div className="flex items-center gap-2">
                     {overdueCount > 0 && (
@@ -142,7 +142,7 @@ export const KeyDatesWidget: React.FC<KeyDatesWidgetProps> = ({
 
             {/* View All */}
             {dates.length > maxItems && onViewAll && (
-                <div className="px-5 py-3 border-t border-gray-100 dark:border-slate-700">
+                <div className="px-5 py-3 border-t border-gray-200 dark:border-slate-700">
                     <button
                         onClick={onViewAll}
                         className="w-full text-center text-xs font-bold text-blue-600 hover:text-blue-700"

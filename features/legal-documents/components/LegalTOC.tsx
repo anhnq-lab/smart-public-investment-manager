@@ -24,9 +24,9 @@ export const LegalTOC: React.FC<LegalTOCProps> = ({ selectedDoc, scrollToArticle
     };
 
     return (
-        <div className="w-72 border-r border-gray-100 dark:border-slate-700 bg-gray-50/50 dark:bg-slate-800/50 overflow-y-auto custom-scrollbar shrink-0 flex flex-col">
+        <div className="w-72 border-r border-gray-200 dark:border-slate-700 bg-gray-50/50 dark:bg-slate-800/50 overflow-y-auto custom-scrollbar shrink-0 flex flex-col">
             {/* Header */}
-            <div className="sticky top-0 bg-gray-50/95 dark:bg-slate-800/95 backdrop-blur-sm px-4 py-3 border-b border-gray-100 dark:border-slate-700 z-10">
+            <div className="sticky top-0 bg-gray-50/95 dark:bg-slate-800/95 backdrop-blur-sm px-4 py-3 border-b border-gray-200 dark:border-slate-700 z-10">
                 <span className="text-[10px] font-black uppercase tracking-widest text-indigo-600 dark:text-indigo-400 flex items-center gap-2">
                     <BookOpen className="w-4 h-4" />
                     Mục lục văn bản

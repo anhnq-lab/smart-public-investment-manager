@@ -16,9 +16,9 @@ export const DocMetadataPanel: React.FC<DocMetadataPanelProps> = ({
     doc, meta, onMetaChange, onSave, onClose, onPreview, savingMeta
 }) => {
     return (
-        <div className="mx-3 mb-3 p-4 bg-slate-50 dark:bg-slate-800/50 rounded-lg border border-gray-100 dark:border-slate-700 space-y-3 animate-in slide-in-from-top-2 duration-200">
+        <div className="mx-3 mb-3 p-4 bg-slate-50 dark:bg-slate-800/50 rounded-lg border border-gray-200 dark:border-slate-700 space-y-3 animate-in slide-in-from-top-2 duration-200">
             {/* File info row */}
-            <div className="flex items-center gap-3 pb-3 border-b border-gray-100 dark:border-slate-700">
+            <div className="flex items-center gap-3 pb-3 border-b border-gray-200 dark:border-slate-700">
                 <div className="flex-1 min-w-0">
                     <p className="text-xs text-gray-500 dark:text-slate-400">Tệp đính kèm</p>
                     <p className="text-sm font-medium text-gray-800 dark:text-slate-100 truncate">{doc.DocName}</p>
@@ -95,7 +95,7 @@ export const DocMetadataPanel: React.FC<DocMetadataPanelProps> = ({
             </div>
 
             {/* Action buttons */}
-            <div className="flex items-center justify-between pt-2 border-t border-gray-100 dark:border-slate-700">
+            <div className="flex items-center justify-between pt-2 border-t border-gray-200 dark:border-slate-700">
                 <div className="text-[11px] text-gray-400 dark:text-slate-500">
                     {doc.Size && <span>Kích thước: {doc.Size}</span>}
                     {doc.Version && <span className="ml-3">Phiên bản: {doc.Version}</span>}

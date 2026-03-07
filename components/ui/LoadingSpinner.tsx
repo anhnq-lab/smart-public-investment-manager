@@ -54,7 +54,7 @@ export const CardSkeleton: React.FC<{ count?: number }> = ({ count = 1 }) => {
             {Array.from({ length: count }).map((_, i) => (
                 <div
                     key={i}
-                    className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 animate-pulse"
+                    className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 animate-pulse"
                 >
                     <div className="flex items-start gap-4">
                         <div className="w-16 h-16 bg-gray-200 rounded-xl" />

@@ -142,36 +142,39 @@ const UserAccountManager: React.FC = () => {
 
             {/* Stats */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div className="bg-white dark:bg-slate-800 rounded-xl p-4 border border-gray-100 dark:border-slate-700">
-                    <div className="flex items-center gap-3">
-                        <div className="p-2 bg-blue-50 dark:bg-blue-900/30 rounded-lg">
-                            <Users className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                <div className="relative overflow-hidden bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl p-5 shadow-xl ring-1 ring-white/10 hover:scale-[1.02] hover:shadow-2xl transition-all duration-200">
+                    <Users className="absolute -right-3 -top-3 w-20 h-20 text-white opacity-[0.12]" />
+                    <div className="relative z-10 flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center">
+                            <Users className="w-5 h-5 text-white" />
                         </div>
                         <div>
-                            <p className="text-2xl font-bold text-gray-900 dark:text-slate-100">{accounts.length}</p>
-                            <p className="text-xs text-gray-500 dark:text-slate-400">Tổng tài khoản</p>
+                            <p className="text-3xl font-black tracking-tight text-white drop-shadow-sm">{accounts.length}</p>
+                            <p className="text-[10px] font-extrabold uppercase tracking-[0.15em] text-white/90">Tổng tài khoản</p>
                         </div>
                     </div>
                 </div>
-                <div className="bg-white dark:bg-slate-800 rounded-xl p-4 border border-gray-100 dark:border-slate-700">
-                    <div className="flex items-center gap-3">
-                        <div className="p-2 bg-green-50 dark:bg-green-900/30 rounded-lg">
-                            <ToggleRight className="w-5 h-5 text-green-600 dark:text-green-400" />
+                <div className="relative overflow-hidden bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl p-5 shadow-xl ring-1 ring-white/10 hover:scale-[1.02] hover:shadow-2xl transition-all duration-200">
+                    <ToggleRight className="absolute -right-3 -top-3 w-20 h-20 text-white opacity-[0.12]" />
+                    <div className="relative z-10 flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center">
+                            <ToggleRight className="w-5 h-5 text-white" />
                         </div>
                         <div>
-                            <p className="text-2xl font-bold text-gray-900 dark:text-slate-100">{accounts.filter(a => a.is_active).length}</p>
-                            <p className="text-xs text-gray-500 dark:text-slate-400">Đang hoạt động</p>
+                            <p className="text-3xl font-black tracking-tight text-white drop-shadow-sm">{accounts.filter(a => a.is_active).length}</p>
+                            <p className="text-[10px] font-extrabold uppercase tracking-[0.15em] text-white/90">Đang hoạt động</p>
                         </div>
                     </div>
                 </div>
-                <div className="bg-white dark:bg-slate-800 rounded-xl p-4 border border-gray-100 dark:border-slate-700">
-                    <div className="flex items-center gap-3">
-                        <div className="p-2 bg-orange-50 dark:bg-orange-900/30 rounded-lg">
-                            <ToggleLeft className="w-5 h-5 text-orange-600 dark:text-orange-400" />
+                <div className="relative overflow-hidden bg-gradient-to-br from-orange-500 to-red-500 rounded-2xl p-5 shadow-xl ring-1 ring-white/10 hover:scale-[1.02] hover:shadow-2xl transition-all duration-200">
+                    <ToggleLeft className="absolute -right-3 -top-3 w-20 h-20 text-white opacity-[0.12]" />
+                    <div className="relative z-10 flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center">
+                            <ToggleLeft className="w-5 h-5 text-white" />
                         </div>
                         <div>
-                            <p className="text-2xl font-bold text-gray-900 dark:text-slate-100">{accounts.filter(a => !a.is_active).length}</p>
-                            <p className="text-xs text-gray-500 dark:text-slate-400">Đã tắt</p>
+                            <p className="text-3xl font-black tracking-tight text-white drop-shadow-sm">{accounts.filter(a => !a.is_active).length}</p>
+                            <p className="text-[10px] font-extrabold uppercase tracking-[0.15em] text-white/90">Đã tắt</p>
                         </div>
                     </div>
                 </div>
@@ -199,7 +202,7 @@ const UserAccountManager: React.FC = () => {
             </div>
 
             {/* Table */}
-            <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-100 dark:border-slate-700 overflow-hidden">
+            <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 overflow-hidden">
                 {loading ? (
                     <div className="p-8 text-center text-gray-400">
                         <div className="animate-spin w-8 h-8 border-2 border-indigo-500 border-t-transparent rounded-full mx-auto mb-3" />
@@ -211,23 +214,23 @@ const UserAccountManager: React.FC = () => {
                         {search ? 'Không tìm thấy kết quả' : 'Chưa có tài khoản nào'}
                     </div>
                 ) : (
-                    <div className="overflow-x-auto">
+                    <div className="overflow-x-auto overflow-y-auto max-h-[calc(100vh-360px)]">
                         <table className="w-full text-sm">
                             <thead>
-                                <tr className="bg-gray-50 dark:bg-slate-900/50 border-b border-gray-100 dark:border-slate-700">
-                                    <th className="text-left px-4 py-3 font-semibold text-gray-600 dark:text-slate-300">#</th>
-                                    <th className="text-left px-4 py-3 font-semibold text-gray-600 dark:text-slate-300">Nhân viên</th>
-                                    <th className="text-left px-4 py-3 font-semibold text-gray-600 dark:text-slate-300">Username</th>
-                                    <th className="text-left px-4 py-3 font-semibold text-gray-600 dark:text-slate-300">
+                                <tr className="table-header-row">
+                                    <th className="text-left px-4 py-3 text-[10px] font-black uppercase tracking-widest">#</th>
+                                    <th className="text-left px-4 py-3 text-[10px] font-black uppercase tracking-widest">Nhân viên</th>
+                                    <th className="text-left px-4 py-3 text-[10px] font-black uppercase tracking-widest">Username</th>
+                                    <th className="text-left px-4 py-3 text-[10px] font-black uppercase tracking-widest">
                                         <div className="flex items-center gap-1"><Mail className="w-3.5 h-3.5" /> Email</div>
                                     </th>
-                                    <th className="text-left px-4 py-3 font-semibold text-gray-600 dark:text-slate-300">
+                                    <th className="text-left px-4 py-3 text-[10px] font-black uppercase tracking-widest">
                                         <div className="flex items-center gap-1"><Phone className="w-3.5 h-3.5" /> SĐT</div>
                                     </th>
-                                    <th className="text-left px-4 py-3 font-semibold text-gray-600 dark:text-slate-300">Vai trò</th>
-                                    <th className="text-left px-4 py-3 font-semibold text-gray-600 dark:text-slate-300">Trạng thái</th>
-                                    <th className="text-left px-4 py-3 font-semibold text-gray-600 dark:text-slate-300">Đăng nhập lần cuối</th>
-                                    <th className="text-right px-4 py-3 font-semibold text-gray-600 dark:text-slate-300">Hành động</th>
+                                    <th className="text-left px-4 py-3 text-[10px] font-black uppercase tracking-widest">Vai trò</th>
+                                    <th className="text-left px-4 py-3 text-[10px] font-black uppercase tracking-widest">Trạng thái</th>
+                                    <th className="text-left px-4 py-3 text-[10px] font-black uppercase tracking-widest">Đăng nhập lần cuối</th>
+                                    <th className="text-right px-4 py-3 text-[10px] font-black uppercase tracking-widest">Hành động</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-50 dark:divide-slate-700/50">
@@ -256,8 +259,8 @@ const UserAccountManager: React.FC = () => {
                                         <td className="px-4 py-3 text-gray-600 dark:text-slate-400 text-xs">{account.phone || '—'}</td>
                                         <td className="px-4 py-3">
                                             <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${account.role === 'Admin' ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400' :
-                                                    account.role === 'Manager' ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400' :
-                                                        'bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-slate-400'
+                                                account.role === 'Manager' ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400' :
+                                                    'bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-slate-400'
                                                 }`}>
                                                 {account.role || 'Staff'}
                                             </span>
@@ -266,8 +269,8 @@ const UserAccountManager: React.FC = () => {
                                             <button
                                                 onClick={() => handleToggleActive(account)}
                                                 className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium transition-colors ${account.is_active
-                                                        ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 hover:bg-green-200'
-                                                        : 'bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 hover:bg-red-200'
+                                                    ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 hover:bg-green-200'
+                                                    : 'bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 hover:bg-red-200'
                                                     }`}
                                                 title={account.is_active ? 'Nhấn để tắt' : 'Nhấn để bật'}
                                             >

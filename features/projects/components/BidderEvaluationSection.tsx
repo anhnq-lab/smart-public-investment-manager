@@ -296,7 +296,7 @@ const EditBidderRow: React.FC<{
     const labelClass = "text-[10px] font-medium text-gray-500 dark:text-slate-400 uppercase tracking-wide mb-1";
 
     return (
-        <div className="p-3 bg-gray-50 dark:bg-slate-850 border-t border-gray-100 dark:border-slate-700 space-y-3">
+        <div className="p-3 bg-gray-50 dark:bg-slate-850 border-t border-gray-200 dark:border-slate-700 space-y-3">
             <div className="grid grid-cols-2 gap-2">
                 <div>
                     <label className={labelClass}>Giá dự thầu (VND)</label>

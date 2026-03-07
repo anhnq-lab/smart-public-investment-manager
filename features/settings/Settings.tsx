@@ -51,8 +51,8 @@ const Settings: React.FC = () => {
             </div>
 
             {/* Appearance Section */}
-            <div className="bg-white dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-700 shadow-sm overflow-hidden">
-                <div className="p-5 border-b border-gray-100 dark:border-slate-700 flex items-center gap-3">
+            <div className="bg-white dark:bg-slate-800 rounded-2xl border border-gray-200 dark:border-slate-700 shadow-sm overflow-hidden">
+                <div className="p-5 border-b border-gray-200 dark:border-slate-700 flex items-center gap-3">
                     <div className="p-2 bg-blue-50 dark:bg-blue-900/30 rounded-xl">
                         <Palette className="w-5 h-5 text-blue-600 dark:text-blue-400" />
                     </div>
@@ -124,7 +124,7 @@ const Settings: React.FC = () => {
             </div>
 
             {/* Other Settings (Placeholder) */}
-            <div className="bg-white dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-700 shadow-sm overflow-hidden">
+            <div className="bg-white dark:bg-slate-800 rounded-2xl border border-gray-200 dark:border-slate-700 shadow-sm overflow-hidden">
                 <div className="divide-y divide-gray-100 dark:divide-slate-700">
                     {settingSections.map((section, idx) => (
                         <div key={idx} className="px-5 py-4 flex items-center justify-between opacity-60 cursor-not-allowed">

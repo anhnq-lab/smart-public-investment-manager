@@ -337,7 +337,7 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ isOpen, 
     };
 
     const SectionHeader = ({ icon: Icon, title, subtitle }: { icon: React.ElementType; title: string; subtitle: string }) => (
-        <div className="flex items-center gap-3 mb-4 pb-3 border-b border-gray-100 dark:border-slate-700">
+        <div className="flex items-center gap-3 mb-4 pb-3 border-b border-gray-200 dark:border-slate-700">
             <div className="w-8 h-8 rounded-lg bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center">
                 <Icon className="w-4 h-4 text-blue-600 dark:text-blue-400" />
             </div>
@@ -361,10 +361,10 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ isOpen, 
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
-            <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl w-full max-w-3xl overflow-hidden border border-gray-100 dark:border-slate-700 flex flex-col max-h-[90vh]">
+            <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl w-full max-w-3xl overflow-hidden border border-gray-200 dark:border-slate-700 flex flex-col max-h-[90vh]">
 
                 {/* Header */}
-                <div className="px-6 py-4 border-b border-gray-100 dark:border-slate-700 flex justify-between items-center bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-slate-800 dark:to-slate-800">
+                <div className="px-6 py-4 border-b border-gray-200 dark:border-slate-700 flex justify-between items-center bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-slate-800 dark:to-slate-800">
                     <div>
                         <h2 className="text-lg font-bold text-gray-800 dark:text-slate-100 flex items-center gap-2">
                             <Building2 className="w-5 h-5 text-blue-600 dark:text-blue-400" />
@@ -384,7 +384,7 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ isOpen, 
 
                 {/* ── AI Image Import Zone (only in create mode) ── */}
                 {!isEditMode && (
-                    <div className="px-6 py-3 border-b border-gray-100 dark:border-slate-700">
+                    <div className="px-6 py-3 border-b border-gray-200 dark:border-slate-700">
                         <div
                             className={`relative rounded-xl border-2 border-dashed transition-all cursor-pointer
                                 ${aiStatus === 'extracting' ? 'border-blue-400 dark:border-blue-500 bg-blue-50/50 dark:bg-blue-900/20' : ''}
@@ -889,7 +889,7 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ isOpen, 
                 </form>
 
                 {/* Footer */}
-                <div className="px-6 py-4 border-t border-gray-100 dark:border-slate-700 bg-gray-50 dark:bg-slate-800/80 flex justify-between items-center">
+                <div className="px-6 py-4 border-t border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800/80 flex justify-between items-center">
                     <p className="text-[11px] text-gray-400 dark:text-slate-500">
                         Các trường không bắt buộc có thể bổ sung sau
                     </p>

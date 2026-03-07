@@ -78,7 +78,7 @@ export const BimPerformanceStats: React.FC<{ visible: boolean; onClose: () => vo
         >
             {/* Header */}
             <div className={`flex items-center justify-between px-3 py-1.5 border-b
-                ${isDarkMode ? 'border-slate-700/50 bg-slate-800/50' : 'border-gray-100 bg-gray-50/50'}
+                ${isDarkMode ? 'border-slate-700/50 bg-slate-800/50' : 'border-gray-200 bg-gray-50/50'}
             `}>
                 <div className="flex items-center gap-1.5">
                     <Activity className="w-3 h-3 text-blue-400" />

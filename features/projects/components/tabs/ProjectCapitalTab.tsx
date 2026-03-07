@@ -371,7 +371,7 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
                 SECTION C — Kế hoạch vốn theo năm (Allocations)
                ════════════════════════════════════════════ */}
             <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 shadow-sm overflow-hidden">
-                <div className="px-6 py-4 border-b border-gray-100 dark:border-slate-700 flex justify-between items-center bg-gray-50/50 dark:bg-slate-700/50">
+                <div className="px-6 py-4 border-b border-gray-200 dark:border-slate-700 flex justify-between items-center bg-gray-50/50 dark:bg-slate-700/50">
                     <h3 className="text-sm font-bold text-gray-800 dark:text-slate-100 uppercase tracking-wider flex items-center gap-2">
                         <Calendar className="w-4 h-4 text-blue-600" />
                         Kế hoạch vốn (Luật ĐTC 2024 - 58/2024/QH15)
@@ -385,7 +385,7 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
                 </div>
                 <div className="overflow-x-auto">
                     <table className="w-full text-sm text-left">
-                        <thead className="bg-gray-50 dark:bg-slate-700 text-gray-500 dark:text-slate-400 font-semibold text-xs uppercase border-b border-gray-100 dark:border-slate-600">
+                        <thead className="bg-gray-50 dark:bg-slate-700 text-gray-500 dark:text-slate-400 font-semibold text-xs uppercase border-b border-gray-200 dark:border-slate-600">
                             <tr>
                                 <th className="px-6 py-3">Năm</th>
                                 <th className="px-6 py-3">QĐ giao vốn</th>
@@ -490,7 +490,7 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
                 SECTION D — Lịch sử giải ngân chi tiết
                ════════════════════════════════════════════ */}
             <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 shadow-sm overflow-hidden">
-                <div className="px-6 py-4 border-b border-gray-100 dark:border-slate-700 flex flex-wrap justify-between items-center gap-3">
+                <div className="px-6 py-4 border-b border-gray-200 dark:border-slate-700 flex flex-wrap justify-between items-center gap-3">
                     <h3 className="font-bold text-gray-800 dark:text-slate-100 flex items-center gap-2">
                         <ArrowDownUp className="w-4 h-4 text-emerald-600" />
                         Lịch sử giải ngân (NĐ 99/2021/NĐ-CP)
@@ -525,7 +525,7 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
                 </div>
                 <div className="overflow-x-auto">
                     <table className="w-full text-sm text-left">
-                        <thead className="bg-gray-50 dark:bg-slate-700 text-gray-500 dark:text-slate-400 font-semibold text-xs uppercase border-b border-gray-100 dark:border-slate-600">
+                        <thead className="bg-gray-50 dark:bg-slate-700 text-gray-500 dark:text-slate-400 font-semibold text-xs uppercase border-b border-gray-200 dark:border-slate-600">
                             <tr>
                                 <th className="px-4 py-3">Ngày</th>
                                 <th className="px-4 py-3">Nội dung</th>
@@ -627,7 +627,7 @@ export const ProjectCapitalTab: React.FC<ProjectCapitalTabProps> = ({ projectID 
                ════════════════════════════════════════════ */}
             {alerts.length > 0 && (
                 <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 shadow-sm overflow-hidden">
-                    <div className="px-6 py-3 border-b border-gray-100 dark:border-slate-700 bg-orange-50/50 dark:bg-orange-900/20">
+                    <div className="px-6 py-3 border-b border-gray-200 dark:border-slate-700 bg-orange-50/50 dark:bg-orange-900/20">
                         <h3 className="text-sm font-bold text-orange-800 dark:text-orange-400 flex items-center gap-2">
                             <AlertTriangle className="w-4 h-4" />
                             Cảnh báo giải ngân
@@ -754,26 +754,43 @@ interface KPICardProps {
     progressColor?: string;
 }
 
+const KPI_GRADIENT_MAP: Record<string, string> = {
+    'bg-slate-100': 'from-slate-600 to-slate-700',
+    'bg-blue-100': 'from-blue-500 to-indigo-600',
+    'bg-indigo-100': 'from-indigo-500 to-violet-600',
+    'bg-emerald-100': 'from-emerald-500 to-teal-600',
+    'bg-amber-100': 'from-amber-500 to-orange-600',
+    'bg-cyan-100': 'from-cyan-500 to-blue-600',
+};
+
 const KPICard: React.FC<KPICardProps> = ({
     label, value, sub, icon, iconBg = 'bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-slate-300',
-    valueColor = 'text-gray-800', progress, progressColor = 'bg-blue-500'
-}) => (
-    <div className="bg-white dark:bg-slate-800 p-4 rounded-xl border border-gray-100 dark:border-slate-700 shadow-sm">
-        <div className="flex items-center justify-between mb-2">
-            <div className={`p-1.5 rounded-lg ${iconBg}`}>{icon}</div>
-        </div>
-        <p className="text-[11px] text-gray-500 dark:text-slate-400 font-medium truncate">{label}</p>
-        <h3 className={`text-lg font-bold ${valueColor} dark:text-slate-100 mt-0.5 truncate`}>{value}</h3>
-        {progress != null && (
-            <div className="flex items-center gap-2 mt-2">
-                <div className="flex-1 h-1.5 bg-gray-100 dark:bg-slate-600 rounded-full overflow-hidden">
-                    <div className={`h-full rounded-full ${progressColor}`} style={{ width: `${Math.min(progress, 100)}%` }} />
+    valueColor = 'text-gray-800', progress, progressColor = 'bg-white/30'
+}) => {
+    // Auto-detect gradient from iconBg
+    const bgClass = Object.keys(KPI_GRADIENT_MAP).find(k => iconBg?.includes(k)) || '';
+    const gradient = KPI_GRADIENT_MAP[bgClass] || 'from-slate-600 to-slate-700';
+
+    return (
+        <div className={`relative overflow-hidden bg-gradient-to-br ${gradient} rounded-2xl p-4 shadow-xl ring-1 ring-white/10 hover:scale-[1.02] hover:shadow-2xl transition-all duration-200`}>
+            <div className="relative z-10">
+                <div className="flex items-center justify-between mb-2">
+                    <div className="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center text-white">{icon}</div>
                 </div>
-                <span className="text-[10px] font-bold text-gray-600 dark:text-slate-400">{progress}%</span>
+                <p className="text-[10px] font-extrabold uppercase tracking-[0.15em] text-white/90 truncate">{label}</p>
+                <h3 className="text-lg font-black tracking-tight text-white drop-shadow-sm mt-0.5 truncate">{value}</h3>
+                {progress != null && (
+                    <div className="flex items-center gap-2 mt-2">
+                        <div className="flex-1 h-1.5 bg-white/20 rounded-full overflow-hidden">
+                            <div className="h-full rounded-full bg-white/70" style={{ width: `${Math.min(progress, 100)}%` }} />
+                        </div>
+                        <span className="text-[10px] font-bold text-white/80">{progress}%</span>
+                    </div>
+                )}
+                {sub && !progress && (
+                    <p className="text-[10px] text-white/80 mt-1.5 truncate">{sub}</p>
+                )}
             </div>
-        )}
-        {sub && !progress && (
-            <p className="text-[10px] text-gray-400 dark:text-slate-500 mt-1.5 truncate">{sub}</p>
-        )}
-    </div>
-);
+        </div>
+    );
+};

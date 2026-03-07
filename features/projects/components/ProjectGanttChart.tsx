@@ -118,7 +118,7 @@ export const ProjectGanttChart: React.FC<ProjectGanttChartProps> = ({ tasks }) =
                                 key={idx}
                                 style={{ width: `${COL_WIDTH}px` }}
                                 title={`Tháng ${m.month} năm ${m.year}`}
-                                className="text-center py-2 text-[9px] font-black text-gray-400 dark:text-slate-500 border-l border-gray-100 dark:border-slate-700 cursor-help hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-slate-700 transition-colors"
+                                className="text-center py-2 text-[9px] font-black text-gray-400 dark:text-slate-500 border-l border-gray-200 dark:border-slate-700 cursor-help hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-slate-700 transition-colors"
                             >
                                 {m.label}
                             </div>

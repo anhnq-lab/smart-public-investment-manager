@@ -23,7 +23,7 @@ import {
 import { useAuth } from '../context/AuthContext';
 
 // ========================================
-// SIDEBAR COMPONENT - Design System v2
+// SIDEBAR COMPONENT — Premium HCMA Theme
 // ========================================
 
 interface SidebarProps {
@@ -66,31 +66,43 @@ const Sidebar: React.FC<SidebarProps> = ({
   const adminItems: NavItem[] = isAdmin ? [
     { name: 'Quản lý tài khoản', path: '/user-accounts', icon: ShieldCheck },
   ] : [];
+
   return (
-    <div className={`
-            h-full flex flex-col justify-between py-6 bg-white dark:bg-slate-900 border-r border-gray-100 dark:border-slate-800
-            transition-all duration-300 ease-out
-            ${isCollapsed ? 'w-20 px-2' : 'w-64 px-4'}
-        `}>
-      {/* Header */}
+    <div
+      className={`
+        h-full flex flex-col justify-between
+        transition-all duration-300 ease-out
+        ${isCollapsed ? 'w-20' : 'w-64'}
+      `}
+      style={{
+        background: 'linear-gradient(180deg, #C85A10 0%, #A84508 60%, #8B3706 100%)',
+      }}
+    >
+      {/* ── Logo & Brand ── */}
       <div>
-        <div className={`
-                    flex items-center gap-3 mb-8 px-2
-                    ${isCollapsed ? 'justify-center' : ''}
-                `}>
-          <div className="w-10 h-10 bg-gradient-to-br from-primary-500 to-primary-600 rounded-xl flex items-center justify-center shadow-lg shadow-primary-500/30 shrink-0">
-            <span className="text-white font-bold text-lg">HV</span>
+        <div
+          className={`flex items-center gap-3 px-4 h-14 shrink-0 ${isCollapsed ? 'justify-center px-2' : ''}`}
+          style={{ borderBottom: '1px solid rgba(255,255,255,0.1)' }}
+        >
+          <div
+            className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0"
+            style={{
+              background: 'linear-gradient(135deg, #FDDF8B 0%, #F99715 100%)',
+              boxShadow: '0 2px 8px rgba(249, 151, 21, 0.35)',
+            }}
+          >
+            <span className="font-extrabold text-sm" style={{ color: '#7C3308' }}>HV</span>
           </div>
           {!isCollapsed && (
-            <div className="animate-fade-in">
-              <h1 className="text-sm font-bold text-gray-800 dark:text-slate-100 leading-tight">Ban QLDA ĐTXD CN</h1>
-              <p className="text-xs text-gray-500 dark:text-slate-400 font-medium">Học viện CTQG HCM</p>
+            <div className="animate-fade-in overflow-hidden">
+              <h1 className="text-[13px] font-bold text-white leading-tight truncate">Ban QLDA ĐTXD CN</h1>
+              <p className="text-[11px] truncate" style={{ color: 'rgba(255,255,255,0.55)' }}>Học viện CTQG HCM</p>
             </div>
           )}
         </div>
 
-        {/* Navigation */}
-        <nav className="space-y-1">
+        {/* ── Navigation ── */}
+        <nav className="mt-2 px-2 space-y-0.5 overflow-y-auto flex-1" style={{ maxHeight: 'calc(100vh - 160px)' }}>
           {[...navItems, ...adminItems].map((item) => (
             <NavLink
               key={item.path}
@@ -98,50 +110,72 @@ const Sidebar: React.FC<SidebarProps> = ({
               onClick={onClose}
               title={isCollapsed ? item.name : undefined}
               className={({ isActive }) => `
-                                flex items-center gap-3 px-3 py-2.5 rounded-xl 
-                                transition-all duration-200 group relative
-                                ${isCollapsed ? 'justify-center' : ''}
-                                ${isActive
-                  ? 'bg-primary-50 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400 font-semibold shadow-sm'
-                  : 'text-gray-500 dark:text-slate-400 hover:bg-gray-50 dark:hover:bg-slate-800 hover:text-gray-800 dark:hover:text-slate-200'
+                flex items-center gap-2.5 px-3 py-2 rounded-lg
+                transition-all duration-150 group relative text-[13px]
+                ${isCollapsed ? 'justify-center' : ''}
+                ${isActive
+                  ? 'font-semibold'
+                  : 'sidebar-nav-item'
                 }
-                            `}
+              `}
+              style={({ isActive }) => isActive ? {
+                background: 'rgba(255,255,255,0.18)',
+                color: '#ffffff',
+                boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.1)',
+              } : {
+                color: 'rgba(255,255,255,0.7)',
+              }}
             >
               {({ isActive }) => (
                 <>
-                  {/* Active Indicator */}
+                  {/* Active Indicator — subtle left bar */}
                   {isActive && (
-                    <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-primary-500 rounded-r-full" />
+                    <span
+                      className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 rounded-r-full"
+                      style={{ background: '#FDDF8B' }}
+                    />
                   )}
 
                   <item.icon className={`
-                                        w-5 h-5 shrink-0 transition-transform
-                                        ${isActive ? '' : 'group-hover:scale-110'}
-                                    `} />
+                    w-[18px] h-[18px] shrink-0 transition-transform
+                    ${isActive ? '' : 'group-hover:scale-110'}
+                  `} />
 
                   {!isCollapsed && (
-                    <span className="flex-1 truncate text-sm">{item.name}</span>
+                    <span className="flex-1 truncate">{item.name}</span>
                   )}
 
                   {/* Badge */}
                   {item.badge && !isCollapsed && (
-                    <span className="px-2 py-0.5 text-xs font-bold bg-danger-100 text-danger-600 rounded-full">
+                    <span
+                      className="px-1.5 py-0.5 text-[10px] font-bold rounded-md leading-none"
+                      style={{
+                        background: '#FDDF8B',
+                        color: '#7C3308',
+                      }}
+                    >
                       {item.badge}
                     </span>
                   )}
                   {item.badge && isCollapsed && (
-                    <span className="absolute top-1 right-1 w-2 h-2 bg-danger-500 rounded-full" />
+                    <span
+                      className="absolute top-1 right-1 w-2 h-2 rounded-full"
+                      style={{ background: '#FDDF8B' }}
+                    />
                   )}
 
-                  {/* Tooltip for collapsed mode */}
+                  {/* Tooltip for collapsed */}
                   {isCollapsed && (
-                    <span className="
-                                            absolute left-full ml-2 px-2 py-1 
-                                            bg-gray-800 dark:bg-slate-700 text-white text-xs rounded-lg
-                                            opacity-0 group-hover:opacity-100 pointer-events-none
-                                            whitespace-nowrap z-50 shadow-lg
-                                            transition-opacity duration-200
-                                        ">
+                    <span
+                      className="
+                        absolute left-full ml-2 px-2 py-1
+                        text-white text-xs rounded-lg
+                        opacity-0 group-hover:opacity-100 pointer-events-none
+                        whitespace-nowrap z-50 shadow-lg
+                        transition-opacity duration-200
+                      "
+                      style={{ background: '#7C3308' }}
+                    >
                       {item.name}
                     </span>
                   )}
@@ -152,26 +186,37 @@ const Sidebar: React.FC<SidebarProps> = ({
         </nav>
       </div>
 
-      {/* Footer */}
-      <div className="space-y-1 pt-4 border-t border-gray-100 dark:border-slate-800">
+      {/* ── Footer ── */}
+      <div
+        className="px-2 py-3 space-y-0.5"
+        style={{ borderTop: '1px solid rgba(255,255,255,0.1)' }}
+      >
         {/* Collapse Toggle */}
         {onToggleCollapse && (
           <button
             onClick={onToggleCollapse}
             className={`
-                            w-full flex items-center gap-3 px-3 py-2.5 rounded-xl
-                            text-gray-400 dark:text-slate-500 hover:bg-gray-50 dark:hover:bg-slate-800 hover:text-gray-600 dark:hover:text-slate-300
-                            transition-all duration-200
-                            ${isCollapsed ? 'justify-center' : ''}
-                        `}
+              w-full flex items-center gap-2.5 px-3 py-2 rounded-lg
+              transition-all duration-150 text-[13px]
+              ${isCollapsed ? 'justify-center' : ''}
+            `}
+            style={{ color: 'rgba(255,255,255,0.5)' }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = 'rgba(255,255,255,0.08)';
+              e.currentTarget.style.color = 'rgba(255,255,255,0.9)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = 'transparent';
+              e.currentTarget.style.color = 'rgba(255,255,255,0.5)';
+            }}
             aria-label={isCollapsed ? 'Mở rộng sidebar' : 'Thu gọn sidebar'}
           >
             {isCollapsed ? (
-              <ChevronRight className="w-5 h-5" />
+              <ChevronRight className="w-[18px] h-[18px]" />
             ) : (
               <>
-                <ChevronLeft className="w-5 h-5" />
-                <span className="text-sm">Thu gọn</span>
+                <ChevronLeft className="w-[18px] h-[18px]" />
+                <span>Thu gọn</span>
               </>
             )}
           </button>
@@ -181,30 +226,38 @@ const Sidebar: React.FC<SidebarProps> = ({
         <NavLink
           to="/settings"
           className={`
-                        flex items-center gap-3 px-3 py-2.5 rounded-xl
-                        text-gray-500 dark:text-slate-400 hover:bg-gray-50 dark:hover:bg-slate-800 hover:text-gray-800 dark:hover:text-slate-200
-                        transition-colors
-                        ${isCollapsed ? 'justify-center' : ''}
-                    `}
+            flex items-center gap-2.5 px-3 py-2 rounded-lg
+            transition-colors text-[13px]
+            ${isCollapsed ? 'justify-center' : ''}
+          `}
+          style={{ color: 'rgba(255,255,255,0.5)' }}
           title={isCollapsed ? 'Cài đặt' : undefined}
         >
-          <Settings className="w-5 h-5" />
-          {!isCollapsed && <span className="text-sm">Cài đặt</span>}
+          <Settings className="w-[18px] h-[18px]" />
+          {!isCollapsed && <span>Cài đặt</span>}
         </NavLink>
 
         {/* Logout */}
         <button
           onClick={() => {/* Handle logout */ }}
           className={`
-                        w-full flex items-center gap-3 px-3 py-2.5 rounded-xl
-                        text-danger-500 hover:bg-danger-50 dark:hover:bg-danger-900/20
-                        transition-colors
-                        ${isCollapsed ? 'justify-center' : ''}
-                    `}
+            w-full flex items-center gap-2.5 px-3 py-2 rounded-lg
+            transition-all duration-150 text-[13px]
+            ${isCollapsed ? 'justify-center' : ''}
+          `}
+          style={{ color: 'rgba(255,255,255,0.5)' }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.background = 'rgba(255,255,255,0.08)';
+            e.currentTarget.style.color = '#FDDF8B';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.background = 'transparent';
+            e.currentTarget.style.color = 'rgba(255,255,255,0.5)';
+          }}
           title={isCollapsed ? 'Đăng xuất' : undefined}
         >
-          <LogOut className="w-5 h-5" />
-          {!isCollapsed && <span className="text-sm">Đăng xuất</span>}
+          <LogOut className="w-[18px] h-[18px]" />
+          {!isCollapsed && <span>Đăng xuất</span>}
         </button>
       </div>
     </div>

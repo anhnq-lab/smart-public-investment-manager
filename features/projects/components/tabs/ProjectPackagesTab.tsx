@@ -278,55 +278,59 @@ export const ProjectPackagesTab: React.FC<ProjectPackagesTabProps> = ({ projectI
     return (
         <div className="space-y-6">
             {/* Header / Statistics */}
-            <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-100 dark:border-slate-700 shadow-sm p-5">
+            <div className="rounded-xl p-5">
                 {/* Main Stats Row */}
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                     {/* Total Packages */}
-                    <div className="flex items-center gap-4">
-                        <div className="p-3 bg-blue-50 dark:bg-blue-900/30 rounded-xl text-blue-600 dark:text-blue-400">
-                            <Briefcase size={24} />
-                        </div>
-                        <div>
-                            <p className="text-sm text-gray-500 dark:text-slate-400">Tổng gói thầu</p>
-                            <h3 className="text-2xl font-bold text-gray-800 dark:text-slate-100 tabular-nums">{packages?.length || 0}</h3>
+                    <div className="relative overflow-hidden bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl p-5 shadow-xl ring-1 ring-white/10 hover:scale-[1.02] hover:shadow-2xl transition-all duration-200">
+                        <Briefcase className="absolute -right-3 -top-3 w-20 h-20 text-white opacity-[0.12]" />
+                        <div className="relative z-10">
+                            <div className="flex items-center justify-between mb-2">
+                                <p className="text-[10px] font-extrabold uppercase tracking-[0.15em] text-white/90">Tổng gói thầu</p>
+                                <div className="w-9 h-9 rounded-xl bg-white/20 flex items-center justify-center"><Briefcase className="w-4.5 h-4.5 text-white" /></div>
+                            </div>
+                            <h3 className="text-3xl font-black tracking-tight text-white drop-shadow-sm tabular-nums">{packages?.length || 0}</h3>
                         </div>
                     </div>
 
                     {/* Total Value */}
-                    <div className="flex items-center gap-4">
-                        <div className="p-3 bg-emerald-50 dark:bg-emerald-900/30 rounded-xl text-emerald-600 dark:text-emerald-400">
-                            <FileText size={24} />
-                        </div>
-                        <div>
-                            <p className="text-sm text-gray-500 dark:text-slate-400">Tổng giá trị (DT)</p>
-                            <h3 className="text-2xl font-bold text-gray-800 dark:text-slate-100 tabular-nums">
+                    <div className="relative overflow-hidden bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl p-5 shadow-xl ring-1 ring-white/10 hover:scale-[1.02] hover:shadow-2xl transition-all duration-200">
+                        <FileText className="absolute -right-3 -top-3 w-20 h-20 text-white opacity-[0.12]" />
+                        <div className="relative z-10">
+                            <div className="flex items-center justify-between mb-2">
+                                <p className="text-[10px] font-extrabold uppercase tracking-[0.15em] text-white/90">Tổng giá trị (DT)</p>
+                                <div className="w-9 h-9 rounded-xl bg-white/20 flex items-center justify-center"><FileText className="w-4.5 h-4.5 text-white" /></div>
+                            </div>
+                            <h3 className="text-2xl font-black tracking-tight text-white drop-shadow-sm tabular-nums">
                                 {formatCurrency(packages?.reduce((sum, p) => sum + (p.Price || 0), 0) || 0)}
                             </h3>
                         </div>
                     </div>
 
                     {/* Awarded Packages */}
-                    <div className="flex items-center gap-4">
-                        <div className="p-3 bg-indigo-50 dark:bg-indigo-900/30 rounded-xl text-indigo-600 dark:text-indigo-400">
-                            <CheckCircle2 size={24} />
-                        </div>
-                        <div>
-                            <p className="text-sm text-gray-500 dark:text-slate-400">Đã có kết quả</p>
-                            <h3 className="text-2xl font-bold text-gray-800 dark:text-slate-100 tabular-nums">
+                    <div className="relative overflow-hidden bg-gradient-to-br from-violet-500 to-purple-600 rounded-2xl p-5 shadow-xl ring-1 ring-white/10 hover:scale-[1.02] hover:shadow-2xl transition-all duration-200">
+                        <CheckCircle2 className="absolute -right-3 -top-3 w-20 h-20 text-white opacity-[0.12]" />
+                        <div className="relative z-10">
+                            <div className="flex items-center justify-between mb-2">
+                                <p className="text-[10px] font-extrabold uppercase tracking-[0.15em] text-white/90">Đã có kết quả</p>
+                                <div className="w-9 h-9 rounded-xl bg-white/20 flex items-center justify-center"><CheckCircle2 className="w-4.5 h-4.5 text-white" /></div>
+                            </div>
+                            <h3 className="text-3xl font-black tracking-tight text-white drop-shadow-sm tabular-nums">
                                 {packages?.filter(p => p.Status === PackageStatus.Awarded).length || 0}
-                                <span className="text-sm font-normal text-gray-400 dark:text-slate-500">/{packages?.length || 0}</span>
+                                <span className="text-lg font-bold text-white/70 ml-1">/{packages?.length || 0}</span>
                             </h3>
                         </div>
                     </div>
 
                     {/* In Progress */}
-                    <div className="flex items-center gap-4">
-                        <div className="p-3 bg-amber-50 dark:bg-amber-900/30 rounded-xl text-amber-600 dark:text-amber-400">
-                            <Clock size={24} />
-                        </div>
-                        <div>
-                            <p className="text-sm text-gray-500 dark:text-slate-400">Đang thực hiện</p>
-                            <h3 className="text-2xl font-bold text-gray-800 dark:text-slate-100 tabular-nums">
+                    <div className="relative overflow-hidden bg-gradient-to-br from-amber-500 to-orange-600 rounded-2xl p-5 shadow-xl ring-1 ring-white/10 hover:scale-[1.02] hover:shadow-2xl transition-all duration-200">
+                        <Clock className="absolute -right-3 -top-3 w-20 h-20 text-white opacity-[0.12]" />
+                        <div className="relative z-10">
+                            <div className="flex items-center justify-between mb-2">
+                                <p className="text-[10px] font-extrabold uppercase tracking-[0.15em] text-white/90">Đang thực hiện</p>
+                                <div className="w-9 h-9 rounded-xl bg-white/20 flex items-center justify-center"><Clock className="w-4.5 h-4.5 text-white" /></div>
+                            </div>
+                            <h3 className="text-3xl font-black tracking-tight text-white drop-shadow-sm tabular-nums">
                                 {packages?.filter(p => p.Status === PackageStatus.Bidding || p.Status === PackageStatus.Evaluating).length || 0}
                             </h3>
                         </div>
@@ -334,7 +338,7 @@ export const ProjectPackagesTab: React.FC<ProjectPackagesTabProps> = ({ projectI
                 </div>
 
                 {/* Progress Bar */}
-                <div className="mt-6 pt-5 border-t border-gray-100 dark:border-slate-700">
+                <div className="mt-6 pt-5 border-t border-gray-200 dark:border-slate-700">
                     <div className="flex items-center justify-between mb-2">
                         <span className="text-sm font-medium text-gray-700 dark:text-slate-300">Tiến độ hoàn thành đấu thầu</span>
                         <span className="text-sm font-bold text-gray-800 dark:text-slate-100 tabular-nums">
@@ -962,7 +966,7 @@ const ActionDropdown: React.FC<ActionDropdownProps> = ({
             </button>
 
             {isOpen && (
-                <div className="absolute right-0 top-full mt-1 w-48 bg-white dark:bg-slate-800 rounded-lg shadow-lg border border-gray-100 dark:border-slate-600 py-1 z-20 animate-fade-in">
+                <div className="absolute right-0 top-full mt-1 w-48 bg-white dark:bg-slate-800 rounded-lg shadow-lg border border-gray-200 dark:border-slate-600 py-1 z-20 animate-fade-in">
                     <button
                         onClick={() => onView(pkg)}
                         className="w-full flex items-center gap-2 px-4 py-2 text-sm text-gray-700 dark:text-slate-300 hover:bg-gray-50 dark:hover:bg-slate-700"
@@ -979,7 +983,7 @@ const ActionDropdown: React.FC<ActionDropdownProps> = ({
                     </button>
                     {pkg.NotificationCode && (
                         <>
-                            <hr className="my-1 border-gray-100 dark:border-slate-700" />
+                            <hr className="my-1 border-gray-200 dark:border-slate-700" />
                             <a
                                 href={getMSCPackageLink(pkg.NotificationCode)}
                                 target="_blank"
@@ -998,7 +1002,7 @@ const ActionDropdown: React.FC<ActionDropdownProps> = ({
                             </button>
                         </>
                     )}
-                    <hr className="my-1 border-gray-100 dark:border-slate-700" />
+                    <hr className="my-1 border-gray-200 dark:border-slate-700" />
                     <button
                         onClick={() => onDelete(pkg)}
                         className="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20"

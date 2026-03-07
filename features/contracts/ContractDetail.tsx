@@ -115,41 +115,41 @@ const ContractDetail: React.FC = () => {
 
             {/* Financial Summary Cards */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-gray-100 dark:border-slate-700 shadow-sm flex items-center justify-between relative overflow-hidden group">
-                    <div className="absolute right-0 top-0 p-6 opacity-5 group-hover:opacity-10 transition-opacity"><DollarSign className="w-24 h-24" /></div>
-                    <div>
-                        <p className="text-xs font-bold text-gray-400 dark:text-slate-500 uppercase tracking-widest mb-1">Giá trị hợp đồng</p>
-                        <p className="text-xl font-black text-gray-900 dark:text-slate-100">{formatFullCurrency(contract.Value)}</p>
-                    </div>
-                    <div className="w-12 h-12 bg-blue-50 dark:bg-blue-900/30 rounded-xl flex items-center justify-center text-blue-600 dark:text-blue-400">
-                        <FileDigit className="w-6 h-6" />
-                    </div>
-                </div>
-                <div className="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-gray-100 dark:border-slate-700 shadow-sm flex items-center justify-between relative overflow-hidden group">
-                    <div className="absolute right-0 top-0 p-6 opacity-5 group-hover:opacity-10 transition-opacity"><TrendingUp className="w-24 h-24 text-emerald-600" /></div>
-                    <div>
-                        <p className="text-xs font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-widest mb-1">Đã thanh toán ({paymentPercent.toFixed(1)}%)</p>
-                        <p className="text-xl font-black text-emerald-700 dark:text-emerald-300">{formatFullCurrency(totalPaid)}</p>
-                    </div>
-                    <div className="w-12 h-12 bg-emerald-50 dark:bg-emerald-900/30 rounded-xl flex items-center justify-center text-emerald-600 dark:text-emerald-400">
-                        <CheckCircle2 className="w-6 h-6" />
+                <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-blue-500 via-blue-600 to-indigo-700 text-white p-5 shadow-xl ring-1 ring-blue-400/30 transition-transform hover:scale-[1.02] hover:shadow-2xl duration-300">
+                    <div className="absolute -right-3 -top-3 opacity-[0.12]"><DollarSign className="w-24 h-24" strokeWidth={1.2} /></div>
+                    <div className="relative z-10 text-center">
+                        <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center mx-auto mb-2 shadow-sm">
+                            <FileDigit className="w-6 h-6 text-white" />
+                        </div>
+                        <p className="text-[10px] font-extrabold text-white/90 uppercase tracking-[0.15em] mb-1">Giá trị hợp đồng</p>
+                        <p className="text-xl font-black text-white drop-shadow-sm">{formatFullCurrency(contract.Value)}</p>
                     </div>
                 </div>
-                <div className="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-gray-100 dark:border-slate-700 shadow-sm flex items-center justify-between relative overflow-hidden group">
-                    <div className="absolute right-0 top-0 p-6 opacity-5 group-hover:opacity-10 transition-opacity"><Clock className="w-24 h-24 text-orange-600" /></div>
-                    <div>
-                        <p className="text-xs font-bold text-orange-600 dark:text-orange-400 uppercase tracking-widest mb-1">Giá trị còn lại</p>
-                        <p className="text-xl font-black text-orange-700 dark:text-orange-300">{formatFullCurrency(remaining)}</p>
+                <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-emerald-500 via-emerald-600 to-teal-700 text-white p-5 shadow-xl ring-1 ring-emerald-400/30 transition-transform hover:scale-[1.02] hover:shadow-2xl duration-300">
+                    <div className="absolute -right-3 -top-3 opacity-[0.12]"><TrendingUp className="w-24 h-24" strokeWidth={1.2} /></div>
+                    <div className="relative z-10 text-center">
+                        <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center mx-auto mb-2 shadow-sm">
+                            <CheckCircle2 className="w-6 h-6 text-white" />
+                        </div>
+                        <p className="text-[10px] font-extrabold text-white/90 uppercase tracking-[0.15em] mb-1">Đã thanh toán ({paymentPercent.toFixed(1)}%)</p>
+                        <p className="text-xl font-black text-white drop-shadow-sm">{formatFullCurrency(totalPaid)}</p>
                     </div>
-                    <div className="w-12 h-12 bg-orange-50 dark:bg-orange-900/30 rounded-xl flex items-center justify-center text-orange-600 dark:text-orange-400">
-                        <AlertTriangle className="w-6 h-6" />
+                </div>
+                <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-amber-500 via-orange-500 to-red-500 text-white p-5 shadow-xl ring-1 ring-amber-400/30 transition-transform hover:scale-[1.02] hover:shadow-2xl duration-300">
+                    <div className="absolute -right-3 -top-3 opacity-[0.12]"><Clock className="w-24 h-24" strokeWidth={1.2} /></div>
+                    <div className="relative z-10 text-center">
+                        <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center mx-auto mb-2 shadow-sm">
+                            <AlertTriangle className="w-6 h-6 text-white" />
+                        </div>
+                        <p className="text-[10px] font-extrabold text-white/90 uppercase tracking-[0.15em] mb-1">Giá trị còn lại</p>
+                        <p className="text-xl font-black text-white drop-shadow-sm">{formatFullCurrency(remaining)}</p>
                     </div>
                 </div>
             </div>
 
             {/* Navigation Tabs */}
-            <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 overflow-hidden">
-                <div className="border-b border-gray-100 dark:border-slate-700 px-6 flex gap-8 overflow-x-auto">
+            <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-gray-200 dark:border-slate-700 overflow-hidden">
+                <div className="border-b border-gray-200 dark:border-slate-700 px-6 flex gap-8 overflow-x-auto">
                     {[
                         { id: 'general', label: 'Thông tin chung', icon: FileText },
                         { id: 'boq', label: 'Nội dung & Khối lượng', icon: Layers },
@@ -176,8 +176,9 @@ const ContractDetail: React.FC = () => {
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
                             {/* Left Column: Contract Details */}
                             <div className="space-y-6">
-                                <h3 className="text-sm font-black text-gray-800 dark:text-slate-200 uppercase tracking-widest border-b border-gray-100 dark:border-slate-700 pb-2 flex items-center gap-2">
-                                    <FileText className="w-4 h-4 text-blue-600 dark:text-blue-400" /> Thông tin hợp đồng
+                                <h3 className="section-header">
+                                    <div className="section-icon"><FileText className="w-3.5 h-3.5" /></div>
+                                    Thông tin hợp đồng
                                 </h3>
                                 <div className="grid grid-cols-2 gap-y-4 gap-x-4 text-sm">
                                     <div>
@@ -210,17 +211,19 @@ const ContractDetail: React.FC = () => {
                             {/* Right Column: Parties */}
                             <div className="space-y-8">
                                 <div>
-                                    <h3 className="text-sm font-black text-gray-800 dark:text-slate-200 uppercase tracking-widest border-b border-gray-100 dark:border-slate-700 pb-2 flex items-center gap-2">
-                                        <Building2 className="w-4 h-4 text-blue-600 dark:text-blue-400" /> Bên giao thầu (Bên A)
+                                    <h3 className="section-header">
+                                        <div className="section-icon"><Building2 className="w-3.5 h-3.5" /></div>
+                                        Bên giao thầu (Bên A)
                                     </h3>
-                                    <div className="mt-4 p-4 bg-gray-50 dark:bg-slate-700/50 rounded-xl border border-gray-100 dark:border-slate-600">
+                                    <div className="mt-4 p-4 bg-gray-50 dark:bg-slate-700/50 rounded-xl border border-gray-200 dark:border-slate-600">
                                         <p className="font-bold text-gray-800 dark:text-slate-200 text-sm">{project?.InvestorName}</p>
                                         <p className="text-xs text-gray-500 dark:text-slate-400 mt-1">Đại diện: Giám đốc Ban QLDA</p>
                                     </div>
                                 </div>
                                 <div>
-                                    <h3 className="text-sm font-black text-gray-800 dark:text-slate-200 uppercase tracking-widest border-b border-gray-100 dark:border-slate-700 pb-2 flex items-center gap-2">
-                                        <Briefcase className="w-4 h-4 text-blue-600 dark:text-blue-400" /> Bên nhận thầu (Bên B)
+                                    <h3 className="section-header">
+                                        <div className="section-icon"><Briefcase className="w-3.5 h-3.5" /></div>
+                                        Bên nhận thầu (Bên B)
                                     </h3>
                                     <div className="mt-4 p-4 bg-blue-50/50 dark:bg-blue-900/20 rounded-xl border border-blue-100 dark:border-blue-800/40">
                                         <p className="font-bold text-blue-900 dark:text-blue-200 text-sm">{contractor?.FullName}</p>
@@ -315,7 +318,7 @@ const ContractDetail: React.FC = () => {
                             {/* Payment Chart */}
                             <div>
                                 <h3 className="text-lg font-bold text-gray-800 dark:text-slate-200 mb-6">Biểu đồ dòng tiền</h3>
-                                <div className="bg-gray-50 dark:bg-slate-700/30 p-6 rounded-2xl border border-gray-100 dark:border-slate-700 h-80">
+                                <div className="bg-gray-50 dark:bg-slate-700/30 p-6 rounded-2xl border border-gray-200 dark:border-slate-700 h-80">
                                     <ResponsiveContainer width="100%" height="100%">
                                         <BarChart data={financialData} layout="vertical" margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
                                             <CartesianGrid strokeDasharray="3 3" horizontal={false} />
@@ -370,7 +373,7 @@ const ContractDetail: React.FC = () => {
                                         </div>
                                     </div>
                                 </div>
-                                <div className="bg-gray-50 dark:bg-slate-700/30 p-6 rounded-2xl border border-gray-100 dark:border-slate-700 h-80">
+                                <div className="bg-gray-50 dark:bg-slate-700/30 p-6 rounded-2xl border border-gray-200 dark:border-slate-700 h-80">
                                     <ResponsiveContainer width="100%" height="100%">
                                         <AreaChart
                                             data={[
@@ -474,7 +477,7 @@ const ContractDetail: React.FC = () => {
                                                 ms.status === 'In Progress' ? 'bg-blue-500 animate-pulse' : 'bg-gray-300'
                                                 }`}></div>
 
-                                            <div className="flex flex-col md:flex-row md:items-center justify-between p-4 bg-white dark:bg-slate-700/50 border border-gray-100 dark:border-slate-600 rounded-xl hover:shadow-md transition-shadow">
+                                            <div className="flex flex-col md:flex-row md:items-center justify-between p-4 bg-white dark:bg-slate-700/50 border border-gray-200 dark:border-slate-600 rounded-xl hover:shadow-md transition-shadow">
                                                 <div>
                                                     <h4 className={`font-bold text-sm ${ms.status === 'Pending' ? 'text-gray-500 dark:text-slate-500' : 'text-gray-800 dark:text-slate-200'}`}>{ms.name}</h4>
                                                     <p className="text-xs text-gray-400 dark:text-slate-500 mt-1 flex items-center gap-1">

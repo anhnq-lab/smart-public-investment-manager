@@ -15,11 +15,12 @@ export const DualProgressCard: React.FC<DualProgressCardProps> = ({
     financialLabel = 'Tiến độ giải ngân'
 }) => {
     return (
-        <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 shadow-sm overflow-hidden">
-            <div className="px-4 py-3 bg-gray-50 dark:bg-slate-700 border-b border-gray-200 dark:border-slate-600">
-                <h4 className="text-xs font-bold text-gray-700 dark:text-slate-300 uppercase tracking-wide">
-                    Tiến độ thực hiện
-                </h4>
+        <div className="section-card">
+            <div className="section-card-header">
+                <div className="flex items-center gap-2">
+                    <div className="section-icon"><TrendingUp className="w-3.5 h-3.5" /></div>
+                    <span>Tiến độ thực hiện</span>
+                </div>
             </div>
             <div className="p-4 space-y-4">
                 {/* Physical Progress */}

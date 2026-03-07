@@ -70,7 +70,7 @@ export const CapitalPlanModal: React.FC<CapitalPlanModalProps> = ({
                 onClick={e => e.stopPropagation()}
             >
                 {/* Header */}
-                <div className="px-6 py-4 border-b border-gray-100 dark:border-slate-700 flex items-center justify-between">
+                <div className="px-6 py-4 border-b border-gray-200 dark:border-slate-700 flex items-center justify-between">
                     <div className="flex items-center gap-3">
                         <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
                             <Landmark className="w-5 h-5 text-blue-600 dark:text-blue-400" />
@@ -166,7 +166,7 @@ export const CapitalPlanModal: React.FC<CapitalPlanModalProps> = ({
                     </div>
 
                     {/* Actions */}
-                    <div className="flex justify-end gap-3 pt-4 border-t border-gray-100 dark:border-slate-700">
+                    <div className="flex justify-end gap-3 pt-4 border-t border-gray-200 dark:border-slate-700">
                         <button
                             type="button"
                             onClick={onClose}

@@ -123,7 +123,7 @@ const PersonalDashboard: React.FC = () => {
     return (
         <div className="space-y-6 animate-in fade-in duration-300">
             {/* Welcome Header */}
-            <div className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 rounded-2xl p-6 text-white relative overflow-hidden">
+            <div className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 rounded-2xl p-4 sm:p-6 text-white relative overflow-hidden">
                 <div className="absolute right-0 top-0 w-64 h-64 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/3"></div>
                 <div className="absolute right-20 bottom-0 w-32 h-32 bg-white/5 rounded-full translate-y-1/2"></div>
 
@@ -149,63 +149,79 @@ const PersonalDashboard: React.FC = () => {
             </div>
 
             {/* Quick Stats */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div className="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-gray-100 dark:border-slate-700 shadow-sm hover:shadow-md transition-shadow">
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <p className="text-xs font-bold text-gray-400 dark:text-slate-500 uppercase tracking-wider">Dự án phụ trách</p>
-                            <p className="text-3xl font-black text-gray-900 dark:text-slate-100 mt-1">{myProjects.length}</p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+                {/* Card: Dự án phụ trách */}
+                <div className="stat-card-premium cursor-pointer" onClick={() => navigate('/projects')}>
+                    <div className="flex items-center justify-between relative z-10">
+                        <div className="p-2.5 rounded-xl bg-white/20 shadow-sm">
+                            <Building2 className="w-5 h-5 text-white" />
                         </div>
-                        <div className="w-12 h-12 bg-blue-50 dark:bg-blue-900/30 rounded-xl flex items-center justify-center">
-                            <Building2 className="w-6 h-6 text-blue-600 dark:text-blue-400" />
-                        </div>
+                    </div>
+                    <div className="relative z-10">
+                        <h3 className="text-3xl font-black text-white tracking-tight drop-shadow-sm">{myProjects.length}</h3>
+                        <p className="text-[10px] font-extrabold text-white/90 uppercase tracking-[0.15em]">Dự án phụ trách</p>
+                    </div>
+                    <div className="absolute top-0 right-0 p-4 opacity-[0.12] text-white">
+                        <Building2 className="w-20 h-20" />
                     </div>
                 </div>
 
-                <div className="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-gray-100 dark:border-slate-700 shadow-sm hover:shadow-md transition-shadow">
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <p className="text-xs font-bold text-gray-400 dark:text-slate-500 uppercase tracking-wider">Công việc đang làm</p>
-                            <p className="text-3xl font-black text-blue-600 dark:text-blue-400 mt-1">{taskStats.inProgress}</p>
+                {/* Card: Công việc đang làm */}
+                <div className="stat-card-premium cursor-pointer" onClick={() => navigate('/tasks')}>
+                    <div className="flex items-center justify-between relative z-10">
+                        <div className="p-2.5 rounded-xl bg-white/20 shadow-sm">
+                            <Target className="w-5 h-5 text-white" />
                         </div>
-                        <div className="w-12 h-12 bg-indigo-50 dark:bg-indigo-900/30 rounded-xl flex items-center justify-center">
-                            <Target className="w-6 h-6 text-indigo-600 dark:text-indigo-400" />
-                        </div>
+                    </div>
+                    <div className="relative z-10">
+                        <h3 className="text-3xl font-black text-white tracking-tight drop-shadow-sm">{taskStats.inProgress}</h3>
+                        <p className="text-[10px] font-extrabold text-white/90 uppercase tracking-[0.15em]">Công việc đang làm</p>
+                    </div>
+                    <div className="absolute top-0 right-0 p-4 opacity-[0.12] text-white">
+                        <Target className="w-20 h-20" />
                     </div>
                 </div>
 
-                <div className="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-gray-100 dark:border-slate-700 shadow-sm hover:shadow-md transition-shadow">
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <p className="text-xs font-bold text-gray-400 dark:text-slate-500 uppercase tracking-wider">Chờ xử lý</p>
-                            <p className="text-3xl font-black text-amber-600 dark:text-amber-400 mt-1">{taskStats.todo}</p>
+                {/* Card: Chờ xử lý */}
+                <div className="stat-card-premium cursor-pointer" onClick={() => navigate('/tasks')}>
+                    <div className="flex items-center justify-between relative z-10">
+                        <div className="p-2.5 rounded-xl bg-white/20 shadow-sm">
+                            <Clock className="w-5 h-5 text-white" />
                         </div>
-                        <div className="w-12 h-12 bg-amber-50 dark:bg-amber-900/30 rounded-xl flex items-center justify-center">
-                            <Clock className="w-6 h-6 text-amber-600 dark:text-amber-400" />
-                        </div>
+                    </div>
+                    <div className="relative z-10">
+                        <h3 className="text-3xl font-black text-white tracking-tight drop-shadow-sm">{taskStats.todo}</h3>
+                        <p className="text-[10px] font-extrabold text-white/90 uppercase tracking-[0.15em]">Chờ xử lý</p>
+                    </div>
+                    <div className="absolute top-0 right-0 p-4 opacity-[0.12] text-white">
+                        <Clock className="w-20 h-20" />
                     </div>
                 </div>
 
-                <div className="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-gray-100 dark:border-slate-700 shadow-sm hover:shadow-md transition-shadow">
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <p className="text-xs font-bold text-gray-400 dark:text-slate-500 uppercase tracking-wider">Quá hạn</p>
-                            <p className={`text-3xl font-black mt-1 ${taskStats.overdue > 0 ? 'text-red-600 dark:text-red-400' : 'text-gray-400 dark:text-slate-500'}`}>{taskStats.overdue}</p>
+                {/* Card: Quá hạn */}
+                <div className="stat-card-premium cursor-pointer" onClick={() => navigate('/tasks')}>
+                    <div className="flex items-center justify-between relative z-10">
+                        <div className="p-2.5 rounded-xl bg-white/20 shadow-sm">
+                            <AlertTriangle className={`w-5 h-5 text-white`} />
                         </div>
-                        <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${taskStats.overdue > 0 ? 'bg-red-50 dark:bg-red-900/30' : 'bg-gray-50 dark:bg-slate-700'}`}>
-                            <AlertTriangle className={`w-6 h-6 ${taskStats.overdue > 0 ? 'text-red-600 dark:text-red-400' : 'text-gray-400 dark:text-slate-500'}`} />
-                        </div>
+                    </div>
+                    <div className="relative z-10">
+                        <h3 className="text-3xl font-black text-white tracking-tight drop-shadow-sm">{taskStats.overdue}</h3>
+                        <p className="text-[10px] font-extrabold text-white/90 uppercase tracking-[0.15em]">Quá hạn</p>
+                    </div>
+                    <div className="absolute top-0 right-0 p-4 opacity-[0.12] text-white">
+                        <AlertTriangle className="w-20 h-20" />
                     </div>
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
                 {/* My Projects */}
-                <div className="lg:col-span-2 bg-white dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-700 shadow-sm overflow-hidden">
-                    <div className="px-6 py-4 border-b border-gray-100 dark:border-slate-700 flex items-center justify-between">
+                <div className="xl:col-span-2 section-card">
+                    <div className="section-card-header">
                         <div className="flex items-center gap-2">
-                            <Briefcase className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-                            <h3 className="font-bold text-gray-800 dark:text-slate-100">Dự án của tôi</h3>
+                            <div className="section-icon"><Briefcase className="w-3.5 h-3.5" /></div>
+                            <span>Dự án của tôi</span>
                         </div>
                         <button
                             onClick={() => navigate('/projects')}
@@ -266,11 +282,11 @@ const PersonalDashboard: React.FC = () => {
                 </div>
 
                 {/* Upcoming Deadlines */}
-                <div className="bg-white dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-700 shadow-sm overflow-hidden">
-                    <div className="px-6 py-4 border-b border-gray-100 dark:border-slate-700 flex items-center justify-between">
+                <div className="section-card">
+                    <div className="section-card-header">
                         <div className="flex items-center gap-2">
-                            <Clock className="w-5 h-5 text-amber-600 dark:text-amber-400" />
-                            <h3 className="font-bold text-gray-800 dark:text-slate-100">Deadline sắp tới</h3>
+                            <div className="section-icon"><Clock className="w-3.5 h-3.5" /></div>
+                            <span>Deadline sắp tới</span>
                         </div>
                         <span className="text-[10px] font-bold text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/30 px-2 py-1 rounded">7 ngày</span>
                     </div>
@@ -305,13 +321,13 @@ const PersonalDashboard: React.FC = () => {
             </div>
 
             {/* Bottom Row */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
                 {/* My Tasks */}
-                <div className="bg-white dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-700 shadow-sm overflow-hidden">
-                    <div className="px-6 py-4 border-b border-gray-100 dark:border-slate-700 flex items-center justify-between">
+                <div className="section-card">
+                    <div className="section-card-header">
                         <div className="flex items-center gap-2">
-                            <CheckSquare className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
-                            <h3 className="font-bold text-gray-800 dark:text-slate-100">Công việc đang thực hiện</h3>
+                            <div className="section-icon"><CheckSquare className="w-3.5 h-3.5" /></div>
+                            <span>Công việc đang thực hiện</span>
                         </div>
                         <button
                             onClick={() => navigate('/tasks')}
@@ -352,11 +368,11 @@ const PersonalDashboard: React.FC = () => {
                 </div>
 
                 {/* My Documents — Real Data from Supabase */}
-                <div className="bg-white dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-700 shadow-sm overflow-hidden">
-                    <div className="px-6 py-4 border-b border-gray-100 dark:border-slate-700 flex items-center justify-between">
+                <div className="section-card">
+                    <div className="section-card-header">
                         <div className="flex items-center gap-2">
-                            <FileText className="w-5 h-5 text-purple-600 dark:text-purple-400" />
-                            <h3 className="font-bold text-gray-800 dark:text-slate-100">Tài liệu gần đây</h3>
+                            <div className="section-icon"><FileText className="w-3.5 h-3.5" /></div>
+                            <span>Tài liệu gần đây</span>
                         </div>
                         <button
                             onClick={() => navigate('/documents')}
@@ -404,11 +420,11 @@ const PersonalDashboard: React.FC = () => {
 
             {/* Contracts Row */}
             {myContracts.length > 0 && (
-                <div className="bg-white dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-700 shadow-sm overflow-hidden">
-                    <div className="px-6 py-4 border-b border-gray-100 dark:border-slate-700 flex items-center justify-between">
+                <div className="section-card">
+                    <div className="section-card-header">
                         <div className="flex items-center gap-2">
-                            <FileText className="w-5 h-5 text-cyan-600 dark:text-cyan-400" />
-                            <h3 className="font-bold text-gray-800 dark:text-slate-100">Hợp đồng liên quan</h3>
+                            <div className="section-icon"><FileText className="w-3.5 h-3.5" /></div>
+                            <span>Hợp đồng liên quan</span>
                         </div>
                         <button
                             onClick={() => navigate('/contracts')}
@@ -444,7 +460,7 @@ const PersonalDashboard: React.FC = () => {
             )}
 
             {/* Summary Footer */}
-            <div className="bg-gradient-to-r from-gray-50 to-white dark:from-slate-800 dark:to-slate-800 rounded-2xl border border-gray-100 dark:border-slate-700 p-6">
+            <div className="bg-gradient-to-r from-gray-50 to-white dark:from-slate-800 dark:to-slate-800 rounded-2xl border border-gray-200 dark:border-slate-700 p-6">
                 <div className="flex flex-wrap items-center justify-between gap-6">
                     <div className="flex items-center gap-8">
                         <div>

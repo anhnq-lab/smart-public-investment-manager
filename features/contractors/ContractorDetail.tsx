@@ -51,7 +51,7 @@ const ContractorDetail: React.FC = () => {
                     <ArrowLeft className="w-4 h-4" /> Quay lại danh sách
                 </button>
 
-                <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-gray-100 dark:border-slate-700 p-8">
+                <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-gray-200 dark:border-slate-700 p-8">
                     <div className="flex flex-col md:flex-row justify-between gap-8">
                         <div className="flex-1">
                             <div className="flex items-center gap-3 mb-2">
@@ -87,7 +87,7 @@ const ContractorDetail: React.FC = () => {
 
             <div className="max-w-6xl mx-auto space-y-8">
                 {/* Won Packages List */}
-                <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-gray-100 dark:border-slate-700 p-8">
+                <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-gray-200 dark:border-slate-700 p-8">
                     <h3 className="text-xl font-bold text-gray-800 dark:text-slate-100 mb-6 flex items-center gap-2">
                         <Award className="w-6 h-6 text-yellow-500" /> Lịch sử đấu thầu & Trúng thầu
                     </h3>
@@ -127,14 +127,14 @@ const ContractorDetail: React.FC = () => {
                 </div>
 
                 {/* Contracts List */}
-                <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-gray-100 dark:border-slate-700 p-8">
+                <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-gray-200 dark:border-slate-700 p-8">
                     <h3 className="text-xl font-bold text-gray-800 dark:text-slate-100 mb-6 flex items-center gap-2">
                         <FileText className="w-6 h-6 text-blue-500" /> Hợp đồng đã ký ({contracts.length})
                     </h3>
                     {contracts.length > 0 ? (
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             {contracts.map(c => (
-                                <div key={c.ContractID} onClick={() => navigate(`/contracts/${c.ContractID}`)} className="p-4 border border-gray-100 dark:border-slate-700 rounded-2xl hover:bg-gray-50 dark:hover:bg-slate-700/30 cursor-pointer transition-all">
+                                <div key={c.ContractID} onClick={() => navigate(`/contracts/${c.ContractID}`)} className="p-4 border border-gray-200 dark:border-slate-700 rounded-2xl hover:bg-gray-50 dark:hover:bg-slate-700/30 cursor-pointer transition-all">
                                     <div className="flex justify-between items-start mb-2">
                                         <span className="bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 px-2 py-0.5 rounded-lg text-xs font-bold font-mono">{c.ContractID}</span>
                                         <span className={`px-2 py-0.5 rounded-lg text-xs font-bold ${c.Status === 1 ? 'bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-300' : 'bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-slate-400'}`}>

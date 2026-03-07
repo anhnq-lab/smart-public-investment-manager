@@ -893,7 +893,7 @@ export const ProjectComplianceTab: React.FC<ProjectComplianceTabProps> = ({ proj
                     return (
                         <div
                             key={key}
-                            className={`grid grid-cols-[56px_1fr_130px_1fr] gap-0 border-b border-gray-100 dark:border-slate-700 transition-colors ${isMainHeading
+                            className={`grid grid-cols-[56px_1fr_130px_1fr] gap-0 border-b border-gray-200 dark:border-slate-700 transition-colors ${isMainHeading
                                 ? 'bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-slate-700 dark:to-slate-700 cursor-pointer hover:from-blue-100 hover:to-indigo-100 dark:hover:from-slate-600 dark:hover:to-slate-600'
                                 : isHeading
                                     ? 'bg-gray-50/50 dark:bg-slate-700/50'
@@ -913,7 +913,7 @@ export const ProjectComplianceTab: React.FC<ProjectComplianceTabProps> = ({ proj
                             </div>
 
                             {/* Label */}
-                            <div className={`px-3 py-3 border-l border-gray-100 dark:border-slate-700 text-xs ${isMainHeading ? 'font-black text-blue-800 dark:text-blue-300 tracking-wider' :
+                            <div className={`px-3 py-3 border-l border-gray-200 dark:border-slate-700 text-xs ${isMainHeading ? 'font-black text-blue-800 dark:text-blue-300 tracking-wider' :
                                 isHeading ? 'font-bold text-gray-700 dark:text-slate-200' :
                                     'text-gray-700 dark:text-slate-300'
                                 }`} style={{ paddingLeft: `${12 + row.depth * 16}px` }}>
@@ -926,7 +926,7 @@ export const ProjectComplianceTab: React.FC<ProjectComplianceTabProps> = ({ proj
                             </div>
 
                             {/* Biểu mẫu / Upload */}
-                            <div className="px-3 py-3 border-l border-gray-100 dark:border-slate-700 text-center">
+                            <div className="px-3 py-3 border-l border-gray-200 dark:border-slate-700 text-center">
                                 {isMainHeading || isHeading ? null : row.type === 'document' ? (
                                     <div className="flex flex-col items-center gap-1">
                                         {row.templateFile && (
@@ -941,7 +941,7 @@ export const ProjectComplianceTab: React.FC<ProjectComplianceTabProps> = ({ proj
                             </div>
 
                             {/* Value / Extracted Data */}
-                            <div className="px-3 py-3 border-l border-gray-100 dark:border-slate-700">
+                            <div className="px-3 py-3 border-l border-gray-200 dark:border-slate-700">
                                 {isMainHeading || isHeading ? null :
                                     row.type === 'data' ? renderDataValue(row) :
                                         row.type === 'cost_breakdown' ? (

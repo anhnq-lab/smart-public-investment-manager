@@ -65,7 +65,7 @@ export const LegalDocumentsSection: React.FC<LegalDocumentsSectionProps> = ({
                     </button>
 
                     {expandedCard === 'policy' && (
-                        <div className="px-4 pb-4 border-t border-gray-100 pt-3 space-y-2 bg-gray-50">
+                        <div className="px-4 pb-4 border-t border-gray-200 pt-3 space-y-2 bg-gray-50">
                             <InfoRow icon={Calendar} label="Ngày ban hành" value={investmentPolicy.DecisionDate} />
                             <InfoRow icon={Building2} label="Cơ quan" value={investmentPolicy.Authority} />
                             <InfoRow icon={MapPin} label="Địa điểm" value={investmentPolicy.Location} />
@@ -108,7 +108,7 @@ export const LegalDocumentsSection: React.FC<LegalDocumentsSectionProps> = ({
                     </button>
 
                     {expandedCard === 'feasibility' && (
-                        <div className="px-4 pb-4 border-t border-gray-100 pt-3 space-y-2 bg-gray-50">
+                        <div className="px-4 pb-4 border-t border-gray-200 pt-3 space-y-2 bg-gray-50">
                             <InfoRow icon={Calendar} label="Ngày phê duyệt" value={feasibilityStudy.ApprovalDate} />
                             <InfoRow icon={Building2} label="Cơ quan phê duyệt" value={feasibilityStudy.ApprovalAuthority} />
                             <InfoRow icon={Coins} label="Tổng mức ĐT" value={formatCurrency(feasibilityStudy.TotalInvestment)} highlight />
@@ -151,7 +151,7 @@ export const LegalDocumentsSection: React.FC<LegalDocumentsSectionProps> = ({
                     </button>
 
                     {expandedCard === 'approval' && (
-                        <div className="px-4 pb-4 border-t border-gray-100 pt-3 space-y-2 bg-gray-50">
+                        <div className="px-4 pb-4 border-t border-gray-200 pt-3 space-y-2 bg-gray-50">
                             <InfoRow icon={Calendar} label="Ngày phê duyệt" value={approvalDecision.date} />
                             <InfoRow icon={Building2} label="Cơ quan ban hành" value={approvalDecision.authority} />
                         </div>

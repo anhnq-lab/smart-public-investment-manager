@@ -27,13 +27,11 @@ const Login: React.FC = () => {
     return (
         <div className="min-h-screen bg-gray-50 dark:bg-slate-900 flex items-center justify-center p-4">
             <div className="bg-white dark:bg-slate-800 w-full max-w-md rounded-3xl shadow-2xl overflow-hidden flex flex-col border border-gray-200 dark:border-slate-700">
-                <div className="bg-blue-600 p-8 text-center relative overflow-hidden">
+                <div className="bg-gradient-to-r from-[#F99715] to-[#EC6710] p-8 text-center relative overflow-hidden">
                     <div className="absolute top-0 left-0 w-full h-full opacity-20 bg-gradient-to-br from-white via-transparent to-transparent"></div>
-                    <div className="w-16 h-16 bg-white/20 rounded-2xl mx-auto flex items-center justify-center mb-4 backdrop-blur-sm border border-white/30">
-                        <Building2 className="w-8 h-8 text-white" />
-                    </div>
-                    <h1 className="text-2xl font-bold text-white">QLDA Đầu tư công</h1>
-                    <p className="text-blue-50 text-sm mt-1">Hệ thống quản lý dự án thông minh</p>
+                    <img src="/hcma-logo.png" alt="Logo HVCTQG HCM" className="w-20 h-20 mx-auto mb-4 drop-shadow-lg object-contain" />
+                    <h1 className="text-lg font-bold text-white leading-snug">Ban Quản lý dự án đầu tư xây dựng chuyên ngành</h1>
+                    <p className="text-yellow-50 text-sm mt-1">Học viện Chính trị Quốc gia Hồ Chí Minh</p>
                 </div>
 
                 <div className="p-8">
@@ -54,7 +52,7 @@ const Login: React.FC = () => {
                                     placeholder="Nhập tên đăng nhập hoặc email"
                                     value={username}
                                     onChange={e => setUsername(e.target.value)}
-                                    className="w-full pl-12 pr-4 py-3 bg-gray-50 dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all text-gray-900 dark:text-slate-100 placeholder-gray-400 dark:placeholder-slate-500"
+                                    className="w-full pl-12 pr-4 py-3 bg-gray-50 dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 transition-all text-gray-900 dark:text-slate-100 placeholder-gray-400 dark:placeholder-slate-500"
                                     autoFocus
                                 />
                             </div>
@@ -69,7 +67,7 @@ const Login: React.FC = () => {
                                     placeholder="••••••••"
                                     value={password}
                                     onChange={e => setPassword(e.target.value)}
-                                    className="w-full pl-12 pr-12 py-3 bg-gray-50 dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all text-gray-900 dark:text-slate-100 placeholder-gray-400 dark:placeholder-slate-500"
+                                    className="w-full pl-12 pr-12 py-3 bg-gray-50 dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 transition-all text-gray-900 dark:text-slate-100 placeholder-gray-400 dark:placeholder-slate-500"
                                 />
                                 <button
                                     type="button"
@@ -80,19 +78,19 @@ const Login: React.FC = () => {
                                 </button>
                             </div>
                             <div className="text-right">
-                                <a href="#" className="text-xs text-blue-600 hover:underline">Quên mật khẩu?</a>
+                                <a href="#" className="text-xs text-primary-600 hover:underline">Quên mật khẩu?</a>
                             </div>
                         </div>
 
                         <button
                             type="submit"
-                            className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-lg shadow-blue-200 dark:shadow-blue-900/30 transition-all hover:-translate-y-0.5"
+                            className="w-full py-3 bg-gradient-to-r from-[#F99715] to-[#EC6710] hover:from-[#EC6710] hover:to-[#C4560D] text-white font-bold rounded-xl shadow-lg shadow-orange-200 dark:shadow-orange-900/30 transition-all hover:-translate-y-0.5"
                         >
                             Đăng nhập
                         </button>
                     </form>
 
-                    <div className="mt-8 pt-6 border-t border-gray-100 dark:border-slate-700 text-center">
+                    <div className="mt-8 pt-6 border-t border-gray-200 dark:border-slate-700 text-center">
                         <p className="text-xs text-gray-500 dark:text-slate-400">
                             Hỗ trợ kỹ thuật: 1900 1234 (Ext: 101)<br />
                             Phiên bản 2.5.0

@@ -282,7 +282,7 @@ Nếu không tìm thấy, để giá trị rỗng "". CHỈ TRẢ VỀ JSON, KH�
 
             {/* Header with View Toggle */}
             <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 mb-6 overflow-hidden">
-                <div className="px-5 py-3 flex justify-between items-center border-b border-gray-100 dark:border-slate-700">
+                <div className="px-5 py-3 flex justify-between items-center border-b border-gray-200 dark:border-slate-700">
                     <div className="flex gap-2">
                         <button
                             onClick={() => setActiveView('legal')}
@@ -335,16 +335,23 @@ Nếu không tìm thấy, để giá trị rỗng "". CHỈ TRẢ VỀ JSON, KH�
                     {/* Quick Stats */}
                     <div className="grid grid-cols-4 gap-4 mb-6">
                         {statCards.map((stat, idx) => {
-                            const colors = getStageColor(stat.color);
+                            const gradientMap: Record<string, string> = {
+                                blue: 'from-blue-500 to-indigo-600',
+                                emerald: 'from-emerald-500 to-teal-600',
+                                amber: 'from-amber-500 to-orange-600',
+                                orange: 'from-orange-500 to-red-500',
+                            };
+                            const gradient = gradientMap[stat.color] || 'from-slate-600 to-slate-700';
                             return (
-                                <div key={idx} className="bg-white dark:bg-slate-800 rounded-xl p-4 border border-gray-100 dark:border-slate-700 shadow-sm hover:shadow-md transition-shadow">
-                                    <div className="flex items-center justify-between">
+                                <div key={idx} className={`relative overflow-hidden bg-gradient-to-br ${gradient} rounded-2xl p-5 shadow-xl ring-1 ring-white/10 hover:scale-[1.02] hover:shadow-2xl transition-all duration-200`}>
+                                    <stat.icon className="absolute -right-3 -top-3 w-20 h-20 text-white opacity-[0.12]" />
+                                    <div className="relative z-10 flex items-center justify-between">
                                         <div>
-                                            <p className="text-xs text-gray-500 dark:text-slate-400 mb-1 font-medium">{stat.label}</p>
-                                            <p className="text-2xl font-black text-gray-800 dark:text-slate-100">{stat.value}</p>
+                                            <p className="text-[10px] font-extrabold uppercase tracking-[0.15em] text-white/90 mb-1">{stat.label}</p>
+                                            <p className="text-3xl font-black tracking-tight text-white drop-shadow-sm">{stat.value}</p>
                                         </div>
-                                        <div className={`w-10 h-10 rounded-xl ${colors.iconBg} flex items-center justify-center`}>
-                                            <stat.icon className={`w-5 h-5 ${colors.text}`} />
+                                        <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center">
+                                            <stat.icon className="w-5 h-5 text-white" />
                                         </div>
                                     </div>
                                 </div>
@@ -363,7 +370,7 @@ Nếu không tìm thấy, để giá trị rỗng "". CHỈ TRẢ VỀ JSON, KH�
                         const progressPercent = totalCount > 0 ? Math.round((matchedCount / totalCount) * 100) : 0;
 
                         return (
-                            <div key={category.stage} className={`bg-white dark:bg-slate-800 rounded-xl border overflow-hidden shadow-sm transition-all ${isCurrent ? 'ring-2 ring-blue-200 dark:ring-blue-700' : 'border-gray-100 dark:border-slate-700 hover:border-gray-200 dark:hover:border-slate-600'}`}>
+                            <div key={category.stage} className={`bg-white dark:bg-slate-800 rounded-xl border overflow-hidden shadow-sm transition-all ${isCurrent ? 'ring-2 ring-blue-200 dark:ring-blue-700' : 'border-gray-200 dark:border-slate-700 hover:border-gray-200 dark:hover:border-slate-600'}`}>
                                 <button
                                     onClick={() => toggleCategory(category.stage)}
                                     className={`w-full px-5 py-4 flex items-center justify-between hover:bg-gray-50/50 transition-colors ${colors.bg}`}
@@ -392,7 +399,7 @@ Nếu không tìm thấy, để giá trị rỗng "". CHỈ TRẢ VỀ JSON, KH�
                                 </button>
 
                                 {isExpanded && (
-                                    <div className="px-5 py-4 border-t border-gray-100 dark:border-slate-700 space-y-2">
+                                    <div className="px-5 py-4 border-t border-gray-200 dark:border-slate-700 space-y-2">
                                         {/* Investment Policy */}
                                         {category.stage === ProjectStage.Preparation && investmentPolicy && (
                                             <div className="bg-blue-50/80 dark:bg-blue-900/20 rounded-lg p-4 border border-blue-100 dark:border-blue-800 mb-3">
@@ -551,7 +558,7 @@ Nếu không tìm thấy, để giá trị rỗng "". CHỈ TRẢ VỀ JSON, KH�
 
                     {/* Recently uploaded docs */}
                     {uploadedDocs.length > 0 && (
-                        <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-100 dark:border-slate-700 shadow-sm overflow-hidden">
+                        <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 shadow-sm overflow-hidden">
                             <div className="px-5 py-3 bg-gradient-to-r from-emerald-50 to-white dark:from-emerald-900/30 dark:to-slate-800 border-b border-emerald-100 dark:border-emerald-800 flex items-center gap-2">
                                 <Upload className="w-4 h-4 text-emerald-600" />
                                 <span className="text-sm font-bold text-emerald-800 dark:text-emerald-400">Mới tải lên ({uploadedDocs.length})</span>

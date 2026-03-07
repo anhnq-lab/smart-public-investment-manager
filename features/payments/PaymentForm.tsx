@@ -131,7 +131,7 @@ export const PaymentForm: React.FC<PaymentFormProps> = ({ isOpen, onClose, onSub
 
                         {/* Contract Info */}
                         {selectedContract && (
-                            <div className="bg-gray-50 dark:bg-slate-700/50 rounded-xl p-4 border border-gray-100 dark:border-slate-600">
+                            <div className="bg-gray-50 dark:bg-slate-700/50 rounded-xl p-4 border border-gray-200 dark:border-slate-600">
                                 <div className="grid grid-cols-2 gap-4 text-sm">
                                     <div>
                                         <span className="text-gray-500 dark:text-slate-400">Nhà thầu:</span>
@@ -274,7 +274,7 @@ export const PaymentForm: React.FC<PaymentFormProps> = ({ isOpen, onClose, onSub
                         </div>
 
                         {/* Actions */}
-                        <div className="flex justify-end gap-3 pt-4 border-t border-gray-100 dark:border-slate-700">
+                        <div className="flex justify-end gap-3 pt-4 border-t border-gray-200 dark:border-slate-700">
                             <button
                                 type="button"
                                 onClick={onClose}

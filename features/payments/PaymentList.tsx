@@ -172,21 +172,21 @@ const PaymentList: React.FC = () => {
                                 </div>
                             )}
                             <div className="relative z-10">
-                                <p className="text-[10px] font-extrabold uppercase tracking-[0.2em] text-white/70">{card.label}</p>
+                                <p className="text-[10px] font-extrabold uppercase tracking-[0.2em] text-white/90">{card.label}</p>
                                 <p className="text-3xl font-black mt-2 tracking-tight drop-shadow-sm">{card.value}</p>
                                 {(card as any).progressPercent !== undefined && (
                                     <div className="mt-2 w-full bg-white/20 rounded-full h-1.5">
                                         <div className="h-full bg-white/80 rounded-full transition-all duration-1000" style={{ width: `${Math.min((card as any).progressPercent, 100)}%` }}></div>
                                     </div>
                                 )}
-                                <p className="text-[11px] text-white/50 mt-1.5 font-medium">{card.sub}</p>
+                                <p className="text-[11px] text-white/70 mt-1.5 font-medium">{card.sub}</p>
                             </div>
                         </div>
                     ))}
                 </div>
 
                 {/* === Toolbar === */}
-                <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-gray-100 p-4">
+                <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-gray-200 p-4">
                     <div className="flex flex-col md:flex-row items-center gap-3">
                         <div className="relative w-full md:w-80">
                             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
@@ -261,18 +261,18 @@ const PaymentList: React.FC = () => {
 
                 {/* === Table === */}
                 <Card className="overflow-hidden border-0 shadow-sm ring-1 ring-gray-100 dark:bg-slate-800">
-                    <div className="overflow-x-auto">
+                    <div className="overflow-x-auto overflow-y-auto max-h-[calc(100vh-360px)]">
                         <table className="w-full text-left text-sm">
                             <thead>
-                                <tr className="bg-gradient-to-r from-gray-50 to-gray-100/50 border-b border-slate-100 dark:border-slate-700 dark:from-slate-900 dark:to-slate-800/50">
-                                    <th className="px-5 py-4 text-[10px] font-extrabold uppercase tracking-[0.15em] text-gray-500 dark:text-slate-400">Mã TT</th>
-                                    <th className="px-5 py-4 text-[10px] font-extrabold uppercase tracking-[0.15em] text-gray-500 dark:text-slate-400">Hợp đồng</th>
-                                    <th className="px-5 py-4 text-[10px] font-extrabold uppercase tracking-[0.15em] text-gray-500 dark:text-slate-400">Nhà thầu</th>
-                                    <th className="px-5 py-4 text-[10px] font-extrabold uppercase tracking-[0.15em] text-gray-500 dark:text-slate-400">Dự án</th>
-                                    <th className="px-5 py-4 text-[10px] font-extrabold uppercase tracking-[0.15em] text-gray-500 dark:text-slate-400 text-center">Đợt</th>
-                                    <th className="px-5 py-4 text-[10px] font-extrabold uppercase tracking-[0.15em] text-gray-500 dark:text-slate-400">Loại</th>
-                                    <th className="px-5 py-4 text-[10px] font-extrabold uppercase tracking-[0.15em] text-gray-500 dark:text-slate-400 text-right">Số tiền</th>
-                                    <th className="px-5 py-4 text-[10px] font-extrabold uppercase tracking-[0.15em] text-gray-500 dark:text-slate-400 text-center">Trạng thái</th>
+                                <tr className="table-header-row">
+                                    <th className="px-5 py-4 text-[10px] font-black uppercase tracking-widest">Mã TT</th>
+                                    <th className="px-5 py-4 text-[10px] font-black uppercase tracking-widest">Hợp đồng</th>
+                                    <th className="px-5 py-4 text-[10px] font-black uppercase tracking-widest">Nhà thầu</th>
+                                    <th className="px-5 py-4 text-[10px] font-black uppercase tracking-widest">Dự án</th>
+                                    <th className="px-5 py-4 text-[10px] font-black uppercase tracking-widest text-center">Đợt</th>
+                                    <th className="px-5 py-4 text-[10px] font-black uppercase tracking-widest">Loại</th>
+                                    <th className="px-5 py-4 text-[10px] font-black uppercase tracking-widest text-right">Số tiền</th>
+                                    <th className="px-5 py-4 text-[10px] font-black uppercase tracking-widest text-center">Trạng thái</th>
                                     <th className="px-5 py-4 w-10"></th>
                                 </tr>
                             </thead>
@@ -388,7 +388,7 @@ const PaymentList: React.FC = () => {
                     </div>
 
                     {/* Summary Footer */}
-                    <div className="bg-gradient-to-r from-gray-50 to-emerald-50/30 border-t border-gray-100 px-6 py-4 dark:from-slate-900 dark:to-slate-800/30 dark:border-slate-700">
+                    <div className="bg-gradient-to-r from-gray-50 to-emerald-50/30 border-t border-gray-200 px-6 py-4 dark:from-slate-900 dark:to-slate-800/30 dark:border-slate-700">
                         <div className="flex items-center justify-between">
                             <div className="flex items-center gap-6">
                                 <div className="flex items-center gap-2">

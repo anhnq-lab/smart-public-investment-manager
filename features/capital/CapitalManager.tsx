@@ -24,7 +24,7 @@ export const CapitalManager: React.FC<CapitalManagerProps> = ({ projectId }) => 
         <div className="space-y-6">
             {/* Header Stats */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 flex flex-col justify-between">
+                <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-gray-200 dark:border-slate-700 flex flex-col justify-between">
                     <div className="flex justify-between items-start mb-4">
                         <div className="p-2 bg-blue-50 text-blue-600 rounded-lg"><Landmark className="w-5 h-5" /></div>
                         <span className="text-xs font-black text-gray-400 dark:text-slate-500 uppercase tracking-wider">KẾ HOẠCH VỐN</span>
@@ -34,7 +34,7 @@ export const CapitalManager: React.FC<CapitalManagerProps> = ({ projectId }) => 
                         <p className="text-xs text-gray-500 dark:text-slate-400 mt-1 font-medium">Tổng vốn được giao</p>
                     </div>
                 </div>
-                <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 flex flex-col justify-between">
+                <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-gray-200 dark:border-slate-700 flex flex-col justify-between">
                     <div className="flex justify-between items-start mb-4">
                         <div className="p-2 bg-emerald-50 text-emerald-600 rounded-lg"><DollarSign className="w-5 h-5" /></div>
                         <span className="text-xs font-black text-gray-400 dark:text-slate-500 uppercase tracking-wider">ĐÃ GIẢI NGÂN</span>
@@ -49,7 +49,7 @@ export const CapitalManager: React.FC<CapitalManagerProps> = ({ projectId }) => 
                         </div>
                     </div>
                 </div>
-                <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 flex flex-col justify-between">
+                <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-gray-200 dark:border-slate-700 flex flex-col justify-between">
                     <div className="flex justify-between items-start mb-4">
                         <div className="p-2 bg-orange-50 text-orange-600 rounded-lg"><AlertTriangle className="w-5 h-5" /></div>
                         <span className="text-xs font-black text-gray-400 dark:text-slate-500 uppercase tracking-wider">CẢNH BÁO</span>
@@ -70,8 +70,8 @@ export const CapitalManager: React.FC<CapitalManagerProps> = ({ projectId }) => 
             </div>
 
             {/* Plans Table */}
-            <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 overflow-hidden">
-                <div className="px-6 py-4 border-b border-gray-100 dark:border-slate-700 flex justify-between items-center bg-gray-50/50 dark:bg-slate-800/50">
+            <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-gray-200 dark:border-slate-700 overflow-hidden">
+                <div className="px-6 py-4 border-b border-gray-200 dark:border-slate-700 flex justify-between items-center bg-gray-50/50 dark:bg-slate-800/50">
                     <h3 className="text-sm font-black text-gray-800 dark:text-slate-100 uppercase tracking-widest flex items-center gap-2">
                         <Calendar className="w-4 h-4 text-blue-600" /> Kế hoạch vốn (Trung hạn & Hàng năm)
                     </h3>
@@ -81,7 +81,7 @@ export const CapitalManager: React.FC<CapitalManagerProps> = ({ projectId }) => 
                 </div>
                 <div className="overflow-x-auto">
                     <table className="w-full text-left text-sm">
-                        <thead className="bg-gray-50 dark:bg-slate-700/50 text-gray-500 dark:text-slate-400 font-bold text-[10px] uppercase border-b border-gray-100 dark:border-slate-700">
+                        <thead className="bg-gray-50 dark:bg-slate-700/50 text-gray-500 dark:text-slate-400 font-bold text-[10px] uppercase border-b border-gray-200 dark:border-slate-700">
                             <tr>
                                 <th className="px-6 py-4">Năm / Mã KH</th>
                                 <th className="px-6 py-4">Quyết định số</th>
@@ -120,8 +120,8 @@ export const CapitalManager: React.FC<CapitalManagerProps> = ({ projectId }) => 
             </div>
 
             {/* Disbursement History */}
-            <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 overflow-hidden">
-                <div className="px-6 py-4 border-b border-gray-100 dark:border-slate-700 flex justify-between items-center bg-gray-50/50 dark:bg-slate-800/50">
+            <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-gray-200 dark:border-slate-700 overflow-hidden">
+                <div className="px-6 py-4 border-b border-gray-200 dark:border-slate-700 flex justify-between items-center bg-gray-50/50 dark:bg-slate-800/50">
                     <h3 className="text-sm font-black text-gray-800 dark:text-slate-100 uppercase tracking-widest flex items-center gap-2">
                         <TrendingUp className="w-4 h-4 text-emerald-600" /> Lịch sử giải ngân (KBNN)
                     </h3>
@@ -136,7 +136,7 @@ export const CapitalManager: React.FC<CapitalManagerProps> = ({ projectId }) => 
                 </div>
                 <div className="overflow-x-auto">
                     <table className="w-full text-left text-sm">
-                        <thead className="bg-gray-50 dark:bg-slate-700/50 text-gray-500 dark:text-slate-400 font-bold text-[10px] uppercase border-b border-gray-100 dark:border-slate-700">
+                        <thead className="bg-gray-50 dark:bg-slate-700/50 text-gray-500 dark:text-slate-400 font-bold text-[10px] uppercase border-b border-gray-200 dark:border-slate-700">
                             <tr>
                                 <th className="px-6 py-4">Mã giao dịch</th>
                                 <th className="px-6 py-4">Ngày giao dịch</th>

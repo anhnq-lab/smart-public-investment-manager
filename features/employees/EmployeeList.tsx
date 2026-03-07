@@ -160,7 +160,7 @@ const EmployeeList: React.FC = () => {
                         <div className="p-2 bg-white/10 rounded-xl backdrop-blur-sm">
                             <Users className="w-5 h-5 text-white/80" />
                         </div>
-                        <span className="text-xs font-medium text-white/60 uppercase tracking-wider">Tổng nhân sự</span>
+                        <span className="text-xs font-medium text-white/80 uppercase tracking-wider">Tổng nhân sự</span>
                     </div>
                     <p className="text-4xl font-black relative z-10">{stats?.total || 0}</p>
                     <div className="mt-3 flex items-center gap-2 relative z-10">
@@ -177,53 +177,49 @@ const EmployeeList: React.FC = () => {
                 </div>
 
                 {/* Active */}
-                <div className="bg-white dark:bg-slate-800 rounded-2xl p-5 border border-emerald-100 hover:border-emerald-200 transition-colors group cursor-pointer">
-                    <div className="flex items-center justify-between mb-3">
-                        <div className="p-2 bg-emerald-50 rounded-xl group-hover:bg-emerald-100 transition-colors">
-                            <UserCheck className="w-4 h-4 text-emerald-600" />
-                        </div>
-                        <ArrowUpRight className="w-4 h-4 text-emerald-400 opacity-0 group-hover:opacity-100 transition-opacity" />
+                <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-emerald-500 via-emerald-600 to-teal-700 text-white p-5 shadow-xl ring-1 ring-emerald-400/30 transition-transform hover:scale-[1.02] hover:shadow-2xl duration-300">
+                    <div className="absolute -right-3 -top-3 opacity-[0.12]">
+                        <UserCheck className="w-24 h-24" strokeWidth={1.2} />
                     </div>
-                    <p className="text-3xl font-black text-emerald-600">{stats?.active || 0}</p>
-                    <p className="text-xs font-medium text-slate-400 dark:text-slate-500 mt-1">Đang hoạt động</p>
+                    <div className="relative z-10">
+                        <p className="text-[10px] font-extrabold uppercase tracking-[0.2em] text-white/90">Đang hoạt động</p>
+                        <p className="text-3xl font-black mt-2 tracking-tight drop-shadow-sm">{stats?.active || 0}</p>
+                    </div>
                 </div>
 
                 {/* Departments */}
-                <div className="bg-white dark:bg-slate-800 rounded-2xl p-5 border border-violet-100 hover:border-violet-200 transition-colors group cursor-pointer">
-                    <div className="flex items-center justify-between mb-3">
-                        <div className="p-2 bg-violet-50 rounded-xl group-hover:bg-violet-100 transition-colors">
-                            <Building2 className="w-4 h-4 text-violet-600" />
-                        </div>
-                        <ArrowUpRight className="w-4 h-4 text-violet-400 opacity-0 group-hover:opacity-100 transition-opacity" />
+                <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-violet-500 via-violet-600 to-purple-700 text-white p-5 shadow-xl ring-1 ring-violet-400/30 transition-transform hover:scale-[1.02] hover:shadow-2xl duration-300">
+                    <div className="absolute -right-3 -top-3 opacity-[0.12]">
+                        <Building2 className="w-24 h-24" strokeWidth={1.2} />
                     </div>
-                    <p className="text-3xl font-black text-violet-600">{departments.length}</p>
-                    <p className="text-xs font-medium text-slate-400 dark:text-slate-500 mt-1">Phòng ban</p>
+                    <div className="relative z-10">
+                        <p className="text-[10px] font-extrabold uppercase tracking-[0.2em] text-white/90">Phòng ban</p>
+                        <p className="text-3xl font-black mt-2 tracking-tight drop-shadow-sm">{departments.length}</p>
+                    </div>
                 </div>
 
                 {/* Admins */}
-                <div className="bg-white dark:bg-slate-800 rounded-2xl p-5 border border-purple-100 hover:border-purple-200 transition-colors group cursor-pointer"
+                <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-purple-500 via-purple-600 to-fuchsia-700 text-white p-5 shadow-xl ring-1 ring-purple-400/30 transition-transform hover:scale-[1.02] hover:shadow-2xl duration-300 cursor-pointer"
                     onClick={() => setFilterRole(filterRole === Role.Admin ? 'All' : Role.Admin)}>
-                    <div className="flex items-center justify-between mb-3">
-                        <div className="p-2 bg-purple-50 rounded-xl group-hover:bg-purple-100 transition-colors">
-                            <Shield className="w-4 h-4 text-purple-600" />
-                        </div>
-                        <ArrowUpRight className="w-4 h-4 text-purple-400 opacity-0 group-hover:opacity-100 transition-opacity" />
+                    <div className="absolute -right-3 -top-3 opacity-[0.12]">
+                        <Shield className="w-24 h-24" strokeWidth={1.2} />
                     </div>
-                    <p className="text-3xl font-black text-purple-600">{stats?.byRole?.[Role.Admin] || 0}</p>
-                    <p className="text-xs font-medium text-slate-400 dark:text-slate-500 mt-1">Quản trị viên</p>
+                    <div className="relative z-10">
+                        <p className="text-[10px] font-extrabold uppercase tracking-[0.2em] text-white/90">Quản trị viên</p>
+                        <p className="text-3xl font-black mt-2 tracking-tight drop-shadow-sm">{stats?.byRole?.[Role.Admin] || 0}</p>
+                    </div>
                 </div>
 
                 {/* Managers */}
-                <div className="bg-white dark:bg-slate-800 rounded-2xl p-5 border border-blue-100 hover:border-blue-200 transition-colors group cursor-pointer"
+                <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-blue-500 via-blue-600 to-indigo-700 text-white p-5 shadow-xl ring-1 ring-blue-400/30 transition-transform hover:scale-[1.02] hover:shadow-2xl duration-300 cursor-pointer"
                     onClick={() => setFilterRole(filterRole === Role.Manager ? 'All' : Role.Manager)}>
-                    <div className="flex items-center justify-between mb-3">
-                        <div className="p-2 bg-blue-50 rounded-xl group-hover:bg-blue-100 transition-colors">
-                            <TrendingUp className="w-4 h-4 text-blue-600" />
-                        </div>
-                        <ArrowUpRight className="w-4 h-4 text-blue-400 opacity-0 group-hover:opacity-100 transition-opacity" />
+                    <div className="absolute -right-3 -top-3 opacity-[0.12]">
+                        <TrendingUp className="w-24 h-24" strokeWidth={1.2} />
                     </div>
-                    <p className="text-3xl font-black text-blue-600">{stats?.byRole?.[Role.Manager] || 0}</p>
-                    <p className="text-xs font-medium text-slate-400 dark:text-slate-500 mt-1">Quản lý</p>
+                    <div className="relative z-10">
+                        <p className="text-[10px] font-extrabold uppercase tracking-[0.2em] text-white/90">Quản lý</p>
+                        <p className="text-3xl font-black mt-2 tracking-tight drop-shadow-sm">{stats?.byRole?.[Role.Manager] || 0}</p>
+                    </div>
                 </div>
             </div>
 
@@ -233,9 +229,9 @@ const EmployeeList: React.FC = () => {
                 {/* LEFT SIDEBAR: DEPARTMENTS */}
                 <div className="w-full lg:w-60 shrink-0">
                     <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm overflow-hidden sticky top-4">
-                        <div className="px-4 py-3 border-b border-slate-100 dark:border-slate-700 bg-gradient-to-r from-slate-50 to-white dark:from-slate-800 dark:to-slate-800">
-                            <h3 className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest flex items-center gap-2">
-                                <Building2 className="w-3.5 h-3.5" /> Phòng ban
+                        <div className="px-4 py-3 border-b-2 border-orange-200 dark:border-orange-900/40" style={{ background: 'linear-gradient(135deg, #fde5c9 0%, #fef0db 50%, #fdf4e5 100%)' }}>
+                            <h3 className="text-xs font-black text-gray-800 dark:text-slate-100 uppercase tracking-widest flex items-center gap-2">
+                                <Building2 className="w-3.5 h-3.5 text-orange-600" /> Phòng ban
                             </h3>
                         </div>
                         <div className="p-2 space-y-0.5 max-h-[60vh] overflow-y-auto">
@@ -366,16 +362,16 @@ const EmployeeList: React.FC = () => {
                             {viewMode === 'list' ? (
                                 /* ══════════ TABLE VIEW ══════════ */
                                 <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 overflow-hidden">
-                                    <div className="overflow-x-auto">
+                                    <div className="overflow-x-auto overflow-y-auto max-h-[calc(100vh-360px)]">
                                         <table className="w-full">
                                             <thead>
-                                                <tr className="border-b border-slate-100 dark:border-slate-700">
-                                                    <th className="px-5 py-3.5 text-left text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Nhân viên</th>
-                                                    <th className="px-5 py-3.5 text-left text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Chức vụ / Phòng ban</th>
-                                                    <th className="px-5 py-3.5 text-left text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider hidden md:table-cell">Liên hệ</th>
-                                                    <th className="px-5 py-3.5 text-center text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Khối lượng CV</th>
-                                                    <th className="px-5 py-3.5 text-center text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Vai trò</th>
-                                                    <th className="px-5 py-3.5 text-center text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider w-12">TT</th>
+                                                <tr className="table-header-row">
+                                                    <th className="px-5 py-3.5 text-left text-[10px] font-black uppercase tracking-widest">Nhân viên</th>
+                                                    <th className="px-5 py-3.5 text-left text-[10px] font-black uppercase tracking-widest">Chức vụ / Phòng ban</th>
+                                                    <th className="px-5 py-3.5 text-left text-[10px] font-black uppercase tracking-widest hidden md:table-cell">Liên hệ</th>
+                                                    <th className="px-5 py-3.5 text-center text-[10px] font-black uppercase tracking-widest">Khối lượng CV</th>
+                                                    <th className="px-5 py-3.5 text-center text-[10px] font-black uppercase tracking-widest">Vai trò</th>
+                                                    <th className="px-5 py-3.5 text-center text-[10px] font-black uppercase tracking-widest w-12">TT</th>
                                                     <th className="px-5 py-3.5 w-20"></th>
                                                 </tr>
                                             </thead>

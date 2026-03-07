@@ -139,7 +139,7 @@ export const ResourceAllocationView: React.FC<ResourceAllocationViewProps> = ({
                         className={`rounded-xl border overflow-hidden transition-all ${getWorkloadBg(totalAllocation)}`}
                     >
                         {/* Employee Header */}
-                        <div className="flex items-center justify-between p-4 border-b border-gray-100">
+                        <div className="flex items-center justify-between p-4 border-b border-gray-200">
                             <div className="flex items-center gap-3">
                                 {/* Avatar */}
                                 <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-400 to-indigo-500 flex items-center justify-center text-white font-bold">
@@ -204,7 +204,7 @@ export const ResourceAllocationView: React.FC<ResourceAllocationViewProps> = ({
                                         <div
                                             key={task.TaskID}
                                             onClick={() => onTaskClick(task)}
-                                            className={`flex items-center justify-between p-2 bg-white rounded-lg border cursor-pointer hover:shadow-sm transition-all ${isOverdue(task) ? 'border-red-200 bg-red-50/50' : 'border-gray-100'
+                                            className={`flex items-center justify-between p-2 bg-white rounded-lg border cursor-pointer hover:shadow-sm transition-all ${isOverdue(task) ? 'border-red-200 bg-red-50/50' : 'border-gray-200'
                                                 }`}
                                         >
                                             <div className="flex items-center gap-2 min-w-0">

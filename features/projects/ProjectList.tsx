@@ -95,10 +95,10 @@ const ProjectList: React.FC = () => {
             <div className="flex flex-col lg:flex-row gap-6 items-start">
                 {/* 2. SIDEBAR FILTER (Premium Style) */}
                 <div className={`w-full lg:w-72 shrink-0 ${isSidebarOpen ? 'block' : 'hidden lg:block'}`}>
-                    <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 overflow-hidden sticky top-6">
+                    <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-gray-200 dark:border-slate-700 overflow-hidden sticky top-6">
                         <div className="p-4 border-b border-gray-50 dark:border-slate-700 bg-gray-50/50 dark:bg-slate-800/80 flex justify-between items-center">
                             <h3 className="font-bold text-gray-800 dark:text-slate-100 flex items-center gap-2">
-                                <Filter className="w-4 h-4 text-blue-600 dark:text-blue-400" /> Bộ lọc dự án
+                                <Filter className="w-4 h-4 text-primary-600 dark:text-primary-400" /> Bộ lọc dự án
                             </h3>
                             <button onClick={() => {
                                 setSelectedStatus('all'); setSelectedGroup('all'); setSelectedType('all'); setSearchQuery('');
@@ -119,7 +119,7 @@ const ProjectList: React.FC = () => {
                                         <label
                                             key={opt.val}
                                             className={`flex items-center gap-3 p-2.5 rounded-xl cursor-pointer transition-all duration-200 ${selectedStatus === opt.val
-                                                ? 'bg-blue-50 dark:bg-blue-900/30 ring-1 ring-blue-200 dark:ring-blue-800'
+                                                ? 'bg-primary-50 dark:bg-primary-900/30 ring-1 ring-primary-200 dark:ring-primary-800'
                                                 : 'hover:bg-gray-50 dark:hover:bg-slate-700/50'
                                                 }`}
                                         >
@@ -147,7 +147,7 @@ const ProjectList: React.FC = () => {
                                         <button
                                             key={g}
                                             onClick={() => setSelectedGroup(g)}
-                                            className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-all flex justify-between ${selectedGroup === g ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 font-bold shadow-sm' : 'text-gray-600 dark:text-slate-300 hover:bg-gray-50 dark:hover:bg-slate-700/50'
+                                            className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-all flex justify-between ${selectedGroup === g ? 'bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-400 font-bold shadow-sm' : 'text-gray-600 dark:text-slate-300 hover:bg-gray-50 dark:hover:bg-slate-700/50'
                                                 }`}
                                         >
                                             {g === 'all' ? 'Tất cả nhóm' : `Nhóm ${g}`}
@@ -163,7 +163,7 @@ const ProjectList: React.FC = () => {
                 {/* 3. MAIN LIST AREA */}
                 <div className="flex-1 w-full space-y-6">
                     {/* Toolbar */}
-                    <div className="bg-white dark:bg-slate-800 p-2 pr-4 rounded-xl border border-gray-100 dark:border-slate-700 shadow-sm flex flex-col md:flex-row justify-between items-center gap-4">
+                    <div className="bg-white dark:bg-slate-800 p-2 pr-4 rounded-xl border border-gray-200 dark:border-slate-700 shadow-sm flex flex-col md:flex-row justify-between items-center gap-4">
                         <div className="relative w-full md:flex-1">
                             <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 dark:text-slate-500 w-4 h-4" />
                             <input
@@ -181,13 +181,13 @@ const ProjectList: React.FC = () => {
                             <div className="flex bg-gray-100 dark:bg-slate-700 p-1 rounded-lg">
                                 <button
                                     onClick={() => setViewMode('grid')}
-                                    className={`p-2 rounded-md transition-all ${viewMode === 'grid' ? 'bg-white dark:bg-slate-600 shadow text-blue-600 dark:text-blue-400' : 'text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:hover:text-slate-200'}`}
+                                    className={`p-2 rounded-md transition-all ${viewMode === 'grid' ? 'bg-white dark:bg-slate-600 shadow text-primary-600 dark:text-primary-400' : 'text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:hover:text-slate-200'}`}
                                 >
                                     <LayoutGrid className="w-4 h-4" />
                                 </button>
                                 <button
                                     onClick={() => setViewMode('list')}
-                                    className={`p-2 rounded-md transition-all ${viewMode === 'list' ? 'bg-white dark:bg-slate-600 shadow text-blue-600 dark:text-blue-400' : 'text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:hover:text-slate-200'}`}
+                                    className={`p-2 rounded-md transition-all ${viewMode === 'list' ? 'bg-white dark:bg-slate-600 shadow text-primary-600 dark:text-primary-400' : 'text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:hover:text-slate-200'}`}
                                 >
                                     <ListIcon className="w-4 h-4" />
                                 </button>
@@ -210,7 +210,8 @@ const ProjectList: React.FC = () => {
 
                             <button
                                 onClick={handleCreateProject}
-                                className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2.5 rounded-xl text-sm font-bold shadow-lg shadow-blue-200 dark:shadow-blue-900/30 transition-all hover:-translate-y-0.5"
+                                className="flex items-center gap-2 text-white px-4 py-2.5 rounded-xl text-sm font-bold shadow-lg transition-all hover:-translate-y-0.5"
+                                style={{ background: 'linear-gradient(135deg, #F99715 0%, #EC6710 100%)', boxShadow: '0 4px 14px rgba(236, 103, 16, 0.3)' }}
                             >
                                 <Plus className="w-4 h-4" />
                                 <span>Thêm mới</span>
@@ -223,7 +224,7 @@ const ProjectList: React.FC = () => {
                         {isLoading ? (
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                                 {[1, 2, 3, 4, 5, 6].map(i => (
-                                    <div key={i} className="bg-white dark:bg-slate-800 h-72 rounded-2xl p-4 space-y-4 border border-gray-100 dark:border-slate-700">
+                                    <div key={i} className="bg-white dark:bg-slate-800 h-72 rounded-2xl p-4 space-y-4 border border-gray-200 dark:border-slate-700">
                                         <Skeleton className="h-40 w-full rounded-xl" />
                                         <Skeleton className="h-4 w-3/4" />
                                         <Skeleton className="h-4 w-1/2" />
@@ -231,7 +232,7 @@ const ProjectList: React.FC = () => {
                                 ))}
                             </div>
                         ) : sortedProjects.length === 0 ? (
-                            <div className="flex flex-col items-center justify-center py-20 bg-white dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-700 border-dashed">
+                            <div className="flex flex-col items-center justify-center py-20 bg-white dark:bg-slate-800 rounded-2xl border border-gray-200 dark:border-slate-700 border-dashed">
                                 <div className="bg-gray-50 dark:bg-slate-700 p-6 rounded-full mb-4">
                                     <Layers className="w-10 h-10 text-gray-300 dark:text-slate-500" />
                                 </div>
@@ -239,7 +240,7 @@ const ProjectList: React.FC = () => {
                                 <p className="text-gray-500 dark:text-slate-400 mt-2 max-w-sm text-center">Không có dự án nào phù hợp với bộ lọc hiện tại. Hãy thử thay đổi từ khóa hoặc bộ lọc.</p>
                                 <button
                                     onClick={() => { setSearchQuery(''); setSelectedStatus('all'); }}
-                                    className="mt-6 text-blue-600 dark:text-blue-400 font-bold hover:underline"
+                                    className="mt-6 text-primary-600 dark:text-primary-400 font-bold hover:underline"
                                 >
                                     Xóa tất cả bộ lọc
                                 </button>

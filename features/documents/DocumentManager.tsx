@@ -148,7 +148,7 @@ const VersionHistoryModal: React.FC<{ file: any, onClose: () => void }> = ({ fil
     return (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in zoom-in-95">
             <div className="bg-white dark:bg-slate-800 w-full max-w-2xl rounded-2xl shadow-xl overflow-hidden">
-                <div className="p-6 border-b border-gray-100 dark:border-slate-700 flex justify-between items-center bg-gray-50 dark:bg-slate-800">
+                <div className="p-6 border-b border-gray-200 dark:border-slate-700 flex justify-between items-center bg-gray-50 dark:bg-slate-800">
                     <div>
                         <h3 className="text-lg font-bold text-gray-800 dark:text-slate-200">Lịch sử phiên bản</h3>
                         <p className="text-sm text-gray-500 dark:text-slate-400 mt-1 truncate max-w-md">{file.DocName}</p>
@@ -189,7 +189,7 @@ const VersionHistoryModal: React.FC<{ file: any, onClose: () => void }> = ({ fil
                         </div>
                     )}
                 </div>
-                <div className="p-4 bg-gray-50 dark:bg-slate-800 border-t border-gray-100 dark:border-slate-700 text-right">
+                <div className="p-4 bg-gray-50 dark:bg-slate-800 border-t border-gray-200 dark:border-slate-700 text-right">
                     <button onClick={onClose} className="px-4 py-2 bg-white dark:bg-slate-700 border border-gray-300 dark:border-slate-600 rounded-lg text-sm font-medium hover:bg-gray-50 dark:hover:bg-slate-600 dark:text-slate-300">Đóng</button>
                 </div>
             </div>
@@ -467,7 +467,7 @@ const DocumentManager: React.FC = () => {
             </div>
 
             <div className="flex flex-1 gap-6 overflow-hidden">
-                <div className="w-80 bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-gray-100 dark:border-slate-700 p-5 flex flex-col overflow-y-auto">
+                <div className="w-80 bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-gray-200 dark:border-slate-700 p-5 flex flex-col overflow-y-auto">
                     <h3 className="text-[10px] font-black text-gray-400 dark:text-slate-500 uppercase tracking-[0.2em] mb-6 px-2">Cấu trúc thư mục</h3>
                     <div className="space-y-2">
                         {folders.map(folder => (
@@ -487,12 +487,12 @@ const DocumentManager: React.FC = () => {
                     </div>
                 </div>
 
-                <div className="flex-1 bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-gray-100 dark:border-slate-700 flex flex-col overflow-hidden">
+                <div className="flex-1 bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-gray-200 dark:border-slate-700 flex flex-col overflow-hidden">
                     <div className="p-5 border-b border-gray-50 dark:border-slate-700 bg-gray-50/50 dark:bg-slate-800/50 flex justify-between items-center">
                         <h3 className="font-black text-gray-800 dark:text-slate-200 text-sm flex items-center gap-2 uppercase tracking-widest">
                             <Folder className="w-4 h-4 text-blue-500 dark:text-blue-400" /> {folders.find(f => f.id === selectedFolder)?.name}
                         </h3>
-                        <span className="bg-white dark:bg-slate-700 text-gray-400 dark:text-slate-400 text-[10px] px-3 py-1 rounded-xl font-black border border-gray-100 dark:border-slate-600">{allDocs.length} TÀI LIỆU</span>
+                        <span className="bg-white dark:bg-slate-700 text-gray-400 dark:text-slate-400 text-[10px] px-3 py-1 rounded-xl font-black border border-gray-200 dark:border-slate-600">{allDocs.length} TÀI LIỆU</span>
                     </div>
 
                     <div className="flex-1 overflow-y-auto relative">
@@ -512,7 +512,7 @@ const DocumentManager: React.FC = () => {
                             </div>
                         ) : (
                             <table className="w-full text-left text-sm">
-                                <thead className="bg-white dark:bg-slate-800 text-[10px] uppercase font-black text-gray-400 dark:text-slate-500 sticky top-0 z-20 border-b border-gray-100 dark:border-slate-700 tracking-[0.1em] shadow-sm">
+                                <thead className="bg-white dark:bg-slate-800 text-[10px] uppercase font-black text-gray-400 dark:text-slate-500 sticky top-0 z-20 border-b border-gray-200 dark:border-slate-700 tracking-[0.1em] shadow-sm">
                                     <tr>
                                         <th className="px-6 py-5">Tên tài liệu</th>
                                         <th className="px-6 py-5 w-32 text-center">Phiên bản</th>
@@ -551,14 +551,14 @@ const DocumentManager: React.FC = () => {
                                                 <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-all translate-x-2 group-hover:translate-x-0">
                                                     <button
                                                         onClick={() => setPreviewFile(doc)}
-                                                        className="p-2.5 bg-white text-blue-600 rounded-xl hover:bg-blue-600 hover:text-white shadow-sm border border-gray-100 transition-all"
+                                                        className="p-2.5 bg-white text-blue-600 rounded-xl hover:bg-blue-600 hover:text-white shadow-sm border border-gray-200 transition-all"
                                                         title="Xem nội dung"
                                                     >
                                                         <Eye className="w-4 h-4" />
                                                     </button>
-                                                    <button onClick={() => handleSignClick(doc)} className="p-2.5 bg-white text-emerald-600 rounded-xl hover:bg-emerald-600 hover:text-white shadow-sm border border-gray-100 transition-all" title="Ký số"><PenTool className="w-4 h-4" /></button>
-                                                    <button onClick={() => setHistoryFile(doc)} className="p-2.5 bg-white text-orange-600 rounded-xl hover:bg-orange-600 hover:text-white shadow-sm border border-gray-100 transition-all" title="Lịch sử"><History className="w-4 h-4" /></button>
-                                                    <button className="p-2.5 bg-white text-gray-400 rounded-xl hover:bg-gray-600 hover:text-white shadow-sm border border-gray-100 transition-all"><Download className="w-4 h-4" /></button>
+                                                    <button onClick={() => handleSignClick(doc)} className="p-2.5 bg-white text-emerald-600 rounded-xl hover:bg-emerald-600 hover:text-white shadow-sm border border-gray-200 transition-all" title="Ký số"><PenTool className="w-4 h-4" /></button>
+                                                    <button onClick={() => setHistoryFile(doc)} className="p-2.5 bg-white text-orange-600 rounded-xl hover:bg-orange-600 hover:text-white shadow-sm border border-gray-200 transition-all" title="Lịch sử"><History className="w-4 h-4" /></button>
+                                                    <button className="p-2.5 bg-white text-gray-400 rounded-xl hover:bg-gray-600 hover:text-white shadow-sm border border-gray-200 transition-all"><Download className="w-4 h-4" /></button>
                                                 </div>
                                             </td>
                                         </tr>
@@ -583,7 +583,7 @@ const DocumentManager: React.FC = () => {
                             <button onClick={() => setIsSignModalOpen(false)} className="text-gray-400 hover:text-red-500 transition-colors"><X className="w-6 h-6" /></button>
                         </div>
                         <div className="space-y-6">
-                            <div className="bg-gray-50 dark:bg-slate-700/50 p-5 rounded-2xl border border-gray-100 dark:border-slate-600 flex items-center gap-4">
+                            <div className="bg-gray-50 dark:bg-slate-700/50 p-5 rounded-2xl border border-gray-200 dark:border-slate-600 flex items-center gap-4">
                                 <FileIcon className="w-10 h-10 text-blue-500 dark:text-blue-400" />
                                 <div className="flex-1 overflow-hidden">
                                     <p className="font-black text-gray-800 dark:text-slate-200 truncate text-sm">{selectedFile?.DocName}</p>

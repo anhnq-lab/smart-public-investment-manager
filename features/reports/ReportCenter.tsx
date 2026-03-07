@@ -129,7 +129,7 @@ const ReportCenter: React.FC = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {/* BC-01: Báo cáo giám sát đầu tư */}
-                <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 hover:shadow-md transition-shadow group">
+                <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-gray-200 dark:border-slate-700 hover:shadow-md transition-shadow group">
                     <div className="w-12 h-12 bg-purple-50 dark:bg-purple-900/30 rounded-xl flex items-center justify-center text-purple-600 dark:text-purple-400 mb-4 group-hover:scale-110 transition-transform">
                         <BarChart2 className="w-6 h-6" />
                     </div>
@@ -137,7 +137,7 @@ const ReportCenter: React.FC = () => {
                     <p className="text-sm text-gray-500 dark:text-slate-400 mb-6 min-h-[40px]">
                         Báo cáo tình hình thực hiện dự án theo biểu mẫu quy định của Bộ KH&ĐT (BC-01).
                     </p>
-                    <div className="pt-4 border-t border-gray-100 dark:border-slate-700 flex justify-between items-center">
+                    <div className="pt-4 border-t border-gray-200 dark:border-slate-700 flex justify-between items-center">
                         <span className="text-xs font-medium text-gray-400 dark:text-slate-500 bg-gray-50 dark:bg-slate-700 px-2 py-1 rounded">Định kỳ: Tháng/Quý</span>
                         <button
                             onClick={() => handleExportReport('monitoring')}
@@ -165,7 +165,7 @@ const ReportCenter: React.FC = () => {
                 </div>
 
                 {/* BC-02: Giải ngân */}
-                <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 hover:shadow-md transition-shadow group">
+                <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-gray-200 dark:border-slate-700 hover:shadow-md transition-shadow group">
                     <div className="w-12 h-12 bg-emerald-50 dark:bg-emerald-900/30 rounded-xl flex items-center justify-center text-emerald-600 dark:text-emerald-400 mb-4 group-hover:scale-110 transition-transform">
                         <PieChart className="w-6 h-6" />
                     </div>
@@ -173,7 +173,7 @@ const ReportCenter: React.FC = () => {
                     <p className="text-sm text-gray-500 dark:text-slate-400 mb-6 min-h-[40px]">
                         So sánh vốn giải ngân thực tế so với kế hoạch vốn được giao.
                     </p>
-                    <div className="pt-4 border-t border-gray-100 dark:border-slate-700 flex justify-between items-center">
+                    <div className="pt-4 border-t border-gray-200 dark:border-slate-700 flex justify-between items-center">
                         <span className="text-xs font-medium text-gray-400 dark:text-slate-500 bg-gray-50 dark:bg-slate-700 px-2 py-1 rounded">Real-time</span>
                         <button
                             onClick={() => handleExportReport('disbursement')}
@@ -201,7 +201,7 @@ const ReportCenter: React.FC = () => {
                 </div>
 
                 {/* Other Report */}
-                <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 hover:shadow-md transition-shadow group">
+                <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-gray-200 dark:border-slate-700 hover:shadow-md transition-shadow group">
                     <div className="w-12 h-12 bg-orange-50 dark:bg-orange-900/30 rounded-xl flex items-center justify-center text-orange-600 dark:text-orange-400 mb-4 group-hover:scale-110 transition-transform">
                         <AlertTriangle className="w-6 h-6" />
                     </div>
@@ -209,7 +209,7 @@ const ReportCenter: React.FC = () => {
                     <p className="text-sm text-gray-500 dark:text-slate-400 mb-6 min-h-[40px]">
                         Tổng hợp các vấn đề khó khăn, vướng mắc cần tháo gỡ trong quá trình thi công.
                     </p>
-                    <div className="pt-4 border-t border-gray-100 dark:border-slate-700 flex justify-between items-center">
+                    <div className="pt-4 border-t border-gray-200 dark:border-slate-700 flex justify-between items-center">
                         <span className="text-xs font-medium text-gray-400 dark:text-slate-500 bg-gray-50 dark:bg-slate-700 px-2 py-1 rounded">Theo sự vụ</span>
                         <button
                             onClick={() => handleExportReport('issues')}

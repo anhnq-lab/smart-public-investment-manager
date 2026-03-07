@@ -205,56 +205,56 @@ export const ProjectOperationsTab: React.FC<Props> = ({ projectID }) => {
                 </div>
 
                 {/* ── KPI Cards ── */}
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                     {/* Total assets */}
-                    <div className={`rounded-xl p-4 border ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-gray-100'} shadow-sm`}>
-                        <div className="flex items-center justify-between mb-2">
-                            <span className={`text-[10px] uppercase tracking-wider font-bold ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>Tổng tài sản</span>
-                            <Package className={`w-4 h-4 ${isDark ? 'text-blue-400' : 'text-blue-500'}`} />
-                        </div>
-                        <div className={`text-2xl font-black ${isDark ? 'text-white' : 'text-gray-900'}`}>{stats.total}</div>
-                        <div className={`text-[10px] mt-1 ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>
-                            {stats.hasBim} đã gắn BIM
+                    <div className="relative overflow-hidden bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl p-5 shadow-xl ring-1 ring-white/10 hover:scale-[1.02] hover:shadow-2xl transition-all duration-200">
+                        <Package className="absolute -right-3 -top-3 w-20 h-20 text-white opacity-[0.12]" />
+                        <div className="relative z-10">
+                            <div className="flex items-center justify-between mb-2">
+                                <span className="text-[10px] font-extrabold uppercase tracking-[0.15em] text-white/90">Tổng tài sản</span>
+                                <div className="w-9 h-9 rounded-xl bg-white/20 flex items-center justify-center"><Package className="w-4 h-4 text-white" /></div>
+                            </div>
+                            <div className="text-3xl font-black tracking-tight text-white drop-shadow-sm">{stats.total}</div>
+                            <div className="text-[10px] mt-1 text-white/80">{stats.hasBim} đã gắn BIM</div>
                         </div>
                     </div>
 
                     {/* Active */}
-                    <div className={`rounded-xl p-4 border ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-gray-100'} shadow-sm`}>
-                        <div className="flex items-center justify-between mb-2">
-                            <span className={`text-[10px] uppercase tracking-wider font-bold ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>Hoạt động</span>
-                            <CheckCircle2 className="w-4 h-4 text-emerald-500" />
-                        </div>
-                        <div className="text-2xl font-black text-emerald-500">{stats.byStatus.Active}</div>
-                        <div className={`text-[10px] mt-1 ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>
-                            {stats.total > 0 ? Math.round((stats.byStatus.Active / stats.total) * 100) : 0}% tổng số
+                    <div className="relative overflow-hidden bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl p-5 shadow-xl ring-1 ring-white/10 hover:scale-[1.02] hover:shadow-2xl transition-all duration-200">
+                        <CheckCircle2 className="absolute -right-3 -top-3 w-20 h-20 text-white opacity-[0.12]" />
+                        <div className="relative z-10">
+                            <div className="flex items-center justify-between mb-2">
+                                <span className="text-[10px] font-extrabold uppercase tracking-[0.15em] text-white/90">Hoạt động</span>
+                                <div className="w-9 h-9 rounded-xl bg-white/20 flex items-center justify-center"><CheckCircle2 className="w-4 h-4 text-white" /></div>
+                            </div>
+                            <div className="text-3xl font-black tracking-tight text-white drop-shadow-sm">{stats.byStatus.Active}</div>
+                            <div className="text-[10px] mt-1 text-white/80">{stats.total > 0 ? Math.round((stats.byStatus.Active / stats.total) * 100) : 0}% tổng số</div>
                         </div>
                     </div>
 
                     {/* Maintenance overdue */}
-                    <div className={`rounded-xl p-4 border ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-gray-100'} shadow-sm`}>
-                        <div className="flex items-center justify-between mb-2">
-                            <span className={`text-[10px] uppercase tracking-wider font-bold ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>Quá hạn bảo trì</span>
-                            <AlertTriangle className="w-4 h-4 text-amber-500" />
-                        </div>
-                        <div className={`text-2xl font-black ${stats.maintenanceOverdue > 0 ? 'text-amber-500' : isDark ? 'text-slate-300' : 'text-gray-700'}`}>
-                            {stats.maintenanceOverdue}
-                        </div>
-                        <div className={`text-[10px] mt-1 ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>
-                            Cần xử lý ngay
+                    <div className="relative overflow-hidden bg-gradient-to-br from-amber-500 to-orange-600 rounded-2xl p-5 shadow-xl ring-1 ring-white/10 hover:scale-[1.02] hover:shadow-2xl transition-all duration-200">
+                        <AlertTriangle className="absolute -right-3 -top-3 w-20 h-20 text-white opacity-[0.12]" />
+                        <div className="relative z-10">
+                            <div className="flex items-center justify-between mb-2">
+                                <span className="text-[10px] font-extrabold uppercase tracking-[0.15em] text-white/90">Quá hạn bảo trì</span>
+                                <div className="w-9 h-9 rounded-xl bg-white/20 flex items-center justify-center"><AlertTriangle className="w-4 h-4 text-white" /></div>
+                            </div>
+                            <div className="text-3xl font-black tracking-tight text-white drop-shadow-sm">{stats.maintenanceOverdue}</div>
+                            <div className="text-[10px] mt-1 text-white/80">Cần xử lý ngay</div>
                         </div>
                     </div>
 
                     {/* Warranty expiring */}
-                    <div className={`rounded-xl p-4 border ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-gray-100'} shadow-sm`}>
-                        <div className="flex items-center justify-between mb-2">
-                            <span className={`text-[10px] uppercase tracking-wider font-bold ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>Sắp hết bảo hành</span>
-                            <Shield className="w-4 h-4 text-red-500" />
-                        </div>
-                        <div className={`text-2xl font-black ${stats.warrantyExpiringSoon > 0 ? 'text-red-500' : isDark ? 'text-slate-300' : 'text-gray-700'}`}>
-                            {stats.warrantyExpiringSoon}
-                        </div>
-                        <div className={`text-[10px] mt-1 ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>
-                            Trong 90 ngày tới
+                    <div className="relative overflow-hidden bg-gradient-to-br from-red-500 to-rose-600 rounded-2xl p-5 shadow-xl ring-1 ring-white/10 hover:scale-[1.02] hover:shadow-2xl transition-all duration-200">
+                        <Shield className="absolute -right-3 -top-3 w-20 h-20 text-white opacity-[0.12]" />
+                        <div className="relative z-10">
+                            <div className="flex items-center justify-between mb-2">
+                                <span className="text-[10px] font-extrabold uppercase tracking-[0.15em] text-white/90">Sắp hết bảo hành</span>
+                                <div className="w-9 h-9 rounded-xl bg-white/20 flex items-center justify-center"><Shield className="w-4 h-4 text-white" /></div>
+                            </div>
+                            <div className="text-3xl font-black tracking-tight text-white drop-shadow-sm">{stats.warrantyExpiringSoon}</div>
+                            <div className="text-[10px] mt-1 text-white/80">Trong 90 ngày tới</div>
                         </div>
                     </div>
                 </div>
@@ -262,7 +262,7 @@ export const ProjectOperationsTab: React.FC<Props> = ({ projectID }) => {
                 {/* ── Charts Row ── */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {/* Chart: By Category */}
-                    <div className={`rounded-xl p-4 border ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-gray-100'} shadow-sm`}>
+                    <div className={`rounded-xl p-4 border ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-gray-200'} shadow-sm`}>
                         <div className="flex items-center gap-2 mb-3">
                             <BarChart3 className={`w-4 h-4 ${isDark ? 'text-blue-400' : 'text-blue-500'}`} />
                             <span className={`text-xs font-bold ${isDark ? 'text-slate-200' : 'text-gray-700'}`}>Theo danh mục</span>
@@ -281,7 +281,7 @@ export const ProjectOperationsTab: React.FC<Props> = ({ projectID }) => {
                     </div>
 
                     {/* Chart: By Status */}
-                    <div className={`rounded-xl p-4 border ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-gray-100'} shadow-sm`}>
+                    <div className={`rounded-xl p-4 border ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-gray-200'} shadow-sm`}>
                         <div className="flex items-center gap-2 mb-3">
                             <PieChart className={`w-4 h-4 ${isDark ? 'text-emerald-400' : 'text-emerald-500'}`} />
                             <span className={`text-xs font-bold ${isDark ? 'text-slate-200' : 'text-gray-700'}`}>Theo trạng thái</span>
@@ -305,8 +305,8 @@ export const ProjectOperationsTab: React.FC<Props> = ({ projectID }) => {
                 </div>
 
                 {/* ── Maintenance Timeline ── */}
-                <div className={`rounded-xl border ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-gray-100'} shadow-sm overflow-hidden`}>
-                    <div className={`px-4 py-3 border-b flex items-center justify-between ${isDark ? 'border-slate-800' : 'border-gray-100'}`}>
+                <div className={`rounded-xl border ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-gray-200'} shadow-sm overflow-hidden`}>
+                    <div className={`px-4 py-3 border-b flex items-center justify-between ${isDark ? 'border-slate-800' : 'border-gray-200'}`}>
                         <div className="flex items-center gap-2">
                             <Calendar className={`w-4 h-4 ${isDark ? 'text-amber-400' : 'text-amber-500'}`} />
                             <span className={`text-xs font-bold ${isDark ? 'text-slate-200' : 'text-gray-700'}`}>Lịch bảo trì</span>
@@ -331,9 +331,9 @@ export const ProjectOperationsTab: React.FC<Props> = ({ projectID }) => {
                                         {/* Timeline dot */}
                                         <div className="flex flex-col items-center gap-0.5 shrink-0">
                                             <div className={`w-2.5 h-2.5 rounded-full ${item.overdue ? 'bg-red-500 animate-pulse'
-                                                    : item.daysUntil <= 7 ? 'bg-amber-500'
-                                                        : item.daysUntil <= 30 ? 'bg-blue-500'
-                                                            : 'bg-emerald-500'
+                                                : item.daysUntil <= 7 ? 'bg-amber-500'
+                                                    : item.daysUntil <= 30 ? 'bg-blue-500'
+                                                        : 'bg-emerald-500'
                                                 }`} />
                                             {idx < maintenanceTimeline.length - 1 && (
                                                 <div className={`w-px h-3 ${isDark ? 'bg-slate-700' : 'bg-gray-200'}`} />
@@ -345,8 +345,8 @@ export const ProjectOperationsTab: React.FC<Props> = ({ projectID }) => {
                                                 {item.date.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit' })}
                                             </div>
                                             <div className={`text-[10px] ${item.overdue ? 'text-red-400 font-semibold'
-                                                    : item.daysUntil <= 7 ? 'text-amber-500'
-                                                        : isDark ? 'text-slate-500' : 'text-gray-400'
+                                                : item.daysUntil <= 7 ? 'text-amber-500'
+                                                    : isDark ? 'text-slate-500' : 'text-gray-400'
                                                 }`}>
                                                 {item.overdue ? `Quá ${Math.abs(item.daysUntil)} ngày` : item.daysUntil === 0 ? 'Hôm nay' : `${item.daysUntil} ngày nữa`}
                                             </div>
@@ -375,10 +375,10 @@ export const ProjectOperationsTab: React.FC<Props> = ({ projectID }) => {
                 </div>
 
                 {/* ── Asset Inventory ── */}
-                <div className={`rounded-xl border ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-gray-100'} shadow-sm overflow-hidden`}>
+                <div className={`rounded-xl border ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-gray-200'} shadow-sm overflow-hidden`}>
                     {/* Inventory header — sticky */}
                     <div className={`px-4 py-3 border-b flex flex-col md:flex-row md:items-center md:justify-between gap-3 sticky top-0 z-10
-                        ${isDark ? 'border-slate-800 bg-slate-900' : 'border-gray-100 bg-white'}
+                        ${isDark ? 'border-slate-800 bg-slate-900' : 'border-gray-200 bg-white'}
                     `}>
                         <div className="flex items-center gap-2">
                             <Layers className={`w-4 h-4 ${isDark ? 'text-emerald-400' : 'text-emerald-500'}`} />

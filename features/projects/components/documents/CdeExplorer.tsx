@@ -97,7 +97,7 @@ export const CdeExplorer: React.FC<CdeExplorerProps> = ({
                 </div>
 
                 {/* Container Quick Access */}
-                <div className="p-3 space-y-1 border-b border-gray-100 dark:border-slate-700">
+                <div className="p-3 space-y-1 border-b border-gray-200 dark:border-slate-700">
                     {CDE_CONTAINERS.map(container => {
                         const colors = getStageColor(container.color);
                         const ContainerIcon = container.icon;
@@ -136,7 +136,7 @@ export const CdeExplorer: React.FC<CdeExplorerProps> = ({
             {/* Document List Area */}
             <div className="flex-1 flex flex-col">
                 {/* Breadcrumb */}
-                <div className="px-5 py-3 border-b border-gray-100 dark:border-slate-700 flex items-center gap-2 text-sm text-gray-500 dark:text-slate-400 bg-white dark:bg-slate-800">
+                <div className="px-5 py-3 border-b border-gray-200 dark:border-slate-700 flex items-center gap-2 text-sm text-gray-500 dark:text-slate-400 bg-white dark:bg-slate-800">
                     <FolderIcon className="w-4 h-4 text-gray-300" />
                     {breadcrumbs.map((f, i) => (
                         <React.Fragment key={f.FolderID}>
@@ -177,9 +177,9 @@ export const CdeExplorer: React.FC<CdeExplorerProps> = ({
                             )}
                         </div>
                     ) : (
-                        <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-100 dark:border-slate-700 shadow-sm overflow-hidden">
+                        <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 shadow-sm overflow-hidden">
                             <table className="w-full text-left text-sm">
-                                <thead className="bg-gray-50/80 dark:bg-slate-700/80 text-gray-500 dark:text-slate-400 font-bold text-[11px] uppercase border-b border-gray-100 dark:border-slate-600">
+                                <thead className="bg-gray-50/80 dark:bg-slate-700/80 text-gray-500 dark:text-slate-400 font-bold text-[11px] uppercase border-b border-gray-200 dark:border-slate-600">
                                     <tr>
                                         <th className="px-5 py-3 w-10"></th>
                                         <th className="px-5 py-3">Tên tài liệu</th>

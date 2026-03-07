@@ -116,9 +116,11 @@ export const QuickActionsPanel: React.FC<QuickActionsPanelProps> = ({
     return (
         <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 overflow-hidden">
             {/* Header */}
-            <div className="px-5 py-3 bg-gray-50 dark:bg-slate-700 border-b border-gray-100 dark:border-slate-600 flex items-center gap-2">
-                <Settings className="w-4 h-4 text-gray-600 dark:text-slate-400" />
-                <h3 className="font-bold text-gray-800 dark:text-slate-200 text-xs uppercase">Thao tác nhanh</h3>
+            <div className="section-card-header">
+                <div className="flex items-center gap-2">
+                    <div className="section-icon"><Settings className="w-3.5 h-3.5" /></div>
+                    <span>Thao tác nhanh</span>
+                </div>
             </div>
 
             {/* Actions Grid */}

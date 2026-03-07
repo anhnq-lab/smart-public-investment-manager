@@ -322,9 +322,9 @@ export const ProjectInfoTab: React.FC<ProjectInfoTabProps> = ({
                     />
 
                     {/* General Info Section */}
-                    <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 overflow-hidden">
-                        <div className="px-5 py-3 bg-gray-50 dark:bg-slate-700 border-b border-gray-200 dark:border-slate-600 flex items-center justify-between">
-                            <h3 className="font-bold text-gray-800 dark:text-slate-200 text-xs uppercase">Thông tin chung</h3>
+                    <div className="section-card">
+                        <div className="section-card-header">
+                            <span>Thông tin chung</span>
                             <button
                                 onClick={onEditProject}
                                 className="flex items-center gap-1 text-[10px] text-blue-600 hover:underline font-bold"

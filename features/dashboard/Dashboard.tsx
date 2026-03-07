@@ -19,7 +19,7 @@ import { AIAnomalyDetector } from '../../components/ai/AIAnomalyDetector';
 const ChartTooltip = ({ active, payload, label }: any) => {
     if (!active || !payload) return null;
     return (
-        <div className="bg-white dark:bg-slate-800 px-4 py-3 rounded-xl shadow-xl border border-gray-100 dark:border-slate-600">
+        <div className="bg-white dark:bg-slate-800 px-4 py-3 rounded-xl shadow-xl border border-gray-200 dark:border-slate-600">
             <p className="text-xs font-bold text-gray-500 dark:text-slate-400 mb-1">{label}</p>
             {payload.map((entry: any, idx: number) => (
                 <p key={idx} className="text-sm font-bold text-gray-800 dark:text-slate-100">
@@ -32,7 +32,7 @@ const ChartTooltip = ({ active, payload, label }: any) => {
     );
 };
 
-// --- STAT CARD (Inline - premium style matching Dashboard design) ---
+// --- STAT CARD (Inline - bold gradient matching TaskList/PaymentList design) ---
 const StatCard: React.FC<{
     title: string;
     value: string;
@@ -44,38 +44,56 @@ const StatCard: React.FC<{
     description?: string;
     loading?: boolean;
     onClick?: () => void;
-}> = ({ title, value, icon: Icon, trend, trendUp, bgIcon, textIcon, description, loading, onClick }) => (
-    <div
-        className={`bg-white dark:bg-slate-800 p-5 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 flex flex-col justify-between h-36 relative overflow-hidden group hover:shadow-md transition-all duration-300 ${onClick ? 'cursor-pointer' : ''}`}
-        onClick={onClick}
-        role={onClick ? 'button' : undefined}
-        tabIndex={onClick ? 0 : undefined}
-        onKeyDown={onClick ? (e) => { if (e.key === 'Enter' || e.key === ' ') onClick(); } : undefined}
-    >
-        <div className={`absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity transform group-hover:scale-110 ${textIcon}`}>
-            <Icon className="w-24 h-24" />
-        </div>
-        <div className="flex justify-between items-start relative z-10">
-            <div className={`p-2.5 rounded-xl ${bgIcon} border border-white/50 dark:border-slate-600/50 shadow-sm`}>
-                <Icon className={`w-5 h-5 ${textIcon}`} />
+}> = ({ title, value, icon: Icon, trend, trendUp, bgIcon, textIcon, description, loading, onClick }) => {
+    // Extract color from textIcon (e.g., 'text-blue-600 dark:text-blue-400' -> 'blue')
+    const colorMatch = textIcon.match(/text-(\w+)-/);
+    const colorName = colorMatch ? colorMatch[1] : 'blue';
+    const gradientMap: Record<string, string> = {
+        blue: 'from-blue-500 via-blue-600 to-indigo-700',
+        emerald: 'from-emerald-500 via-emerald-600 to-teal-700',
+        green: 'from-emerald-500 via-emerald-600 to-teal-700',
+        purple: 'from-purple-500 via-purple-600 to-fuchsia-700',
+        amber: 'from-amber-500 via-orange-500 to-red-500',
+        red: 'from-red-500 via-red-600 to-rose-700',
+        violet: 'from-violet-500 via-violet-600 to-purple-700',
+    };
+    const gradient = gradientMap[colorName] || gradientMap.blue;
+
+    return (
+        <div
+            className={`relative overflow-hidden rounded-2xl bg-gradient-to-br ${gradient} text-white p-4 sm:p-5 shadow-xl ring-1 ring-white/10 transition-transform hover:scale-[1.02] hover:shadow-2xl duration-300 min-h-[7rem] h-auto flex flex-col justify-center gap-2 ${onClick ? 'cursor-pointer' : ''}`}
+            onClick={onClick}
+            role={onClick ? 'button' : undefined}
+            tabIndex={onClick ? 0 : undefined}
+            onKeyDown={onClick ? (e) => { if (e.key === 'Enter' || e.key === ' ') onClick(); } : undefined}
+        >
+            {/* Background Icon Watermark */}
+            <div className="absolute -right-3 -top-3 opacity-[0.12]">
+                <Icon className="w-24 h-24" strokeWidth={1.2} />
             </div>
-            {trend && !loading && (
-                <span className={`flex items-center gap-1 text-[10px] font-bold px-2 py-1 rounded-full border ${trendUp ? 'bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 border-emerald-100 dark:border-emerald-800' : 'bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 border-red-100 dark:border-red-800'}`}>
-                    <TrendingUp className={`w-3 h-3 ${trendUp ? '' : 'rotate-180'}`} /> {trend}
-                </span>
-            )}
+
+            <div className="flex justify-between items-start relative z-10">
+                <div className="p-2.5 rounded-xl bg-white/20 shadow-sm">
+                    <Icon className="w-5 h-5 text-white" />
+                </div>
+                {trend && !loading && (
+                    <span className={`flex items-center gap-1 text-[10px] font-bold px-2 py-1 rounded-full bg-white/20 text-white`}>
+                        <TrendingUp className={`w-3 h-3 ${trendUp ? '' : 'rotate-180'}`} /> {trend}
+                    </span>
+                )}
+            </div>
+            <div className="relative z-10">
+                {loading ? (
+                    <div className="h-8 w-24 bg-white/20 rounded animate-pulse my-1"></div>
+                ) : (
+                    <h3 className="text-2xl font-black text-white tracking-tight my-1 drop-shadow-sm">{value}</h3>
+                )}
+                <p className="text-[10px] font-extrabold text-white/90 uppercase tracking-[0.15em]">{title}</p>
+                {description && <p className="text-[10px] text-white/70 mt-1 font-medium">{description}</p>}
+            </div>
         </div>
-        <div className="relative z-10">
-            {loading ? (
-                <div className="h-8 w-24 bg-gray-200 dark:bg-slate-700 rounded animate-pulse my-1"></div>
-            ) : (
-                <h3 className="text-2xl font-black text-gray-800 dark:text-slate-100 tracking-tight my-1">{value}</h3>
-            )}
-            <p className="text-xs font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wide">{title}</p>
-            {description && <p className="text-[10px] text-gray-400 dark:text-slate-500 mt-1 font-medium">{description}</p>}
-        </div>
-    </div>
-);
+    );
+};
 
 // --- EMPTY STATE ---
 const EmptyState: React.FC<{ icon: React.ElementType; message: string }> = ({ icon: Icon, message }) => (
@@ -231,7 +249,7 @@ const Dashboard: React.FC = () => {
                         <select
                             value={selectedProjectId}
                             onChange={e => setSelectedProjectId(e.target.value)}
-                            className="pl-9 pr-8 py-2 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-600 text-gray-700 dark:text-slate-200 text-sm font-bold rounded-xl hover:border-blue-400 dark:hover:border-blue-500 shadow-sm transition-all appearance-none cursor-pointer min-w-[180px] max-w-[280px] truncate focus:outline-none focus:ring-2 focus:ring-blue-500/30"
+                            className="pl-9 pr-8 py-2 filter-primary min-w-[180px] max-w-[280px] truncate"
                         >
                             <option value="all">Tất cả dự án</option>
                             {projects?.map(p => (
@@ -249,7 +267,7 @@ const Dashboard: React.FC = () => {
                         <select
                             value={selectedYear}
                             onChange={e => setSelectedYear(parseInt(e.target.value))}
-                            className="pl-9 pr-8 py-2 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-600 text-gray-700 dark:text-slate-200 text-sm font-bold rounded-xl hover:border-blue-400 dark:hover:border-blue-500 shadow-sm transition-all appearance-none cursor-pointer min-w-[120px] focus:outline-none focus:ring-2 focus:ring-blue-500/30"
+                            className="pl-9 pr-8 py-2 filter-primary min-w-[120px]"
                         >
                             {availableYears.map(y => (
                                 <option key={y} value={y}>Năm {y}</option>
@@ -259,7 +277,7 @@ const Dashboard: React.FC = () => {
                     </div>
 
                     {/* Export button */}
-                    <button onClick={() => navigate('/reports')} className="px-4 py-2 bg-blue-600 text-white text-sm font-bold rounded-xl hover:bg-blue-700 shadow-lg shadow-blue-200 dark:shadow-blue-900/30 transition-all flex items-center gap-2">
+                    <button onClick={() => navigate('/reports')} className="px-4 py-2 text-white text-sm font-bold rounded-xl shadow-lg transition-all flex items-center gap-2" style={{ background: 'linear-gradient(135deg, #F99715 0%, #EC6710 100%)', boxShadow: '0 4px 14px rgba(236, 103, 16, 0.3)' }}>
                         <FileBox className="w-4 h-4" /> Xuất báo cáo
                     </button>
                 </div>
@@ -268,7 +286,7 @@ const Dashboard: React.FC = () => {
             {/* Active filter indicator */}
             {(selectedProjectId !== 'all' || selectedYear !== new Date().getFullYear()) && (
                 <div className="flex items-center gap-2 -mt-4">
-                    <span className="text-xs font-bold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 px-3 py-1 rounded-full border border-blue-200 dark:border-blue-800 flex items-center gap-1.5">
+                    <span className="text-xs font-bold text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/30 px-3 py-1 rounded-full border border-primary-200 dark:border-primary-800 flex items-center gap-1.5">
                         <Filter className="w-3 h-3" />
                         Đang lọc: {filteredProjects.length} dự án
                         {selectedProjectId !== 'all' && ' (1 dự án)'}
@@ -284,7 +302,7 @@ const Dashboard: React.FC = () => {
             )}
 
             {/* 1. KEY METRICS ROW — 5 Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-4 sm:gap-5">
                 <StatCard
                     title="Tổng vốn đầu tư"
                     value={formatCurrency(filteredTotalInvestment)}
@@ -341,14 +359,14 @@ const Dashboard: React.FC = () => {
             <AISummaryWidget />
 
             {/* 2. MAP & ALERTS ROW */}
-            <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 h-[500px]">
+            <div className="grid grid-cols-1 xl:grid-cols-3 gap-4 sm:gap-6 min-h-[300px] xl:h-[500px]">
                 {/* Map Section (2/3 width) */}
-                <div className="xl:col-span-2 bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 relative overflow-hidden h-full flex flex-col">
+                <div className="xl:col-span-2 bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-gray-200 dark:border-slate-700 relative overflow-hidden h-full flex flex-col">
                     <div className="flex justify-between items-center mb-4 shrink-0">
-                        <div className="flex items-center gap-3">
-                            <div className="p-2 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 rounded-lg"><MapIcon className="w-5 h-5" /></div>
-                            <h3 className="text-sm font-black text-gray-800 dark:text-slate-100 uppercase tracking-widest">Bản đồ vị trí dự án</h3>
-                        </div>
+                        <h3 className="section-header">
+                            <div className="section-icon"><MapIcon className="w-5 h-5" /></div>
+                            Bản đồ vị trí dự án
+                        </h3>
                     </div>
 
                     <div className="flex-1 w-full bg-gray-100 dark:bg-slate-700 rounded-2xl relative border border-gray-200 dark:border-slate-600 overflow-hidden z-0">
@@ -378,7 +396,7 @@ const Dashboard: React.FC = () => {
                 {/* ALERTS SECTION */}
                 <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-red-100 dark:border-red-900/50 relative overflow-hidden h-full flex flex-col">
                     <div className="absolute top-0 right-0 p-3 opacity-5 pointer-events-none"><AlertTriangle className="w-32 h-32 text-red-500" /></div>
-                    <h3 className="text-sm font-black text-red-600 dark:text-red-400 uppercase tracking-widest mb-4 flex items-center gap-2 relative z-10 shrink-0">
+                    <h3 className="text-sm font-black text-red-600 dark:text-red-400 uppercase tracking-widest mb-4 flex items-center gap-2 relative z-10 shrink-0" style={{ paddingLeft: '0.75rem', borderLeft: '3px solid #EF4444' }}>
                         <AlertTriangle className="w-4 h-4" /> Cảnh báo quan trọng
                     </h3>
                     <div className="space-y-3 relative z-10 flex-1 overflow-y-auto pr-2 custom-scrollbar">
@@ -411,21 +429,21 @@ const Dashboard: React.FC = () => {
             </div>
 
             {/* 3. MAIN CONTENT GRID */}
-            <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 xl:grid-cols-3 gap-4 sm:gap-6 xl:gap-8">
                 {/* Main Content Column (2/3) */}
                 <div className="xl:col-span-2 space-y-6">
                     {/* PORTFOLIO STATUS ROW (Horizontal / Compact) */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         {/* Pie Chart: Project Status */}
-                        <div className="bg-white dark:bg-slate-800 p-5 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 flex flex-col h-48">
-                            <h3 className="text-xs font-black text-gray-800 dark:text-slate-100 uppercase tracking-widest mb-2 flex items-center gap-2 shrink-0">
-                                <Activity className="w-4 h-4 text-blue-500" /> Giai đoạn dự án
+                        <div className="bg-white dark:bg-slate-800 p-4 sm:p-5 rounded-2xl shadow-sm border border-gray-200 dark:border-slate-700 flex flex-col min-h-[10rem] h-auto">
+                            <h3 className="section-header text-xs mb-2 shrink-0">
+                                <div className="section-icon p-1.5"><Activity className="w-4 h-4" /></div> Giai đoạn dự án
                             </h3>
                             {loadingStatus ? (
                                 <div className="h-full w-full bg-gray-50 dark:bg-slate-700 rounded-xl animate-pulse"></div>
                             ) : (
                                 <div className="flex-1 flex items-center gap-4">
-                                    <div className="relative w-32 h-32 shrink-0">
+                                    <div className="relative w-24 h-24 sm:w-28 sm:h-28 xl:w-32 xl:h-32 shrink-0">
                                         <ResponsiveContainer width="100%" height="100%">
                                             <PieChart>
                                                 <Pie data={filteredStatusData} cx="50%" cy="50%" innerRadius={40} outerRadius={55} paddingAngle={5} dataKey="value">
@@ -455,15 +473,15 @@ const Dashboard: React.FC = () => {
                         </div>
 
                         {/* Pie Chart: Groups */}
-                        <div className="bg-white dark:bg-slate-800 p-5 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 flex flex-col h-48">
-                            <h3 className="text-xs font-black text-gray-800 dark:text-slate-100 uppercase tracking-widest mb-2 flex items-center gap-2 shrink-0">
-                                <Building2 className="w-4 h-4 text-purple-500" /> Phân loại nhóm dự án
+                        <div className="bg-white dark:bg-slate-800 p-4 sm:p-5 rounded-2xl shadow-sm border border-gray-200 dark:border-slate-700 flex flex-col min-h-[10rem] h-auto">
+                            <h3 className="section-header text-xs mb-2 shrink-0">
+                                <div className="section-icon p-1.5"><Building2 className="w-4 h-4" /></div> Phân loại nhóm dự án
                             </h3>
                             {loadingGroups ? (
                                 <div className="h-full w-full bg-gray-50 dark:bg-slate-700 rounded-xl animate-pulse"></div>
                             ) : (
                                 <div className="flex-1 flex items-center gap-4">
-                                    <div className="relative w-32 h-32 shrink-0">
+                                    <div className="relative w-24 h-24 sm:w-28 sm:h-28 xl:w-32 xl:h-32 shrink-0">
                                         <ResponsiveContainer width="100%" height="100%">
                                             <PieChart>
                                                 <Pie data={filteredGroupData} cx="50%" cy="50%" innerRadius={40} outerRadius={55} paddingAngle={5} dataKey="value">
@@ -494,15 +512,15 @@ const Dashboard: React.FC = () => {
                     </div>
 
                     {/* Disbursement Chart (Full Width in column) */}
-                    <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700">
+                    <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-gray-200 dark:border-slate-700">
                         <div className="flex justify-between items-center mb-6">
-                            <div className="flex items-center gap-3">
-                                <div className="p-2 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 rounded-lg"><TrendingUp className="w-5 h-5" /></div>
-                                <h3 className="text-sm font-black text-gray-800 dark:text-slate-100 uppercase tracking-widest">Biểu đồ giải ngân & Kế hoạch vốn</h3>
-                            </div>
+                            <h3 className="section-header">
+                                <div className="section-icon"><TrendingUp className="w-5 h-5" /></div>
+                                Biểu đồ giải ngân & Kế hoạch vốn
+                            </h3>
                             <div className="flex gap-3">
-                                <span className="flex items-center gap-1.5 text-[10px] font-bold text-gray-500 dark:text-slate-400"><div className="w-2.5 h-2.5 rounded bg-[#0ea5e9]"></div> Giải ngân</span>
-                                <span className="flex items-center gap-1.5 text-[10px] font-bold text-gray-500 dark:text-slate-400"><div className="w-2.5 h-2.5 rounded bg-gray-300 dark:bg-slate-500"></div> Kế hoạch</span>
+                                <span className="flex items-center gap-1.5 text-[10px] font-bold text-gray-500 dark:text-slate-400"><div className="w-2.5 h-2.5 rounded" style={{ background: '#EC6710' }}></div> Giải ngân</span>
+                                <span className="flex items-center gap-1.5 text-[10px] font-bold text-gray-500 dark:text-slate-400"><div className="w-2.5 h-2.5 rounded" style={{ background: '#FDDF8B' }}></div> Kế hoạch</span>
                             </div>
                         </div>
                         <div className="h-80 w-full">
@@ -515,8 +533,8 @@ const Dashboard: React.FC = () => {
                                         <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: theme === 'dark' ? '#94A3B8' : '#6B7280', fontSize: 11, fontWeight: 600 }} dy={10} />
                                         <YAxis axisLine={false} tickLine={false} tick={{ fill: theme === 'dark' ? '#94A3B8' : '#6B7280', fontSize: 11, fontWeight: 600 }} tickFormatter={(val) => `${val / 1000} Tỷ`} />
                                         <RechartsTooltip content={<ChartTooltip />} cursor={{ fill: theme === 'dark' ? '#1E293B' : '#F3F4F6' }} />
-                                        <Bar dataKey="plan" fill={theme === 'dark' ? '#475569' : '#D1D5DB'} radius={[4, 4, 0, 0]} maxBarSize={40} />
-                                        <Bar dataKey="disbursement" fill="#0ea5e9" radius={[4, 4, 0, 0]} maxBarSize={40} />
+                                        <Bar dataKey="plan" fill={theme === 'dark' ? '#5C2606' : '#FDDF8B'} radius={[4, 4, 0, 0]} maxBarSize={40} />
+                                        <Bar dataKey="disbursement" fill="#EC6710" radius={[4, 4, 0, 0]} maxBarSize={40} />
                                     </BarChart>
                                 </ResponsiveContainer>
                             )}
@@ -526,10 +544,11 @@ const Dashboard: React.FC = () => {
                     {/* LEGAL & SITE CLEARANCE MONITOR */}
                     <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-orange-100 dark:border-orange-900/50 flex flex-col">
                         <div className="flex justify-between items-center mb-4">
-                            <h3 className="text-sm font-black text-gray-800 dark:text-slate-100 uppercase tracking-widest flex items-center gap-2">
-                                <FileBox className="w-4 h-4 text-orange-500" /> Theo dõi Vướng mắc (GPMB & Pháp lý)
+                            <h3 className="section-header">
+                                <div className="section-icon"><FileBox className="w-5 h-5" /></div>
+                                Theo dõi Vướng mắc (GPMB & Pháp lý)
                             </h3>
-                            <button className="text-[10px] font-bold text-blue-600 dark:text-blue-400 hover:underline">Chi tiết</button>
+                            <button className="text-[10px] font-bold text-primary-600 dark:text-primary-400 hover:underline">Chi tiết</button>
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -541,7 +560,7 @@ const Dashboard: React.FC = () => {
                                 <div className="space-y-3">
                                     <div className="flex justify-between items-center">
                                         <span className="text-xs text-gray-600 dark:text-slate-300 font-medium">Chờ phê duyệt chủ trương</span>
-                                        <span className="text-xs font-black text-gray-800 dark:text-slate-100 bg-white dark:bg-slate-700 px-2 py-0.5 rounded border border-gray-100 dark:border-slate-600 shadow-sm">3 dự án</span>
+                                        <span className="text-xs font-black text-gray-800 dark:text-slate-100 bg-white dark:bg-slate-700 px-2 py-0.5 rounded border border-gray-200 dark:border-slate-600 shadow-sm">3 dự án</span>
                                     </div>
                                     <div className="flex justify-between items-center">
                                         <span className="text-xs text-gray-600 dark:text-slate-300 font-medium">Đang điều chỉnh TMĐT</span>
@@ -585,10 +604,10 @@ const Dashboard: React.FC = () => {
                 {/* Sidebar Column (1/3) */}
                 <div className="space-y-6">
                     {/* UPCOMING DEADLINES */}
-                    <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700">
+                    <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-gray-200 dark:border-slate-700">
                         <div className="flex justify-between items-center mb-4">
-                            <h3 className="text-sm font-black text-gray-800 dark:text-slate-100 uppercase tracking-widest flex items-center gap-2">
-                                <Clock className="w-4 h-4 text-orange-500" /> Sắp đến hạn
+                            <h3 className="section-header">
+                                <div className="section-icon"><Clock className="w-5 h-5" /></div> Sắp đến hạn
                             </h3>
                             <span className="text-[10px] bg-orange-50 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 px-2 py-0.5 rounded-md font-bold">7 ngày tới</span>
                         </div>
@@ -605,7 +624,7 @@ const Dashboard: React.FC = () => {
                                         <div className="flex-1">
                                             <p className="text-xs font-bold text-gray-800 dark:text-slate-100 line-clamp-1">{item.title}</p>
                                             <p className="text-[10px] text-gray-500 dark:text-slate-400 mt-0.5 mb-1">{item.project}</p>
-                                            <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded border ${item.urgent ? 'bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 border-red-100 dark:border-red-800' : 'bg-gray-50 dark:bg-slate-700 text-gray-500 dark:text-slate-400 border-gray-100 dark:border-slate-600'}`}>
+                                            <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded border ${item.urgent ? 'bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 border-red-100 dark:border-red-800' : 'bg-gray-50 dark:bg-slate-700 text-gray-500 dark:text-slate-400 border-gray-200 dark:border-slate-600'}`}>
                                                 Hạn: {item.due}
                                             </span>
                                         </div>
@@ -630,10 +649,10 @@ const Dashboard: React.FC = () => {
                     <AIResourceOptimizer />
 
                     {/* ACTIVE CONTRACTORS SUMMARY */}
-                    <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700">
+                    <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-gray-200 dark:border-slate-700">
                         <div className="flex justify-between items-center mb-4">
-                            <h3 className="text-sm font-black text-gray-800 dark:text-slate-100 uppercase tracking-widest flex items-center gap-2">
-                                <HardHat className="w-4 h-4 text-gray-600 dark:text-slate-400" /> Nhà thầu chính
+                            <h3 className="section-header">
+                                <div className="section-icon"><HardHat className="w-5 h-5" /></div> Nhà thầu chính
                             </h3>
                         </div>
                         <div className="space-y-4">
@@ -663,7 +682,7 @@ const Dashboard: React.FC = () => {
                                 <EmptyState icon={Users} message="Chưa có nhà thầu nào" />
                             )}
                         </div>
-                        <button onClick={() => navigate('/contractors')} className="w-full mt-4 flex items-center justify-center gap-1 text-[11px] font-bold text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors">
+                        <button onClick={() => navigate('/contractors')} className="w-full mt-4 flex items-center justify-center gap-1 text-[11px] font-bold text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 transition-colors">
                             Xem tất cả nhà thầu <ArrowRight className="w-3 h-3" />
                         </button>
                     </div>

@@ -36,8 +36,8 @@ export const ProjectMembersModal: React.FC<ProjectMembersModalProps> = ({ isOpen
 
     return (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
-            <div className="bg-white w-full max-w-4xl h-[80vh] rounded-3xl shadow-2xl flex flex-col overflow-hidden border border-gray-100 animate-in zoom-in-95">
-                <div className="p-6 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
+            <div className="bg-white w-full max-w-4xl h-[80vh] rounded-3xl shadow-2xl flex flex-col overflow-hidden border border-gray-200 animate-in zoom-in-95">
+                <div className="p-6 border-b border-gray-200 flex justify-between items-center bg-gray-50/50">
                     <h3 className="text-lg font-black text-gray-800 flex items-center gap-3">
                         <Users className="w-5 h-5 text-blue-600" /> Quản lý nhân sự dự án
                     </h3>
@@ -48,16 +48,16 @@ export const ProjectMembersModal: React.FC<ProjectMembersModalProps> = ({ isOpen
 
                 <div className="flex-1 flex overflow-hidden">
                     {/* Left: Current Members */}
-                    <div className="flex-1 border-r border-gray-100 flex flex-col bg-white">
+                    <div className="flex-1 border-r border-gray-200 flex flex-col bg-white">
                         <div className="p-4 bg-blue-50/30 border-b border-blue-50">
                             <h4 className="text-xs font-bold text-blue-800 uppercase tracking-widest mb-1">Danh sách hiện tại ({activeMembers.length})</h4>
                             <p className="text-[10px] text-blue-600/70">Thành viên đang tham gia dự án</p>
                         </div>
                         <div className="flex-1 overflow-y-auto p-4 space-y-3">
                             {activeMembers.map((member) => (
-                                <div key={member.EmployeeID} className="flex items-center gap-3 p-3 rounded-xl border border-gray-100 hover:border-blue-100 hover:bg-blue-50/20 transition-all group">
+                                <div key={member.EmployeeID} className="flex items-center gap-3 p-3 rounded-xl border border-gray-200 hover:border-blue-100 hover:bg-blue-50/20 transition-all group">
                                     <div className="relative">
-                                        <img src={member.AvatarUrl} alt="" className="w-10 h-10 rounded-full border border-gray-100" />
+                                        <img src={member.AvatarUrl} alt="" className="w-10 h-10 rounded-full border border-gray-200" />
                                         <span className={`absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full border-2 border-white ${member.Status === 1 ? 'bg-emerald-500' : 'bg-gray-300'}`}></span>
                                     </div>
                                     <div className="flex-1 min-w-0">

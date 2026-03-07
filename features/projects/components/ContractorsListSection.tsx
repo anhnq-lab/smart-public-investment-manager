@@ -111,7 +111,7 @@ export const ContractorsListSection: React.FC<ContractorsListSectionProps> = ({
                         packages.slice(0, 5).map((pkg) => (
                             <div
                                 key={pkg.PackageID}
-                                className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-slate-700/50 rounded-lg border border-gray-100 dark:border-slate-600 hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors cursor-pointer group"
+                                className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-slate-700/50 rounded-lg border border-gray-200 dark:border-slate-600 hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors cursor-pointer group"
                                 onClick={() => onViewPackage?.(pkg.PackageID)}
                             >
                                 <div className="w-10 h-10 rounded-lg bg-gray-100 dark:bg-slate-600 flex items-center justify-center">

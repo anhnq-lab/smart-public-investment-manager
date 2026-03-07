@@ -187,7 +187,7 @@ export const AuditLogViewer: React.FC<AuditLogViewerProps> = ({ isOpen = true, o
             </div>
 
             {/* Filters */}
-            <div className="bg-white dark:bg-slate-800 p-4 rounded-2xl border border-gray-100 dark:border-slate-700 shadow-sm">
+            <div className="bg-white dark:bg-slate-800 p-4 rounded-2xl border border-gray-200 dark:border-slate-700 shadow-sm">
                 <div className="flex flex-wrap gap-4">
                     {/* Search */}
                     <div className="flex-1 min-w-[250px] relative">
@@ -236,7 +236,7 @@ export const AuditLogViewer: React.FC<AuditLogViewerProps> = ({ isOpen = true, o
             </div>
 
             {/* Log Table */}
-            <div className="bg-white dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-700 shadow-sm overflow-hidden">
+            <div className="bg-white dark:bg-slate-800 rounded-2xl border border-gray-200 dark:border-slate-700 shadow-sm overflow-hidden">
                 <div className="overflow-x-auto">
                     <table className="w-full text-sm">
                         <thead className="bg-gray-50 dark:bg-slate-700/50 text-xs uppercase font-bold text-gray-500 dark:text-slate-400">
@@ -310,7 +310,7 @@ export const AuditLogViewer: React.FC<AuditLogViewerProps> = ({ isOpen = true, o
                 </div>
 
                 {/* Pagination */}
-                <div className="px-6 py-4 border-t border-gray-100 dark:border-slate-700 flex items-center justify-between">
+                <div className="px-6 py-4 border-t border-gray-200 dark:border-slate-700 flex items-center justify-between">
                     <span className="text-sm text-gray-500 dark:text-slate-400">
                         Hiển thị {((currentPage - 1) * itemsPerPage) + 1} - {Math.min(currentPage * itemsPerPage, filteredLogs.length)} / {filteredLogs.length} bản ghi
                     </span>

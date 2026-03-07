@@ -724,7 +724,7 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({
                                             : 'border-l-gray-200';
 
                                     return (
-                                        <div key={item.id} className={`bg-white dark:bg-slate-800 border border-gray-100 dark:border-slate-700 rounded-lg p-3 hover:border-gray-200 dark:hover:border-slate-600 transition-colors group border-l-4 ${stepBorderColor}`}>
+                                        <div key={item.id} className={`bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-lg p-3 hover:border-gray-200 dark:hover:border-slate-600 transition-colors group border-l-4 ${stepBorderColor}`}>
                                             {/* Step Header Row */}
                                             <div className="flex items-center gap-3">
                                                 {/* Status Icon */}
@@ -754,7 +754,7 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({
 
                                                 {/* Date Range Badge */}
                                                 {(agg?.startDate || agg?.dueDate) && (
-                                                    <span className="hidden sm:flex items-center gap-1 text-[10px] text-gray-400 dark:text-slate-500 bg-gray-50 dark:bg-slate-700 px-2 py-0.5 rounded border border-gray-100 dark:border-slate-600 shrink-0">
+                                                    <span className="hidden sm:flex items-center gap-1 text-[10px] text-gray-400 dark:text-slate-500 bg-gray-50 dark:bg-slate-700 px-2 py-0.5 rounded border border-gray-200 dark:border-slate-600 shrink-0">
                                                         <Calendar className="w-3 h-3" />
                                                         {agg.startDate && new Date(agg.startDate).toLocaleDateString('vi-VN')}
                                                         {agg.startDate && agg.dueDate && ' → '}
@@ -799,7 +799,7 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({
 
                                             {/* Task Table (Compact) */}
                                             {linkedTasks.length > 0 && (
-                                                <div className="mt-3 border border-gray-100 dark:border-slate-700 rounded-lg overflow-hidden">
+                                                <div className="mt-3 border border-gray-200 dark:border-slate-700 rounded-lg overflow-hidden">
                                                     <table className="w-full text-xs">
                                                         <thead>
                                                             <tr className="bg-gray-50 dark:bg-slate-700 text-gray-500 dark:text-slate-400">
@@ -1141,7 +1141,7 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({
                 const inProgress = tasks.filter(t => t.Status === TaskStatus.InProgress || t.Status === TaskStatus.Review).length;
                 const pct = total > 0 ? Math.round((done / total) * 100) : 0;
                 return (
-                    <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-100 dark:border-slate-700 p-4 shadow-sm">
+                    <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 p-4 shadow-sm">
                         <div className="flex items-center justify-between mb-2">
                             <span className="text-xs font-bold text-gray-600 dark:text-slate-300 uppercase tracking-wide">Tiến độ tổng thể</span>
                             <span className="text-sm font-black text-gray-800 dark:text-white">{pct}%</span>
@@ -1178,7 +1178,7 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({
 
                     {currentView === 'gantt' && (
                         <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl overflow-hidden shadow-sm">
-                            <div className="px-4 py-3 border-b border-gray-100 dark:border-slate-700 bg-gray-50 dark:bg-slate-700 flex justify-between items-center">
+                            <div className="px-4 py-3 border-b border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-700 flex justify-between items-center">
                                 <h4 className="font-bold text-gray-700 dark:text-slate-200 text-xs uppercase flex items-center gap-2">
                                     <Layers className="w-4 h-4" /> Tiến độ tổng thể (Gantt)
                                 </h4>

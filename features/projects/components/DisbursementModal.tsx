@@ -96,7 +96,7 @@ export const DisbursementModal: React.FC<DisbursementModalProps> = ({
                 onClick={e => e.stopPropagation()}
             >
                 {/* Header */}
-                <div className="px-6 py-4 border-b border-gray-100 dark:border-slate-700 flex items-center justify-between sticky top-0 bg-white dark:bg-slate-800 z-10">
+                <div className="px-6 py-4 border-b border-gray-200 dark:border-slate-700 flex items-center justify-between sticky top-0 bg-white dark:bg-slate-800 z-10">
                     <div className="flex items-center gap-3">
                         <div className="p-2 bg-emerald-100 dark:bg-emerald-900/30 rounded-lg">
                             <Receipt className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
@@ -241,7 +241,7 @@ export const DisbursementModal: React.FC<DisbursementModalProps> = ({
                     )}
 
                     {/* Actions */}
-                    <div className="flex justify-end gap-3 pt-4 border-t border-gray-100 dark:border-slate-700">
+                    <div className="flex justify-end gap-3 pt-4 border-t border-gray-200 dark:border-slate-700">
                         <button
                             type="button"
                             onClick={onClose}

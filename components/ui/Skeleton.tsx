@@ -112,7 +112,7 @@ export const SkeletonCard: React.FC<SkeletonCardProps> = ({
     lines = 2,
 }) => {
     return (
-        <div className={`bg-white rounded-2xl border border-gray-100 p-6 ${className}`}>
+        <div className={`bg-white rounded-2xl border border-gray-200 p-6 ${className}`}>
             {hasImage && (
                 <Skeleton
                     variant="rounded"
@@ -164,7 +164,7 @@ export const SkeletonTable: React.FC<SkeletonTableProps> = ({
             {Array.from({ length: rows }).map((_, rowIdx) => (
                 <div
                     key={`row-${rowIdx}`}
-                    className="px-4 py-3 flex gap-4 border-b border-gray-100 last:border-0"
+                    className="px-4 py-3 flex gap-4 border-b border-gray-200 last:border-0"
                 >
                     {Array.from({ length: columns }).map((_, colIdx) => (
                         <Skeleton
@@ -185,7 +185,7 @@ export const SkeletonTable: React.FC<SkeletonTableProps> = ({
 
 export const SkeletonStatCard: React.FC<{ className?: string }> = ({ className = '' }) => {
     return (
-        <div className={`bg-white rounded-2xl border border-gray-100 p-6 h-36 ${className}`}>
+        <div className={`bg-white rounded-2xl border border-gray-200 p-6 h-36 ${className}`}>
             <div className="flex justify-between items-start mb-4">
                 <Skeleton variant="rounded" width={44} height={44} />
                 <Skeleton variant="rounded" width={60} height={24} />
