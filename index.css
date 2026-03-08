@@ -335,7 +335,7 @@
 
   /* ── Stat Card ── */
   .stat-card {
-    @apply relative flex items-center gap-4 px-5 py-4 rounded-2xl border transition-all duration-200 overflow-hidden;
+    @apply relative flex items-center gap-3 px-4 py-3 rounded-xl border transition-all duration-200 overflow-hidden;
     @apply bg-white border-gray-200 shadow-sm;
     @apply dark:bg-slate-800 dark:border-slate-600/60 dark:shadow-slate-900/30;
   }
@@ -356,7 +356,7 @@
   }
 
   .stat-card-icon {
-    @apply flex items-center justify-center w-12 h-12 rounded-xl;
+    @apply flex items-center justify-center w-10 h-10 rounded-lg;
   }
 
   .stat-card-blue .stat-card-icon {
@@ -380,7 +380,7 @@
   }
 
   .stat-card-value {
-    @apply text-2xl font-bold text-gray-900 dark:text-white leading-none;
+    @apply text-lg font-bold text-gray-900 dark:text-white leading-none;
   }
 
   .stat-card-label {
@@ -623,21 +623,20 @@
 
   /* ── Stat Card — Base + Color Variants ── */
   .stat-card {
-    @apply p-5 rounded-2xl shadow-xl;
+    @apply p-3.5 rounded-xl shadow-lg;
     @apply ring-1 ring-white/10;
-    @apply flex items-center gap-4 relative overflow-hidden;
-    @apply transition-transform duration-300;
+    @apply flex items-center gap-3 relative overflow-hidden;
+    @apply transition-all duration-200;
     background: linear-gradient(135deg, #3b82f6 0%, #4f46e5 100%);
     color: white;
   }
 
   .stat-card:hover {
-    transform: scale(1.02);
-    @apply shadow-2xl;
+    @apply shadow-xl;
   }
 
   .stat-card-icon {
-    @apply p-3 rounded-xl border shadow-sm;
+    @apply p-2.5 rounded-lg border shadow-sm;
   }
 
   .stat-card-label {
@@ -645,7 +644,7 @@
   }
 
   .stat-card-value {
-    @apply text-2xl font-black tracking-tight text-gray-800 dark:text-slate-100;
+    @apply text-lg font-black tracking-tight text-gray-800 dark:text-slate-100;
   }
 
   .stat-card-trend {
@@ -703,17 +702,17 @@
 
   /* ── Stat Card Premium — Gradient border-top cam ── */
   .stat-card-premium {
-    @apply bg-white dark:bg-slate-800 p-5 rounded-2xl shadow;
+    @apply bg-white dark:bg-slate-800 p-3.5 rounded-xl shadow;
     @apply border border-gray-200 dark:border-slate-700;
-    @apply flex flex-col justify-center gap-2.5 h-36 relative overflow-hidden;
-    @apply hover:shadow-lg transition-all duration-300;
+    @apply flex flex-col justify-center gap-2 relative overflow-hidden;
+    @apply hover:shadow-lg transition-all duration-200;
     border-top: 3px solid transparent;
     border-image: linear-gradient(90deg, #F99715, #EC6710) 1;
     border-image-slice: 1 0 0 0;
   }
 
   .stat-card-premium:hover {
-    transform: translateY(-2px);
+    transform: translateY(-1px);
   }
 
   /* ── Filter Primary — Cam theme cho select/input ── */

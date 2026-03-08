@@ -157,29 +157,28 @@ const PaymentList: React.FC = () => {
                     {statCards.map((card, idx) => (
                         <div
                             key={idx}
-                            className={`relative overflow-hidden rounded-2xl bg-gradient-to-br ${card.gradient} text-white p-5 shadow-xl ring-1 ${card.ring} transition-transform hover:scale-[1.02] hover:shadow-2xl duration-300`}
+                            className={`relative overflow-hidden rounded-xl bg-gradient-to-br ${card.gradient} text-white p-3 shadow-lg ring-1 ${card.ring} transition-all duration-200`}
                         >
-                            <div className="absolute -right-3 -top-3 opacity-[0.12]">
-                                <card.icon className="w-24 h-24" strokeWidth={1.2} />
+                            <div className="absolute -right-2 -top-2 opacity-[0.12]">
+                                <card.icon className="w-16 h-16" strokeWidth={1.2} />
                             </div>
-                            {/* Pending highlight pulse */}
                             {(card as any).highlight && (
-                                <div className="absolute top-3 right-3">
-                                    <span className="flex h-3 w-3">
+                                <div className="absolute top-2 right-2">
+                                    <span className="flex h-2.5 w-2.5">
                                         <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-50"></span>
-                                        <span className="relative inline-flex rounded-full h-3 w-3 bg-white/70"></span>
+                                        <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-white/70"></span>
                                     </span>
                                 </div>
                             )}
                             <div className="relative z-10">
-                                <p className="text-[10px] font-extrabold uppercase tracking-[0.2em] text-white/90">{card.label}</p>
-                                <p className="text-3xl font-black mt-2 tracking-tight drop-shadow-sm">{card.value}</p>
+                                <p className="text-[10px] font-extrabold uppercase tracking-[0.15em] text-white/90">{card.label}</p>
+                                <p className="text-xl font-black mt-1 tracking-tight drop-shadow-sm">{card.value}</p>
                                 {(card as any).progressPercent !== undefined && (
-                                    <div className="mt-2 w-full bg-white/20 rounded-full h-1.5">
+                                    <div className="mt-1.5 w-full bg-white/20 rounded-full h-1">
                                         <div className="h-full bg-white/80 rounded-full transition-all duration-1000" style={{ width: `${Math.min((card as any).progressPercent, 100)}%` }}></div>
                                     </div>
                                 )}
-                                <p className="text-[11px] text-white/70 mt-1.5 font-medium">{card.sub}</p>
+                                <p className="text-[10px] text-white/70 mt-1 font-medium">{card.sub}</p>
                             </div>
                         </div>
                     ))}
@@ -265,14 +264,15 @@ const PaymentList: React.FC = () => {
                         <table className="w-full text-left text-sm">
                             <thead>
                                 <tr className="table-header-row">
-                                    <th className="px-5 py-4 text-[10px] font-black uppercase tracking-widest">Mã TT</th>
-                                    <th className="px-5 py-4 text-[10px] font-black uppercase tracking-widest">Hợp đồng</th>
-                                    <th className="px-5 py-4 text-[10px] font-black uppercase tracking-widest">Nhà thầu</th>
-                                    <th className="px-5 py-4 text-[10px] font-black uppercase tracking-widest">Dự án</th>
-                                    <th className="px-5 py-4 text-[10px] font-black uppercase tracking-widest text-center">Đợt</th>
-                                    <th className="px-5 py-4 text-[10px] font-black uppercase tracking-widest">Loại</th>
-                                    <th className="px-5 py-4 text-[10px] font-black uppercase tracking-widest text-right">Số tiền</th>
-                                    <th className="px-5 py-4 text-[10px] font-black uppercase tracking-widest text-center">Trạng thái</th>
+                                    <th className="px-3 py-2.5 text-center text-[10px] font-black uppercase tracking-widest w-12">STT</th>
+                                    <th className="px-4 py-2.5 text-[10px] font-black uppercase tracking-widest">Mã TT</th>
+                                    <th className="px-4 py-2.5 text-[10px] font-black uppercase tracking-widest">Hợp đồng</th>
+                                    <th className="px-4 py-2.5 text-[10px] font-black uppercase tracking-widest">Nhà thầu</th>
+                                    <th className="px-4 py-2.5 text-[10px] font-black uppercase tracking-widest">Dự án</th>
+                                    <th className="px-4 py-2.5 text-[10px] font-black uppercase tracking-widest text-center">Đợt</th>
+                                    <th className="px-4 py-2.5 text-[10px] font-black uppercase tracking-widest">Loại</th>
+                                    <th className="px-4 py-2.5 text-[10px] font-black uppercase tracking-widest text-right">Số tiền</th>
+                                    <th className="px-4 py-2.5 text-[10px] font-black uppercase tracking-widest text-center">Trạng thái</th>
                                     <th className="px-5 py-4 w-10"></th>
                                 </tr>
                             </thead>
@@ -290,6 +290,8 @@ const PaymentList: React.FC = () => {
                                             className={`group cursor-pointer transition-all duration-200 hover:bg-blue-50/60 hover:shadow-sm ${isEven ? 'bg-white dark:bg-slate-800' : 'bg-gray-50/30 dark:bg-slate-900/30'} border-b border-gray-50 dark:border-slate-700`}
                                             onClick={() => navigate(`/contracts/${encodeURIComponent(payment.ContractID)}`)}
                                         >
+                                            {/* STT */}
+                                            <td className="px-3 py-4 text-center text-xs text-gray-500 dark:text-slate-400 font-medium">{rowIdx + 1}</td>
                                             {/* Payment ID */}
                                             <td className="px-5 py-4">
                                                 <div className="flex items-center gap-2">
@@ -352,7 +354,7 @@ const PaymentList: React.FC = () => {
                                             {/* Amount */}
                                             <td className="px-5 py-4 text-right">
                                                 <div className="text-right">
-                                                    <span className="font-bold text-gray-900 font-mono text-sm tracking-tight block dark:text-slate-100">{formatCurrency(payment.Amount)}</span>
+                                                    <span className="font-bold text-gray-900 font-mono text-xs tracking-tight block whitespace-nowrap dark:text-slate-100">{formatCurrency(payment.Amount)}</span>
                                                     {contractValue > 0 && (
                                                         <span className="text-[10px] text-gray-400 font-medium dark:text-slate-500">{payPercent.toFixed(1)}% giá trị HĐ</span>
                                                     )}
@@ -362,12 +364,12 @@ const PaymentList: React.FC = () => {
                                             {/* Status */}
                                             <td className="px-5 py-4 text-center">
                                                 {payment.Status === PaymentStatus.Transferred ? (
-                                                    <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-bold uppercase bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100 dark:bg-emerald-900/30 dark:text-emerald-300 dark:ring-emerald-900">
+                                                    <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-[9px] font-bold uppercase whitespace-nowrap bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100 dark:bg-emerald-900/30 dark:text-emerald-300 dark:ring-emerald-900">
                                                         <CheckCircle2 className="w-3 h-3" />
                                                         Đã chuyển
                                                     </span>
                                                 ) : (
-                                                    <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-bold uppercase bg-amber-50 text-amber-700 ring-1 ring-amber-100 dark:bg-amber-900/30 dark:text-amber-300 dark:ring-amber-900">
+                                                    <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-[9px] font-bold uppercase whitespace-nowrap bg-amber-50 text-amber-700 ring-1 ring-amber-100 dark:bg-amber-900/30 dark:text-amber-300 dark:ring-amber-900">
                                                         <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span>
                                                         Chờ duyệt
                                                     </span>

@@ -61,35 +61,35 @@ const StatCard: React.FC<{
 
     return (
         <div
-            className={`relative overflow-hidden rounded-2xl bg-gradient-to-br ${gradient} text-white p-4 sm:p-5 shadow-xl ring-1 ring-white/10 transition-transform hover:scale-[1.02] hover:shadow-2xl duration-300 min-h-[7rem] h-auto flex flex-col justify-center gap-2 ${onClick ? 'cursor-pointer' : ''}`}
+            className={`relative overflow-hidden rounded-2xl bg-gradient-to-br ${gradient} text-white p-3 sm:p-4 shadow-xl ring-1 ring-white/10 transition-transform hover:scale-[1.02] hover:shadow-2xl duration-300 min-h-[5.5rem] h-auto flex flex-col justify-center gap-1.5 ${onClick ? 'cursor-pointer' : ''}`}
             onClick={onClick}
             role={onClick ? 'button' : undefined}
             tabIndex={onClick ? 0 : undefined}
             onKeyDown={onClick ? (e) => { if (e.key === 'Enter' || e.key === ' ') onClick(); } : undefined}
         >
             {/* Background Icon Watermark */}
-            <div className="absolute -right-3 -top-3 opacity-[0.12]">
-                <Icon className="w-24 h-24" strokeWidth={1.2} />
+            <div className="absolute -right-2 -top-2 opacity-[0.12]">
+                <Icon className="w-20 h-20" strokeWidth={1.2} />
             </div>
 
             <div className="flex justify-between items-start relative z-10">
-                <div className="p-2.5 rounded-xl bg-white/20 shadow-sm">
-                    <Icon className="w-5 h-5 text-white" />
+                <div className="p-2 rounded-xl bg-white/20 shadow-sm">
+                    <Icon className="w-4 h-4 text-white" />
                 </div>
                 {trend && !loading && (
-                    <span className={`flex items-center gap-1 text-[10px] font-bold px-2 py-1 rounded-full bg-white/20 text-white`}>
-                        <TrendingUp className={`w-3 h-3 ${trendUp ? '' : 'rotate-180'}`} /> {trend}
+                    <span className={`flex items-center gap-1 text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-white/20 text-white`}>
+                        <TrendingUp className={`w-2.5 h-2.5 ${trendUp ? '' : 'rotate-180'}`} /> {trend}
                     </span>
                 )}
             </div>
             <div className="relative z-10">
                 {loading ? (
-                    <div className="h-8 w-24 bg-white/20 rounded animate-pulse my-1"></div>
+                    <div className="h-6 w-20 bg-white/20 rounded animate-pulse my-0.5"></div>
                 ) : (
-                    <h3 className="text-2xl font-black text-white tracking-tight my-1 drop-shadow-sm">{value}</h3>
+                    <h3 className="text-xl font-black text-white tracking-tight my-0.5 drop-shadow-sm">{value}</h3>
                 )}
-                <p className="text-[10px] font-extrabold text-white/90 uppercase tracking-[0.15em]">{title}</p>
-                {description && <p className="text-[10px] text-white/70 mt-1 font-medium">{description}</p>}
+                <p className="text-[9px] font-extrabold text-white/90 uppercase tracking-[0.15em]">{title}</p>
+                {description && <p className="text-[9px] text-white/70 mt-0.5 font-medium leading-tight">{description}</p>}
             </div>
         </div>
     );
@@ -301,43 +301,44 @@ const Dashboard: React.FC = () => {
                 </div>
             )}
 
-            {/* 1. KEY METRICS ROW — 5 Cards */}
+            {/* 1. KEY METRICS ROW — 5 Cards (Thứ tự: DA → Vốn → Giải ngân → HĐ → Rủi ro) */}
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-4 sm:gap-5">
+                <StatCard
+                    title="Dự án đang quản lý"
+                    value={filteredProjects.length.toString()}
+                    icon={Building2}
+                    bgIcon="bg-blue-50 dark:bg-blue-900/30"
+                    textIcon="text-blue-600 dark:text-blue-400"
+                    description={filteredStatusData.map(s => `${s.value} ${s.name.toLowerCase()}`).join(' • ')}
+                    loading={loadingProjects}
+                    onClick={() => navigate('/projects')}
+                />
                 <StatCard
                     title="Tổng vốn đầu tư"
                     value={formatCurrency(filteredTotalInvestment)}
                     icon={Wallet}
-                    bgIcon="bg-blue-50 dark:bg-blue-900/30"
-                    textIcon="text-blue-600 dark:text-blue-400"
+                    bgIcon="bg-emerald-50 dark:bg-emerald-900/30"
+                    textIcon="text-emerald-600 dark:text-emerald-400"
                     description={`${filteredProjects.length} dự án đang quản lý`}
                     loading={loadingMetrics}
+                    onClick={() => navigate('/projects')}
                 />
                 <StatCard
                     title="Giá trị giải ngân"
                     value={metrics ? formatCurrency(metrics.totalDisbursed) : '0'}
                     icon={Activity}
-                    trend={metrics ? `${metrics.disbursementRate.toFixed(0)}% tổng vốn` : undefined}
+                    trend={metrics ? `Đạt ${metrics.disbursementRate.toFixed(0)}% tổng vốn` : undefined}
                     trendUp={metrics ? metrics.disbursementRate >= 50 : undefined}
-                    bgIcon="bg-emerald-50 dark:bg-emerald-900/30"
-                    textIcon="text-emerald-600 dark:text-emerald-400"
-                    description={metrics ? `Đạt ${metrics.disbursementRate.toFixed(1)}% tổng vốn` : ''}
-                    loading={loadingMetrics}
-                />
-                <StatCard
-                    title="Giá trị KL nghiệm thu"
-                    value={metrics ? formatCurrency(metrics.totalVolumeValue) : '0'}
-                    icon={CheckCircle2}
-                    bgIcon="bg-purple-50 dark:bg-purple-900/30"
-                    textIcon="text-purple-600 dark:text-purple-400"
-                    description="Đã được phê duyệt"
+                    bgIcon="bg-amber-50 dark:bg-amber-900/30"
+                    textIcon="text-amber-600 dark:text-amber-400"
                     loading={loadingMetrics}
                 />
                 <StatCard
                     title="Hợp đồng"
                     value={contractStatus ? contractStatus.total.toString() : '0'}
                     icon={Briefcase}
-                    bgIcon="bg-amber-50 dark:bg-amber-900/30"
-                    textIcon="text-amber-600 dark:text-amber-400"
+                    bgIcon="bg-purple-50 dark:bg-purple-900/30"
+                    textIcon="text-purple-600 dark:text-purple-400"
                     description={contractStatus ? `${contractStatus.executing} đang thực hiện` : ''}
                     loading={loadingContracts}
                     onClick={() => navigate('/contracts')}
@@ -355,10 +356,49 @@ const Dashboard: React.FC = () => {
                 />
             </div>
 
-            {/* AI SUMMARY */}
-            <AISummaryWidget />
 
-            {/* 2. MAP & ALERTS ROW */}
+            {/* 2. AI SUMMARY + DEADLINES ROW */}
+            <div className="grid grid-cols-1 xl:grid-cols-3 gap-4 sm:gap-6">
+                {/* AI Summary (chiếm 2/3) */}
+                <div className="xl:col-span-2">
+                    <AISummaryWidget />
+                </div>
+
+                {/* UPCOMING DEADLINES */}
+                <div className="bg-white dark:bg-slate-800 p-4 sm:p-5 rounded-2xl shadow-sm border border-gray-200 dark:border-slate-700 flex flex-col min-h-[10rem]">
+                    <div className="flex justify-between items-center mb-3 shrink-0">
+                        <h3 className="section-header text-xs">
+                            <div className="section-icon p-1.5"><Clock className="w-4 h-4" /></div> Sắp đến hạn
+                        </h3>
+                        <span className="text-[10px] bg-orange-50 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 px-2 py-0.5 rounded-md font-bold">7 ngày tới</span>
+                    </div>
+                    <div className="space-y-3 flex-1 overflow-y-auto pr-1 custom-scrollbar">
+                        {loadingDeadlines ? (
+                            <div className="space-y-2">
+                                <div className="h-12 bg-gray-50 dark:bg-slate-700 rounded-lg animate-pulse"></div>
+                                <div className="h-12 bg-gray-50 dark:bg-slate-700 rounded-lg animate-pulse"></div>
+                            </div>
+                        ) : deadlines && deadlines.length > 0 ? (
+                            deadlines.map((item, idx) => (
+                                <div key={idx} className="flex items-start gap-2.5 pb-2.5 border-b border-gray-50 dark:border-slate-700/50 last:border-0 last:pb-0">
+                                    <div className={`mt-1 w-2 h-2 rounded-full shrink-0 ${item.urgent ? 'bg-red-500 animate-pulse' : 'bg-orange-400'}`}></div>
+                                    <div className="flex-1 min-w-0">
+                                        <p className="text-[11px] font-bold text-gray-800 dark:text-slate-100 line-clamp-1">{item.title}</p>
+                                        <p className="text-[10px] text-gray-500 dark:text-slate-400 mt-0.5 truncate">{item.project}</p>
+                                        <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded border mt-1 inline-block ${item.urgent ? 'bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 border-red-100 dark:border-red-800' : 'bg-gray-50 dark:bg-slate-700 text-gray-500 dark:text-slate-400 border-gray-200 dark:border-slate-600'}`}>
+                                            Hạn: {item.due}
+                                        </span>
+                                    </div>
+                                </div>
+                            ))
+                        ) : (
+                            <EmptyState icon={Calendar} message="Không có deadline trong 7 ngày tới" />
+                        )}
+                    </div>
+                </div>
+            </div>
+
+            {/* 3. MAP & ALERTS ROW */}
             <div className="grid grid-cols-1 xl:grid-cols-3 gap-4 sm:gap-6 min-h-[300px] xl:h-[500px]">
                 {/* Map Section (2/3 width) */}
                 <div className="xl:col-span-2 bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-gray-200 dark:border-slate-700 relative overflow-hidden h-full flex flex-col">
@@ -428,264 +468,146 @@ const Dashboard: React.FC = () => {
                 </div>
             </div>
 
-            {/* 3. MAIN CONTENT GRID */}
-            <div className="grid grid-cols-1 xl:grid-cols-3 gap-4 sm:gap-6 xl:gap-8">
-                {/* Main Content Column (2/3) */}
-                <div className="xl:col-span-2 space-y-6">
-                    {/* PORTFOLIO STATUS ROW (Horizontal / Compact) */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        {/* Pie Chart: Project Status */}
-                        <div className="bg-white dark:bg-slate-800 p-4 sm:p-5 rounded-2xl shadow-sm border border-gray-200 dark:border-slate-700 flex flex-col min-h-[10rem] h-auto">
-                            <h3 className="section-header text-xs mb-2 shrink-0">
-                                <div className="section-icon p-1.5"><Activity className="w-4 h-4" /></div> Giai đoạn dự án
-                            </h3>
-                            {loadingStatus ? (
-                                <div className="h-full w-full bg-gray-50 dark:bg-slate-700 rounded-xl animate-pulse"></div>
-                            ) : (
-                                <div className="flex-1 flex items-center gap-4">
-                                    <div className="relative w-24 h-24 sm:w-28 sm:h-28 xl:w-32 xl:h-32 shrink-0">
-                                        <ResponsiveContainer width="100%" height="100%">
-                                            <PieChart>
-                                                <Pie data={filteredStatusData} cx="50%" cy="50%" innerRadius={40} outerRadius={55} paddingAngle={5} dataKey="value">
-                                                    {filteredStatusData.map((entry, index) => <Cell key={`cell-${index}`} fill={entry.color} stroke="none" />)}
-                                                </Pie>
-                                                <RechartsTooltip />
-                                            </PieChart>
-                                        </ResponsiveContainer>
-                                        <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                                            <span className="text-xl font-black text-gray-800 dark:text-slate-100">{filteredProjects.length}</span>
-                                            <span className="text-[9px] text-gray-400 dark:text-slate-500 font-bold uppercase">Dự án</span>
-                                        </div>
-                                    </div>
-                                    <div className="flex-1 grid grid-cols-1 gap-2 overflow-y-auto pr-1 custom-scrollbar max-h-32">
-                                        {filteredStatusData.map((item, idx) => (
-                                            <div key={idx} className="flex items-center justify-between group">
-                                                <div className="flex items-center gap-2 overflow-hidden">
-                                                    <div className="w-2 h-2 rounded-full shrink-0 group-hover:scale-125 transition-transform" style={{ backgroundColor: item.color }}></div>
-                                                    <span className="text-[11px] font-bold text-gray-500 dark:text-slate-400 truncate group-hover:text-gray-700 dark:group-hover:text-slate-200 transition-colors" title={item.name}>{item.name}</span>
-                                                </div>
-                                                <span className="text-[11px] font-black text-gray-800 dark:text-slate-100">{item.value}</span>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-                            )}
-                        </div>
-
-                        {/* Pie Chart: Groups */}
-                        <div className="bg-white dark:bg-slate-800 p-4 sm:p-5 rounded-2xl shadow-sm border border-gray-200 dark:border-slate-700 flex flex-col min-h-[10rem] h-auto">
-                            <h3 className="section-header text-xs mb-2 shrink-0">
-                                <div className="section-icon p-1.5"><Building2 className="w-4 h-4" /></div> Phân loại nhóm dự án
-                            </h3>
-                            {loadingGroups ? (
-                                <div className="h-full w-full bg-gray-50 dark:bg-slate-700 rounded-xl animate-pulse"></div>
-                            ) : (
-                                <div className="flex-1 flex items-center gap-4">
-                                    <div className="relative w-24 h-24 sm:w-28 sm:h-28 xl:w-32 xl:h-32 shrink-0">
-                                        <ResponsiveContainer width="100%" height="100%">
-                                            <PieChart>
-                                                <Pie data={filteredGroupData} cx="50%" cy="50%" innerRadius={40} outerRadius={55} paddingAngle={5} dataKey="value">
-                                                    {filteredGroupData.map((entry, index) => <Cell key={`cell-${index}`} fill={entry.color} stroke="none" />)}
-                                                </Pie>
-                                                <RechartsTooltip />
-                                            </PieChart>
-                                        </ResponsiveContainer>
-                                        <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                                            <span className="text-xl font-black text-gray-800 dark:text-slate-100">100%</span>
-                                            <span className="text-[9px] text-gray-400 dark:text-slate-500 font-bold uppercase">Cơ cấu</span>
-                                        </div>
-                                    </div>
-                                    <div className="flex-1 grid grid-cols-1 gap-2 overflow-y-auto pr-1 custom-scrollbar max-h-32">
-                                        {filteredGroupData.map((item, idx) => (
-                                            <div key={idx} className="flex items-center justify-between group">
-                                                <div className="flex items-center gap-2 overflow-hidden">
-                                                    <div className="w-2 h-2 rounded-full shrink-0 group-hover:scale-125 transition-transform" style={{ backgroundColor: item.color }}></div>
-                                                    <span className="text-[11px] font-bold text-gray-500 dark:text-slate-400 truncate group-hover:text-gray-700 dark:group-hover:text-slate-200 transition-colors" title={item.name}>{item.name}</span>
-                                                </div>
-                                                <span className="text-[11px] font-black text-gray-800 dark:text-slate-100">{item.value}</span>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-                            )}
-                        </div>
-                    </div>
-
-                    {/* Disbursement Chart (Full Width in column) */}
-                    <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-gray-200 dark:border-slate-700">
-                        <div className="flex justify-between items-center mb-6">
-                            <h3 className="section-header">
-                                <div className="section-icon"><TrendingUp className="w-5 h-5" /></div>
-                                Biểu đồ giải ngân & Kế hoạch vốn
-                            </h3>
-                            <div className="flex gap-3">
-                                <span className="flex items-center gap-1.5 text-[10px] font-bold text-gray-500 dark:text-slate-400"><div className="w-2.5 h-2.5 rounded" style={{ background: '#EC6710' }}></div> Giải ngân</span>
-                                <span className="flex items-center gap-1.5 text-[10px] font-bold text-gray-500 dark:text-slate-400"><div className="w-2.5 h-2.5 rounded" style={{ background: '#FDDF8B' }}></div> Kế hoạch</span>
-                            </div>
-                        </div>
-                        <div className="h-80 w-full">
-                            {loadingDisbursement ? (
-                                <div className="h-full w-full bg-gray-50 dark:bg-slate-700 rounded-xl animate-pulse"></div>
-                            ) : (
-                                <ResponsiveContainer width="100%" height="100%">
-                                    <BarChart data={disbursementData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }} barGap={0}>
-                                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={theme === 'dark' ? '#334155' : '#E5E7EB'} />
-                                        <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: theme === 'dark' ? '#94A3B8' : '#6B7280', fontSize: 11, fontWeight: 600 }} dy={10} />
-                                        <YAxis axisLine={false} tickLine={false} tick={{ fill: theme === 'dark' ? '#94A3B8' : '#6B7280', fontSize: 11, fontWeight: 600 }} tickFormatter={(val) => `${val / 1000} Tỷ`} />
-                                        <RechartsTooltip content={<ChartTooltip />} cursor={{ fill: theme === 'dark' ? '#1E293B' : '#F3F4F6' }} />
-                                        <Bar dataKey="plan" fill={theme === 'dark' ? '#5C2606' : '#FDDF8B'} radius={[4, 4, 0, 0]} maxBarSize={40} />
-                                        <Bar dataKey="disbursement" fill="#EC6710" radius={[4, 4, 0, 0]} maxBarSize={40} />
-                                    </BarChart>
-                                </ResponsiveContainer>
-                            )}
-                        </div>
-                    </div>
-
-                    {/* LEGAL & SITE CLEARANCE MONITOR */}
-                    <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-orange-100 dark:border-orange-900/50 flex flex-col">
-                        <div className="flex justify-between items-center mb-4">
-                            <h3 className="section-header">
-                                <div className="section-icon"><FileBox className="w-5 h-5" /></div>
-                                Theo dõi Vướng mắc (GPMB & Pháp lý)
-                            </h3>
-                            <button className="text-[10px] font-bold text-primary-600 dark:text-primary-400 hover:underline">Chi tiết</button>
-                        </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            {/* Legal Issues */}
-                            <div className="p-4 bg-orange-50/50 dark:bg-orange-900/10 rounded-2xl border border-orange-100 dark:border-orange-800/30">
-                                <h4 className="text-[11px] font-bold text-orange-800 dark:text-orange-300 uppercase mb-3 flex items-center gap-2">
-                                    <Briefcase className="w-3 h-3" /> Hồ sơ pháp lý
-                                </h4>
-                                <div className="space-y-3">
-                                    <div className="flex justify-between items-center">
-                                        <span className="text-xs text-gray-600 dark:text-slate-300 font-medium">Chờ phê duyệt chủ trương</span>
-                                        <span className="text-xs font-black text-gray-800 dark:text-slate-100 bg-white dark:bg-slate-700 px-2 py-0.5 rounded border border-gray-200 dark:border-slate-600 shadow-sm">3 dự án</span>
-                                    </div>
-                                    <div className="flex justify-between items-center">
-                                        <span className="text-xs text-gray-600 dark:text-slate-300 font-medium">Đang điều chỉnh TMĐT</span>
-                                        <span className="text-xs font-black text-orange-600 dark:text-orange-400 bg-white dark:bg-slate-700 px-2 py-0.5 rounded border border-orange-100 dark:border-orange-800/50 shadow-sm">1 dự án</span>
-                                    </div>
-                                    <div className="w-full bg-gray-200 dark:bg-slate-600 h-1.5 rounded-full mt-2 overflow-hidden">
-                                        <div className="bg-orange-400 h-full rounded-full transition-all duration-500" style={{ width: '65%' }}></div>
-                                    </div>
-                                    <p className="text-[9px] text-gray-400 dark:text-slate-500 text-right mt-1">Hoàn thành 65% hồ sơ năm</p>
-                                </div>
-                            </div>
-
-                            {/* Site Clearance (GPMB) */}
-                            <div className="p-4 bg-blue-50/50 dark:bg-blue-900/10 rounded-2xl border border-blue-100 dark:border-blue-800/30">
-                                <h4 className="text-[11px] font-bold text-blue-800 dark:text-blue-300 uppercase mb-3 flex items-center gap-2">
-                                    <MapIcon className="w-3 h-3" /> Giải phóng mặt bằng
-                                </h4>
-                                {loadingGPMB ? (
-                                    <div className="h-24 bg-blue-100/50 dark:bg-blue-900/20 rounded-xl animate-pulse"></div>
-                                ) : (
-                                    <div className="space-y-3">
-                                        <div className="flex justify-between items-center">
-                                            <span className="text-xs text-gray-600 dark:text-slate-300 font-medium">Vướng mắc mặt bằng</span>
-                                            <span className="text-xs font-black text-red-600 dark:text-red-400 bg-white dark:bg-slate-700 px-2 py-0.5 rounded border border-red-100 dark:border-red-800/50 shadow-sm animate-pulse">{gpmbData?.bottlenecks || 0} điểm nghẽn</span>
-                                        </div>
-                                        <div className="flex justify-between items-center">
-                                            <span className="text-xs text-gray-600 dark:text-slate-300 font-medium">Đã bàn giao mặt bằng</span>
-                                            <span className="text-xs font-black text-emerald-600 dark:text-emerald-400 bg-white dark:bg-slate-700 px-2 py-0.5 rounded border border-emerald-100 dark:border-emerald-800/50 shadow-sm">{gpmbData?.handedOverPercent || 0}%</span>
-                                        </div>
-                                        <div className="w-full bg-gray-200 dark:bg-slate-600 h-1.5 rounded-full mt-2 overflow-hidden">
-                                            <div className="bg-blue-500 h-full rounded-full transition-all duration-500" style={{ width: `${gpmbData?.handedOverPercent || 0}%` }}></div>
-                                        </div>
-                                        <p className="text-[9px] text-gray-400 dark:text-slate-500 text-right mt-1">Tăng 5% so với tháng trước</p>
-                                    </div>
-                                )}
-                            </div>
-                        </div>
+            {/* 4. DISBURSEMENT CHART (Full Width) */}
+            <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-gray-200 dark:border-slate-700">
+                <div className="flex justify-between items-center mb-6">
+                    <h3 className="section-header">
+                        <div className="section-icon"><TrendingUp className="w-5 h-5" /></div>
+                        Biểu đồ giải ngân &amp; Kế hoạch vốn
+                    </h3>
+                    <div className="flex gap-3">
+                        <span className="flex items-center gap-1.5 text-[10px] font-bold text-gray-500 dark:text-slate-400"><div className="w-2.5 h-2.5 rounded" style={{ background: '#EC6710' }}></div> Giải ngân</span>
+                        <span className="flex items-center gap-1.5 text-[10px] font-bold text-gray-500 dark:text-slate-400"><div className="w-2.5 h-2.5 rounded" style={{ background: '#FDDF8B' }}></div> Kế hoạch</span>
                     </div>
                 </div>
+                <div className="h-80 w-full">
+                    {loadingDisbursement ? (
+                        <div className="h-full w-full bg-gray-50 dark:bg-slate-700 rounded-xl animate-pulse"></div>
+                    ) : (
+                        <ResponsiveContainer width="100%" height="100%">
+                            <BarChart data={disbursementData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }} barGap={0}>
+                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={theme === 'dark' ? '#334155' : '#E5E7EB'} />
+                                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: theme === 'dark' ? '#94A3B8' : '#6B7280', fontSize: 11, fontWeight: 600 }} dy={10} />
+                                <YAxis axisLine={false} tickLine={false} tick={{ fill: theme === 'dark' ? '#94A3B8' : '#6B7280', fontSize: 11, fontWeight: 600 }} tickFormatter={(val) => `${val / 1000} Tỷ`} />
+                                <RechartsTooltip content={<ChartTooltip />} cursor={{ fill: theme === 'dark' ? '#1E293B' : '#F3F4F6' }} />
+                                <Bar dataKey="plan" fill={theme === 'dark' ? '#5C2606' : '#FDDF8B'} radius={[4, 4, 0, 0]} maxBarSize={40} />
+                                <Bar dataKey="disbursement" fill="#EC6710" radius={[4, 4, 0, 0]} maxBarSize={40} />
+                            </BarChart>
+                        </ResponsiveContainer>
+                    )}
+                </div>
+            </div>
 
-                {/* Sidebar Column (1/3) */}
-                <div className="space-y-6">
-                    {/* UPCOMING DEADLINES */}
-                    <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-gray-200 dark:border-slate-700">
-                        <div className="flex justify-between items-center mb-4">
-                            <h3 className="section-header">
-                                <div className="section-icon"><Clock className="w-5 h-5" /></div> Sắp đến hạn
-                            </h3>
-                            <span className="text-[10px] bg-orange-50 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 px-2 py-0.5 rounded-md font-bold">7 ngày tới</span>
-                        </div>
-                        <div className="space-y-4">
-                            {loadingDeadlines ? (
-                                <div className="space-y-3">
-                                    <div className="h-12 bg-gray-50 dark:bg-slate-700 rounded-lg animate-pulse"></div>
-                                    <div className="h-12 bg-gray-50 dark:bg-slate-700 rounded-lg animate-pulse"></div>
-                                </div>
-                            ) : deadlines && deadlines.length > 0 ? (
-                                deadlines.map((item, idx) => (
-                                    <div key={idx} className="flex items-start gap-3 pb-3 border-b border-gray-50 dark:border-slate-700/50 last:border-0 last:pb-0">
-                                        <div className={`mt-1 w-2 h-2 rounded-full shrink-0 ${item.urgent ? 'bg-red-500 animate-pulse' : 'bg-orange-400'}`}></div>
-                                        <div className="flex-1">
-                                            <p className="text-xs font-bold text-gray-800 dark:text-slate-100 line-clamp-1">{item.title}</p>
-                                            <p className="text-[10px] text-gray-500 dark:text-slate-400 mt-0.5 mb-1">{item.project}</p>
-                                            <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded border ${item.urgent ? 'bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 border-red-100 dark:border-red-800' : 'bg-gray-50 dark:bg-slate-700 text-gray-500 dark:text-slate-400 border-gray-200 dark:border-slate-600'}`}>
-                                                Hạn: {item.due}
-                                            </span>
-                                        </div>
-                                    </div>
-                                ))
-                            ) : (
-                                <EmptyState icon={Calendar} message="Không có deadline trong 7 ngày tới" />
-                            )}
+            {/* 5. LEGAL & SITE CLEARANCE MONITOR (Full Width) */}
+            <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-orange-100 dark:border-orange-900/50 flex flex-col">
+                <div className="flex justify-between items-center mb-4">
+                    <h3 className="section-header">
+                        <div className="section-icon"><FileBox className="w-5 h-5" /></div>
+                        Theo dõi Vướng mắc (GPMB &amp; Pháp lý)
+                    </h3>
+                    <button className="text-[10px] font-bold text-primary-600 dark:text-primary-400 hover:underline">Chi tiết</button>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {/* Legal Issues */}
+                    <div className="p-4 bg-orange-50/50 dark:bg-orange-900/10 rounded-2xl border border-orange-100 dark:border-orange-800/30">
+                        <h4 className="text-[11px] font-bold text-orange-800 dark:text-orange-300 uppercase mb-3 flex items-center gap-2">
+                            <Briefcase className="w-3 h-3" /> Hồ sơ pháp lý
+                        </h4>
+                        <div className="space-y-3">
+                            <div className="flex justify-between items-center">
+                                <span className="text-xs text-gray-600 dark:text-slate-300 font-medium">Chờ phê duyệt chủ trương</span>
+                                <span className="text-xs font-black text-gray-800 dark:text-slate-100 bg-white dark:bg-slate-700 px-2 py-0.5 rounded border border-gray-200 dark:border-slate-600 shadow-sm">
+                                    {filteredProjects.filter(p => p.Status === ProjectStatus.Preparation).length} dự án
+                                </span>
+                            </div>
+                            <div className="flex justify-between items-center">
+                                <span className="text-xs text-gray-600 dark:text-slate-300 font-medium">Đang điều chỉnh TMĐT</span>
+                                <span className="text-xs font-black text-orange-600 dark:text-orange-400 bg-white dark:bg-slate-700 px-2 py-0.5 rounded border border-orange-100 dark:border-orange-800/50 shadow-sm">
+                                    {0} dự án
+                                </span>
+                            </div>
+                            <div className="w-full bg-gray-200 dark:bg-slate-600 h-1.5 rounded-full mt-2 overflow-hidden">
+                                <div className="bg-orange-400 h-full rounded-full transition-all duration-500" style={{ width: `${filteredProjects.length > 0 ? Math.round((filteredProjects.filter(p => p.Status !== ProjectStatus.Preparation).length / filteredProjects.length) * 100) : 0}%` }}></div>
+                            </div>
+                            <p className="text-[9px] text-gray-400 dark:text-slate-500 text-right mt-1">
+                                {filteredProjects.length > 0 ? Math.round((filteredProjects.filter(p => p.Status !== ProjectStatus.Preparation).length / filteredProjects.length) * 100) : 0}% hồ sơ đã hoàn thành
+                            </p>
                         </div>
                     </div>
 
-                    {/* AI RISK INTELLIGENCE */}
-                    <AIRiskDashboard />
-
-                    {/* AI ANOMALY DETECTOR */}
-                    <AIAnomalyDetector />
-
-                    {/* AI CONTRACTOR SCORING */}
-                    <AIContractorScoring />
-
-                    {/* AI RESOURCE OPTIMIZER */}
-                    <AIResourceOptimizer />
-
-                    {/* ACTIVE CONTRACTORS SUMMARY */}
-                    <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-gray-200 dark:border-slate-700">
-                        <div className="flex justify-between items-center mb-4">
-                            <h3 className="section-header">
-                                <div className="section-icon"><HardHat className="w-5 h-5" /></div> Nhà thầu chính
-                            </h3>
-                        </div>
-                        <div className="space-y-4">
-                            {loadingContractors ? (
-                                <div className="space-y-3">
-                                    <div className="h-10 bg-gray-50 dark:bg-slate-700 rounded-full animate-pulse"></div>
-                                    <div className="h-10 bg-gray-50 dark:bg-slate-700 rounded-full animate-pulse"></div>
+                    {/* Site Clearance (GPMB) */}
+                    <div className="p-4 bg-blue-50/50 dark:bg-blue-900/10 rounded-2xl border border-blue-100 dark:border-blue-800/30">
+                        <h4 className="text-[11px] font-bold text-blue-800 dark:text-blue-300 uppercase mb-3 flex items-center gap-2">
+                            <MapIcon className="w-3 h-3" /> Giải phóng mặt bằng
+                        </h4>
+                        {loadingGPMB ? (
+                            <div className="h-24 bg-blue-100/50 dark:bg-blue-900/20 rounded-xl animate-pulse"></div>
+                        ) : (
+                            <div className="space-y-3">
+                                <div className="flex justify-between items-center">
+                                    <span className="text-xs text-gray-600 dark:text-slate-300 font-medium">Vướng mắc mặt bằng</span>
+                                    <span className="text-xs font-black text-red-600 dark:text-red-400 bg-white dark:bg-slate-700 px-2 py-0.5 rounded border border-red-100 dark:border-red-800/50 shadow-sm animate-pulse">{gpmbData?.bottlenecks || 0} điểm nghẽn</span>
                                 </div>
-                            ) : contractors && contractors.length > 0 ? (
-                                contractors.map((c, idx) => (
-                                    <div key={idx} className="flex items-center gap-3">
-                                        <div className={`w-8 h-8 rounded-full ${avatarColors[idx % avatarColors.length]} text-white flex items-center justify-center font-bold text-xs shadow-sm`}>
-                                            {c.FullName?.charAt(c.FullName.lastIndexOf(' ') + 1) || c.ContractorID.substring(0, 2)}
-                                        </div>
-                                        <div className="flex-1 overflow-hidden">
-                                            <p className="text-xs font-bold text-gray-800 dark:text-slate-100 truncate" title={c.FullName}>{c.FullName}</p>
-                                            <div className="flex items-center gap-2 mt-0.5">
-                                                <div className="flex items-center gap-0.5">
-                                                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                                                    <span className="text-[9px] text-gray-500 dark:text-slate-400 font-medium">Đang thi công</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                ))
-                            ) : (
-                                <EmptyState icon={Users} message="Chưa có nhà thầu nào" />
-                            )}
-                        </div>
-                        <button onClick={() => navigate('/contractors')} className="w-full mt-4 flex items-center justify-center gap-1 text-[11px] font-bold text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 transition-colors">
-                            Xem tất cả nhà thầu <ArrowRight className="w-3 h-3" />
-                        </button>
+                                <div className="flex justify-between items-center">
+                                    <span className="text-xs text-gray-600 dark:text-slate-300 font-medium">Đã bàn giao mặt bằng</span>
+                                    <span className="text-xs font-black text-emerald-600 dark:text-emerald-400 bg-white dark:bg-slate-700 px-2 py-0.5 rounded border border-emerald-100 dark:border-emerald-800/50 shadow-sm">{gpmbData?.handedOverPercent || 0}%</span>
+                                </div>
+                                <div className="w-full bg-gray-200 dark:bg-slate-600 h-1.5 rounded-full mt-2 overflow-hidden">
+                                    <div className="bg-blue-500 h-full rounded-full transition-all duration-500" style={{ width: `${gpmbData?.handedOverPercent || 0}%` }}></div>
+                                </div>
+                                <p className="text-[9px] text-gray-400 dark:text-slate-500 text-right mt-1">Tăng 5% so với tháng trước</p>
+                            </div>
+                        )}
                     </div>
+                </div>
+            </div>
+
+            {/* 6. AI INTELLIGENCE HUB (Grid 2x2) */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+                <AIRiskDashboard />
+                <AIAnomalyDetector />
+                <AIContractorScoring />
+                <AIResourceOptimizer />
+            </div>
+
+            {/* 7. ACTIVE CONTRACTORS (Compact Horizontal) */}
+            <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-gray-200 dark:border-slate-700">
+                <div className="flex justify-between items-center mb-4">
+                    <h3 className="section-header">
+                        <div className="section-icon"><HardHat className="w-5 h-5" /></div> Nhà thầu chính
+                    </h3>
+                    <button onClick={() => navigate('/contractors')} className="flex items-center gap-1 text-[11px] font-bold text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 transition-colors">
+                        Xem tất cả <ArrowRight className="w-3 h-3" />
+                    </button>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-4">
+                    {loadingContractors ? (
+                        <>
+                            <div className="h-16 bg-gray-50 dark:bg-slate-700 rounded-xl animate-pulse"></div>
+                            <div className="h-16 bg-gray-50 dark:bg-slate-700 rounded-xl animate-pulse"></div>
+                            <div className="h-16 bg-gray-50 dark:bg-slate-700 rounded-xl animate-pulse"></div>
+                        </>
+                    ) : contractors && contractors.length > 0 ? (
+                        contractors.map((c, idx) => (
+                            <div key={idx} className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-slate-700/50 rounded-xl border border-gray-100 dark:border-slate-600 hover:shadow-md transition-shadow">
+                                <div className={`w-9 h-9 rounded-full ${avatarColors[idx % avatarColors.length]} text-white flex items-center justify-center font-bold text-xs shadow-sm shrink-0`}>
+                                    {c.FullName?.charAt(c.FullName.lastIndexOf(' ') + 1) || c.ContractorID.substring(0, 2)}
+                                </div>
+                                <div className="flex-1 overflow-hidden">
+                                    <p className="text-[11px] font-bold text-gray-800 dark:text-slate-100 truncate" title={c.FullName}>{c.FullName}</p>
+                                    <div className="flex items-center gap-1 mt-0.5">
+                                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                                        <span className="text-[9px] text-gray-500 dark:text-slate-400 font-medium">Đang thi công</span>
+                                    </div>
+                                </div>
+                            </div>
+                        ))
+                    ) : (
+                        <div className="col-span-full">
+                            <EmptyState icon={Users} message="Chưa có nhà thầu nào" />
+                        </div>
+                    )}
                 </div>
             </div>
         </div>

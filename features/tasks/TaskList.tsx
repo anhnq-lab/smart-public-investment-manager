@@ -149,79 +149,79 @@ const TaskList: React.FC = () => {
             {/* ══════════ STATS DASHBOARD ══════════ */}
             <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
                 {/* Total */}
-                <div className="col-span-2 lg:col-span-1 bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl p-5 text-white relative overflow-hidden">
-                    <div className="absolute top-0 right-0 w-24 h-24 bg-white/5 rounded-full -translate-y-8 translate-x-8" />
-                    <div className="flex items-center gap-3 mb-3">
-                        <div className="p-2 bg-white/10 rounded-xl backdrop-blur-sm">
-                            <Target className="w-5 h-5 text-white/80" />
+                <div className="col-span-2 lg:col-span-1 bg-gradient-to-br from-slate-800 to-slate-900 rounded-xl p-3 text-white relative overflow-hidden">
+                    <div className="absolute top-0 right-0 w-16 h-16 bg-white/5 rounded-full -translate-y-6 translate-x-6" />
+                    <div className="flex items-center gap-2 mb-2">
+                        <div className="p-1.5 bg-white/10 rounded-lg backdrop-blur-sm">
+                            <Target className="w-4 h-4 text-white/80" />
                         </div>
-                        <span className="text-xs font-medium text-white/80 uppercase tracking-wider">Tổng công việc</span>
+                        <span className="text-[10px] font-medium text-white/80 uppercase tracking-wider">Tổng công việc</span>
                     </div>
-                    <p className="text-4xl font-black">{stats.total}</p>
-                    <div className="mt-3 flex items-center gap-2">
-                        <div className="flex-1 h-1.5 bg-white/10 rounded-full overflow-hidden">
+                    <p className="text-2xl font-black">{stats.total}</p>
+                    <div className="mt-2 flex items-center gap-2">
+                        <div className="flex-1 h-1 bg-white/10 rounded-full overflow-hidden">
                             <div
                                 className="h-full bg-gradient-to-r from-emerald-400 to-emerald-500 rounded-full transition-all duration-700"
                                 style={{ width: `${stats.completion}%` }}
                             />
                         </div>
-                        <span className="text-xs font-bold text-emerald-400">{stats.completion}%</span>
+                        <span className="text-[10px] font-bold text-emerald-400">{stats.completion}%</span>
                     </div>
                 </div>
 
                 {/* In Progress */}
-                <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-blue-500 via-blue-600 to-indigo-700 text-white p-5 shadow-xl ring-1 ring-blue-400/30 transition-transform hover:scale-[1.02] hover:shadow-2xl duration-300 cursor-pointer"
+                <div className="relative overflow-hidden rounded-xl bg-gradient-to-br from-blue-500 via-blue-600 to-indigo-700 text-white p-3 shadow-lg ring-1 ring-blue-400/30 transition-all duration-200 cursor-pointer"
                     onClick={() => setFilterStatus(filterStatus === TaskStatus.InProgress ? 'All' : TaskStatus.InProgress)}>
-                    <div className="absolute -right-3 -top-3 opacity-[0.12]">
-                        <TrendingUp className="w-24 h-24" strokeWidth={1.2} />
+                    <div className="absolute -right-2 -top-2 opacity-[0.12]">
+                        <TrendingUp className="w-16 h-16" strokeWidth={1.2} />
                     </div>
                     <div className="relative z-10">
-                        <p className="text-[10px] font-extrabold uppercase tracking-[0.2em] text-white/90">Đang thực hiện</p>
-                        <p className="text-3xl font-black mt-2 tracking-tight drop-shadow-sm">{stats.inProgress}</p>
+                        <p className="text-[10px] font-extrabold uppercase tracking-[0.15em] text-white/90">Đang thực hiện</p>
+                        <p className="text-xl font-black mt-1 tracking-tight drop-shadow-sm">{stats.inProgress}</p>
                     </div>
                 </div>
 
                 {/* Review */}
-                <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-violet-500 via-violet-600 to-purple-700 text-white p-5 shadow-xl ring-1 ring-violet-400/30 transition-transform hover:scale-[1.02] hover:shadow-2xl duration-300 cursor-pointer"
+                <div className="relative overflow-hidden rounded-xl bg-gradient-to-br from-violet-500 via-violet-600 to-purple-700 text-white p-3 shadow-lg ring-1 ring-violet-400/30 transition-all duration-200 cursor-pointer"
                     onClick={() => setFilterStatus(filterStatus === TaskStatus.Review ? 'All' : TaskStatus.Review)}>
-                    <div className="absolute -right-3 -top-3 opacity-[0.12]">
-                        <AlertCircle className="w-24 h-24" strokeWidth={1.2} />
+                    <div className="absolute -right-2 -top-2 opacity-[0.12]">
+                        <AlertCircle className="w-16 h-16" strokeWidth={1.2} />
                     </div>
                     <div className="relative z-10">
-                        <p className="text-[10px] font-extrabold uppercase tracking-[0.2em] text-white/90">Chờ duyệt</p>
-                        <p className="text-3xl font-black mt-2 tracking-tight drop-shadow-sm">{stats.review}</p>
+                        <p className="text-[10px] font-extrabold uppercase tracking-[0.15em] text-white/90">Chờ duyệt</p>
+                        <p className="text-xl font-black mt-1 tracking-tight drop-shadow-sm">{stats.review}</p>
                     </div>
                 </div>
 
                 {/* Done */}
-                <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-emerald-500 via-emerald-600 to-teal-700 text-white p-5 shadow-xl ring-1 ring-emerald-400/30 transition-transform hover:scale-[1.02] hover:shadow-2xl duration-300 cursor-pointer"
+                <div className="relative overflow-hidden rounded-xl bg-gradient-to-br from-emerald-500 via-emerald-600 to-teal-700 text-white p-3 shadow-lg ring-1 ring-emerald-400/30 transition-all duration-200 cursor-pointer"
                     onClick={() => setFilterStatus(filterStatus === TaskStatus.Done ? 'All' : TaskStatus.Done)}>
-                    <div className="absolute -right-3 -top-3 opacity-[0.12]">
-                        <CheckCircle2 className="w-24 h-24" strokeWidth={1.2} />
+                    <div className="absolute -right-2 -top-2 opacity-[0.12]">
+                        <CheckCircle2 className="w-16 h-16" strokeWidth={1.2} />
                     </div>
                     <div className="relative z-10">
-                        <p className="text-[10px] font-extrabold uppercase tracking-[0.2em] text-white/90">Hoàn thành</p>
-                        <p className="text-3xl font-black mt-2 tracking-tight drop-shadow-sm">{stats.done}</p>
+                        <p className="text-[10px] font-extrabold uppercase tracking-[0.15em] text-white/90">Hoàn thành</p>
+                        <p className="text-xl font-black mt-1 tracking-tight drop-shadow-sm">{stats.done}</p>
                     </div>
                 </div>
 
                 {/* Overdue */}
-                <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-red-500 via-red-600 to-rose-700 text-white p-5 shadow-xl ring-1 ring-red-400/30 transition-transform hover:scale-[1.02] hover:shadow-2xl duration-300 cursor-pointer"
+                <div className="relative overflow-hidden rounded-xl bg-gradient-to-br from-red-500 via-red-600 to-rose-700 text-white p-3 shadow-lg ring-1 ring-red-400/30 transition-all duration-200 cursor-pointer"
                     onClick={() => { /* custom overdue filter logic */ }}>
-                    <div className="absolute -right-3 -top-3 opacity-[0.12]">
-                        <AlertTriangle className="w-24 h-24" strokeWidth={1.2} />
+                    <div className="absolute -right-2 -top-2 opacity-[0.12]">
+                        <AlertTriangle className="w-16 h-16" strokeWidth={1.2} />
                     </div>
                     {stats.overdue > 0 && (
-                        <div className="absolute top-3 right-3">
-                            <span className="flex h-3 w-3">
+                        <div className="absolute top-2 right-2">
+                            <span className="flex h-2.5 w-2.5">
                                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-50"></span>
-                                <span className="relative inline-flex rounded-full h-3 w-3 bg-white/70"></span>
+                                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-white/70"></span>
                             </span>
                         </div>
                     )}
                     <div className="relative z-10">
-                        <p className="text-[10px] font-extrabold uppercase tracking-[0.2em] text-white/90">Quá hạn</p>
-                        <p className="text-3xl font-black mt-2 tracking-tight drop-shadow-sm">{stats.overdue}</p>
+                        <p className="text-[10px] font-extrabold uppercase tracking-[0.15em] text-white/90">Quá hạn</p>
+                        <p className="text-xl font-black mt-1 tracking-tight drop-shadow-sm">{stats.overdue}</p>
                     </div>
                 </div>
             </div>
@@ -325,7 +325,7 @@ const TaskList: React.FC = () => {
                                 <thead>
                                     <tr className="table-header-row">
                                         <th className="px-4 py-3 text-left text-[10px] font-black uppercase tracking-widest w-12"></th>
-                                        <th className="px-4 py-3 text-left text-[10px] font-black uppercase tracking-widest">Công việc</th>
+                                        <th className="px-4 py-3 text-left text-[10px] font-black uppercase tracking-widest max-w-[280px]">Công việc</th>
                                         <th className="px-4 py-3 text-left text-[10px] font-black uppercase tracking-widest hidden md:table-cell w-44">Bước thực hiện</th>
                                         <th className="px-4 py-3 text-center text-[10px] font-black uppercase tracking-widest w-24">Tiến độ</th>
                                         <th className="px-4 py-3 text-left text-[10px] font-black uppercase tracking-widest hidden lg:table-cell w-40">Phụ trách</th>
@@ -382,7 +382,7 @@ const TaskList: React.FC = () => {
                                                         </td>
 
                                                         {/* Title + Description */}
-                                                        <td className="px-4 py-3.5">
+                                                        <td className="px-4 py-3.5 max-w-[280px]">
                                                             <div className="flex items-center gap-2 mb-0.5">
                                                                 <h4 className={`text-sm font-semibold group-hover:text-blue-600 transition-colors line-clamp-1 ${task.Status === TaskStatus.Done ? 'text-slate-400 line-through' : isOverdue ? 'text-red-700 dark:text-red-400' : 'text-slate-800 dark:text-slate-100'
                                                                     }`}>

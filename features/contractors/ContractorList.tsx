@@ -122,19 +122,7 @@ const ContractorList: React.FC = () => {
 
     return (
         <div className="space-y-6">
-            {/* Page Header */}
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                <div>
-                    <h2 className="text-2xl font-bold text-gray-800 dark:text-slate-100">Quản lý Nhà thầu</h2>
-                    <p className="text-sm text-gray-500 dark:text-slate-400 mt-1">Quản lý thông tin và năng lực các đơn vị tư vấn, thi công</p>
-                </div>
-                <button
-                    onClick={handleAdd}
-                    className="bg-blue-600 text-white px-4 py-2.5 rounded-xl text-sm font-bold hover:bg-blue-700 transition-colors shadow-lg shadow-blue-200 dark:shadow-blue-900/30 flex items-center gap-2 whitespace-nowrap"
-                >
-                    <Plus className="w-4 h-4" /> Thêm nhà thầu
-                </button>
-            </div>
+
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 {stats.map(stat => {
@@ -181,8 +169,8 @@ const ContractorList: React.FC = () => {
 
             {/* Search Bar + Table */}
             <div className="bg-white dark:bg-slate-800 rounded-2xl border border-gray-200 dark:border-slate-700 shadow-sm overflow-hidden">
-                <div className="p-4 border-b border-gray-200 dark:border-slate-700">
-                    <div className="relative max-w-sm">
+                <div className="p-4 border-b border-gray-200 dark:border-slate-700 flex justify-between items-center gap-4">
+                    <div className="relative max-w-sm flex-1">
                         <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-slate-500" />
                         <input
                             type="text"
@@ -192,6 +180,12 @@ const ContractorList: React.FC = () => {
                             onChange={(e) => setSearchTerm(e.target.value)}
                         />
                     </div>
+                    <button
+                        onClick={handleAdd}
+                        className="bg-blue-600 text-white px-4 py-2.5 rounded-xl text-sm font-bold hover:bg-blue-700 transition-colors shadow-lg shadow-blue-200 dark:shadow-blue-900/30 flex items-center gap-2 whitespace-nowrap shrink-0"
+                    >
+                        <Plus className="w-4 h-4" /> Thêm nhà thầu
+                    </button>
                 </div>
 
                 {/* Table */}
@@ -199,12 +193,13 @@ const ContractorList: React.FC = () => {
                     <table className="w-full text-left text-sm">
                         <thead>
                             <tr className="table-header-row">
-                                <th className="px-6 py-3.5 text-[10px] font-black uppercase tracking-widest">Mã số thuế</th>
-                                <th className="px-6 py-3.5 text-[10px] font-black uppercase tracking-widest">Tên nhà thầu</th>
-                                <th className="px-6 py-3.5 text-[10px] font-black uppercase tracking-widest">Người đại diện</th>
-                                <th className="px-6 py-3.5 text-[10px] font-black uppercase tracking-widest text-center">Loại hình</th>
-                                <th className="px-6 py-3.5 text-[10px] font-black uppercase tracking-widest">Địa chỉ / Liên hệ</th>
-                                <th className="px-6 py-3.5 text-[10px] font-black uppercase tracking-widest text-right">Thao tác</th>
+                                <th className="px-3 py-2.5 text-center text-[10px] font-black uppercase tracking-widest w-12">STT</th>
+                                <th className="px-4 py-2.5 text-[10px] font-black uppercase tracking-widest">Mã số thuế</th>
+                                <th className="px-4 py-2.5 text-[10px] font-black uppercase tracking-widest">Tên nhà thầu</th>
+                                <th className="px-4 py-2.5 text-[10px] font-black uppercase tracking-widest">Người đại diện</th>
+                                <th className="px-4 py-2.5 text-[10px] font-black uppercase tracking-widest text-center">Loại hình</th>
+                                <th className="px-4 py-2.5 text-[10px] font-black uppercase tracking-widest">Địa chỉ / Liên hệ</th>
+                                <th className="px-4 py-2.5 text-[10px] font-black uppercase tracking-widest text-right">Thao tác</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-100 dark:divide-slate-700">
@@ -220,8 +215,9 @@ const ContractorList: React.FC = () => {
                                     </tr>
                                 ))
                             ) : filteredContractors.length > 0 ? (
-                                filteredContractors.map((contractor) => (
+                                filteredContractors.map((contractor, index) => (
                                     <tr key={contractor.ContractorID} onClick={() => navigate(`/contractors/${contractor.ContractorID}`)} className="hover:bg-blue-50/30 dark:hover:bg-blue-900/10 transition-colors cursor-pointer group">
+                                        <td className="px-3 py-4 text-center text-xs text-gray-500 dark:text-slate-400 font-medium">{index + 1}</td>
                                         <td className="px-6 py-4">
                                             <span className="font-mono text-xs font-bold text-gray-600 dark:text-slate-300 bg-gray-100 dark:bg-slate-700 px-2 py-1 rounded-lg border border-gray-200 dark:border-slate-600">
                                                 {contractor.TaxCode || contractor.ContractorID}

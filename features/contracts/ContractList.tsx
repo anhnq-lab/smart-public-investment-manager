@@ -144,24 +144,24 @@ const ContractList: React.FC = () => {
                 {statCards.map((card, idx) => (
                     <div
                         key={idx}
-                        className={`relative overflow-hidden rounded-2xl bg-gradient-to-br ${card.gradient} text-white p-5 shadow-xl ring-1 ${card.ring} transition-transform hover:scale-[1.02] hover:shadow-2xl duration-300`}
+                        className={`relative overflow-hidden rounded-xl bg-gradient-to-br ${card.gradient} text-white p-3 shadow-lg ring-1 ${card.ring} transition-all duration-200`}
                     >
                         {/* Background icon */}
-                        <div className="absolute -right-3 -top-3 opacity-[0.12]">
-                            <card.icon className="w-24 h-24" strokeWidth={1.2} />
+                        <div className="absolute -right-2 -top-2 opacity-[0.12]">
+                            <card.icon className="w-16 h-16" strokeWidth={1.2} />
                         </div>
                         <div className="relative z-10">
-                            <p className="text-[10px] font-extrabold uppercase tracking-[0.2em] text-white/90">{card.label}</p>
-                            <p className="text-3xl font-black mt-2 tracking-tight drop-shadow-sm">
+                            <p className="text-[10px] font-extrabold uppercase tracking-[0.15em] text-white/90">{card.label}</p>
+                            <p className="text-xl font-black mt-1 tracking-tight drop-shadow-sm">
                                 {card.value}
-                                {card.suffix && <span className="text-sm font-semibold ml-1.5 text-white/80">{card.suffix}</span>}
+                                {card.suffix && <span className="text-xs font-semibold ml-1 text-white/80">{card.suffix}</span>}
                             </p>
                             {card.progressPercent !== undefined && (
-                                <div className="mt-2 w-full bg-white/20 rounded-full h-1.5">
+                                <div className="mt-1.5 w-full bg-white/20 rounded-full h-1">
                                     <div className="h-full bg-white/80 rounded-full transition-all duration-1000" style={{ width: `${Math.min(card.progressPercent, 100)}%` }}></div>
                                 </div>
                             )}
-                            <p className="text-[11px] text-white/70 mt-1.5 font-medium">{card.sub}</p>
+                            <p className="text-[10px] text-white/70 mt-1 font-medium">{card.sub}</p>
                         </div>
                     </div>
                 ))}
@@ -223,13 +223,14 @@ const ContractList: React.FC = () => {
                     <table className="w-full text-left text-sm">
                         <thead>
                             <tr className="table-header-row">
-                                <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest">Số hợp đồng</th>
-                                <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest">Nhà thầu</th>
-                                <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest">Dự án</th>
-                                <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-right">Giá trị HĐ</th>
-                                <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-center">Giải ngân</th>
-                                <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-center">Ngày ký</th>
-                                <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-center">Trạng thái</th>
+                                <th className="px-3 py-2.5 text-center text-[10px] font-black uppercase tracking-widest w-12">STT</th>
+                                <th className="px-4 py-2.5 text-[10px] font-black uppercase tracking-widest">Số hợp đồng</th>
+                                <th className="px-4 py-2.5 text-[10px] font-black uppercase tracking-widest">Nhà thầu</th>
+                                <th className="px-4 py-2.5 text-[10px] font-black uppercase tracking-widest">Dự án</th>
+                                <th className="px-4 py-2.5 text-[10px] font-black uppercase tracking-widest text-right whitespace-nowrap">Giá trị HĐ</th>
+                                <th className="px-4 py-2.5 text-[10px] font-black uppercase tracking-widest text-center">Giải ngân</th>
+                                <th className="px-4 py-2.5 text-[10px] font-black uppercase tracking-widest text-center">Ngày ký</th>
+                                <th className="px-4 py-2.5 text-[10px] font-black uppercase tracking-widest text-center">Trạng thái</th>
                                 <th className="px-6 py-4 w-10"></th>
                             </tr>
                         </thead>
@@ -246,6 +247,8 @@ const ContractList: React.FC = () => {
                                         className={`group cursor-pointer transition-all duration-200 hover:bg-blue-50/60 dark:hover:bg-slate-700/50 hover:shadow-sm ${isEven ? 'bg-white dark:bg-slate-800' : 'bg-gray-50/30 dark:bg-slate-900/30'} border-b border-gray-50 dark:border-slate-700`}
                                         onClick={() => navigate(`/contracts/${encodeURIComponent(contract.ContractID)}`)}
                                     >
+                                        {/* STT */}
+                                        <td className="px-3 py-4 text-center text-xs text-gray-500 dark:text-slate-400 font-medium">{rowIdx + 1}</td>
                                         {/* Contract ID */}
                                         <td className="px-6 py-4">
                                             <div className="flex items-center gap-3">
@@ -253,7 +256,7 @@ const ContractList: React.FC = () => {
                                                     <FileText className="w-4 h-4 text-blue-600" />
                                                 </div>
                                                 <div>
-                                                    <span className="font-bold text-blue-700 group-hover:text-blue-800 text-sm block">{contract.ContractID}</span>
+                                                    <span className="font-bold text-blue-700 group-hover:text-blue-800 text-xs block whitespace-nowrap">{contract.ContractID}</span>
                                                     <span className="text-[10px] text-gray-400 dark:text-slate-500">Gói {contract.PackageID?.slice(-5) || '—'}</span>
                                                 </div>
                                             </div>
@@ -280,7 +283,7 @@ const ContractList: React.FC = () => {
 
                                         {/* Contract Value */}
                                         <td className="px-6 py-4 text-right">
-                                            <span className="font-bold text-gray-900 dark:text-slate-100 font-mono text-sm tracking-tight">{formatCurrency(contract.Value)}</span>
+                                            <span className="font-bold text-gray-900 dark:text-slate-100 font-mono text-xs tracking-tight whitespace-nowrap">{formatCurrency(contract.Value)}</span>
                                         </td>
 
                                         {/* Payment Progress */}
@@ -314,7 +317,7 @@ const ContractList: React.FC = () => {
                                         <td className="px-6 py-4 text-center">
                                             <div className="flex items-center justify-center gap-1.5 text-xs text-gray-500 dark:text-slate-400">
                                                 <CalendarDays className="w-3 h-3 text-gray-400 dark:text-slate-500" />
-                                                {contract.SignDate}
+                                                {contract.SignDate ? new Date(contract.SignDate).toLocaleDateString('vi-VN') : '—'}
                                             </div>
                                         </td>
 
