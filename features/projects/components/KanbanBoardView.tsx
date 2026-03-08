@@ -195,7 +195,7 @@ export const KanbanBoardView: React.FC<KanbanBoardViewProps> = ({
                                         <GripVertical className="w-4 h-4 text-gray-300 opacity-0 group-hover:opacity-100 transition-opacity cursor-grab shrink-0 mt-0.5" />
                                         <div className="flex-1 min-w-0">
                                             <h4 className={`text-sm font-medium line-clamp-2 ${task.Status === TaskStatus.Done
-                                                ? 'text-gray-400 line-through'
+                                                ? 'text-gray-400'
                                                 : isOverdue(task)
                                                     ? 'text-red-700'
                                                     : 'text-gray-800 dark:text-slate-200'

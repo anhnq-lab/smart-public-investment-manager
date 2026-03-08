@@ -398,26 +398,44 @@ export function useBimUpload(
 
         if (fragments) {
             for (const [modelId, model] of fragments.list) {
-                // Scan this model's meshes for the expressId
-                const modelObj = (model as any).object || model;
                 let found = false;
-                if (modelObj && typeof modelObj.traverse === 'function') {
-                    modelObj.traverse((child: any) => {
-                        if (found) return;
-                        // Check multiple possible ID storage locations
-                        const ids = child.itemIDs || child.fragment?.ids || child.userData?.itemIDs;
-                        if (ids instanceof Set && ids.has(expressId)) {
+
+                // Strategy 1: Try getFragmentMap API (ThatOpen v2)
+                try {
+                    if (typeof (model as any).getFragmentMap === 'function') {
+                        const fragMap = (model as any).getFragmentMap([expressId]);
+                        if (fragMap && Object.keys(fragMap).length > 0) {
                             found = true;
                         }
-                        // Also check InstancedMesh fragment data
-                        if (!found && child.isInstancedMesh && child.fragment) {
-                            const fragIds = child.fragment.ids;
-                            if (fragIds instanceof Set && fragIds.has(expressId)) {
+                    }
+                } catch { /* skip */ }
+
+                // Strategy 2: Scan model meshes
+                if (!found) {
+                    const modelObj = (model as any).object || model;
+                    if (modelObj && typeof modelObj.traverse === 'function') {
+                        modelObj.traverse((child: any) => {
+                            if (found) return;
+                            // ThatOpen v2: fragment.items is Map<number, number[]>
+                            const items = child.fragment?.items;
+                            if (items instanceof Map && items.has(expressId)) {
+                                found = true;
+                                return;
+                            }
+                            // Legacy: itemIDs Set
+                            const ids = child.itemIDs || child.fragment?.ids || child.userData?.itemIDs;
+                            if (ids instanceof Set && ids.has(expressId)) {
+                                found = true;
+                                return;
+                            }
+                            // InstancedMesh
+                            if (child.isInstancedMesh && child.fragment?.ids instanceof Set && child.fragment.ids.has(expressId)) {
                                 found = true;
                             }
-                        }
-                    });
+                        });
+                    }
                 }
+
                 if (found) {
                     targetFragModelId = modelId;
                     break;
@@ -439,7 +457,7 @@ export function useBimUpload(
             }
         }
 
-        // FADE other models via material cloning
+        // FADE other models via material cloning (null-safe)
         disciplineModels.forEach((dm, i) => {
             if (i === targetDmIndex || !dm.fragModel || !dm.visible) return;
             const obj = (dm.fragModel as any).object || dm.fragModel;
@@ -454,23 +472,29 @@ export function useBimUpload(
                 const original = child.material;
                 fadedMaterialsRef.current.set(key, { mesh: child, original });
 
-                // Clone and fade
-                if (Array.isArray(original)) {
-                    child.material = original.map((mat: THREE.Material) => {
-                        const c = mat.clone();
+                // Clone and fade (null-safe)
+                try {
+                    if (Array.isArray(original)) {
+                        child.material = original.map((mat: THREE.Material) => {
+                            if (!mat || typeof mat.clone !== 'function') return mat;
+                            const c = mat.clone();
+                            (c as any).transparent = true;
+                            (c as any).opacity = 0.1;
+                            (c as any).depthWrite = false;
+                            c.needsUpdate = true;
+                            return c;
+                        });
+                    } else if (original && typeof original.clone === 'function') {
+                        const c = original.clone();
                         (c as any).transparent = true;
                         (c as any).opacity = 0.1;
                         (c as any).depthWrite = false;
                         c.needsUpdate = true;
-                        return c;
-                    });
-                } else {
-                    const c = original.clone();
-                    (c as any).transparent = true;
-                    (c as any).opacity = 0.1;
-                    (c as any).depthWrite = false;
-                    c.needsUpdate = true;
-                    child.material = c;
+                        child.material = c;
+                    }
+                } catch (matErr) {
+                    // Skip materials that can't be cloned
+                    console.warn('[Upload] Material clone error:', matErr);
                 }
             });
         });

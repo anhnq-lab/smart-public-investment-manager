@@ -384,7 +384,7 @@ const TaskList: React.FC = () => {
                                                         {/* Title + Description */}
                                                         <td className="px-4 py-3.5 max-w-[280px]">
                                                             <div className="flex items-center gap-2 mb-0.5">
-                                                                <h4 className={`text-sm font-semibold group-hover:text-blue-600 transition-colors line-clamp-1 ${task.Status === TaskStatus.Done ? 'text-slate-400 line-through' : isOverdue ? 'text-red-700 dark:text-red-400' : 'text-slate-800 dark:text-slate-100'
+                                                                <h4 className={`text-sm font-semibold group-hover:text-blue-600 transition-colors line-clamp-1 ${task.Status === TaskStatus.Done ? 'text-slate-400' : isOverdue ? 'text-red-700 dark:text-red-400' : 'text-slate-800 dark:text-slate-100'
                                                                     }`}>
                                                                     {task.Title}
                                                                 </h4>
@@ -529,7 +529,7 @@ const TaskList: React.FC = () => {
                                                 className={`bg-white dark:bg-slate-800 rounded-xl border p-4 cursor-pointer hover:shadow-md hover:border-blue-200 dark:hover:border-blue-800 transition-all group ${isOverdue ? 'border-red-200 bg-red-50/30 dark:bg-red-900/10 dark:border-red-900/30' : 'border-slate-100 dark:border-slate-700'}`}
                                             >
                                                 <div className="flex items-start justify-between gap-2 mb-2">
-                                                    <h4 className={`text-sm font-semibold line-clamp-2 group-hover:text-blue-600 transition-colors ${task.Status === TaskStatus.Done ? 'text-slate-400 line-through' : 'text-slate-800 dark:text-slate-100'
+                                                    <h4 className={`text-sm font-semibold line-clamp-2 group-hover:text-blue-600 transition-colors ${task.Status === TaskStatus.Done ? 'text-slate-400' : 'text-slate-800 dark:text-slate-100'
                                                         }`}>{task.Title}</h4>
                                                     <span className={`shrink-0 w-1.5 h-1.5 rounded-full mt-1.5 ${priorityInfo.dot}`} />
                                                 </div>

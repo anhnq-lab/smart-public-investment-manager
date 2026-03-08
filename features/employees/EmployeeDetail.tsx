@@ -394,7 +394,7 @@ const EmployeeDetail: React.FC = () => {
                                                         </td>
                                                         <td className="px-4 py-3.5">
                                                             <div className="flex items-center gap-2 mb-0.5">
-                                                                <h4 className={`text-sm font-semibold group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-1 ${task.Status === TaskStatus.Done ? 'text-slate-400 dark:text-slate-500 line-through' : isOverdue ? 'text-red-700 dark:text-red-400' : 'text-slate-800 dark:text-slate-200'}`}>
+                                                                <h4 className={`text-sm font-semibold group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-1 ${task.Status === TaskStatus.Done ? 'text-slate-400 dark:text-slate-500' : isOverdue ? 'text-red-700 dark:text-red-400' : 'text-slate-800 dark:text-slate-200'}`}>
                                                                     {task.Title}
                                                                 </h4>
                                                                 {task.IsCritical && <span className="shrink-0 text-[8px] font-black text-red-600 bg-red-100 px-1.5 py-0.5 rounded-md uppercase">Găng</span>}

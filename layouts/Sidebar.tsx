@@ -60,7 +60,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   onToggleCollapse,
   onClose
 }) => {
-  const { currentUser } = useAuth();
+  const { currentUser, logout } = useAuth();
   const isAdmin = currentUser?.Role === 'Admin';
 
   const adminItems: NavItem[] = isAdmin ? [
@@ -239,7 +239,7 @@ const Sidebar: React.FC<SidebarProps> = ({
 
         {/* Logout */}
         <button
-          onClick={() => {/* Handle logout */ }}
+          onClick={() => { logout(); }}
           className={`
             w-full flex items-center gap-2.5 px-3 py-2 rounded-lg
             transition-all duration-150 text-[13px]

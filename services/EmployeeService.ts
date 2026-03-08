@@ -34,12 +34,12 @@ export class EmployeeService {
 
         // Sort by position hierarchy
         const positionOrder: Record<string, number> = {
-            'Quản trị hệ thống': 0,
             'Trưởng Ban': 1, 'Giám đốc Ban QLDA': 1,
             'Phó Trưởng Ban': 2,
             'Kế Toán trưởng': 3, 'Kế toán trưởng': 3,
             'Chuyên viên chính': 4,
             'Chuyên viên': 5,
+            'Quản trị hệ thống': 99,
         };
         const employees = (data || []).map(dbToEmployee);
         employees.sort((a, b) => {

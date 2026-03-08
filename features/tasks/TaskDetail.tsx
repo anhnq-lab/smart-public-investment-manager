@@ -434,7 +434,7 @@ const TaskDetail: React.FC = () => {
                                             {sub.Status === 'Done' && <CheckCircle2 className="w-3 h-3" />}
                                         </div>
                                         <div className="flex-1 min-w-0 cursor-pointer" onClick={() => { setEditingSubTask(sub); setIsSubTaskModalOpen(true); }}>
-                                            <p className={`text-xs font-semibold line-clamp-2 ${sub.Status === 'Done' ? 'line-through text-slate-400 dark:text-slate-500' : 'text-slate-700 dark:text-slate-300'}`}>{sub.Title}</p>
+                                            <p className={`text-xs font-semibold line-clamp-2 ${sub.Status === 'Done' ? 'text-slate-400 dark:text-slate-500' : 'text-slate-700 dark:text-slate-300'}`}>{sub.Title}</p>
                                             <div className="flex items-center gap-2 mt-1 flex-wrap">
                                                 <span className="text-[10px] text-slate-400 bg-white px-2 py-0.5 rounded-md ring-1 ring-slate-100 flex items-center gap-1">
                                                     <User className="w-3 h-3" />

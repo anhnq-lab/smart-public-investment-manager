@@ -513,6 +513,7 @@ export function useBimSelection(
                 const idMap: Record<string, Set<number>> = {};
                 let foundModelId: string | null = null;
 
+                // Strategy 1: Try official ThatOpen API (getMergedBox / getBoundingBox)
                 for (const [modelId, model] of fragments.list) {
                     try {
                         let box = null;
@@ -529,9 +530,70 @@ export function useBimSelection(
                     } catch { /* skip */ }
                 }
 
+                // Strategy 1.5: Try getFragmentMap API (ThatOpen v2)
+                if (!foundModelId) {
+                    for (const [modelId, model] of fragments.list) {
+                        try {
+                            if (typeof (model as any).getFragmentMap === 'function') {
+                                const fragMap = (model as any).getFragmentMap([expressId]);
+                                if (fragMap && Object.keys(fragMap).length > 0) {
+                                    idMap[modelId] = new Set([expressId]);
+                                    foundModelId = String(modelId);
+                                    console.log(`[Selection] Found expressId ${expressId} via getFragmentMap in model ${modelId}`);
+                                    break;
+                                }
+                            }
+                        } catch { /* skip */ }
+                    }
+                }
+
+                // Strategy 2: Fallback — scan mesh children for fragment.items Map / itemIDs Set
+                if (!foundModelId) {
+                    for (const [modelId, model] of fragments.list) {
+                        const modelObj = (model as any).object || model;
+                        if (!modelObj || typeof modelObj.traverse !== 'function') continue;
+                        let found = false;
+                        modelObj.traverse((child: any) => {
+                            if (found) return;
+                            if (!child.isMesh) return;
+
+                            // ThatOpen v2: fragment.items is Map<number, number[]>
+                            const items = child.fragment?.items;
+                            if (items instanceof Map && items.has(expressId)) {
+                                found = true;
+                                return;
+                            }
+
+                            // Legacy: itemIDs Set
+                            const ids = child.itemIDs || child.fragment?.ids || child.userData?.itemIDs;
+                            if (ids instanceof Set && ids.has(expressId)) {
+                                found = true;
+                                return;
+                            }
+
+                            // InstancedMesh
+                            if (child.isInstancedMesh && child.fragment?.ids instanceof Set && child.fragment.ids.has(expressId)) {
+                                found = true;
+                            }
+                        });
+                        if (found) {
+                            idMap[modelId] = new Set([expressId]);
+                            foundModelId = String(modelId);
+                            console.log(`[Selection] Found expressId ${expressId} via mesh scan in model ${modelId}`);
+                            break;
+                        }
+                    }
+                }
+
                 if (foundModelId) {
                     selectedFragmentRef.current = { modelId: foundModelId, expressIds: [expressId] };
-                    await highlighter.highlightByID('select', idMap, true, false);
+                    try {
+                        await highlighter.highlightByID('select', idMap, true, false);
+                    } catch (highlightErr) {
+                        console.warn('[Selection] highlightByID failed:', highlightErr);
+                    }
+                } else {
+                    console.warn(`[Selection] Could not find expressId ${expressId} in any model`);
                 }
             }
         } catch (e) {

@@ -11,6 +11,7 @@ interface ProjectHeaderProps {
     syncResult: any;
     onDelete?: () => void;
     onEdit?: () => void;
+    compact?: boolean;
 }
 
 const getGroupBadge = (group: ProjectGroup) => {
@@ -32,13 +33,65 @@ const getStatusConfig = (status: ProjectStatus) => {
     }
 };
 
-export const ProjectHeader: React.FC<ProjectHeaderProps> = ({ project, onSync, isSyncing, syncResult, onDelete, onEdit }) => {
+export const ProjectHeader: React.FC<ProjectHeaderProps> = ({ project, onSync, isSyncing, syncResult, onDelete, onEdit, compact }) => {
     const navigate = useNavigate();
     const groupBadge = getGroupBadge(project.GroupCode);
     const statusConfig = getStatusConfig(project.Status);
 
     // Progress bar mini
     const progress = project.Progress || 0;
+
+    // ── Compact mode: single-line header for BIM tab ──
+    if (compact) {
+        return (
+            <div className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-xl shadow-sm overflow-hidden">
+                <div className="px-4 py-2 flex items-center gap-3">
+                    <button
+                        onClick={() => navigate(-1)}
+                        className="p-1.5 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-lg transition-all shrink-0"
+                    >
+                        <ArrowLeft className="w-4 h-4 text-gray-500 dark:text-slate-400" />
+                    </button>
+                    <h2 className="text-sm font-bold text-gray-900 dark:text-white truncate">
+                        {project.ProjectName}
+                    </h2>
+                    <span className={`px-2 py-0.5 rounded text-[9px] font-black tracking-wider uppercase shrink-0 ${statusConfig.bg}`}>
+                        {statusConfig.label}
+                    </span>
+                    <div className="hidden sm:flex items-center gap-2 text-[11px] text-gray-400 dark:text-slate-500 shrink-0">
+                        <Hash className="w-3 h-3" />
+                        <span className="font-mono">{project.ProjectNumber || project.ProjectID}</span>
+                    </div>
+                    <span className={`hidden md:inline-flex px-1.5 py-0.5 rounded text-[9px] font-bold border shrink-0 ${groupBadge.bg}`}>
+                        {groupBadge.label}
+                    </span>
+                    <span className="hidden md:inline-flex text-[11px] font-bold text-gray-600 dark:text-slate-300 bg-gray-50 dark:bg-slate-800 px-1.5 py-0.5 rounded border border-gray-200 dark:border-slate-700 shrink-0">
+                        {formatShortCurrency(project.TotalInvestment)}
+                    </span>
+                    <div className="flex-1" />
+                    {onEdit && (
+                        <button
+                            onClick={onEdit}
+                            className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-[11px] font-bold shadow-sm transition-all shrink-0"
+                            title="Chỉnh sửa thông tin dự án"
+                        >
+                            <Pencil className="w-3 h-3" />
+                            Chỉnh sửa
+                        </button>
+                    )}
+                    {onDelete && (
+                        <button
+                            onClick={onDelete}
+                            className="p-1.5 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-all text-gray-400 hover:text-red-600 dark:hover:text-red-400 shrink-0"
+                            title="Xoá dự án"
+                        >
+                            <Trash2 className="w-4 h-4" />
+                        </button>
+                    )}
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-2xl shadow-sm overflow-hidden">

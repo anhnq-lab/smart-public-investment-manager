@@ -312,7 +312,7 @@ const ProjectDetail: React.FC = () => {
     return (
         <div className="flex flex-col relative h-[calc(100vh-120px)] bg-[#F8FAFC] dark:bg-slate-900">
             {/* Fixed Header + Tabs — does NOT scroll */}
-            <div className="shrink-0 px-4 pt-4">
+            <div className={`shrink-0 px-4 ${activeTab === 'bim' || activeTab === 'operations' ? 'pt-2' : 'pt-4'}`}>
                 {/* 1. Header */}
                 <ProjectHeader
                     project={project}
@@ -321,10 +321,11 @@ const ProjectDetail: React.FC = () => {
                     syncResult={syncResult}
                     onDelete={() => setShowDeleteModal(true)}
                     onEdit={() => setShowEditModal(true)}
+                    compact={activeTab === 'bim' || activeTab === 'operations'}
                 />
 
                 {/* 2. Tab Navigation */}
-                <div className="border-b border-gray-200 dark:border-slate-700 flex gap-8 mt-4 overflow-x-auto">
+                <div className={`border-b border-gray-200 dark:border-slate-700 flex gap-8 ${activeTab === 'bim' || activeTab === 'operations' ? 'mt-2' : 'mt-4'} overflow-x-auto`}>
                     {[
                         { id: 'info', label: 'TỔNG QUAN', icon: Info },
                         { id: 'plan', label: 'KẾ HOẠCH/TIẾN ĐỘ', icon: CalendarCheck },
@@ -337,7 +338,7 @@ const ProjectDetail: React.FC = () => {
                     ].map(t => (
                         <button
                             key={t.id} onClick={() => setActiveTab(t.id as any)}
-                            className={`py-3 px-1 text-xs font-black border-b-2 transition-all flex items-center gap-2 tracking-widest whitespace-nowrap ${activeTab === t.id ? 'border-blue-600 text-blue-600 dark:border-blue-400 dark:text-blue-400' : 'border-transparent text-gray-400 dark:text-slate-500 hover:text-gray-600 dark:hover:text-slate-300'}`}
+                            className={`${activeTab === 'bim' || activeTab === 'operations' ? 'py-2' : 'py-3'} px-1 text-xs font-black border-b-2 transition-all flex items-center gap-2 tracking-widest whitespace-nowrap ${activeTab === t.id ? 'border-blue-600 text-blue-600 dark:border-blue-400 dark:text-blue-400' : 'border-transparent text-gray-400 dark:text-slate-500 hover:text-gray-600 dark:hover:text-slate-300'}`}
                         >
                             <t.icon className="w-4 h-4" />
                             {t.label}

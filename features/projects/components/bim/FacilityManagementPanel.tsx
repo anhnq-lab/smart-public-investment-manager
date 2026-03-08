@@ -68,11 +68,21 @@ export const FacilityManagementPanel: React.FC = () => {
         const expressId = parseInt(asset.bim_element_id, 10);
         if (isNaN(expressId)) return;
 
-        tools.toggleRightPanel('properties');
-        await selection.handleSelectElementFromTree(expressId);
-        // Isolate the model containing this equipment (hide others)
-        upload.isolateModelByExpressId(expressId);
-        await engine.zoomToExpressId(expressId);
+        console.log(`[FacilityMgmt] Navigating to expressId: ${expressId} (${asset.asset_name})`);
+
+        try {
+            // Step 1: Select element first (highlights + loads properties)
+            tools.toggleRightPanel('properties');
+            await selection.handleSelectElementFromTree(expressId);
+
+            // Step 2: Zoom to the element (BEFORE isolate, so bounding box is computed with full materials)
+            await engine.zoomToExpressId(expressId);
+
+            // Step 3: Isolate the model containing this equipment (fade others)
+            upload.isolateModelByExpressId(expressId);
+        } catch (err) {
+            console.warn('[FacilityMgmt] Error navigating to asset:', err);
+        }
     }, [selection, engine, tools, upload]);
     const [assets, setAssets] = useState<FacilityAsset[]>([]);
     const [loading, setLoading] = useState(true);

@@ -834,7 +834,7 @@ export const ProjectPlanTab: React.FC<ProjectPlanTabProps> = ({
                                                                     </td>
 
                                                                     {/* Title */}
-                                                                    <td className={`px-2 py-2 font-medium ${t.Status === 'Done' ? 'text-gray-400 dark:text-slate-500 line-through' :
+                                                                    <td className={`px-2 py-2 font-medium ${t.Status === 'Done' ? 'text-gray-400 dark:text-slate-500' :
                                                                         isOverdue(t) ? 'text-red-700 dark:text-red-400' :
                                                                             t.Status === 'Review' ? 'text-indigo-700 dark:text-indigo-400' :
                                                                                 t.Status === 'InProgress' ? 'text-orange-700 dark:text-orange-400' :

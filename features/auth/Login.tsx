@@ -26,12 +26,13 @@ const Login: React.FC = () => {
 
     return (
         <div className="min-h-screen bg-gray-50 dark:bg-slate-900 flex items-center justify-center p-4">
-            <div className="bg-white dark:bg-slate-800 w-full max-w-md rounded-3xl shadow-2xl overflow-hidden flex flex-col border border-gray-200 dark:border-slate-700">
-                <div className="bg-gradient-to-r from-[#F99715] to-[#EC6710] p-8 text-center relative overflow-hidden">
-                    <div className="absolute top-0 left-0 w-full h-full opacity-20 bg-gradient-to-br from-white via-transparent to-transparent"></div>
-                    <img src="/hcma-logo.png" alt="Logo HVCTQG HCM" className="w-20 h-20 mx-auto mb-4 drop-shadow-lg object-contain" />
-                    <h1 className="text-lg font-bold text-white leading-snug">Ban Quản lý dự án đầu tư xây dựng chuyên ngành</h1>
-                    <p className="text-yellow-50 text-sm mt-1">Học viện Chính trị Quốc gia Hồ Chí Minh</p>
+            <div className="bg-white dark:bg-slate-800 w-full max-w-xl rounded-3xl shadow-2xl overflow-hidden flex flex-col border border-gray-200 dark:border-slate-700">
+                <div className="bg-[#8B1A1A] p-8 pb-6 text-center relative overflow-hidden">
+                    {/* Decorative drum pattern background */}
+                    <div className="absolute inset-0 opacity-[0.25]" style={{ backgroundImage: 'url("/bg-header-login.png")', backgroundSize: '120%', backgroundPosition: 'center top', backgroundRepeat: 'no-repeat' }}></div>
+                    <img src="/hcma-logo.png" alt="Logo HVCTQG HCM" className="relative z-10 w-44 mx-auto mb-4 drop-shadow-xl object-contain" />
+                    <h1 className="relative z-10 text-base font-extrabold text-white leading-snug uppercase" style={{ textShadow: '0 2px 4px rgba(0,0,0,0.3)', letterSpacing: '0.5px' }}>Ban Quản lý dự án đầu tư xây dựng chuyên ngành</h1>
+                    <p className="relative z-10 text-yellow-200/90 text-sm mt-2 font-medium tracking-wide">Học viện Chính trị Quốc gia Hồ Chí Minh</p>
                 </div>
 
                 <div className="p-8">
@@ -84,7 +85,7 @@ const Login: React.FC = () => {
 
                         <button
                             type="submit"
-                            className="w-full py-3 bg-gradient-to-r from-[#F99715] to-[#EC6710] hover:from-[#EC6710] hover:to-[#C4560D] text-white font-bold rounded-xl shadow-lg shadow-orange-200 dark:shadow-orange-900/30 transition-all hover:-translate-y-0.5"
+                            className="w-full py-3 bg-gradient-to-r from-[#B71C1C] to-[#8B1A1A] hover:from-[#9B1515] hover:to-[#6D1414] text-white font-bold rounded-xl shadow-lg shadow-red-200 dark:shadow-red-900/30 transition-all hover:-translate-y-0.5"
                         >
                             Đăng nhập
                         </button>

@@ -485,33 +485,83 @@ export function useBimEngine(
             const box3 = new THREE.Box3();
             let found = false;
 
-            // Strategy 1: Try ThatOpen API methods (most reliable for bounding box)
+            console.log(`[BimEngine] zoomToExpressId(${expressId}): starting search across ${fragments.list.size} models`);
+
+            // Strategy 0: Try getFragmentMap API (ThatOpen v2 primary method)
             for (const [modelId, model] of fragments.list) {
                 try {
-                    if (typeof (model as any).getMergedBox === 'function') {
-                        const box = await (model as any).getMergedBox([expressId]);
-                        if (box && !box.isEmpty()) {
-                            box3.union(box);
-                            found = true;
-                            console.log(`[BimEngine] Zoom: found via getMergedBox in model ${modelId}`);
-                            break;
+                    if (typeof (model as any).getFragmentMap === 'function') {
+                        const fragMap = (model as any).getFragmentMap([expressId]);
+                        if (fragMap && Object.keys(fragMap).length > 0) {
+                            // Found! Now get bounding box via fragment meshes
+                            for (const [fragId, ids] of Object.entries(fragMap)) {
+                                const modelObj = (model as any).object || model;
+                                if (modelObj && typeof modelObj.traverse === 'function') {
+                                    modelObj.traverse((child: any) => {
+                                        if (found) return;
+                                        if (child.isMesh) {
+                                            const meshBox = new THREE.Box3().setFromObject(child);
+                                            if (!meshBox.isEmpty()) {
+                                                // Check if this mesh contains the expressId via items
+                                                const items = child.fragment?.items;
+                                                if (items instanceof Map && items.has(expressId)) {
+                                                    box3.union(meshBox);
+                                                    found = true;
+                                                }
+                                            }
+                                        }
+                                    });
+                                }
+                                // If we couldn't find the specific mesh, use model bounding box
+                                if (!found) {
+                                    const modelObj2 = (model as any).object || model;
+                                    if (modelObj2 instanceof THREE.Object3D) {
+                                        const modelBox = new THREE.Box3().setFromObject(modelObj2);
+                                        if (!modelBox.isEmpty()) {
+                                            box3.union(modelBox);
+                                            found = true;
+                                        }
+                                    }
+                                }
+                            }
+                            if (found) {
+                                console.log(`[BimEngine] Zoom: found via getFragmentMap in model ${modelId}`);
+                                break;
+                            }
                         }
                     }
-                } catch { /* skip */ }
-                try {
-                    if (!found && typeof (model as any).getBoundingBox === 'function') {
-                        const box = await (model as any).getBoundingBox([expressId]);
-                        if (box && !box.isEmpty()) {
-                            box3.union(box);
-                            found = true;
-                            console.log(`[BimEngine] Zoom: found via getBoundingBox in model ${modelId}`);
-                            break;
-                        }
-                    }
-                } catch { /* skip */ }
+                } catch (e) { console.warn('[BimEngine] getFragmentMap error:', e); }
             }
 
-            // Strategy 2: Scan model objects for expressId (matching isolateModelByExpressId patterns)
+            // Strategy 1: Try getMergedBox / getBoundingBox API
+            if (!found) {
+                for (const [modelId, model] of fragments.list) {
+                    try {
+                        if (typeof (model as any).getMergedBox === 'function') {
+                            const box = await (model as any).getMergedBox([expressId]);
+                            if (box && !box.isEmpty()) {
+                                box3.union(box);
+                                found = true;
+                                console.log(`[BimEngine] Zoom: found via getMergedBox in model ${modelId}`);
+                                break;
+                            }
+                        }
+                    } catch { /* skip */ }
+                    try {
+                        if (!found && typeof (model as any).getBoundingBox === 'function') {
+                            const box = await (model as any).getBoundingBox([expressId]);
+                            if (box && !box.isEmpty()) {
+                                box3.union(box);
+                                found = true;
+                                console.log(`[BimEngine] Zoom: found via getBoundingBox in model ${modelId}`);
+                                break;
+                            }
+                        }
+                    } catch { /* skip */ }
+                }
+            }
+
+            // Strategy 2: Scan model children for fragment.items Map (ThatOpen v2 pattern)
             if (!found) {
                 for (const [modelId, model] of fragments.list) {
                     const modelObj = (model as any).object || model;
@@ -521,18 +571,31 @@ export function useBimEngine(
                         if (found) return;
                         if (!child.isMesh) return;
 
-                        // Check all possible ID storage locations (same as isolateModelByExpressId)
-                        const ids = child.itemIDs || child.fragment?.ids || child.userData?.itemIDs;
-                        if (ids instanceof Set && ids.has(expressId)) {
+                        // ThatOpen v2: fragment.items is a Map<number, number[]>
+                        const items = child.fragment?.items;
+                        if (items instanceof Map && items.has(expressId)) {
                             const meshBox = new THREE.Box3().setFromObject(child);
                             if (!meshBox.isEmpty()) {
                                 box3.union(meshBox);
                                 found = true;
-                                console.log(`[BimEngine] Zoom: found via mesh scan (itemIDs) in model ${modelId}`);
+                                console.log(`[BimEngine] Zoom: found via fragment.items Map in model ${modelId}`);
                             }
                         }
 
-                        // Also check InstancedMesh fragment data
+                        // Legacy: itemIDs Set
+                        if (!found) {
+                            const ids = child.itemIDs || child.fragment?.ids || child.userData?.itemIDs;
+                            if (ids instanceof Set && ids.has(expressId)) {
+                                const meshBox = new THREE.Box3().setFromObject(child);
+                                if (!meshBox.isEmpty()) {
+                                    box3.union(meshBox);
+                                    found = true;
+                                    console.log(`[BimEngine] Zoom: found via itemIDs Set in model ${modelId}`);
+                                }
+                            }
+                        }
+
+                        // InstancedMesh fragment data
                         if (!found && child.isInstancedMesh && child.fragment) {
                             const fragIds = child.fragment.ids;
                             if (fragIds instanceof Set && fragIds.has(expressId)) {
@@ -540,7 +603,7 @@ export function useBimEngine(
                                 if (!meshBox.isEmpty()) {
                                     box3.union(meshBox);
                                     found = true;
-                                    console.log(`[BimEngine] Zoom: found via InstancedMesh fragment in model ${modelId}`);
+                                    console.log(`[BimEngine] Zoom: found via InstancedMesh in model ${modelId}`);
                                 }
                             }
                         }
@@ -549,43 +612,75 @@ export function useBimEngine(
                 }
             }
 
-            // Strategy 3: Final fallback — scan entire scene (not just models)
+            // Strategy 3: Scan entire scene (final fallback)
             if (!found) {
                 const scene = worldRef.current.scene.three;
                 scene.traverse((obj: any) => {
                     if (found) return;
                     if (!obj.isMesh) return;
-                    const itemIDs = obj.itemIDs || obj.fragment?.ids || obj.userData?.itemIDs;
-                    if (itemIDs instanceof Set && itemIDs.has(expressId)) {
+
+                    // Check fragment.items Map first
+                    const items = obj.fragment?.items;
+                    if (items instanceof Map && items.has(expressId)) {
                         const meshBox = new THREE.Box3().setFromObject(obj);
                         if (!meshBox.isEmpty()) {
                             box3.union(meshBox);
                             found = true;
-                            console.log('[BimEngine] Zoom: found via scene traverse fallback');
+                            console.log('[BimEngine] Zoom: found via scene traverse fragment.items');
                         }
                     }
-                    // InstancedMesh fallback
-                    if (!found && obj.isInstancedMesh && obj.fragment?.ids instanceof Set && obj.fragment.ids.has(expressId)) {
-                        const meshBox = new THREE.Box3().setFromObject(obj);
-                        if (!meshBox.isEmpty()) {
-                            box3.union(meshBox);
-                            found = true;
-                            console.log('[BimEngine] Zoom: found via scene InstancedMesh fallback');
+
+                    if (!found) {
+                        const itemIDs = obj.itemIDs || obj.fragment?.ids || obj.userData?.itemIDs;
+                        if (itemIDs instanceof Set && itemIDs.has(expressId)) {
+                            const meshBox = new THREE.Box3().setFromObject(obj);
+                            if (!meshBox.isEmpty()) {
+                                box3.union(meshBox);
+                                found = true;
+                                console.log('[BimEngine] Zoom: found via scene traverse itemIDs');
+                            }
                         }
                     }
                 });
             }
 
+            // Strategy 4: Debug — log what structures exist on first mesh to understand data format
+            if (!found) {
+                let debugged = false;
+                for (const [modelId, model] of fragments.list) {
+                    if (debugged) break;
+                    const modelObj = (model as any).object || model;
+                    if (!modelObj || typeof modelObj.traverse !== 'function') continue;
+                    modelObj.traverse((child: any) => {
+                        if (debugged) return;
+                        if (!child.isMesh) return;
+                        debugged = true;
+                        const frag = child.fragment;
+                        console.log(`[BimEngine] DEBUG mesh in model ${modelId}:`, {
+                            hasItemIDs: !!child.itemIDs,
+                            itemIDsType: child.itemIDs ? child.itemIDs.constructor.name : 'N/A',
+                            hasFragment: !!frag,
+                            fragKeys: frag ? Object.keys(frag).slice(0, 15) : [],
+                            fragIdsType: frag?.ids ? frag.ids.constructor.name : 'N/A',
+                            fragItemsType: frag?.items ? frag.items.constructor.name : 'N/A',
+                            fragItemsSample: frag?.items instanceof Map
+                                ? Array.from(frag.items.keys()).slice(0, 5)
+                                : (frag?.items ? 'non-Map' : 'N/A'),
+                            userData: child.userData ? Object.keys(child.userData).slice(0, 10) : [],
+                            childType: child.constructor.name,
+                        });
+                    });
+                }
+                console.warn(`[BimEngine] zoomToExpressId(${expressId}): element not found in any model after all strategies`);
+            }
+
             if (found && !box3.isEmpty()) {
                 const sphere = new THREE.Sphere();
                 box3.getBoundingSphere(sphere);
-                // Closer zoom for equipment visibility — smaller radius, tighter fit
                 sphere.radius = Math.max(sphere.radius * 1.2, 0.5);
                 const camera = worldRef.current.camera as OBC.SimpleCamera;
                 camera.controls.fitToSphere(sphere, true);
                 console.log(`[BimEngine] Zoom to expressId ${expressId} success, radius: ${sphere.radius.toFixed(2)}`);
-            } else {
-                console.warn(`[BimEngine] zoomToExpressId(${expressId}): element not found in any model`);
             }
         } catch (err) {
             console.warn('[BimEngine] Zoom to expressId error:', err);
